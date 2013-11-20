@@ -1,34 +1,6 @@
 // vim:set ts=4 sw=4 fdm=marker et:
-// Update:
-// 2012Mar28    pchen       Add GenInfoBranches,XbInfo.rfuj_index.
-//                          Fix Trgresult.
-// 2012Nov14    pchen       Kill following branches to reduce size
-//                              EvtInfo.PVc2p/F
-//                              MuonInfo.p/F
-//                              MuonInfo.caloIso/F
-//                              TrackInfo.p/F
-//                              XbInfo.rfmu1_index/F
-//                              XbInfo.rfmu2_index/F
-//                              XbInfo.rfmu1_e/F
-//                              XbInfo.rfmu2_e/F
-//                              XbInfo.rftk1_e/F
-//                              XbInfo.rftk2_e/F
-//                              XbInfo.jpsi_*
-//                          Rename XbInfo.n_uj as XbInfo.uj_size. 
-//                          Add MuonInfo.isGoodCand/I
-//                              TrackInfo.isGoodCand/I
-//                              XbInfo.uj_isGoodCand/I      
-//                              XbInfo.isGoodCand/I         
-//                          Add option to fit to jpsi/upsilon separately or together.
-// 2012Nov28    pchen       Add MuonInfo.i_nStripLayer/I
-//                              MuonInfo.i_nPixelLayer/I
-// 2013Jan22    pchen       Add MAX_BX 128
-//                              EvtInfo.nBX/I
-//                              EvtInfo.BXPU[EvtInfo.nBX]/I
-//                              EvtInfo.nPU[EvtInfo.nBX]/I
-//                              EvtInfo.trueIT[EvtInfo.nBX]/F
-//                          Fix GenInfo signal matching
-//                              Due to PHOTOS option in evtgen, could have extra photon in (1S)->mumu decay.
+//Update:
+// 2013Nov13   twang   clear up irrelevant things
 #ifndef _XBFRAMEFORMAT_H_
 #define _XBFRAMEFORMAT_H_
 
@@ -148,7 +120,6 @@ class MuonInfoBranches{//{{{
         double 	pt           [ MAX_MUON];
         double	eta          [ MAX_MUON];
         double 	phi          [ MAX_MUON];
-        //double  p            [ MAX_MUON];
         int	    i_striphit   [ MAX_MUON];
         int	    i_pixelhit   [ MAX_MUON];
         int	    g_striphit   [ MAX_MUON];
@@ -314,247 +285,6 @@ class TrackInfoBranches{//{{{
         }//}}}
 };//}}}
 
-class XbInfoBranches{//{{{
-    public:
-        int	    uj_size;
-        int     n_uj;//Compatible with uj_size
-        int	    uj_index[MAX_XB];
-        double  uj_mass[MAX_XB];
-        double  uj_px[MAX_XB];
-        double  uj_py[MAX_XB];
-        double  uj_pz[MAX_XB];
-        double	uj_vtxX[MAX_XB];
-        double  uj_vtxY[MAX_XB];
-        double  uj_vtxZ[MAX_XB];
-        double  uj_vtxXE[MAX_XB];
-        double  uj_vtxYE[MAX_XB];
-        double  uj_vtxZE[MAX_XB];
-        double	uj_vtxdof[MAX_XB];
-        double	uj_vtxchi2[MAX_XB];
-        int     uj_rfmu1_index[MAX_XB];
-        int     uj_rfmu2_index[MAX_XB];
-        int     uj_isGoodCand[MAX_XB];
-
-        double  uj_rfmu1_px[MAX_XB];//after vertexing
-        double  uj_rfmu1_py[MAX_XB];
-        double  uj_rfmu1_pz[MAX_XB];
-        double  uj_rfmu2_px[MAX_XB];
-        double  uj_rfmu2_py[MAX_XB];
-        double  uj_rfmu2_pz[MAX_XB];
-
-        int	    size;
-        int	    index[MAX_XB];
-        double	mass[MAX_XB];
-        double	px[MAX_XB];
-        double	py[MAX_XB];
-        double	pz[MAX_XB];
-        double  pxE[MAX_XB];
-        double  pyE[MAX_XB];
-        double  pzE[MAX_XB];
-        double  vtxX[MAX_XB];
-        double  vtxY[MAX_XB];
-        double  vtxZ[MAX_XB];
-        double  vtxXE[MAX_XB];
-        double  vtxYE[MAX_XB];
-        double  vtxZE[MAX_XB];
-        double	vtxdof[MAX_XB];
-        double	vtxchi2[MAX_XB];
-        int     rfuj_index[MAX_XB];
-        //int     rfmu1_index[MAX_XB];
-        //int     rfmu2_index[MAX_XB];
-        int     rftk1_index[MAX_XB];
-        int     rftk2_index[MAX_XB];
-        int     isGoodCand[MAX_XB];
-
-        double  rfmu1_px[MAX_XB];
-        double  rfmu1_py[MAX_XB];
-        double  rfmu1_pz[MAX_XB];
-        //double  rfmu1_e[MAX_XB];
-        double  rfmu2_px[MAX_XB];
-        double  rfmu2_py[MAX_XB];
-        double  rfmu2_pz[MAX_XB];
-        //double  rfmu2_e[MAX_XB];
-        double  rftk1_px[MAX_XB];
-        double  rftk1_py[MAX_XB];
-        double  rftk1_pz[MAX_XB];
-        //double  rftk1_e[MAX_XB];
-        double  rftk2_px[MAX_XB];
-        double  rftk2_py[MAX_XB];
-        double  rftk2_pz[MAX_XB];
-        //double  rftk2_e[MAX_XB];//38
-    
-        ////Jpsi_fit
-        //int	    jpsi_fitstatus[MAX_XB];
-        //double	jpsi_mass[MAX_XB];
-        //double	jpsi_px[MAX_XB];
-        //double	jpsi_py[MAX_XB];
-        //double	jpsi_pz[MAX_XB];
-        //double    jpsi_vtxX[MAX_XB];
-        //double    jpsi_vtxY[MAX_XB];
-        //double    jpsi_vtxZ[MAX_XB];
-        //double	jpsi_vtxdof[MAX_XB];
-        //double	jpsi_vtxchi2[MAX_XB];//10
-
-
-        void regTree(TTree *root){//{{{
-            root->Branch("XbInfo.uj_size"          , &uj_size       , "XbInfo.uj_size/I"			);
-            root->Branch("XbInfo.uj_index"         , uj_index       , "XbInfo.uj_index[XbInfo.uj_size]/I"	);
-            root->Branch("XbInfo.uj_mass"          , uj_mass        , "XbInfo.uj_mass[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_px"            , uj_px          , "XbInfo.uj_px[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_py"            , uj_py          , "XbInfo.uj_py[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_pz"            , uj_pz          , "XbInfo.uj_pz[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_vtxX"          , uj_vtxX        , "XbInfo.uj_vtxX[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_vtxY"          , uj_vtxY        , "XbInfo.uj_vtxY[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_vtxZ"          , uj_vtxZ        , "XbInfo.uj_vtxZ[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_vtxXE"         , uj_vtxXE       , "XbInfo.uj_vtxXE[XbInfo.uj_size]/D"   );
-            root->Branch("XbInfo.uj_vtxYE"         , uj_vtxYE       , "XbInfo.uj_vtxYE[XbInfo.uj_size]/D"   );
-            root->Branch("XbInfo.uj_vtxZE"         , uj_vtxZE       , "XbInfo.uj_vtxZE[XbInfo.uj_size]/D"   );
-            root->Branch("XbInfo.uj_vtxdof"        , uj_vtxdof      , "XbInfo.uj_vtxdof[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_vtxchi2"       , uj_vtxchi2     , "XbInfo.uj_vtxchi2[XbInfo.uj_size]/D"	);
-            root->Branch("XbInfo.uj_rfmu1_index"   , uj_rfmu1_index , "XbInfo.uj_rfmu1_index[XbInfo.uj_size]/I"	);
-            root->Branch("XbInfo.uj_rfmu2_index"   , uj_rfmu2_index , "XbInfo.uj_rfmu2_index[XbInfo.uj_size]/I"	);
-            root->Branch("XbInfo.uj_isGoodCand"    , uj_isGoodCand  , "XbInfo.uj_isGoodCand[XbInfo.uj_size]/I"	);
-
-            root->Branch("XbInfo.uj_rfmu1_px"      , uj_rfmu1_px    , "XbInfo.uj_rfmu1_px[XbInfo.uj_size]/D");
-            root->Branch("XbInfo.uj_rfmu1_py"      , uj_rfmu1_py    , "XbInfo.uj_rfmu1_py[XbInfo.uj_size]/D");
-            root->Branch("XbInfo.uj_rfmu1_pz"      , uj_rfmu1_pz    , "XbInfo.uj_rfmu1_pz[XbInfo.uj_size]/D");
-            root->Branch("XbInfo.uj_rfmu2_px"      , uj_rfmu2_px    , "XbInfo.uj_rfmu2_px[XbInfo.uj_size]/D");
-            root->Branch("XbInfo.uj_rfmu2_py"      , uj_rfmu2_py    , "XbInfo.uj_rfmu2_py[XbInfo.uj_size]/D");
-            root->Branch("XbInfo.uj_rfmu2_pz"      , uj_rfmu2_pz    , "XbInfo.uj_rfmu2_pz[XbInfo.uj_size]/D");
-
-            root->Branch("XbInfo.size"             , &size          , "XbInfo.size/I"			);
-            root->Branch("XbInfo.index"            , index          , "XbInfo.index[XbInfo.size]/I"		);
-            root->Branch("XbInfo.mass"             , mass           , "XbInfo.mass[XbInfo.size]/D"		);
-            root->Branch("XbInfo.px"               , px             , "XbInfo.px[XbInfo.size]/D"		);
-            root->Branch("XbInfo.py"               , py             , "XbInfo.py[XbInfo.size]/D"		);
-            root->Branch("XbInfo.pz"               , pz             , "XbInfo.pz[XbInfo.size]/D"		);
-            root->Branch("XbInfo.pxE"              , pxE            , "XbInfo.pxE[XbInfo.size]/D"            );
-            root->Branch("XbInfo.pyE"              , pyE            , "XbInfo.pyE[XbInfo.size]/D"            );
-            root->Branch("XbInfo.pzE"              , pzE            , "XbInfo.pzE[XbInfo.size]/D"            );
-            root->Branch("XbInfo.vtxX"             , vtxX           , "XbInfo.vtxX[XbInfo.size]/D"		);
-            root->Branch("XbInfo.vtxY"             , vtxY           , "XbInfo.vtxY[XbInfo.size]/D"		);
-            root->Branch("XbInfo.vtxZ"             , vtxZ           , "XbInfo.vtxZ[XbInfo.size]/D"		);
-            root->Branch("XbInfo.vtxXE"            , vtxXE          , "XbInfo.vtxXE[XbInfo.size]/D"          );
-            root->Branch("XbInfo.vtxYE"            , vtxYE          , "XbInfo.vtxYE[XbInfo.size]/D"          );
-            root->Branch("XbInfo.vtxZE"            , vtxZE          , "XbInfo.vtxZE[XbInfo.size]/D"          );
-            root->Branch("XbInfo.vtxdof"           , vtxdof         , "XbInfo.vtxdof[XbInfo.size]/D"		);
-            root->Branch("XbInfo.vtxchi2"          , vtxchi2        , "XbInfo.vtxchi2[XbInfo.size]/D"	);
-            root->Branch("XbInfo.rfuj_index"       , rfuj_index     , "XbInfo.rfuj_index[XbInfo.size]/I");
-            //root->Branch("XbInfo.rfmu1_index"    , rfmu1_index    , "XbInfo.rfmu1_index[XbInfo.size]/I");
-            //root->Branch("XbInfo.rfmu2_index"    , rfmu2_index    , "XbInfo.rfmu2_index[XbInfo.size]/I");
-            root->Branch("XbInfo.rftk1_index"      , rftk1_index    , "XbInfo.rftk1_index[XbInfo.size]/I");
-            root->Branch("XbInfo.rftk2_index"      , rftk2_index    , "XbInfo.rftk2_index[XbInfo.size]/I");
-            root->Branch("XbInfo.isGoodCand"       , isGoodCand     , "XbInfo.isGoodCand[XbInfo.size]/I"	);
-
-            root->Branch("XbInfo.rfmu1_px"         , rfmu1_px       , "XbInfo.rfmu1_px[XbInfo.size]/D"	);
-            root->Branch("XbInfo.rfmu1_py"         , rfmu1_py       , "XbInfo.rfmu1_py[XbInfo.size]/D"	);
-            root->Branch("XbInfo.rfmu1_pz"         , rfmu1_pz       , "XbInfo.rfmu1_pz[XbInfo.size]/D"	);
-            //root->Branch("XbInfo.rfmu1_e"        , rfmu1_e        , "XbInfo.rfmu1_e[XbInfo.size]/D" 	);
-            root->Branch("XbInfo.rfmu2_px"         , rfmu2_px       , "XbInfo.rfmu2_px[XbInfo.size]/D"	);
-            root->Branch("XbInfo.rfmu2_py"         , rfmu2_py       , "XbInfo.rfmu2_py[XbInfo.size]/D"	);
-            root->Branch("XbInfo.rfmu2_pz"         , rfmu2_pz       , "XbInfo.rfmu2_pz[XbInfo.size]/D"	);
-            //root->Branch("XbInfo.rfmu2_e"        , rfmu2_e        , "XbInfo.rfmu2_e[XbInfo.size]/D" 	);
-            root->Branch("XbInfo.rftk1_px"         , rftk1_px       , "XbInfo.rftk1_px[XbInfo.size]/D"     );
-            root->Branch("XbInfo.rftk1_py"         , rftk1_py       , "XbInfo.rftk1_py[XbInfo.size]/D"     );
-            root->Branch("XbInfo.rftk1_pz"         , rftk1_pz       , "XbInfo.rftk1_pz[XbInfo.size]/D"     );
-            //root->Branch("XbInfo.rftk1_e"        , rftk1_e        , "XbInfo.rftk1_e[XbInfo.size]/D"      );
-            root->Branch("XbInfo.rftk2_px"         , rftk2_px       , "XbInfo.rftk2_px[XbInfo.size]/D"     );
-            root->Branch("XbInfo.rftk2_py"         , rftk2_py       , "XbInfo.rftk2_py[XbInfo.size]/D"     );
-            root->Branch("XbInfo.rftk2_pz"         , rftk2_pz       , "XbInfo.rftk2_pz[XbInfo.size]/D"     );
-            //root->Branch("XbInfo.rftk2_e"        , rftk2_e        , "XbInfo.rftk2_e[XbInfo.size]/D"      );
-
-            //root->Branch("XbInfo.jpsi_fitstatus" , jpsi_fitstatus , "XbInfo.jpsi_fitstatus[XbInfo.size]/I");
-            //root->Branch("XbInfo.jpsi_mass"      , jpsi_mass      , "XbInfo.jpsi_mass[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_px"        , jpsi_px        , "XbInfo.jpsi_px[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_py"        , jpsi_py        , "XbInfo.jpsi_py[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_pz"        , jpsi_pz        , "XbInfo.jpsi_pz[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_vtxX"      , jpsi_vtxX      , "XbInfo.jpsi_vtxX[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_vtxY"      , jpsi_vtxY      , "XbInfo.jpsi_vtxY[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_vtxZ"      , jpsi_vtxZ      , "XbInfo.jpsi_vtxZ[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_vtxdof"    , jpsi_vtxdof    , "XbInfo.jpsi_vtxdof[XbInfo.size]/D"		);
-            //root->Branch("XbInfo.jpsi_vtxchi2"   , jpsi_vtxchi2   , "XbInfo.jpsi_vtxchi2[XbInfo.size]/D"	);
-        }//}}}
-
-        void setbranchadd(TTree *root){//{{{
-            root->SetBranchAddress("XbInfo.uj_size"		    ,&uj_size	);   
-            root->SetBranchAddress("XbInfo.uj_size"		    ,&n_uj	    );   
-            root->SetBranchAddress("XbInfo.uj_index"        ,uj_index   ); 
-            root->SetBranchAddress("XbInfo.uj_mass"         ,uj_mass   	); 
-            root->SetBranchAddress("XbInfo.uj_px"           ,uj_px     	);
-            root->SetBranchAddress("XbInfo.uj_py"           ,uj_py    	);
-            root->SetBranchAddress("XbInfo.uj_pz"           ,uj_pz   	);
-            root->SetBranchAddress("XbInfo.uj_vtxX"         ,uj_vtxX    );  
-            root->SetBranchAddress("XbInfo.uj_vtxY"         ,uj_vtxY    ); 
-            root->SetBranchAddress("XbInfo.uj_vtxZ"         ,uj_vtxZ    );
-            root->SetBranchAddress("XbInfo.uj_vtxXE"        ,uj_vtxXE   );  
-            root->SetBranchAddress("XbInfo.uj_vtxYE"        ,uj_vtxYE   ); 
-            root->SetBranchAddress("XbInfo.uj_vtxZE"        ,uj_vtxZE   );  
-            root->SetBranchAddress("XbInfo.uj_vtxdof"	    ,uj_vtxdof	);
-            root->SetBranchAddress("XbInfo.uj_vtxchi2"      ,uj_vtxchi2 );  
-            root->SetBranchAddress("XbInfo.uj_rfmu1_index"  ,uj_rfmu1_index );  
-            root->SetBranchAddress("XbInfo.uj_rfmu2_index"  ,uj_rfmu2_index );  
-            root->SetBranchAddress("XbInfo.uj_isGoodCand"   ,uj_isGoodCand );  
-            //root->SetBranchAddress("XbInfo.uj_rfmu1_px"     ,uj_rfmu1_px);  
-            //root->SetBranchAddress("XbInfo.uj_rfmu1_py"     ,uj_rfmu1_py);  
-            //root->SetBranchAddress("XbInfo.uj_rfmu1_pz"     ,uj_rfmu1_pz);  
-            //root->SetBranchAddress("XbInfo.uj_rfmu2_px"     ,uj_rfmu2_px); 
-            //root->SetBranchAddress("XbInfo.uj_rfmu2_py"     ,uj_rfmu2_py); 
-            //root->SetBranchAddress("XbInfo.uj_rfmu2_pz"     ,uj_rfmu2_pz);
-
-            root->SetBranchAddress("XbInfo.size"            ,&size        );
-            root->SetBranchAddress("XbInfo.index"           ,index       	);
-            root->SetBranchAddress("XbInfo.mass"		    ,mass		);
-            root->SetBranchAddress("XbInfo.px"              ,px         	);
-            root->SetBranchAddress("XbInfo.py"              ,py        	);
-            root->SetBranchAddress("XbInfo.pz"              ,pz           );  
-            root->SetBranchAddress("XbInfo.pxE"             ,pxE          ); 
-            root->SetBranchAddress("XbInfo.pyE"             ,pyE          );
-            root->SetBranchAddress("XbInfo.pzE"             ,pzE         	);
-            root->SetBranchAddress("XbInfo.vtxX"            ,vtxX       	);
-            root->SetBranchAddress("XbInfo.vtxY"            ,vtxY      	);
-            root->SetBranchAddress("XbInfo.vtxZ"            ,vtxZ     	);
-            root->SetBranchAddress("XbInfo.vtxXE"           ,vtxXE   	);
-            root->SetBranchAddress("XbInfo.vtxYE"           ,vtxYE        );
-            root->SetBranchAddress("XbInfo.vtxZE"           ,vtxZE       	);
-            root->SetBranchAddress("XbInfo.vtxdof"		    ,vtxdof		);	
-            root->SetBranchAddress("XbInfo.vtxchi2"         ,vtxchi2   	);
-            root->SetBranchAddress("XbInfo.rfuj_index"      ,rfuj_index   	);
-            //root->SetBranchAddress("XbInfo.rfmu1_index"     ,rfmu1_index   	);
-            //root->SetBranchAddress("XbInfo.rfmu2_index"     ,rfmu2_index   	);
-            root->SetBranchAddress("XbInfo.rftk1_index"     ,rftk1_index   	);
-            root->SetBranchAddress("XbInfo.rftk2_index"     ,rftk2_index   	);
-            root->SetBranchAddress("XbInfo.isGoodCand"      ,isGoodCand   	);
-            root->SetBranchAddress("XbInfo.rfmu1_px"        ,rfmu1_px 	);
-            root->SetBranchAddress("XbInfo.rfmu1_py"        ,rfmu1_py	);
-            root->SetBranchAddress("XbInfo.rfmu1_pz"        ,rfmu1_pz     );
-            //root->SetBranchAddress("XbInfo.rfmu1_e"         ,rfmu1_e      );
-            root->SetBranchAddress("XbInfo.rfmu2_px"        ,rfmu2_px     );
-            root->SetBranchAddress("XbInfo.rfmu2_py"        ,rfmu2_py    	);
-            root->SetBranchAddress("XbInfo.rfmu2_pz"        ,rfmu2_pz   	);
-            //root->SetBranchAddress("XbInfo.rfmu2_e"         ,rfmu2_e   	);
-            root->SetBranchAddress("XbInfo.rftk1_px"        ,rftk1_px 	);
-            root->SetBranchAddress("XbInfo.rftk1_py"        ,rftk1_py     );
-            root->SetBranchAddress("XbInfo.rftk1_pz"        ,rftk1_pz     );
-            //root->SetBranchAddress("XbInfo.rftk1_e"         ,rftk1_e      );
-            root->SetBranchAddress("XbInfo.rftk2_px"        ,rftk2_px    	);
-            root->SetBranchAddress("XbInfo.rftk2_py"        ,rftk2_py   	);
-            root->SetBranchAddress("XbInfo.rftk2_pz"        ,rftk2_pz  	);
-            //root->SetBranchAddress("XbInfo.rftk2_e"         ,rftk2_e  	);
-            
-
-            //root->SetBranchAddress("XbInfo.jpsi_fitstatus"  ,jpsi_fitstatus);
-            //root->SetBranchAddress("XbInfo.jpsi_mass"		  ,jpsi_mass		);
-            //root->SetBranchAddress("XbInfo.jpsi_px"         ,jpsi_px         	);
-            //root->SetBranchAddress("XbInfo.jpsi_py"         ,jpsi_py        	);
-            //root->SetBranchAddress("XbInfo.jpsi_pz"         ,jpsi_pz           );  
-            //root->SetBranchAddress("XbInfo.jpsi_vtxX"       ,jpsi_vtxX       	);
-            //root->SetBranchAddress("XbInfo.jpsi_vtxY"       ,jpsi_vtxY      	);
-            //root->SetBranchAddress("XbInfo.jpsi_vtxZ"       ,jpsi_vtxZ     	);
-            //root->SetBranchAddress("XbInfo.jpsi_vtxdof"	  ,jpsi_vtxdof		);	
-            //root->SetBranchAddress("XbInfo.jpsi_vtxchi2"    ,jpsi_vtxchi2   	);
-        }//}}}
-};//}}}
-
 class BInfoBranches{//{{{
 public:
     int	    uj_size;
@@ -586,6 +316,9 @@ public:
     int	    size;
     int	    index[MAX_XB];
     double	mass[MAX_XB];
+    double	pt[MAX_XB];
+    double	eta[MAX_XB];
+    double	phi[MAX_XB];
     double	px[MAX_XB];
     double	py[MAX_XB];
     double	pz[MAX_XB];
@@ -661,6 +394,9 @@ public:
         root->Branch("BInfo.size"             , &size          , "BInfo.size/I"			);
         root->Branch("BInfo.index"            , index          , "BInfo.index[BInfo.size]/I"		);
         root->Branch("BInfo.mass"             , mass           , "BInfo.mass[BInfo.size]/D"		);
+        root->Branch("BInfo.pt"               , pt             , "BInfo.pt[BInfo.size]/D"		);
+        root->Branch("BInfo.eta"              , eta            , "BInfo.eta[BInfo.size]/D"		);
+        root->Branch("BInfo.phi"              , phi            , "BInfo.phi[BInfo.size]/D"		);
         root->Branch("BInfo.px"               , px             , "BInfo.px[BInfo.size]/D"		);
         root->Branch("BInfo.py"               , py             , "BInfo.py[BInfo.size]/D"		);
         root->Branch("BInfo.pz"               , pz             , "BInfo.pz[BInfo.size]/D"		);
@@ -711,7 +447,7 @@ public:
     
     void setbranchadd(TTree *root){//{{{
         root->SetBranchAddress("BInfo.uj_size"		    ,&uj_size	);
-        root->SetBranchAddress("BInfo.uj_size"		    ,&n_uj	    );
+        root->SetBranchAddress("BInfo.uj_size"		    ,&uj_size	    );
         root->SetBranchAddress("BInfo.uj_index"        ,uj_index   );
         root->SetBranchAddress("BInfo.uj_mass"         ,uj_mass   	);
         root->SetBranchAddress("BInfo.uj_px"           ,uj_px     	);
@@ -732,6 +468,9 @@ public:
         root->SetBranchAddress("BInfo.size"            ,&size        );
         root->SetBranchAddress("BInfo.index"           ,index       	);
         root->SetBranchAddress("BInfo.mass"		    ,mass		);
+        root->SetBranchAddress("BInfo.pt"		    ,pt		);
+        root->SetBranchAddress("BInfo.eta"		    ,eta		);
+        root->SetBranchAddress("BInfo.phi"		    ,phi		);
         root->SetBranchAddress("BInfo.px"              ,px         	);
         root->SetBranchAddress("BInfo.py"              ,py        	);
         root->SetBranchAddress("BInfo.pz"              ,pz           );
