@@ -244,12 +244,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     memset(&TrackInfo   ,0x00,sizeof(TrackInfo) );
     memset(&BInfo       ,0x00,sizeof(BInfo)    );
     memset(&GenInfo     ,0x00,sizeof(GenInfo)   );
-    GenInfo.mhmu1_index = -1;
-    GenInfo.mhmu2_index = -1;
-    GenInfo.mhtk1_index = -1;
-    GenInfo.mhtk2_index = -1;
-    GenInfo.mhujMass = -1;
-    GenInfo.mhxbMass = -1;
 
     // EvtInfo section{{{
     //EvtInfo.hltnames->clear();
@@ -376,10 +370,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int B_counter[Nchannel] = {0};
     int B_tag[Nchannel] = {0};
     B_tag[0] = 1;// RECONSTRUCTION: J/psi + K
-    B_tag[1] = 1;// RECONSTRUCTION: J/psi + Pi
-    B_tag[2] = 1;// RECONSTRUCTION: J/psi + Ks 
-    B_tag[3] = 1;// RECONSTRUCTION: J/psi + K* (K+, Pi-)
-    B_tag[4] = 1;// RECONSTRUCTION: J/psi + K* (K-, Pi+)
+    B_tag[1] = 0;// RECONSTRUCTION: J/psi + Pi
+    B_tag[2] = 0;// RECONSTRUCTION: J/psi + Ks 
+    B_tag[3] = 0;// RECONSTRUCTION: J/psi + K* (K+, Pi-)
+    B_tag[4] = 0;// RECONSTRUCTION: J/psi + K* (K-, Pi+)
     B_tag[5] = 0;// RECONSTRUCTION: J/psi + phi
     B_tag[6] = 0;// RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 
@@ -460,6 +454,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();
+//if(mu_it->genParticle()->pt())std::cout<<"warnning!!   "<< mu_it->genParticle()->pt()<<std::endl;
 
                         if(mu_it->isGlobalMuon()){
                             MuonInfo.g_striphit [MuonInfo.size] = mu_it->globalTrack()->hitPattern().numberOfValidStripHits();
@@ -633,6 +628,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                             BInfo.uj_index         [BInfo.uj_size]= BInfo.uj_size;
                             BInfo.uj_mass          [BInfo.uj_size]= uj_4vec.Mag();
+                            BInfo.uj_pt            [BInfo.uj_size]= uj_4vec.Pt();
+                            BInfo.uj_eta            [BInfo.uj_size]= uj_4vec.Eta();
+                            BInfo.uj_phi            [BInfo.uj_size]= uj_4vec.Phi();
                             BInfo.uj_px            [BInfo.uj_size]= uj_4vec.Px();
                             BInfo.uj_py            [BInfo.uj_size]= uj_4vec.Py();
                             BInfo.uj_pz            [BInfo.uj_size]= uj_4vec.Pz();
@@ -649,11 +647,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             BInfo.uj_rfmu1_px      [BInfo.uj_size]= uj_mu1_4vec.Px();
                             BInfo.uj_rfmu1_py      [BInfo.uj_size]= uj_mu1_4vec.Py();
                             BInfo.uj_rfmu1_pz      [BInfo.uj_size]= uj_mu1_4vec.Pz();
-                            //BInfo.uj_rfmu1_e       [BInfo.uj_size]= uj_mu1_4vec.E()
                             BInfo.uj_rfmu2_px      [BInfo.uj_size]= uj_mu2_4vec.Px();
                             BInfo.uj_rfmu2_py      [BInfo.uj_size]= uj_mu2_4vec.Py();
                             BInfo.uj_rfmu2_pz      [BInfo.uj_size]= uj_mu2_4vec.Pz();
-                            //BInfo.uj_rfmu2_e       [BInfo.uj_size]= uj_mu2_4vec.E();
 
                             //4.|uj_Eta| < 1.2?
                             //3.good muon candidates?
@@ -818,7 +814,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             mass_window[0] = 3;
                             mass_window[1] = 6.4;
-                            if(B_tag[0] == 1){
+                            if(B_tag[6] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
                                     input_tracks,
@@ -884,6 +880,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+
                         if (!iEvent.isRealData())
                             genTrackPtr [TrackInfo.size] = tk_it->genParticle();
 
@@ -921,6 +918,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                     // GenInfo section{{{
                     if (!iEvent.isRealData()){
+//                    if (0){
                         edm::Handle< std::vector<reco::GenParticle> > gens;
                         iEvent.getByLabel(genLabel_, gens);
     
@@ -933,43 +931,72 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                             it_gen != gens->end(); it_gen++){
                             if (it_gen->status() > 2)                           continue;
-                            //if (it_gen->pdgId() == 92)                          continue;
-                            //if (it_gen->pdgId() == 21)                          continue;
-                            //if (it_gen->pdgId() == 22 && it_gen->status() != 1) continue;
-                            if (abs(it_gen->pdgId()) != 211 &&
-                                abs(it_gen->pdgId()) != 13  &&
-                                it_gen->pdgId() != 443      &&
-                                it_gen->pdgId() != 100443   &&
-                                it_gen->pdgId() != 553      &&
-                                it_gen->pdgId() != 100553
-                               ) continue;
 
-                            bool isGenSignal = false;
+                            //if is pion/kaon must be final state
+                            if (
+                                (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
+                                (abs(it_gen->pdgId()) == 211 && it_gen->status() == 2) ||//pi +-
+                                (abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
+                                (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
+                            ) continue;
+
+                            bool isGenSignal = false;                                                                                                                                                       
+                            //save target intermediat state particle
+                            if (
+                                abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
+                                abs(int(it_gen->pdgId()/100) % 100) == 4  ||//c menson
+                                abs(int(it_gen->pdgId()/100) % 100) == 5  ||//b menson
+                                abs(it_gen->pdgId()) == 511 ||//B_0
+                                abs(it_gen->pdgId()) == 521 ||//B_+-
+                                abs(it_gen->pdgId()) == 130 ||//KL
+                                abs(it_gen->pdgId()) == 310 ||//KS
+                                abs(it_gen->pdgId()) == 313 ||//K*0(892)
+                                abs(it_gen->pdgId()) == 323 ||//K*+-(892)
+                                abs(it_gen->pdgId()) == 333 ||//phi(1020)
+                                it_gen->pdgId() == 443      ||//Jpsi
+                                it_gen->pdgId() == 100443   ||//Psi(2S)
+                                it_gen->pdgId() == 553      ||//Upsilon
+                                it_gen->pdgId() == 100553     //Upsilon(2S)
+                               ) isGenSignal = true;
+
                             if (abs(it_gen->pdgId()) == 13                              &&
                                 it_gen->numberOfMothers() == 1                          &&
                                 (it_gen->mother()->pdgId() == 443 ||
                                  it_gen->mother()->pdgId() == 553 )                     &&
                                 it_gen->mother()->numberOfDaughters() >= 2              &&
                                 it_gen->mother()->numberOfMothers() == 1                &&
-                                (it_gen->mother()->mother()->pdgId() == 100553 ||
-                                 it_gen->mother()->mother()->pdgId() == 100443 )        &&
-                                it_gen->mother()->mother()->numberOfDaughters() == 3    &&
-                                abs(it_gen->mother()->mother()->daughter(1)->pdgId()) == 211 
+                                (it_gen->mother()->mother()->pdgId() == 511 ||
+                                 it_gen->mother()->mother()->pdgId() == 521 )
+                                //(it_gen->mother()->mother()->pdgId() == 100553 ||
+                                // it_gen->mother()->mother()->pdgId() == 100443 )        &&
+                                //it_gen->mother()->mother()->numberOfDaughters() == 3    &&
+                                //abs(it_gen->mother()->mother()->daughter(1)->pdgId()) == 211 
                                ) isGenSignal = true;//signal mu
 
-                            if (abs(it_gen->pdgId()) == 211                             &&
+                            if ((abs(it_gen->pdgId()) == 111 || 
+                                abs(it_gen->pdgId()) == 211 || 
+                                abs(it_gen->pdgId()) == 311 || 
+                                abs(it_gen->pdgId()) == 321) &&
                                 it_gen->numberOfMothers() == 1                          &&
-                                (it_gen->mother()->mother()->pdgId() == 100553 ||
-                                 it_gen->mother()->mother()->pdgId() == 100443 )        &&
-                                it_gen->mother()->numberOfDaughters()== 3               &&
-                                (it_gen->mother()->daughter(0)->pdgId() == 553 ||
-                                 it_gen->mother()->daughter(0)->pdgId() == 443 )        &&
-                                it_gen->mother()->daughter(0)->numberOfDaughters()>=2   &&
-                                abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13
-                               ) isGenSignal = true;//signal pi
-                            
+                                (it_gen->mother()->pdgId() == 511 || 
+                                it_gen->mother()->pdgId() == 521 ||       
+                                it_gen->mother()->mother()->pdgId() == 511 || 
+                                it_gen->mother()->mother()->pdgId() == 521 )  &&
+                                (it_gen->mother()->daughter(0)->pdgId() == 553 ||  
+                                it_gen->mother()->daughter(0)->pdgId() == 443 ||
+                                it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
+                                it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ) &&
+                                //(it_gen->mother()->mother()->pdgId() == 100553 ||
+                                //it_gen->mother()->mother()->pdgId() == 100443 )        &&
+                                //it_gen->mother()->numberOfDaughters()== 3               &&
+                                (it_gen->mother()->daughter(0)->numberOfDaughters()>=2 || 
+                                it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) &&
+                                (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13 || 
+                                abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
+                               ) isGenSignal = true;//signal pion/kaon                           
+/*
                             if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
-                                (it_gen->mother()->pdgId() == 100443 ||
+                                cand(it_gen->mother()->pdgId() == 100443 ||
                                  it_gen->mother()->pdgId() == 100553 )                  &&
                                 it_gen->mother()->numberOfDaughters() == 3              &&
                                 abs(it_gen->mother()->daughter(1)->pdgId()) == 211      &&
@@ -983,7 +1010,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 abs(it_gen->daughter(0)->daughter(0)->pdgId()) == 13    &&
                                 abs(it_gen->daughter(1)->pdgId()) == 211 
                                ) isGenSignal = true;//signal xb
-
+*/
                             if (!isGenSignal) continue;
 
                             int iMo1 = -1,  iMo2 = -1,  iDa1 = -1,  iDa2 = -1;
@@ -1013,111 +1040,31 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //printf("-----*****DEBUG:Start of matching.\n");
                             if (abs(it_gen->pdgId()) == 13){
                                 //printf("-----*****DEBUG:Entered muon matching block.\n");
-                                int best_mu_index = -1;
                                 for(int muonIdx = 0; muonIdx < MuonInfo.size; muonIdx++){
-                                    ////Private matching
-                                    //if (fabs(MuonInfo.pt [muonIdx]/it_gen->pt ()-1) > 0.1) continue;
-                                    //if (fabs(MuonInfo.eta[muonIdx]/it_gen->eta()-1) > 0.1) continue;
-                                    //if (fabs(MuonInfo.phi[muonIdx]/it_gen->phi()-1) > 0.1) continue;
-                                    //if (best_mu_index == -1){
-                                    //    printf("-----*****DEBUG:[Mu]Tar.Pt /Ref.Pt = %9f/%9f\n",
-                                    //        MuonInfo.pt [muonIdx],it_gen->pt ());
-                                    //    printf("-----*****DEBUG:[Mu]Tar.Eta/Ref.Eta= %9f/%9f\n",
-                                    //        MuonInfo.eta[muonIdx],it_gen->eta());
-                                    //    printf("-----*****DEBUG:[Mu]Tar.Phi/Ref.Phi= %9f/%9f\n",
-                                    //        MuonInfo.phi[muonIdx],it_gen->phi());
-                                    //    best_mu_index = muonIdx;
-                                    //}else if (sqrt(pow(MuonInfo.pt [muonIdx]/it_gen->pt()-1,2)+
-                                    //          pow(MuonInfo.eta[muonIdx]/it_gen->eta()-1,2)+
-                                    //          pow(MuonInfo.phi[muonIdx]/it_gen->phi()-1,2))-
-                                    //          sqrt(pow(MuonInfo.pt[best_mu_index]/it_gen->pt()-1,2)-
-                                    //          pow(MuonInfo.eta[best_mu_index]/it_gen->eta()-1,2)-
-                                    //          pow(MuonInfo.phi[best_mu_index]/it_gen->phi()-1,2))<=0){
-                                    //    printf("-----*****DEBUG:[Mu]Tar.Pt /Ref.Pt = %9f/%9f\n",
-                                    //        MuonInfo.pt [muonIdx],it_gen->pt ());
-                                    //    printf("-----*****DEBUG:[Mu]Tar.Eta/Ref.Eta= %9f/%9f\n",
-                                    //        MuonInfo.eta[muonIdx],it_gen->eta());
-                                    //    printf("-----*****DEBUG:[Mu]Tar.Phi/Ref.Phi= %9f/%9f\n",
-                                    //        MuonInfo.phi[muonIdx],it_gen->phi());
-                                    //    best_mu_index = muonIdx;
-                                    //}
-                                    
+                                    MuonInfo.geninfo_index[muonIdx] = -1;
                                     // match by pat::Muon
                                     if (genMuonPtr[muonIdx] == 0) continue;
                                     if (it_gen->p4() == genMuonPtr[muonIdx]->p4()){
-                                        best_mu_index = muonIdx;
+                                        MuonInfo.geninfo_index[muonIdx] = GenInfo.size;
                                         //printf("-----*****DEBUG:[Mu]Tar.Pt /Ref.Pt = %9f/%9f\n",
                                         //    MuonInfo.pt [muonIdx],it_gen->pt ());
-                                        //printf("-----*****DEBUG:[Mu]Tar.Eta/Ref.Eta= %9f/%9f\n",
-                                        //    MuonInfo.eta[muonIdx],it_gen->eta());
-                                        //printf("-----*****DEBUG:[Mu]Tar.Phi/Ref.Phi= %9f/%9f\n",
-                                        //    MuonInfo.phi[muonIdx],it_gen->phi());
                                         break;
                                     }
                                 }
-                                if (GenInfo.mhmu1_index == -1){
-                                    GenInfo.mhmu1_index = best_mu_index;
-                                    //printf("-----*****DEBUG:mhmu1_index=%d\n",GenInfo.mhmu1_index);
-                                }else{
-                                    GenInfo.mhmu2_index = best_mu_index;
-                                    //printf("-----*****DEBUG:mhmu2_index=%d\n",GenInfo.mhmu2_index);
-                                }
-                            }else if(abs(it_gen->pdgId()) == 211){
+                            }
+                            //Find all other particle in TrackInfo
+                            else{
                                 //printf("-----*****DEBUG:Entered pion matching block.\n");
-                                int best_tk_index = -1;
                                 for(int trackIdx = 0; trackIdx < TrackInfo.size; trackIdx++){
-                                    // Private matching
-                                    //if (fabs(TrackInfo.pt [trackIdx]/it_gen->pt ()-1) > 0.1) continue;
-                                    //if (fabs(TrackInfo.eta[trackIdx]/it_gen->eta()-1) > 0.1) continue;
-                                    //if (fabs(TrackInfo.phi[trackIdx]/it_gen->phi()-1) > 0.1) continue;
-                                    //if (best_tk_index == -1){
-                                    //    printf("-----*****DEBUG:[Tk]Tar.Pt /Ref.Pt = %9f/%9f\n",
-                                    //        TrackInfo.pt [trackIdx],it_gen->pt ());
-                                    //    printf("-----*****DEBUG:[Tk]Tar.Eta/Ref.Eta= %9f/%9f\n",
-                                    //        TrackInfo.eta[trackIdx],it_gen->eta());
-                                    //    printf("-----*****DEBUG:[Tk]Tar.Phi/Ref.Phi= %9f/%9f\n",
-                                    //        TrackInfo.phi[trackIdx],it_gen->phi());
-                                    //    best_tk_index = trackIdx;
-                                    //}else if(sqrt(pow(TrackInfo.pt [trackIdx]/it_gen->pt ()-1,2)+
-                                    //         pow(TrackInfo.eta[trackIdx]/it_gen->eta()-1,2)+
-                                    //         pow(TrackInfo.phi[trackIdx]/it_gen->phi()-1,2))-
-                                    //         sqrt(pow(TrackInfo.pt[best_tk_index]/it_gen->pt()-1,2)-
-                                    //         pow(TrackInfo.eta[best_tk_index]/it_gen->eta()-1,2)-
-                                    //         pow(TrackInfo.phi[best_tk_index]/it_gen->phi()-1,2))<=0){
-                                    //    printf("-----*****DEBUG:[Tk]Tar.Pt /Ref.Pt = %9f/%9f\n",
-                                    //        TrackInfo.pt [trackIdx],it_gen->pt ());
-                                    //    printf("-----*****DEBUG:[Tk]Tar.Eta/Ref.Eta= %9f/%9f\n",
-                                    //        TrackInfo.eta[trackIdx],it_gen->eta());
-                                    //    printf("-----*****DEBUG:[Tk]Tar.Phi/Ref.Phi= %9f/%9f\n",
-                                    //        TrackInfo.phi[trackIdx],it_gen->phi());
-                                    //    best_tk_index = trackIdx;
-                                    //}
-                                    
+                                    TrackInfo.geninfo_index[trackIdx] = -1;
                                     //match by pat::GenericParticle
                                     if (genTrackPtr[trackIdx] == 0 ) continue;
                                     if (it_gen->p4() == genTrackPtr[trackIdx]->p4()){
-                                        best_tk_index = trackIdx;
-                                        //printf("-----*****DEBUG:[Tk]Tar.Pt /Ref.Pt = %9f/%9f\n",
-                                        //    TrackInfo.pt [trackIdx],it_gen->pt ());
-                                        //printf("-----*****DEBUG:[Tk]Tar.Eta/Ref.Eta= %9f/%9f\n",
-                                        //    TrackInfo.eta[trackIdx],it_gen->eta());
-                                        //printf("-----*****DEBUG:[Tk]Tar.Phi/Ref.Phi= %9f/%9f\n",
-                                        //    TrackInfo.phi[trackIdx],it_gen->phi());
+                                        TrackInfo.geninfo_index[trackIdx] = GenInfo.size;
                                         break;
                                     }
                                 }
-                                if (GenInfo.mhtk1_index == -1){
-                                    GenInfo.mhtk1_index = best_tk_index;
-                                    //printf("-----*****DEBUG:mhtk1_index=%d\n",GenInfo.mhtk1_index);
-                                }else{
-                                    GenInfo.mhtk2_index = best_tk_index;
-                                    //printf("-----*****DEBUG:mhtk2_index=%d\n",GenInfo.mhtk2_index);
-                                }
                             }
-                            //printf("-----*****DEBUG:mhmu1_index=%d\n",GenInfo.mhmu1_index);
-                            //printf("-----*****DEBUG:mhmu2_index=%d\n",GenInfo.mhmu2_index);
-                            //printf("-----*****DEBUG:mhtk1_index=%d\n",GenInfo.mhtk1_index);
-                            //printf("-----*****DEBUG:mhtk2_index=%d\n",GenInfo.mhtk2_index);
     
                             GenInfo.index[GenInfo.size]         = GenInfo.size;
                             GenInfo.handle_index[GenInfo.size]  = it_gen-gens->begin();
@@ -1137,39 +1084,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                         //printf("-----*****DEBUG:End of gens loop.\n");
                         
-                        if (GenInfo.mhmu1_index != -1     &&
-                            GenInfo.mhmu2_index != -1     ){
-                            TLorentzVector mhmu1_4vec,mhmu2_4vec;
-                            mhmu1_4vec.SetPtEtaPhiM(
-                                MuonInfo.pt [GenInfo.mhmu1_index],
-                                MuonInfo.eta[GenInfo.mhmu1_index],
-                                MuonInfo.phi[GenInfo.mhmu1_index],
-                                MUON_MASS);
-                            mhmu2_4vec.SetPtEtaPhiM(
-                                MuonInfo.pt [GenInfo.mhmu2_index],
-                                MuonInfo.eta[GenInfo.mhmu2_index],
-                                MuonInfo.phi[GenInfo.mhmu2_index],
-                                MUON_MASS);
-                            GenInfo.mhujMass = (mhmu1_4vec+mhmu2_4vec).Mag();
-                            //printf("-----*****DEBUG:mhujMass=%9f\n",(mhmu1_4vec+mhmu2_4vec).Mag());
-                            if (GenInfo.mhtk1_index != -1     &&
-                                GenInfo.mhtk2_index != -1     ){
-                                TLorentzVector mhtk1_4vec,mhtk2_4vec;
-                                mhtk1_4vec.SetPtEtaPhiM(
-                                    TrackInfo.pt [GenInfo.mhtk1_index],
-                                    TrackInfo.eta[GenInfo.mhtk1_index],
-                                    TrackInfo.phi[GenInfo.mhtk1_index],
-                                    PION_MASS);
-                                mhtk2_4vec.SetPtEtaPhiM(
-                                    TrackInfo.pt [GenInfo.mhtk2_index],
-                                    TrackInfo.eta[GenInfo.mhtk2_index],
-                                    TrackInfo.phi[GenInfo.mhtk2_index],
-                                    PION_MASS);
-                                GenInfo.mhxbMass = (mhmu1_4vec+mhmu2_4vec+mhtk1_4vec+mhtk2_4vec).Mag();
-                                //printf("-----*****DEBUG:mhxbMass=%9f\n",(mhmu1_4vec+mhmu2_4vec+mhtk1_4vec+mhtk2_4vec).Mag());
-                            }
-                        }
-    
                         //Pass handle_index to igen
                         for(int igen = 0; igen < GenInfo.size; igen++){
                             int iMo1 = GenInfo.mo1[igen];
@@ -1501,7 +1415,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             
             XbMassCutLevel[channel_number-1]->Fill(4);
             
-            TLorentzVector xb_4vec,xb_mu1_4vec,xb_mu2_4vec,tktk_4vec,xb_tk1_4vec,xb_tk2_4vec;
+            TLorentzVector xb_4vec,xb_mu1_4vec,xb_mu2_4vec,tktk_4vec,xb_tk1_4vec,xb_tk2_4vec,tktk_tk1_4vec, tktk_tk2_4vec;
             xb_4vec.SetPxPyPzE(xbVFP->currentState().kinematicParameters().momentum().x(),
                                xbVFP->currentState().kinematicParameters().momentum().y(),
                                xbVFP->currentState().kinematicParameters().momentum().z(),
@@ -1519,6 +1433,14 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                                    xCands[1]->currentState().kinematicParameters().momentum().y(),
                                    xCands[1]->currentState().kinematicParameters().momentum().z(),
                                    xCands[1]->currentState().kinematicParameters().energy());
+            tktk_tk1_4vec.SetPxPyPzE(tktkCands[0]->currentState().kinematicParameters().momentum().x(),
+                                   tktkCands[0]->currentState().kinematicParameters().momentum().y(),
+                                   tktkCands[0]->currentState().kinematicParameters().momentum().z(),
+                                   tktkCands[0]->currentState().kinematicParameters().energy());
+            tktk_tk2_4vec.SetPxPyPzE(tktkCands[1]->currentState().kinematicParameters().momentum().x(),
+                                   tktkCands[1]->currentState().kinematicParameters().momentum().y(),
+                                   tktkCands[1]->currentState().kinematicParameters().momentum().z(),
+                                   tktkCands[1]->currentState().kinematicParameters().energy());
             if(fit_option == 0){
                 xb_tk1_4vec.SetPxPyPzE(xCands[2]->currentState().kinematicParameters().momentum().x(),
                                        xCands[2]->currentState().kinematicParameters().momentum().y(),
@@ -1529,15 +1451,12 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                                        xCands[3]->currentState().kinematicParameters().momentum().z(),
                                        xCands[3]->currentState().kinematicParameters().energy());
             }
+            
             if(fit_option == 1){
-                xb_tk1_4vec.SetPxPyPzE(tktkCands[0]->currentState().kinematicParameters().momentum().x(),
-                                        tktkCands[0]->currentState().kinematicParameters().momentum().y(),
-                                        tktkCands[0]->currentState().kinematicParameters().momentum().z(),
-                                        tktkCands[0]->currentState().kinematicParameters().energy());
-                xb_tk2_4vec.SetPxPyPzE(tktkCands[1]->currentState().kinematicParameters().momentum().x(),
-                                        tktkCands[1]->currentState().kinematicParameters().momentum().y(),
-                                        tktkCands[1]->currentState().kinematicParameters().momentum().z(),
-                                        tktkCands[1]->currentState().kinematicParameters().energy());
+                xb_tk1_4vec.SetPxPyPzE(xCands[2]->currentState().kinematicParameters().momentum().x(),
+                                       xCands[2]->currentState().kinematicParameters().momentum().y(),
+                                       xCands[2]->currentState().kinematicParameters().momentum().z(),
+                                       xCands[2]->currentState().kinematicParameters().energy());
             }
             
             BInfo.index[BInfo.size]   = BInfo.size;
@@ -1564,7 +1483,11 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.rftk1_index[BInfo.size] = -tk1_hindex-1;
             BInfo.rftk2_index[BInfo.size] = -tk2_hindex-1;
             
+            //tktk fit info
             BInfo.tktk_mass[BInfo.size]    = tktk_4vec.Mag();
+            BInfo.tktk_pt[BInfo.size]      = tktk_4vec.Pt();
+            BInfo.tktk_eta[BInfo.size]      = tktk_4vec.Eta();
+            BInfo.tktk_phi[BInfo.size]      = tktk_4vec.Phi();
             BInfo.tktk_px[BInfo.size]      = tktk_4vec.Px();
             BInfo.tktk_py[BInfo.size]      = tktk_4vec.Py();
             BInfo.tktk_pz[BInfo.size]      = tktk_4vec.Pz();
@@ -1576,6 +1499,12 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.tktk_vtxZE[BInfo.size]   = sqrt(tktk_VFPvtx->error().czz());
             BInfo.tktk_vtxdof[BInfo.size]  = tktk_VFPvtx->degreesOfFreedom();
             BInfo.tktk_vtxchi2[BInfo.size] = tktk_VFPvtx->chiSquared();
+            BInfo.tktk_rftk1_px[BInfo.size]=tktk_tk1_4vec.Px();
+            BInfo.tktk_rftk1_py[BInfo.size]=tktk_tk1_4vec.Py();
+            BInfo.tktk_rftk1_pz[BInfo.size]=tktk_tk1_4vec.Pz();
+            BInfo.tktk_rftk2_px[BInfo.size]=tktk_tk2_4vec.Px();
+            BInfo.tktk_rftk2_py[BInfo.size]=tktk_tk2_4vec.Py();
+            BInfo.tktk_rftk2_pz[BInfo.size]=tktk_tk2_4vec.Pz();
             
             BInfo.rfmu1_px[BInfo.size]=xb_mu1_4vec.Px();
             BInfo.rfmu1_py[BInfo.size]=xb_mu1_4vec.Py();
@@ -1583,12 +1512,20 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.rfmu2_px[BInfo.size]=xb_mu2_4vec.Px();
             BInfo.rfmu2_py[BInfo.size]=xb_mu2_4vec.Py();
             BInfo.rfmu2_pz[BInfo.size]=xb_mu2_4vec.Pz();
+            //If option == 1, this momentum is the tktk virtual particle p.
             BInfo.rftk1_px[BInfo.size]=xb_tk1_4vec.Px();
             BInfo.rftk1_py[BInfo.size]=xb_tk1_4vec.Py();
             BInfo.rftk1_pz[BInfo.size]=xb_tk1_4vec.Pz();
-            BInfo.rftk2_px[BInfo.size]=xb_tk2_4vec.Px();
-            BInfo.rftk2_py[BInfo.size]=xb_tk2_4vec.Py();
-            BInfo.rftk2_pz[BInfo.size]=xb_tk2_4vec.Pz();
+            if(fit_option == 0){
+                BInfo.rftk2_px[BInfo.size]=xb_tk2_4vec.Px();
+                BInfo.rftk2_py[BInfo.size]=xb_tk2_4vec.Py();
+                BInfo.rftk2_pz[BInfo.size]=xb_tk2_4vec.Pz();
+            }
+            else if(fit_option == 1){
+                BInfo.rftk2_px[BInfo.size]=-999;
+                BInfo.rftk2_py[BInfo.size]=-999;
+                BInfo.rftk2_pz[BInfo.size]=-999;
+            }
             
             BInfo.type[BInfo.size] = channel_number;
             B_counter[channel_number-1]++;
