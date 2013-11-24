@@ -1,8 +1,8 @@
 // vim:set ts=4 sw=4 fdm=marker et:
 //Update:
-// 2013Mar31   kfjack  branch out, recontruction of B(s)->J/psi K+, J/psi K*, J/psi Ks, J/psi phi
 // 2013Nov13   twang   clear up different channel into single function
 //                     clear up irrelevant things
+// 2013Nov23   twang   GenInfo
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

@@ -1,6 +1,7 @@
 // vim:set ts=4 sw=4 fdm=marker et:
 //Update:
 // 2013Nov13   twang   clear up irrelevant things
+// 2013Nov23   twang   GenInfo
 #ifndef _XBFRAMEFORMAT_H_
 #define _XBFRAMEFORMAT_H_
 
