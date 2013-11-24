@@ -89,7 +89,6 @@ if runOnMC:
     process.patTrackCandsMCMatch.maxDPtRel = cms.double(0.5)
     process.patTrackCandsMCMatch.maxDeltaR = cms.double(0.7)
     process.patTrackCandsMCMatch.mcPdgId = cms.vint32(111, 211, 311, 321)
-#    process.patTrackCandsMCMatch.mcPdgId = cms.vint32(all)
     process.patTrackCandsMCMatch.mcStatus = cms.vint32(1)
     l1cands = getattr(process, 'patTrackCands')
     l1cands.addGenMatch = True
