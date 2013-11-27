@@ -33,7 +33,7 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START53_V7F::All' )  #Summer12_DR53X
     #process.GlobalTag.globaltag = cms.string( 'STARTHI53_V26::All' ) 
     #process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
-    process.GlobalTag.globaltag = cms.string( 'START52_V9::All' ) 
+    process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
@@ -43,9 +43,6 @@ else:
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-       #'root://eoscms//eos/cms/store/user/pchen/dumpData/MuOnia_Run2012A-13Jul2012-v1_AOD/fetch_1_1_jBm.root'
-       #'file:///afs/cern.ch/user/p/pchen/Upsilon2S_RECO_9_1_BHo.root'
-#'/store/data/Run2012A/MuOnia/AOD/13Jul2012-v1/00000/B8AA89D2-2ECF-E111-8084-003048FFCB84.root'
 'root://eoscms//eos/cms/store/mc/Summer12/BuToJPsiK_K2MuPtEtaEtaFilter_8TeV-pythia6-evtgen/AODSIM/PU_S7_START52_V9-v1/0000/00D5E95C-7798-E111-B5B5-00237DA13CA2.root'
    )
 )
@@ -90,7 +87,6 @@ if runOnMC:
     process.patTrackCandsMCMatch.maxDPtRel = cms.double(0.5)
     process.patTrackCandsMCMatch.maxDeltaR = cms.double(0.7)
     process.patTrackCandsMCMatch.mcPdgId = cms.vint32(111, 211, 311, 321)
-#    process.patTrackCandsMCMatch.mcPdgId = cms.vint32(all)
     process.patTrackCandsMCMatch.mcStatus = cms.vint32(1)
     l1cands = getattr(process, 'patTrackCands')
     l1cands.addGenMatch = True
@@ -142,5 +138,5 @@ process.p = cms.Path(
 
 process.schedule = cms.Schedule(
 	process.p
-	,process.hltAna
+#	,process.hltAna
 )
