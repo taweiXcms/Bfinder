@@ -249,6 +249,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //EvtInfo.hltnames->clear();
     EvtInfo.RunNo   = iEvent.id().run();
     EvtInfo.EvtNo   = iEvent.id().event();
+    //std::cout<<"(EvtInfo.EvtNo)"<<EvtInfo.EvtNo<<std::endl;
     EvtInfo.BxNo    = iEvent.bunchCrossing();
     EvtInfo.LumiNo  = iEvent.luminosityBlock();
     EvtInfo.Orbit   = iEvent.orbitNumber();
@@ -977,23 +978,27 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 abs(it_gen->pdgId()) == 211 || 
                                 abs(it_gen->pdgId()) == 311 || 
                                 abs(it_gen->pdgId()) == 321) &&
-                                it_gen->numberOfMothers() == 1                          &&
+                                it_gen->numberOfMothers() == 1 &&
                                 (it_gen->mother()->pdgId() == 511 || 
                                 it_gen->mother()->pdgId() == 521 ||       
                                 it_gen->mother()->mother()->pdgId() == 511 || 
-                                it_gen->mother()->mother()->pdgId() == 521 )  &&
+                                it_gen->mother()->mother()->pdgId() == 521 ) &&
+
                                 (it_gen->mother()->daughter(0)->pdgId() == 553 ||  
                                 it_gen->mother()->daughter(0)->pdgId() == 443 ||
                                 it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
-                                it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ) &&
-                                //(it_gen->mother()->mother()->pdgId() == 100553 ||
-                                //it_gen->mother()->mother()->pdgId() == 100443 )        &&
-                                //it_gen->mother()->numberOfDaughters()== 3               &&
-                                (it_gen->mother()->daughter(0)->numberOfDaughters()>=2 || 
-                                it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) &&
-                                (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13 || 
-                                abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
-                               ) isGenSignal = true;//signal pion/kaon                           
+                                it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ) 
+                               ) {
+                                if (it_gen->mother()->daughter(0)->numberOfDaughters()>=2){
+                                    if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
+                                        isGenSignal = true;     
+                                }
+                                if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
+                                    if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
+                                        isGenSignal = true;
+                                }
+                                  //signal pion/kaon                           
+                                }
 /*
                             if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
                                 cand(it_gen->mother()->pdgId() == 100443 ||
