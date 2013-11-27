@@ -138,5 +138,5 @@ process.p = cms.Path(
 
 process.schedule = cms.Schedule(
 	process.p
-#	,process.hltAna
+	,process.hltAna
 )
