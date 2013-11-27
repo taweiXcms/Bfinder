@@ -33,7 +33,7 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START53_V7F::All' )  #Summer12_DR53X
     #process.GlobalTag.globaltag = cms.string( 'STARTHI53_V26::All' ) 
     #process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
-    process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
+    process.GlobalTag.globaltag = cms.string( 'START52_V9::All' ) 
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
