@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 ### Run on MC?
 runOnMC = True
+HIFormat = True
+#HIFormat = False
 
 process = cms.Process("demo")
 
@@ -33,7 +35,7 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START53_V7F::All' )  #Summer12_DR53X
     #process.GlobalTag.globaltag = cms.string( 'STARTHI53_V26::All' ) 
     #process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
-    process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
+    process.GlobalTag.globaltag = cms.string( 'START52_V7::All' ) 
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
@@ -43,9 +45,13 @@ else:
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-'root://eoscms//eos/cms/store/mc/Summer12/BuToJPsiK_K2MuPtEtaEtaFilter_8TeV-pythia6-evtgen/AODSIM/PU_S7_START52_V9-v1/0000/00D5E95C-7798-E111-B5B5-00237DA13CA2.root'
+#'root://eoscms//eos/cms/store/mc/Summer12/BuToJPsiK_K2MuPtEtaEtaFilter_8TeV-pythia6-evtgen/AODSIM/PU_S7_START52_V9-v1/0000/00D5E95C-7798-E111-B5B5-00237DA13CA2.root'
+#'file:/raid2/w/twang/JpsiKp/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_61_1_hye.root'
+'root://eoscms//eos/cms/store/user/twang/HIBmeson_20131220/test_20140106/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_102_2_VpA.root'
    )
 )
+#process.load("_raid2_w_twang_JpsiKp_JpsiKp_cff")
+#process.load("_eos_cms_store_user_twang_HIBmeson_20131220_test_20140106_JpsiKp_cff")
 
 ### Set basic filter
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
@@ -65,10 +71,14 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
 
 ### Setup Pat
-    ### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
+### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
+if HIFormat:
+	process.muonMatch.matched = cms.InputTag("hiGenParticles")
+
 #process.allLayer1Jets.addJetCorrFactors = False
 from PhysicsTools.PatAlgos.tools.trackTools import *
+#process.load( 'PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cff' )
 if runOnMC:
     makeTrackCandidates(process,              # patAODTrackCands
         label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
@@ -81,6 +91,7 @@ if runOnMC:
         mcAs='muon'                           # Replicate MC match as the one used for Muons
     );                                        # you can specify more than one collection for this
     ### MC+mcAs+Match/pat_label options
+    #process.patTrackCandsMCMatch.matched = cms.InputTag("hiGenParticles")
     process.patTrackCandsMCMatch.resolveByMatchQuality = cms.bool(True)
     process.patTrackCandsMCMatch.resolveAmbiguities = cms.bool(True)
     process.patTrackCandsMCMatch.checkCharge = cms.bool(True)
@@ -114,6 +125,14 @@ if not runOnMC :
 ### Set Bfinder option
 
 process.demo = cms.EDAnalyzer('Bfinder',
+	Bchannel 		= cms.vint32(
+		1,#RECONSTRUCTION: J/psi + K
+		0,#RECONSTRUCTION: J/psi + Pi
+		0,#RECONSTRUCTION: J/psi + Ks 
+		0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
+		0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
+		0,#RECONSTRUCTION: J/psi + phi
+		0,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
 	MuonLabel       = cms.InputTag('selectedPatMuons'),         #selectedPatMuons
@@ -121,6 +140,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
     PUInfoLabel     = cms.InputTag("addPileupInfo"),
 	NtupleType      = cms.untracked.string('jpsi')               #['all','upsilon','jpsi','no_c'], which mass constraint
 )
+if HIFormat:
+	process.demo.GenLabel = cms.InputTag('hiGenParticles')
 
 ### SetUp HLT info
 process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')

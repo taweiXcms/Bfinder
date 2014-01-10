@@ -3,6 +3,7 @@
 // 2013Nov13   twang   clear up different channel into single function
 //                     clear up irrelevant things
 // 2013Nov23   twang   GenInfo
+// 2014JAn07   twang   Modification for private MC
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -129,7 +130,7 @@ class Bfinder : public edm::EDAnalyzer
             TLorentzVector v4_mu2,
             reco::TransientTrack muonPTT,
             reco::TransientTrack muonMTT,
-            int *B_counter,
+            std::vector<int> &B_counter,
             float *mass_window,
             float MuMu_MASS,
             float Tk_MASS,
@@ -144,7 +145,7 @@ class Bfinder : public edm::EDAnalyzer
             TLorentzVector v4_mu2,
             reco::TransientTrack muonPTT,
             reco::TransientTrack muonMTT,
-            int *B_counter,
+            std::vector<int> &B_counter,
             float *mass_window,
             float MuMu_MASS,
             float TkTk_MASS,
@@ -159,6 +160,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::ESHandle<MagneticField> bField;
         edm::ParameterSet theConfig;
 //      std::vector<std::string> TriggersForMatching_;
+        std::vector<int> Bchannel_;
         edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
         edm::InputTag muonLabel_;
@@ -180,7 +182,8 @@ class Bfinder : public edm::EDAnalyzer
         TH1F *XbujCutLevel;
         //How many channel
         static int const Nchannel = 20;
-        TH1F *XbMassCutLevel[Nchannel];
+//        TH1F *XbMassCutLevel[Nchannel];
+        std::vector<TH1F*> XbMassCutLevel;
         
 };//}}}
 
@@ -194,10 +197,12 @@ void Bfinder::beginJob()
     GenInfo.regTree(root);
 }//}}}
 
+
 Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
     //now do what ever initialization is needed
 //  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
+    Bchannel_            = iConfig.getParameter<std::vector<int> >("Bchannel");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
     muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
@@ -208,8 +213,10 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
     XbujCutLevel        = fs->make<TH1F>("XbujCutLevel"     , "XbujCutLevel"    , 10, 0, 10);
-    for(int i = 0; i < Nchannel; i++){
-        XbMassCutLevel[i]      = fs->make<TH1F>(TString::Format("XbMassCutLevel_i")   ,TString::Format("XbMassCutLevel_i")  , 10, 0, 10);
+    for(unsigned int i = 0; i < Bchannel_.size(); i++){
+//        TH1F* XbMassCutLevel[i]      = fs->make<TH1F>(TString::Format("XbMassCutLevel_i")   ,TString::Format("XbMassCutLevel_i")  , 10, 0, 10);
+        TH1F* XbMassCutLevel_temp      = fs->make<TH1F>(TString::Format("XbMassCutLevel_i")   ,TString::Format("XbMassCutLevel_i")  , 10, 0, 10);
+        XbMassCutLevel.push_back(XbMassCutLevel_temp);
     }
 }//}}}
 
@@ -368,15 +375,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     BInfo.size     = 0;
     GenInfo.size    = 0;
     
-    int B_counter[Nchannel] = {0};
-    int B_tag[Nchannel] = {0};
-    B_tag[0] = 1;// RECONSTRUCTION: J/psi + K
-    B_tag[1] = 0;// RECONSTRUCTION: J/psi + Pi
-    B_tag[2] = 0;// RECONSTRUCTION: J/psi + Ks 
-    B_tag[3] = 0;// RECONSTRUCTION: J/psi + K* (K+, Pi-)
-    B_tag[4] = 0;// RECONSTRUCTION: J/psi + K* (K-, Pi+)
-    B_tag[5] = 0;// RECONSTRUCTION: J/psi + phi
-    B_tag[6] = 0;// RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+    std::vector<int> B_counter;
+    for(unsigned int i = 0; i < Bchannel_.size(); i++){
+        B_counter.push_back(0);
+    }
 
     std::vector<pat::Muon>              input_muons;
     std::vector<pat::GenericParticle>   input_tracks;
@@ -674,7 +676,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + K
                             //////////////////////////////////////////////////////////////////////////
                             float mass_window[2] = {4.3, 6.4};
-                            if(B_tag[0] == 1){
+                            if(Bchannel_[0] == 1){
                                 BranchOut2MuTk(
                                     BInfo,
                                     input_tracks,
@@ -693,7 +695,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + Pi
                             //////////////////////////////////////////////////////////////////////////
-                            if(B_tag[1] == 1){
+                            if(Bchannel_[1] == 1){
                                 BranchOut2MuTk(
                                     BInfo,
                                     input_tracks,
@@ -714,7 +716,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + Ks
                             //////////////////////////////////////////////////////////////////////////
 
-                            if(B_tag[2] == 1){
+                            if(Bchannel_[2] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
                                     input_tracks,
@@ -739,7 +741,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + K* (K+, Pi-)
                             //////////////////////////////////////////////////////////////////////////
 
-                            if(B_tag[3] == 1){
+                            if(Bchannel_[3] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
                                     input_tracks,
@@ -764,7 +766,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + K* (K-, Pi+)
                             //////////////////////////////////////////////////////////////////////////
 
-                            if(B_tag[4] == 1){
+                            if(Bchannel_[4] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
                                     input_tracks,
@@ -789,7 +791,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + phi
                             //////////////////////////////////////////////////////////////////////////
                             
-                            if(B_tag[5] == 1){
+                            if(Bchannel_[5] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
                                     input_tracks,
@@ -815,7 +817,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             mass_window[0] = 3;
                             mass_window[1] = 6.4;
-                            if(B_tag[6] == 1){
+                            if(Bchannel_[6] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
                                     input_tracks,
@@ -839,7 +841,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }//Mu2
                     }//Mu1}}}
                     //printf("-----*****DEBUG:End of BInfo.\n");
-                    printf("B_counter: %d/%d/%d/%d/%d/%d/%d/%d\n",B_counter[0],B_counter[1],B_counter[2],B_counter[3],B_counter[4],B_counter[5],B_counter[6], B_counter[7]);
+                    //printf("B_counter: %d/%d/%d/%d/%d/%d/%d\n",B_counter[0],B_counter[1],B_counter[2],B_counter[3],B_counter[4],B_counter[5],B_counter[6]);
+                    printf("B_counter: ");
+                    for(unsigned int i = 0; i < Bchannel_.size(); i++){
+                        printf("%d/", B_counter[i]);
+                    }
+                    printf("\n");
 
                     // TrackInfo section {{{
                     const reco::GenParticle* genTrackPtr[MAX_GEN];
@@ -918,11 +925,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of TrackInfo.\n");
 
                     // GenInfo section{{{
-                    if (!iEvent.isRealData()){
-//                    if (0){
-                        edm::Handle< std::vector<reco::GenParticle> > gens;
+//                    if (!iEvent.isRealData()){
+                    if (1){
+//                        edm::Handle< std::vector<reco::GenParticle> > gens;
+                        edm::Handle<reco::GenParticleCollection> gens;
                         iEvent.getByLabel(genLabel_, gens);
-    
+ 
                         std::vector<const reco::Candidate *> cands;
                         for(std::vector<reco::GenParticle>::const_iterator it_gen = gens->begin();
                             it_gen != gens->end(); it_gen++ ){
@@ -932,7 +940,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                             it_gen != gens->end(); it_gen++){
                             if (it_gen->status() > 2)                           continue;
-
                             //if is pion/kaon must be final state
                             if (
                                 (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
@@ -941,7 +948,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
                             ) continue;
 
-                            bool isGenSignal = false;                                                                                                                                                       
+                            bool isGenSignal = false;
                             //save target intermediat state particle
                             if (
                                 abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
@@ -975,19 +982,18 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                ) isGenSignal = true;//signal mu
 
                             if ((abs(it_gen->pdgId()) == 111 || 
-                                abs(it_gen->pdgId()) == 211 || 
-                                abs(it_gen->pdgId()) == 311 || 
-                                abs(it_gen->pdgId()) == 321) &&
-                                it_gen->numberOfMothers() == 1 &&
-                                (it_gen->mother()->pdgId() == 511 || 
-                                it_gen->mother()->pdgId() == 521 ||       
-                                it_gen->mother()->mother()->pdgId() == 511 || 
-                                it_gen->mother()->mother()->pdgId() == 521 ) &&
-
-                                (it_gen->mother()->daughter(0)->pdgId() == 553 ||  
-                                it_gen->mother()->daughter(0)->pdgId() == 443 ||
-                                it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
-                                it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ) 
+                                 abs(it_gen->pdgId()) == 211 || 
+                                 abs(it_gen->pdgId()) == 311 || 
+                                 abs(it_gen->pdgId()) == 321) &&
+                                it_gen->numberOfMothers() == 1 && 
+                                ((it_gen->mother()->pdgId() == 511 || it_gen->mother()->pdgId() == 521) ||       
+                                 (it_gen->mother()->numberOfMothers() == 1 && 
+                                  (it_gen->mother()->mother()->pdgId() == 511 || it_gen->mother()->mother()->pdgId() == 521))) &&
+                                ((it_gen->mother()->daughter(0)->pdgId() == 553 ||  
+                                 it_gen->mother()->daughter(0)->pdgId() == 443) ||
+                                 (it_gen->mother()->numberOfMothers() == 1 &&
+                                  (it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
+                                   it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ))) 
                                ) {
                                 if (it_gen->mother()->daughter(0)->numberOfDaughters()>=2){
                                     if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
@@ -998,7 +1004,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                         isGenSignal = true;
                                 }
                                   //signal pion/kaon                           
-                                }
+                            }
+
 /*
                             if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
                                 cand(it_gen->mother()->pdgId() == 100443 ||
@@ -1040,10 +1047,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                         iDa1 = iCands - cands.begin();
                                 }
                             }
-    
-                            //depend on TrackInfo.handle_index and MuonInfo.handle_index
+                            //Find all other particle in TrackInfo
                             //printf("-----*****DEBUG:Start of matching.\n");
-                            if (abs(it_gen->pdgId()) == 13){
+                            //if (abs(it_gen->pdgId()) == 13){
                                 //printf("-----*****DEBUG:Entered muon matching block.\n");
                                 for(int muonIdx = 0; muonIdx < MuonInfo.size; muonIdx++){
                                     MuonInfo.geninfo_index[muonIdx] = -1;
@@ -1056,9 +1062,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                         break;
                                     }
                                 }
-                            }
-                            //Find all other particle in TrackInfo
-                            else{
+                            //}
+                            //else{
                                 //printf("-----*****DEBUG:Entered pion matching block.\n");
                                 for(int trackIdx = 0; trackIdx < TrackInfo.size; trackIdx++){
                                     TrackInfo.geninfo_index[trackIdx] = -1;
@@ -1069,8 +1074,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                         break;
                                     }
                                 }
-                            }
-    
+                            //}
+
                             GenInfo.index[GenInfo.size]         = GenInfo.size;
                             GenInfo.handle_index[GenInfo.size]  = it_gen-gens->begin();
                             GenInfo.pt[GenInfo.size]            = it_gen->pt();
@@ -1087,8 +1092,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             GenInfo.da2[GenInfo.size]           = iDa2;
                             GenInfo.size++;
                         }
+
                         //printf("-----*****DEBUG:End of gens loop.\n");
-                        
                         //Pass handle_index to igen
                         for(int igen = 0; igen < GenInfo.size; igen++){
                             int iMo1 = GenInfo.mo1[igen];
@@ -1170,6 +1175,7 @@ void Bfinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     descriptions.addDefault(desc);
 }
 
+//{{{
 void Bfinder::BranchOut2MuTk(
     BInfoBranches &BInfo, 
     std::vector<pat::GenericParticle> input_tracks, 
@@ -1178,14 +1184,14 @@ void Bfinder::BranchOut2MuTk(
     TLorentzVector v4_mu2,
     reco::TransientTrack muonPTT,
     reco::TransientTrack muonMTT,
-    int *B_counter,
+    std::vector<int> &B_counter,
     float *mass_window,
     float MuMu_MASS,
     float Tk_MASS,
     int channel_number
 
 ){
-  if(channel_number > Nchannel){ printf("Exceeding Maximal allowed channel, exit"); return;}
+  if(channel_number > (int)Bchannel_.size()){ printf("Exceeding defined # of channel, exit"); return;}
   float chi = 0.;
   float ndf = 0.;
   int tk1_hindex = -1;
@@ -1232,11 +1238,11 @@ void Bfinder::BranchOut2MuTk(
       
       double chi2_prob = TMath::Prob(xbVFPvtx->chiSquared(),xbVFPvtx->degreesOfFreedom());
       if (chi2_prob < 0.01) continue;
-      XbMassCutLevel[0]->Fill(3);
+      XbMassCutLevel[channel_number-1]->Fill(3);
       
       if (xbVFP->currentState().mass()<mass_window[0] || xbVFP->currentState().mass()>mass_window[1]) continue;
       
-      XbMassCutLevel[0]->Fill(4);
+      XbMassCutLevel[channel_number-1]->Fill(4);
       
       TLorentzVector xb_4vec,xb_mu1_4vec,xb_mu2_4vec,xb_tk1_4vec,xb_tk2_4vec;
       xb_4vec.SetPxPyPzE(xbVFP->currentState().kinematicParameters().momentum().x(),
@@ -1301,7 +1307,8 @@ void Bfinder::BranchOut2MuTk(
       BInfo.size++;
   }//Tk1
 }
-
+//}}}
+//{{{
 void Bfinder::BranchOut2MuX_XtoTkTk(
     BInfoBranches &BInfo, 
     std::vector<pat::GenericParticle> input_tracks, 
@@ -1310,7 +1317,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
     TLorentzVector v4_mu2,
     reco::TransientTrack muonPTT,
     reco::TransientTrack muonMTT,
-    int *B_counter,
+    std::vector<int> &B_counter,
     float *mass_window,
     float MuMu_MASS,
     float TkTk_MASS,
@@ -1320,7 +1327,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
     int channel_number,
     int fit_option
 ){
-    if(channel_number > Nchannel){ printf("Exceeding Maximal allowed channel, exit"); return;}
+    if(channel_number > (int)Bchannel_.size()){ printf("Exceeding defined # of channel, exit"); return;}
     float chi = 0.;
     float ndf = 0.;
     KinematicParticleFactoryFromTransientTrack pFactory;
@@ -1541,6 +1548,6 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
         }//Tk2
     }//Tk1
 }
-
+//}}}
 //define this as a plug-in
 DEFINE_FWK_MODULE(Bfinder);
