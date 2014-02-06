@@ -3,7 +3,8 @@
 // 2013Nov13   twang   clear up different channel into single function
 //                     clear up irrelevant things
 // 2013Nov23   twang   GenInfo
-// 2014JAn07   twang   Modification for private MC
+// 2014Jan07   twang   Modification for private MC
+// 2014Feb05   twang   fix MC matching
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -65,7 +66,7 @@
 #include <iostream>
         //Bfinder
 #include "Bfinder/Bfinder/interface/format.h"
-#include "Bfinder/Bfinder/interface/TriggerBooking.h"
+//#include "Bfinder/Bfinder/interface/TriggerBooking.h"
 
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
 #include "DataFormats/Common/interface/ValueMap.h"
@@ -161,7 +162,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::ParameterSet theConfig;
 //      std::vector<std::string> TriggersForMatching_;
         std::vector<int> Bchannel_;
-        edm::InputTag hltLabel_;
+//        edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
         edm::InputTag muonLabel_;
         edm::InputTag trackLabel_;
@@ -206,7 +207,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
     muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
-    hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
+//    hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
     puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
     ntupleType_         = iConfig.getUntrackedParameter<std::string>("NtupleType","jpsi");
 
@@ -262,7 +263,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtInfo.Orbit   = iEvent.orbitNumber();
     EvtInfo.McFlag  = !iEvent.isRealData();
     EvtInfo.nTrgBook= N_TRIGGER_BOOKINGS;
-    
+
+//Using HI HLT analysis now    
+/*
     //HLT
     edm::Handle<TriggerResults> TrgResultsHandle; //catch triggerresults
     bool with_TriggerResults = iEvent.getByLabel(hltLabel_,TrgResultsHandle);
@@ -292,6 +295,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             EvtInfo.hltBits[i] = (TrgResultsHandle->accept(i) == true) ? 1:0;
         }
     }//end(!with_TriggerResults)}}}
+*/
 
     // Handle primary vertex properties
     Vertex thePrimaryV;
@@ -956,6 +960,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 abs(int(it_gen->pdgId()/100) % 100) == 5  ||//b menson
                                 abs(it_gen->pdgId()) == 511 ||//B_0
                                 abs(it_gen->pdgId()) == 521 ||//B_+-
+                                abs(it_gen->pdgId()) == 531 ||//B_s
                                 abs(it_gen->pdgId()) == 130 ||//KL
                                 abs(it_gen->pdgId()) == 310 ||//KS
                                 abs(it_gen->pdgId()) == 313 ||//K*0(892)
@@ -973,8 +978,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                  it_gen->mother()->pdgId() == 553 )                     &&
                                 it_gen->mother()->numberOfDaughters() >= 2              &&
                                 it_gen->mother()->numberOfMothers() == 1                &&
-                                (it_gen->mother()->mother()->pdgId() == 511 ||
-                                 it_gen->mother()->mother()->pdgId() == 521 )
+                                (abs(it_gen->mother()->mother()->pdgId()) == 511 ||
+                                 abs(it_gen->mother()->mother()->pdgId()) == 521 ||
+                                 abs(it_gen->mother()->mother()->pdgId()) == 531 )
                                 //(it_gen->mother()->mother()->pdgId() == 100553 ||
                                 // it_gen->mother()->mother()->pdgId() == 100443 )        &&
                                 //it_gen->mother()->mother()->numberOfDaughters() == 3    &&
@@ -986,9 +992,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                  abs(it_gen->pdgId()) == 311 || 
                                  abs(it_gen->pdgId()) == 321) &&
                                 it_gen->numberOfMothers() == 1 && 
-                                ((it_gen->mother()->pdgId() == 511 || it_gen->mother()->pdgId() == 521) ||       
+                                ((abs(it_gen->mother()->pdgId()) == 511 || abs(it_gen->mother()->pdgId()) == 521 || abs(it_gen->mother()->pdgId()) == 531) ||       
                                  (it_gen->mother()->numberOfMothers() == 1 && 
-                                  (it_gen->mother()->mother()->pdgId() == 511 || it_gen->mother()->mother()->pdgId() == 521))) &&
+                                  (abs(it_gen->mother()->mother()->pdgId()) == 511 || abs(it_gen->mother()->mother()->pdgId()) == 521 || abs(it_gen->mother()->mother()->pdgId()) == 531))) &&
                                 ((it_gen->mother()->daughter(0)->pdgId() == 553 ||  
                                  it_gen->mother()->daughter(0)->pdgId() == 443) ||
                                  (it_gen->mother()->numberOfMothers() == 1 &&
