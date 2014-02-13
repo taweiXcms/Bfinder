@@ -402,7 +402,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
                 std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
-                if (input_tracks.size() > 1 && input_muons.size() > 1){
+//                if (input_tracks.size() > 1 && input_muons.size() > 1){
+                if (input_tracks.size() > 0 && input_muons.size() > 1){
 
                     //MuonInfo section{{{
                     int mu_hindex = -1;
