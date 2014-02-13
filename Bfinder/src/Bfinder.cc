@@ -354,7 +354,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtInfo.PVchi2  = thePrimaryV.chi2();
 
     // get pile-up information
-    std::cout << "puInfoLabel_=" << puInfoLabel_ << std::endl;
     if (!iEvent.isRealData()){
         edm::Handle<std::vector< PileupSummaryInfo > >  PUHandle;
         iEvent.getByLabel(puInfoLabel_, PUHandle);
@@ -389,11 +388,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     input_muons = *muons;
     input_tracks = *tks;
     try{
+
+        const reco::GenParticle* genMuonPtr[MAX_MUON];
+        memset(genMuonPtr,0x00,MAX_MUON);
+        const reco::GenParticle* genTrackPtr[MAX_GEN];
+        memset(genTrackPtr,0x00,MAX_GEN);
         //standard check for validity of input data
         if (input_muons.size() == 0){
             std::cout << "There's no muon : " << iEvent.id() << std::endl;
         }else{
-            std::cout << "Got " << input_muons.size() << " muons" << std::endl;
+            std::cout << "Got " << input_muons.size() << " muons / ";
             if (input_tracks.size() == 0){
                 std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
@@ -402,8 +406,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                     //MuonInfo section{{{
                     int mu_hindex = -1;
-                    const reco::GenParticle* genMuonPtr[MAX_MUON];
-                    memset(genMuonPtr,0x00,MAX_MUON);
                     for(std::vector<pat::Muon>::const_iterator mu_it=input_muons.begin();
                         mu_it != input_muons.end() ; mu_it++){
                         if(mu_hindex >= MAX_MUON){
@@ -458,10 +460,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.iso_ecal       [MuonInfo.size] = mu_it->ecalIso();
                         MuonInfo.iso_hcal       [MuonInfo.size] = mu_it->hcalIso();
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
+                        MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();
-//if(mu_it->genParticle()->pt())std::cout<<"warnning!!   "<< mu_it->genParticle()->pt()<<std::endl;
 
                         if(mu_it->isGlobalMuon()){
                             MuonInfo.g_striphit [MuonInfo.size] = mu_it->globalTrack()->hitPattern().numberOfValidStripHits();
@@ -853,8 +855,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     printf("\n");
 
                     // TrackInfo section {{{
-                    const reco::GenParticle* genTrackPtr[MAX_GEN];
-                    memset(genTrackPtr,0x00,MAX_GEN);
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         if(TrackInfo.size >= MAX_TRACK){
@@ -892,6 +892,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
 
                         if (!iEvent.isRealData())
                             genTrackPtr [TrackInfo.size] = tk_it->genParticle();
@@ -927,214 +928,211 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.size++;
                     }//end of TrackInfo}}}
                     //printf("-----*****DEBUG:End of TrackInfo.\n");
-
-                    // GenInfo section{{{
-//                    if (!iEvent.isRealData()){
-                    if (1){
-//                        edm::Handle< std::vector<reco::GenParticle> > gens;
-                        edm::Handle<reco::GenParticleCollection> gens;
-                        iEvent.getByLabel(genLabel_, gens);
- 
-                        std::vector<const reco::Candidate *> cands;
-                        for(std::vector<reco::GenParticle>::const_iterator it_gen = gens->begin();
-                            it_gen != gens->end(); it_gen++ ){
-                            cands.push_back(&*it_gen);
-                        }
-    
-                        for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
-                            it_gen != gens->end(); it_gen++){
-                            if (it_gen->status() > 2)                           continue;
-                            //if is pion/kaon must be final state
-                            if (
-                                (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
-                                (abs(it_gen->pdgId()) == 211 && it_gen->status() == 2) ||//pi +-
-                                (abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
-                                (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
-                            ) continue;
-
-                            bool isGenSignal = false;
-                            //save target intermediat state particle
-                            if (
-                                abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
-                                abs(int(it_gen->pdgId()/100) % 100) == 4  ||//c menson
-                                abs(int(it_gen->pdgId()/100) % 100) == 5  ||//b menson
-                                abs(it_gen->pdgId()) == 511 ||//B_0
-                                abs(it_gen->pdgId()) == 521 ||//B_+-
-                                abs(it_gen->pdgId()) == 531 ||//B_s
-                                abs(it_gen->pdgId()) == 130 ||//KL
-                                abs(it_gen->pdgId()) == 310 ||//KS
-                                abs(it_gen->pdgId()) == 313 ||//K*0(892)
-                                abs(it_gen->pdgId()) == 323 ||//K*+-(892)
-                                abs(it_gen->pdgId()) == 333 ||//phi(1020)
-                                it_gen->pdgId() == 443      ||//Jpsi
-                                it_gen->pdgId() == 100443   ||//Psi(2S)
-                                it_gen->pdgId() == 553      ||//Upsilon
-                                it_gen->pdgId() == 100553     //Upsilon(2S)
-                               ) isGenSignal = true;
-
-                            if (abs(it_gen->pdgId()) == 13                              &&
-                                it_gen->numberOfMothers() == 1                          &&
-                                (it_gen->mother()->pdgId() == 443 ||
-                                 it_gen->mother()->pdgId() == 553 )                     &&
-                                it_gen->mother()->numberOfDaughters() >= 2              &&
-                                it_gen->mother()->numberOfMothers() == 1                &&
-                                (abs(it_gen->mother()->mother()->pdgId()) == 511 ||
-                                 abs(it_gen->mother()->mother()->pdgId()) == 521 ||
-                                 abs(it_gen->mother()->mother()->pdgId()) == 531 )
-                                //(it_gen->mother()->mother()->pdgId() == 100553 ||
-                                // it_gen->mother()->mother()->pdgId() == 100443 )        &&
-                                //it_gen->mother()->mother()->numberOfDaughters() == 3    &&
-                                //abs(it_gen->mother()->mother()->daughter(1)->pdgId()) == 211 
-                               ) isGenSignal = true;//signal mu
-
-                            if ((abs(it_gen->pdgId()) == 111 || 
-                                 abs(it_gen->pdgId()) == 211 || 
-                                 abs(it_gen->pdgId()) == 311 || 
-                                 abs(it_gen->pdgId()) == 321) &&
-                                it_gen->numberOfMothers() == 1 && 
-                                ((abs(it_gen->mother()->pdgId()) == 511 || abs(it_gen->mother()->pdgId()) == 521 || abs(it_gen->mother()->pdgId()) == 531) ||       
-                                 (it_gen->mother()->numberOfMothers() == 1 && 
-                                  (abs(it_gen->mother()->mother()->pdgId()) == 511 || abs(it_gen->mother()->mother()->pdgId()) == 521 || abs(it_gen->mother()->mother()->pdgId()) == 531))) &&
-                                ((it_gen->mother()->daughter(0)->pdgId() == 553 ||  
-                                 it_gen->mother()->daughter(0)->pdgId() == 443) ||
-                                 (it_gen->mother()->numberOfMothers() == 1 &&
-                                  (it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
-                                   it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ))) 
-                               ) {
-                                if (it_gen->mother()->daughter(0)->numberOfDaughters()>=2){
-                                    if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
-                                        isGenSignal = true;     
-                                }
-                                if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
-                                    if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
-                                        isGenSignal = true;
-                                }
-                                  //signal pion/kaon                           
-                            }
-
-/*
-                            if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
-                                cand(it_gen->mother()->pdgId() == 100443 ||
-                                 it_gen->mother()->pdgId() == 100553 )                  &&
-                                it_gen->mother()->numberOfDaughters() == 3              &&
-                                abs(it_gen->mother()->daughter(1)->pdgId()) == 211      &&
-                                it_gen->numberOfDaughters() >= 2                        &&
-                                abs(it_gen->daughter(0)->pdgId()) == 13    
-                               ) isGenSignal = true;//signal uj
-
-                            if ((it_gen->pdgId()==100443 || it_gen->pdgId()==100553)    &&
-                                it_gen->numberOfDaughters() == 3                        &&
-                                it_gen->daughter(0)->numberOfDaughters() >= 2           &&
-                                abs(it_gen->daughter(0)->daughter(0)->pdgId()) == 13    &&
-                                abs(it_gen->daughter(1)->pdgId()) == 211 
-                               ) isGenSignal = true;//signal xb
-*/
-                            if (!isGenSignal) continue;
-
-                            int iMo1 = -1,  iMo2 = -1,  iDa1 = -1,  iDa2 = -1;
-                            for(std::vector<const reco::Candidate *>::iterator iCands = cands.begin();
-                                iCands != cands.end(); iCands++){
-                                if (it_gen->numberOfMothers() >= 2){
-                                    if (it_gen->mother(0) == *iCands)
-                                        iMo1 = iCands - cands.begin();
-                                    if (it_gen->mother(1) == *iCands)
-                                        iMo2 = iCands - cands.begin();
-                                }else if(it_gen->numberOfMothers() == 1){
-                                    if (it_gen->mother(0) == *iCands)
-                                        iMo1 = iCands - cands.begin();
-                                }
-                                if (it_gen->numberOfDaughters() >= 2){
-                                    if (it_gen->daughter(0) == *iCands)
-                                        iDa1 = iCands - cands.begin();
-                                    else if (it_gen->daughter(1) == *iCands)
-                                        iDa2 = iCands - cands.begin();
-                                }else if(it_gen->numberOfDaughters() == 1){
-                                    if (it_gen->daughter(0) == *iCands)
-                                        iDa1 = iCands - cands.begin();
-                                }
-                            }
-                            //Find all other particle in TrackInfo
-                            //printf("-----*****DEBUG:Start of matching.\n");
-                            //if (abs(it_gen->pdgId()) == 13){
-                                //printf("-----*****DEBUG:Entered muon matching block.\n");
-                                for(int muonIdx = 0; muonIdx < MuonInfo.size; muonIdx++){
-                                    MuonInfo.geninfo_index[muonIdx] = -1;
-                                    // match by pat::Muon
-                                    if (genMuonPtr[muonIdx] == 0) continue;
-                                    if (it_gen->p4() == genMuonPtr[muonIdx]->p4()){
-                                        MuonInfo.geninfo_index[muonIdx] = GenInfo.size;
-                                        //printf("-----*****DEBUG:[Mu]Tar.Pt /Ref.Pt = %9f/%9f\n",
-                                        //    MuonInfo.pt [muonIdx],it_gen->pt ());
-                                        break;
-                                    }
-                                }
-                            //}
-                            //else{
-                                //printf("-----*****DEBUG:Entered pion matching block.\n");
-                                for(int trackIdx = 0; trackIdx < TrackInfo.size; trackIdx++){
-                                    TrackInfo.geninfo_index[trackIdx] = -1;
-                                    //match by pat::GenericParticle
-                                    if (genTrackPtr[trackIdx] == 0 ) continue;
-                                    if (it_gen->p4() == genTrackPtr[trackIdx]->p4()){
-                                        TrackInfo.geninfo_index[trackIdx] = GenInfo.size;
-                                        break;
-                                    }
-                                }
-                            //}
-
-                            GenInfo.index[GenInfo.size]         = GenInfo.size;
-                            GenInfo.handle_index[GenInfo.size]  = it_gen-gens->begin();
-                            GenInfo.pt[GenInfo.size]            = it_gen->pt();
-                            GenInfo.eta[GenInfo.size]           = it_gen->eta();
-                            GenInfo.phi[GenInfo.size]           = it_gen->phi();
-                            GenInfo.mass[GenInfo.size]          = it_gen->mass();
-                            GenInfo.pdgId[GenInfo.size]         = it_gen->pdgId();
-                            GenInfo.status[GenInfo.size]        = it_gen->status();
-                            GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
-                            GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
-                            GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
-                            GenInfo.mo2[GenInfo.size]           = iMo2;
-                            GenInfo.da1[GenInfo.size]           = iDa1;
-                            GenInfo.da2[GenInfo.size]           = iDa2;
-                            GenInfo.size++;
-                        }
-
-                        //printf("-----*****DEBUG:End of gens loop.\n");
-                        //Pass handle_index to igen
-                        for(int igen = 0; igen < GenInfo.size; igen++){
-                            int iMo1 = GenInfo.mo1[igen];
-                            int iMo2 = GenInfo.mo2[igen];
-                            int iDa1 = GenInfo.da1[igen];
-                            int iDa2 = GenInfo.da2[igen];
-                            for(int k = 0; k < GenInfo.size; k++){
-                                if (iMo1 == GenInfo.handle_index[k])
-                                    GenInfo.mo1[igen] = k;
-                                else if (iMo2 == GenInfo.handle_index[k])
-                                    GenInfo.mo2[igen] = k;
-                                else if (iDa1 == GenInfo.handle_index[k])
-                                    GenInfo.da1[igen] = k;
-                                else if (iDa2 == GenInfo.handle_index[k])
-                                    GenInfo.da2[igen] = k;
-                            }
-                            //In case that GEN particles are omitted from GenInfo
-                            //handle_index couldn't be the same as igen
-                            //since the very first proton pair has status 3.
-                            if (iMo1 == GenInfo.mo1[igen])
-                                GenInfo.mo1[igen] = -1;
-                            if (iMo2 == GenInfo.mo2[igen])
-                                GenInfo.mo2[igen] = -1;
-                            if (iDa1 == GenInfo.da1[igen])
-                                GenInfo.da1[igen] = -1;
-                            if (iDa2 == GenInfo.da2[igen])
-                               GenInfo.da2[igen] = -1;
-                        }
-                        //printf("-----*****DEBUG:End of IndexToIgen\n");
-                    }//isRealData}}}
-                    //printf("-----*****DEBUG:End of GenInfo.\n");
-                    //std::cout<<"Start to fill!\n";
                 }//has nMuons>1 nTracks>1
             }//Tracks
         }//Muonss
+
+        // GenInfo section{{{
+        if (!iEvent.isRealData()){
+        //if (1){
+            //edm::Handle< std::vector<reco::GenParticle> > gens;
+            edm::Handle<reco::GenParticleCollection> gens;
+            iEvent.getByLabel(genLabel_, gens);
+
+            std::vector<const reco::Candidate *> cands;
+            for(std::vector<reco::GenParticle>::const_iterator it_gen = gens->begin();
+                it_gen != gens->end(); it_gen++ ){
+                cands.push_back(&*it_gen);
+            }
+
+            for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
+                it_gen != gens->end(); it_gen++){
+                if (it_gen->status() > 2)                           continue;
+                //if is pion/kaon must be final state
+                if (
+                    (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
+                    (abs(it_gen->pdgId()) == 211 && it_gen->status() == 2) ||//pi +-
+                    (abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
+                    (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
+                ) continue;
+
+                bool isGenSignal = false;
+                //save target intermediat state particle
+                if (
+                    abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
+                    abs(int(it_gen->pdgId()/100) % 100) == 4  ||//c menson
+                    abs(int(it_gen->pdgId()/100) % 100) == 5  ||//b menson
+                    abs(it_gen->pdgId()) == 511 ||//B_0
+                    abs(it_gen->pdgId()) == 521 ||//B_+-
+                    abs(it_gen->pdgId()) == 531 ||//B_s
+                    abs(it_gen->pdgId()) == 130 ||//KL
+                    abs(it_gen->pdgId()) == 310 ||//KS
+                    abs(it_gen->pdgId()) == 313 ||//K*0(892)
+                    abs(it_gen->pdgId()) == 323 ||//K*+-(892)
+                    abs(it_gen->pdgId()) == 333 ||//phi(1020)
+                    it_gen->pdgId() == 443      ||//Jpsi
+                    it_gen->pdgId() == 100443   ||//Psi(2S)
+                    it_gen->pdgId() == 553      ||//Upsilon
+                    it_gen->pdgId() == 100553     //Upsilon(2S)
+                   ) isGenSignal = true;
+
+                if (abs(it_gen->pdgId()) == 13                              &&
+                    it_gen->numberOfMothers() == 1                          &&
+                    (it_gen->mother()->pdgId() == 443 ||
+                     it_gen->mother()->pdgId() == 553 )                     &&
+                    it_gen->mother()->numberOfDaughters() >= 2              &&
+                    it_gen->mother()->numberOfMothers() == 1                &&
+                    (abs(it_gen->mother()->mother()->pdgId()) == 511 ||
+                     abs(it_gen->mother()->mother()->pdgId()) == 521 ||
+                     abs(it_gen->mother()->mother()->pdgId()) == 531 )
+                    //(it_gen->mother()->mother()->pdgId() == 100553 ||
+                    // it_gen->mother()->mother()->pdgId() == 100443 )        &&
+                    //it_gen->mother()->mother()->numberOfDaughters() == 3    &&
+                    //abs(it_gen->mother()->mother()->daughter(1)->pdgId()) == 211 
+                   ) isGenSignal = true;//signal mu
+
+                if ((abs(it_gen->pdgId()) == 111 || 
+                     abs(it_gen->pdgId()) == 211 || 
+                     abs(it_gen->pdgId()) == 311 || 
+                     abs(it_gen->pdgId()) == 321) &&
+                    it_gen->numberOfMothers() == 1 && 
+                    ((abs(it_gen->mother()->pdgId()) == 511 || abs(it_gen->mother()->pdgId()) == 521 || abs(it_gen->mother()->pdgId()) == 531) ||       
+                     (it_gen->mother()->numberOfMothers() == 1 && 
+                      (abs(it_gen->mother()->mother()->pdgId()) == 511 || abs(it_gen->mother()->mother()->pdgId()) == 521 || abs(it_gen->mother()->mother()->pdgId()) == 531))) &&
+                    ((it_gen->mother()->daughter(0)->pdgId() == 553 ||  
+                     it_gen->mother()->daughter(0)->pdgId() == 443) ||
+                     (it_gen->mother()->numberOfMothers() == 1 &&
+                      (it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
+                       it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ))) 
+                   ) {
+                    if (it_gen->mother()->daughter(0)->numberOfDaughters()>=2){
+                        if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
+                            isGenSignal = true;     
+                    }
+                    if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
+                        if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
+                            isGenSignal = true;
+                    }
+                      //signal pion/kaon                           
+                }
+/*
+                if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
+                    (it_gen->mother()->pdgId() == 100443 ||
+                     it_gen->mother()->pdgId() == 100553 )                  &&
+                    it_gen->mother()->numberOfDaughters() == 3              &&
+                    abs(it_gen->mother()->daughter(1)->pdgId()) == 211      &&
+                    it_gen->numberOfDaughters() >= 2                        &&
+                    abs(it_gen->daughter(0)->pdgId()) == 13    
+                   ) isGenSignal = true;//signal uj
+
+                if ((it_gen->pdgId()==100443 || it_gen->pdgId()==100553)    &&
+                    it_gen->numberOfDaughters() == 3                        &&
+                    it_gen->daughter(0)->numberOfDaughters() >= 2           &&
+                    abs(it_gen->daughter(0)->daughter(0)->pdgId()) == 13    &&
+                    abs(it_gen->daughter(1)->pdgId()) == 211 
+                   ) isGenSignal = true;//signal xb
+*/
+                if (!isGenSignal) continue;
+
+                int iMo1 = -1,  iMo2 = -1,  iDa1 = -1,  iDa2 = -1;
+                for(std::vector<const reco::Candidate *>::iterator iCands = cands.begin();
+                    iCands != cands.end(); iCands++){
+                    if (it_gen->numberOfMothers() >= 2){
+                        if (it_gen->mother(0) == *iCands)
+                            iMo1 = iCands - cands.begin();
+                        if (it_gen->mother(1) == *iCands)
+                            iMo2 = iCands - cands.begin();
+                    }else if(it_gen->numberOfMothers() == 1){
+                        if (it_gen->mother(0) == *iCands)
+                            iMo1 = iCands - cands.begin();
+                    }
+                    if (it_gen->numberOfDaughters() >= 2){
+                        if (it_gen->daughter(0) == *iCands)
+                            iDa1 = iCands - cands.begin();
+                        else if (it_gen->daughter(1) == *iCands)
+                            iDa2 = iCands - cands.begin();
+                    }else if(it_gen->numberOfDaughters() == 1){
+                        if (it_gen->daughter(0) == *iCands)
+                            iDa1 = iCands - cands.begin();
+                    }
+                }
+                //Find all other particle in TrackInfo
+                //printf("-----*****DEBUG:Start of matching.\n");
+                //if (abs(it_gen->pdgId()) == 13){
+                    //printf("-----*****DEBUG:Entered muon matching block.\n");
+                    for(int muonIdx = 0; muonIdx < MuonInfo.size; muonIdx++){
+                        // match by pat::Muon
+                        if (genMuonPtr[muonIdx] == 0) continue;
+                        if (it_gen->p4() == genMuonPtr[muonIdx]->p4()){
+                            MuonInfo.geninfo_index[muonIdx] = GenInfo.size;
+                            //printf("-----*****DEBUG:[Mu]Tar.Pt /Ref.Pt = %9f/%9f\n",
+                            //    MuonInfo.pt [muonIdx],it_gen->pt ());
+                            break;
+                        }
+                    }
+                //}
+                //else{
+                    //printf("-----*****DEBUG:Entered pion matching block.\n");
+                    for(int trackIdx = 0; trackIdx < TrackInfo.size; trackIdx++){
+                        //match by pat::GenericParticle
+                        if (genTrackPtr[trackIdx] == 0 ) continue;
+                        if (it_gen->p4() == genTrackPtr[trackIdx]->p4()){
+                            TrackInfo.geninfo_index[trackIdx] = GenInfo.size;
+                            break;
+                        }
+                    }
+                //}
+
+                GenInfo.index[GenInfo.size]         = GenInfo.size;
+                GenInfo.handle_index[GenInfo.size]  = it_gen-gens->begin();
+                GenInfo.pt[GenInfo.size]            = it_gen->pt();
+                GenInfo.eta[GenInfo.size]           = it_gen->eta();
+                GenInfo.phi[GenInfo.size]           = it_gen->phi();
+                GenInfo.mass[GenInfo.size]          = it_gen->mass();
+                GenInfo.pdgId[GenInfo.size]         = it_gen->pdgId();
+                GenInfo.status[GenInfo.size]        = it_gen->status();
+                GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
+                GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
+                GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
+                GenInfo.mo2[GenInfo.size]           = iMo2;
+                GenInfo.da1[GenInfo.size]           = iDa1;
+                GenInfo.da2[GenInfo.size]           = iDa2;
+                GenInfo.size++;
+            }
+
+            //printf("-----*****DEBUG:End of gens loop.\n");
+            //Pass handle_index to igen
+            for(int igen = 0; igen < GenInfo.size; igen++){
+                int iMo1 = GenInfo.mo1[igen];
+                int iMo2 = GenInfo.mo2[igen];
+                int iDa1 = GenInfo.da1[igen];
+                int iDa2 = GenInfo.da2[igen];
+                for(int k = 0; k < GenInfo.size; k++){
+                    if (iMo1 == GenInfo.handle_index[k])
+                        GenInfo.mo1[igen] = k;
+                    else if (iMo2 == GenInfo.handle_index[k])
+                        GenInfo.mo2[igen] = k;
+                    else if (iDa1 == GenInfo.handle_index[k])
+                        GenInfo.da1[igen] = k;
+                    else if (iDa2 == GenInfo.handle_index[k])
+                        GenInfo.da2[igen] = k;
+                }
+                //In case that GEN particles are omitted from GenInfo
+                //handle_index couldn't be the same as igen
+                //since the very first proton pair has status 3.
+                if (iMo1 == GenInfo.mo1[igen])
+                    GenInfo.mo1[igen] = -1;
+                if (iMo2 == GenInfo.mo2[igen])
+                    GenInfo.mo2[igen] = -1;
+                if (iDa1 == GenInfo.da1[igen])
+                    GenInfo.da1[igen] = -1;
+                if (iDa2 == GenInfo.da2[igen])
+                   GenInfo.da2[igen] = -1;
+            }
+            //printf("-----*****DEBUG:End of IndexToIgen\n");
+        }//isRealData}}}
+        //printf("-----*****DEBUG:End of GenInfo.\n");
+        //std::cout<<"Start to fill!\n";
     }//try
     catch (std::exception & err){
             std::cout  << "Exception during event number: " << iEvent.id()
