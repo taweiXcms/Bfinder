@@ -300,7 +300,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // Handle primary vertex properties
     Vertex thePrimaryV;
     math::XYZPoint RefVtx;
-        //get beamspot information
+    //get beamspot information
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
@@ -314,7 +314,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         //get vertex informationa
     edm::Handle<reco::VertexCollection> VertexHandle;
-    iEvent.getByLabel("offlinePrimaryVertexHandle", VertexHandle);
+//    iEvent.getByLabel("offlinePrimaryVertexHandle", VertexHandle);
+    iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
     if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
         //int nVtxTrks = 0;//outdated PV definition
         double max_tkSt = 0;
