@@ -480,6 +480,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             MuonInfo.g_ndf      [MuonInfo.size] = -1;
                             MuonInfo.nmuhit     [MuonInfo.size] = -1;
                         }
+                        //https://cmssdt.cern.ch/SDT/doxygen/CMSSW_4_4_6/doc/html/da/d18/namespacemuon.html
                         int qm = 0;
                         for(int qi=1; qi!= 24; ++qi){
                             if (muon::isGoodMuon(*mu_it, muon::SelectionType(qi))){

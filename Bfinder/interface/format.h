@@ -195,7 +195,7 @@ class MuonInfoBranches{//{{{
             root->SetBranchAddress("MuonInfo.i_nStripLayer" , i_nStripLayer);
             root->SetBranchAddress("MuonInfo.i_nPixelLayer" , i_nPixelLayer);
             root->SetBranchAddress("MuonInfo.g_striphit"    , g_striphit	);
-            root->SetBranchAddress("MuonInfo.i_pixelhit"    , g_pixelhit	);
+            root->SetBranchAddress("MuonInfo.g_pixelhit"    , g_pixelhit	);
             root->SetBranchAddress("MuonInfo.i_chi2"        , i_chi2		);
             root->SetBranchAddress("MuonInfo.i_ndf"         , i_ndf		);
             root->SetBranchAddress("MuonInfo.g_chi2"        , g_chi2		);
