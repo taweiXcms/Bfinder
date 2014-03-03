@@ -1010,9 +1010,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
                             isGenSignal = true;     
                     }
-                    if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
-                        if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
-                            isGenSignal = true;
+                    if (it_gen->mother()->numberOfMothers() == 1){
+                        if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
+                            if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13){
+                               isGenSignal = true;
+                            }
+                        }
                     }
                       //signal pion/kaon                           
                 }

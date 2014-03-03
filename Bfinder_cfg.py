@@ -78,7 +78,8 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 	thresh = cms.untracked.double(0.25)
 )
 
-process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
+#process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
+process.filter = cms.Sequence(process.noscraping)
 
 ##Producing Gen list with SIM particles
 process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
