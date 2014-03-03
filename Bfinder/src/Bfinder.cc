@@ -389,7 +389,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     input_muons = *muons;
     input_tracks = *tks;
     try{
-
         const reco::GenParticle* genMuonPtr[MAX_MUON];
         memset(genMuonPtr,0x00,MAX_MUON);
         const reco::GenParticle* genTrackPtr[MAX_GEN];
@@ -848,14 +847,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             }
                             
                         }//Mu2
-                    }//Mu1}}}
-                    //printf("-----*****DEBUG:End of BInfo.\n");
-                    //printf("B_counter: %d/%d/%d/%d/%d/%d/%d\n",B_counter[0],B_counter[1],B_counter[2],B_counter[3],B_counter[4],B_counter[5],B_counter[6]);
+                    }//Mu1
                     printf("B_counter: ");
                     for(unsigned int i = 0; i < Bchannel_.size(); i++){
                         printf("%d/", B_counter[i]);
                     }
-                    printf("\n");
+                    printf("\n");//}}}
+                    //printf("-----*****DEBUG:End of BInfo.\n");
 
                     // TrackInfo section {{{
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
@@ -950,7 +948,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
-                if (it_gen->status() > 2)                           continue;
+                if (it_gen->status() > 2 && it_gen->status() != 8) continue;
                 //if is pion/kaon must be final state
                 if (
                     (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
@@ -1145,7 +1143,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     root->Fill();
     //std::cout<<"filled!\n";
 }
-
 
 // ------------ method called once each job just after ending the event loop  ------------
 void Bfinder::endJob()
@@ -1359,7 +1356,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             v4_tk1.SetPtEtaPhiM(tk_it1->pt(),tk_it1->eta(),tk_it1->phi(),Tk1_MASS);
             v4_tk2.SetPtEtaPhiM(tk_it2->pt(),tk_it2->eta(),tk_it2->phi(),Tk2_MASS);
             if(TkTk_MASS > 0) {if (fabs((v4_tk1+v4_tk2).Mag()-TkTk_MASS)>TkTk_window) continue;}
-            else {if (fabs((v4_tk1+v4_tk2).Mag())>TkTk_window) continue;}
+            else {if (fabs((v4_tk1+v4_tk2).Mag())>TkTk_window) continue;}//if no tktk mass constrain, require it to be at least < some window
             
             if ((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()<mass_window[0]-0.2 || (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()>mass_window[1]+0.2) continue;
             
