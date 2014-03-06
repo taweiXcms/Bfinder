@@ -5,6 +5,7 @@
 // 2013Nov23   twang   GenInfo
 // 2014Jan07   twang   Modification for private MC
 // 2014Feb05   twang   fix MC matching
+// 2014Mar05   twang   various update
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -167,7 +168,8 @@ class Bfinder : public edm::EDAnalyzer
         edm::InputTag muonLabel_;
         edm::InputTag trackLabel_;
         edm::InputTag puInfoLabel_;
-        std::string   ntupleType_;//'upsilon','jpsi','all','no'
+        edm::InputTag bsLabel_;
+        edm::InputTag pvLabel_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -209,7 +211,8 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
 //    hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
     puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
-    ntupleType_         = iConfig.getUntrackedParameter<std::string>("NtupleType","jpsi");
+    bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
+    pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -264,12 +267,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtInfo.McFlag  = !iEvent.isRealData();
     EvtInfo.nTrgBook= N_TRIGGER_BOOKINGS;
 
-//Using HI HLT analysis now    
+//Using HI HLT analysis now
 /*
-    //HLT
+    //HLT{{{
     edm::Handle<TriggerResults> TrgResultsHandle; //catch triggerresults
     bool with_TriggerResults = iEvent.getByLabel(hltLabel_,TrgResultsHandle);
-    if(!with_TriggerResults){//{{{
+    if(!with_TriggerResults){//
         std::cout << "Sorry there is no TriggerResult in the file" << std::endl;
     }else{
         //get the names of the triggers
@@ -304,7 +307,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
-    iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
+//    iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
+    iEvent.getByLabel(bsLabel_, beamSpotHandle);
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
         theBeamSpotV = Vertex(beamSpot.position(), beamSpot.covariance3D());
@@ -315,7 +319,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //get vertex informationa
     edm::Handle<reco::VertexCollection> VertexHandle;
 //    iEvent.getByLabel("offlinePrimaryVertexHandle", VertexHandle);
-    iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
+//    iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
+    iEvent.getByLabel(pvLabel_, VertexHandle);
     if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
         //int nVtxTrks = 0;//outdated PV definition
         double max_tkSt = 0;
@@ -402,7 +407,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
                 std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
-//                if (input_tracks.size() > 1 && input_muons.size() > 1){
+                //if (input_tracks.size() > 1 && input_muons.size() > 1){
                 if (input_tracks.size() > 0 && input_muons.size() > 1){
 
                     //MuonInfo section{{{
@@ -951,9 +956,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 if (it_gen->status() > 2 && it_gen->status() != 8) continue;
                 //if is pion/kaon must be final state
                 if (
-                    (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
+//                    (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
                     (abs(it_gen->pdgId()) == 211 && it_gen->status() == 2) ||//pi +-
-                    (abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
+//                    (abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
                     (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
                 ) continue;
 
@@ -966,6 +971,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     abs(it_gen->pdgId()) == 511 ||//B_0
                     abs(it_gen->pdgId()) == 521 ||//B_+-
                     abs(it_gen->pdgId()) == 531 ||//B_s
+                    abs(it_gen->pdgId()) == 311 ||//K0
                     abs(it_gen->pdgId()) == 130 ||//KL
                     abs(it_gen->pdgId()) == 310 ||//KS
                     abs(it_gen->pdgId()) == 313 ||//K*0(892)
@@ -994,31 +1000,56 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                 if ((abs(it_gen->pdgId()) == 111 || 
                      abs(it_gen->pdgId()) == 211 || 
+                     abs(it_gen->pdgId()) == 310 || 
                      abs(it_gen->pdgId()) == 311 || 
                      abs(it_gen->pdgId()) == 321) &&
-                    it_gen->numberOfMothers() == 1 && 
-                    ((abs(it_gen->mother()->pdgId()) == 511 || abs(it_gen->mother()->pdgId()) == 521 || abs(it_gen->mother()->pdgId()) == 531) ||       
-                     (it_gen->mother()->numberOfMothers() == 1 && 
-                      (abs(it_gen->mother()->mother()->pdgId()) == 511 || abs(it_gen->mother()->mother()->pdgId()) == 521 || abs(it_gen->mother()->mother()->pdgId()) == 531))) &&
-                    ((it_gen->mother()->daughter(0)->pdgId() == 553 ||  
-                     it_gen->mother()->daughter(0)->pdgId() == 443) ||
-                     (it_gen->mother()->numberOfMothers() == 1 &&
-                      (it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  
-                       it_gen->mother()->mother()->daughter(0)->pdgId() == 443 ))) 
-                   ) {
-                    if (it_gen->mother()->daughter(0)->numberOfDaughters()>=2){
-                        if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
-                            isGenSignal = true;     
-                    }
-                    if (it_gen->mother()->numberOfMothers() == 1){
-                        if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
-                            if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13){
-                               isGenSignal = true;
+                    it_gen->numberOfMothers() == 1 ){
+                    //Mother is B
+                    if (abs(it_gen->mother()->pdgId()) == 511 || abs(it_gen->mother()->pdgId()) == 521 || abs(it_gen->mother()->pdgId()) == 531){
+                    //Mom's 1st dau is Upsilon/Jpsi
+                        if (it_gen->mother()->daughter(0)->pdgId() == 553 || it_gen->mother()->daughter(0)->pdgId() == 443) {
+                            //Mom's 1st dau's dau are muons
+                            if (it_gen->mother()->daughter(0)->numberOfDaughters()>=2){
+                                if (abs(it_gen->mother()->daughter(0)->daughter(0)->pdgId()) == 13)
+                                  isGenSignal = true;     
                             }
                         }
                     }
-                      //signal pion/kaon                           
+                    //A level up
+                    if(it_gen->mother()->numberOfMothers() == 1){
+                        if(abs(it_gen->mother()->mother()->pdgId()) == 511 || abs(it_gen->mother()->mother()->pdgId()) == 521 || abs(it_gen->mother()->mother()->pdgId()) == 531
+                        //Specific for Ks from K0
+                        || (abs(it_gen->pdgId()) == 310 && abs(it_gen->mother()->mother()->pdgId()) == 311)
+                        ){
+                            if(it_gen->mother()->mother()->daughter(0)->pdgId() == 553 ||  it_gen->mother()->mother()->daughter(0)->pdgId() == 443){
+                                if (it_gen->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
+                                    if (abs(it_gen->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13){
+                                    isGenSignal = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+                //signal pion/kaon
+
+                //Specific for pi from Ks (K0->Ks->pi)                           
+                if (abs(it_gen->pdgId()) == 211 && it_gen->numberOfMothers() == 1){
+                    if(it_gen->mother()->numberOfMothers() == 1 && abs(it_gen->mother()->pdgId()) == 310){
+                        if(it_gen->mother()->mother()->numberOfMothers() == 1 && abs(it_gen->mother()->mother()->pdgId()) == 311){
+                            if(abs(it_gen->mother()->mother()->mother()->pdgId()) == 511){
+                                if(it_gen->mother()->mother()->mother()->daughter(0)->pdgId() == 553 ||  it_gen->mother()->mother()->mother()->daughter(0)->pdgId() == 443){
+                                    if (it_gen->mother()->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
+                                        if (abs(it_gen->mother()->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13){
+                                        isGenSignal = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
 /*
                 if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
                     (it_gen->mother()->pdgId() == 100443 ||
@@ -1137,6 +1168,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }//isRealData}}}
         //printf("-----*****DEBUG:End of GenInfo.\n");
         //std::cout<<"Start to fill!\n";
+
     }//try
     catch (std::exception & err){
             std::cout  << "Exception during event number: " << iEvent.id()

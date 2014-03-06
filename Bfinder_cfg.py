@@ -57,7 +57,7 @@ process.source = cms.Source("PoolSource",
 #'file:/raid2/w/twang/JpsiKp/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_61_1_hye.root'
 #'root://eoscms//eos/cms/store/user/twang/HIBmeson_20131220/test_20140106/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_102_2_VpA.root'
 #'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_GEN_SIM_Bd_JpsiKs_mumu.root'
-'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/step4/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO.root'
+'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/step4/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_Bd_JpsiKs_mumu.root'
    )
 )
 #process.load("_eos_cms_store_user_twang_HIBmeson_20131220_test_20140106_JpsiKp_cff")
@@ -161,7 +161,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 	MuonLabel       = cms.InputTag('selectedPatMuons'),         #selectedPatMuons
 	TrackLabel      = cms.InputTag('selectedPatTrackCands'),    #selectedPat
     PUInfoLabel     = cms.InputTag("addPileupInfo"),
-	NtupleType      = cms.untracked.string('jpsi')               #['all','upsilon','jpsi','no_c'], which mass constraint
+    BSLabel     = cms.InputTag("offlineBeamSpot"),
+    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS")
 )
 if HIFormat:
 	process.demo.GenLabel = cms.InputTag('hiGenParticles')
@@ -183,8 +184,12 @@ process.TFileService = cms.Service("TFileService",
     fileName = cms.string('Bfinder_all.root')
 )
 
+if runOnMC:
+	process.patDefaultSequence *= process.genParticlePlusGEANT
+
 process.p = cms.Path(	
-	process.filter*process.genParticlePlusGEANT*process.patDefaultSequence*process.demo
+#	process.filter*process.genParticlePlusGEANT*process.patDefaultSequence*process.demo
+	process.filter*process.patDefaultSequence*process.demo
 )
 
 process.schedule = cms.Schedule(
