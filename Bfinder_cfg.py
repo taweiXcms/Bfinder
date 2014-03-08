@@ -177,7 +177,7 @@ process.hltanalysis.dummyBranches = cms.untracked.vstring()
 	#process.hltanalysis.HLTProcessName = cms.string("HISIGNAL")
 	#process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
 	#process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
-process.hltAna = cms.Path(process.hltanalysis)
+process.hltAna = cms.Path(process.filter*process.hltanalysis)
 
 ### Set output
 process.TFileService = cms.Service("TFileService",
