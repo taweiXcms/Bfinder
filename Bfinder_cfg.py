@@ -1,4 +1,5 @@
 # 2014Feb05   twang   fix HI MC HLT process name
+# 2014Mar08   twang   add patMuonsWithTrigger
 import FWCore.ParameterSet.Config as cms
 
 ### Run on MC?
@@ -11,17 +12,20 @@ HIFormat = True
 ### Include SIM tracks for matching?
 UseGenPlusSim = False
 
+### Using pat muon with trigger or not
+UsepatMuonsWithTrigger = False
+
 process = cms.Process("demo")
-
 process.load("FWCore.MessageService.MessageLogger_cfi")
-
 ### Set TransientTrackBuilder 
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
-
 ### Set Geometry/GlobalTag/BField
-process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
+#process.load("Configuration.Geometry.GeometryIdeal_cff")
+#process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 
 ### keep only Pat:: part 
 from PhysicsTools.PatAlgos.patEventContent_cff import *
@@ -53,11 +57,10 @@ else:
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
    fileNames = cms.untracked.vstring(
-#'root://eoscms//eos/cms/store/mc/Summer12/BuToJPsiK_K2MuPtEtaEtaFilter_8TeV-pythia6-evtgen/AODSIM/PU_S7_START52_V9-v1/0000/00D5E95C-7798-E111-B5B5-00237DA13CA2.root'
-#'file:/raid2/w/twang/JpsiKp/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_61_1_hye.root'
 #'root://eoscms//eos/cms/store/user/twang/HIBmeson_20131220/test_20140106/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_102_2_VpA.root'
-#'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_GEN_SIM_Bd_JpsiKs_mumu.root'
-'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/step4/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_Bd_JpsiKs_mumu.root'
+'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/localRun/RunMore/PyquenMix_embedHIJING_Bp2JpsiKp_Bpt5_5TeV_boostedMC.root'
+#'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/step4/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_Bd_JpsiKs_mumu.root'
+#'file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/PYTHIA_sub/B2Kstar/step4/PYTHIA6_BdJpsiKstar_TuneZ2star_2760GeV_RECO.root'
    )
 )
 #process.load("_eos_cms_store_user_twang_HIBmeson_20131220_test_20140106_JpsiKp_cff")
@@ -146,12 +149,27 @@ removeAllPATObjectsBut(process, ['Muons'])
 if not runOnMC :
 	removeMCMatching(process, ['All'] )
 
+process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
+###Criterias from Hyunchul's 
+process.muonL1Info.maxDeltaR = 0.3
+process.muonL1Info.fallbackToME1 = True
+process.muonMatchHLTL1.maxDeltaR = 0.3
+process.muonMatchHLTL1.fallbackToME1 = True
+process.muonMatchHLTL2.maxDeltaR = 0.3
+process.muonMatchHLTL2.maxDPtRel = 10.0
+process.muonMatchHLTL3.maxDeltaR = 0.1
+process.muonMatchHLTL3.maxDPtRel = 10.0
+process.muonMatchHLTCtfTrack.maxDeltaR = 0.1
+process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
+process.muonMatchHLTTrackMu.maxDeltaR = 0.1
+process.muonMatchHLTTrackMu.maxDPtRel = 10.0
+
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
 	Bchannel 		= cms.vint32(
-		0,#RECONSTRUCTION: J/psi + K
+		1,#RECONSTRUCTION: J/psi + K
 		0,#RECONSTRUCTION: J/psi + Pi
-		1,#RECONSTRUCTION: J/psi + Ks 
+		0,#RECONSTRUCTION: J/psi + Ks 
 		0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
 		0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 		0,#RECONSTRUCTION: J/psi + phi
@@ -170,6 +188,9 @@ if HIFormat:
 if UseGenPlusSim:
 	process.demo.GenLabel = cms.InputTag('genParticlePlusGEANT')
 
+if UsepatMuonsWithTrigger:
+	process.demo.MuonLabel = cms.InputTag('patMuonsWithTrigger')	
+
 ### SetUp HLT info
 process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
@@ -187,8 +208,10 @@ process.TFileService = cms.Service("TFileService",
 if runOnMC:
 	process.patDefaultSequence *= process.genParticlePlusGEANT
 
+if UsepatMuonsWithTrigger:
+	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
+
 process.p = cms.Path(	
-#	process.filter*process.genParticlePlusGEANT*process.patDefaultSequence*process.demo
 	process.filter*process.patDefaultSequence*process.demo
 )
 
