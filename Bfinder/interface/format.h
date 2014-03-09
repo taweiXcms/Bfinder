@@ -2,15 +2,16 @@
 //Update:
 // 2013Nov13   twang   clear up irrelevant things
 // 2013Nov23   twang   GenInfo
+// 2014Mar08   twabg   Add VtxInfo
 #ifndef _XBFRAMEFORMAT_H_
 #define _XBFRAMEFORMAT_H_
 
-//#define MAX_XB 2560
 #define MAX_XB 8192
 #define MAX_MUON 64
-#define MAX_TRACK 4096 //default 2048
-#define MAX_GEN 4096 //default 2048
+#define MAX_TRACK 4096 
+#define MAX_GEN 4096 
 #define MAX_BX 128
+#define MAX_Vertices 4096
 #define N_TRIGGER_BOOKINGS 5842
 
 #include <string>
@@ -48,7 +49,6 @@ class EvtInfoBranches{ //{{{
 		double	PVchi2;
 		//double	PVc2p;
 		
-
 		void regTree(TTree *root){//{{{
 			root->Branch("EvtInfo.RunNo"      , &RunNo                     , "EvtInfo.RunNo/I"			);
 			root->Branch("EvtInfo.EvtNo"      , &EvtNo                     , "EvtInfo.EvtNo/I"			);
@@ -112,7 +112,47 @@ class EvtInfoBranches{ //{{{
         } //}}}
 }; //}}}
 
-class MuonInfoBranches{//{{{
+class VtxInfoBranches { //{{{
+	public:
+		int     Size;
+		int     isValid[MAX_Vertices];
+		bool    isFake[MAX_Vertices];
+		float   Ndof[MAX_Vertices];
+		float   NormalizedChi2[MAX_Vertices];
+		float   Pt_Sum[MAX_Vertices];
+		float   Pt_Sum2[MAX_Vertices];
+		float   x[MAX_Vertices];
+		float   y[MAX_Vertices];
+		float   z[MAX_Vertices];
+
+		void regTree(TTree *root) { //{{{
+			root->Branch("VtxInfo.Size"	    , &Size	       , "VtxInfo.Size/I"	    );
+			root->Branch("VtxInfo.isValid"  , &isValid[0]      , "VtxInfo.isValid[VtxInfo.Size]/I"	    );
+			root->Branch("VtxInfo.isFake"   , &isFake[0]       , "VtxInfo.isFake[VtxInfo.Size]/O"	    ); 
+			root->Branch("VtxInfo.Ndof"	    , &Ndof[0]	       , "VtxInfo.Ndof[VtxInfo.Size]/F"	    );
+			root->Branch("VtxInfo.NormalizedChi2"	    , &NormalizedChi2[0]	       , "VtxInfo.NormalizedChi2[VtxInfo.Size]/F"	    );
+			root->Branch("VtxInfo.Pt_Sum"	    , &Pt_Sum[0]	       , "VtxInfo.Pt_Sum[VtxInfo.Size]/F"	    );
+			root->Branch("VtxInfo.Pt_Sum2"	    , &Pt_Sum2[0]	       , "VtxInfo.Pt_Sum2[VtxInfo.Size]/F"	    );
+			root->Branch("VtxInfo.x"	    , &x[0]	       , "VtxInfo.x[VtxInfo.Size]/F"	    );
+			root->Branch("VtxInfo.y"	    , &y[0]	       , "VtxInfo.y[VtxInfo.Size]/F"	    );
+			root->Branch("VtxInfo.z"	    , &z[0]	       , "VtxInfo.z[VtxInfo.Size]/F"	    );
+		} //}}}
+	    
+		void setbranchadd(TTree *root) { //{{{
+			root->SetBranchAddress("VtxInfo.Size"        , &Size  	 );
+			root->SetBranchAddress("VtxInfo.isValid"     , &isValid[0]  	 );
+			root->SetBranchAddress("VtxInfo.isFake"      , &isFake[0]  	 );
+			root->SetBranchAddress("VtxInfo.Ndof"        , &Ndof[0]  	 );
+			root->SetBranchAddress("VtxInfo.NormalizedChi2"        , &NormalizedChi2[0]  	 );
+			root->SetBranchAddress("VtxInfo.Pt_Sum"        , &Pt_Sum[0]  	 );
+			root->SetBranchAddress("VtxInfo.Pt_Sum2"        , &Pt_Sum2[0]  	 );
+			root->SetBranchAddress("VtxInfo.x"        , &x[0]  	 );
+			root->SetBranchAddress("VtxInfo.y"        , &y[0]  	 );
+			root->SetBranchAddress("VtxInfo.z"        , &z[0]  	 );
+		} //}}}		    
+};//}}}
+
+ class MuonInfoBranches{//{{{
     public:
         int	    size;
         int     index        [ MAX_MUON];
@@ -232,6 +272,8 @@ class TrackInfoBranches{//{{{
         //double  p            [ MAX_TRACK];
         int     striphit     [ MAX_TRACK];
         int     pixelhit     [ MAX_TRACK];
+        int     nStripLayer  [ MAX_TRACK];
+        int     nPixelLayer  [ MAX_TRACK];
         int	    fpbarrelhit  [ MAX_TRACK];
         int	    fpendcaphit  [ MAX_TRACK];
         double	chi2         [ MAX_TRACK];
@@ -253,6 +295,8 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.phi"            ,phi            ,"TrackInfo.phi[TrackInfo.size]/D"	);
             root->Branch("TrackInfo.striphit"	    ,striphit	    ,"TrackInfo.striphit[TrackInfo.size]/I"	);
             root->Branch("TrackInfo.pixelhit"	    ,pixelhit	    ,"TrackInfo.pixelhit[TrackInfo.size]/I"	);
+            root->Branch("TrackInfo.nStripLayer"	,nStripLayer	,"TrackInfo.nStripLayer[TrackInfo.size]/I"	);
+            root->Branch("TrackInfo.nPixelLayer"	,nPixelLayer	,"TrackInfo.nPixelLayer[TrackInfo.size]/I"	);
             root->Branch("TrackInfo.fpbarrelhit"	,fpbarrelhit	,"TrackInfo.fpbarrelhit[TrackInfo.size]/I");
             root->Branch("TrackInfo.fpendcaphit"	,fpendcaphit	,"TrackInfo.fpendcaphit[TrackInfo.size]/I");
             root->Branch("TrackInfo.chi2"		    ,chi2		    ,"TrackInfo.chi2[TrackInfo.size]/D"	);
@@ -275,6 +319,8 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.phi"         , phi         );
             root->SetBranchAddress("TrackInfo.striphit"    , striphit    );
             root->SetBranchAddress("TrackInfo.pixelhit"    , pixelhit    );
+            root->SetBranchAddress("TrackInfo.nStripLayer" , nStripLayer );
+            root->SetBranchAddress("TrackInfo.nPixelLayer" , nPixelLayer );
             root->SetBranchAddress("TrackInfo.fpbarrelhit" , fpbarrelhit );
             root->SetBranchAddress("TrackInfo.fpendcaphit" , fpendcaphit );
             root->SetBranchAddress("TrackInfo.chi2"        , chi2        );
@@ -556,7 +602,6 @@ public:
         root->SetBranchAddress("BInfo.tktk_rftk2_pz"        ,tktk_rftk2_pz  	);
     }//}}}
 };//}}}
-
 
 class GenInfoBranches{//{{{
     public:

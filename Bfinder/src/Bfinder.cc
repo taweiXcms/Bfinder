@@ -6,6 +6,7 @@
 // 2014Jan07   twang   Modification for private MC
 // 2014Feb05   twang   fix MC matching
 // 2014Mar05   twang   various update
+// 2014Mar08   twang   add VtxInfo
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -174,6 +175,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::Service<TFileService> fs;
         TTree *root;
         EvtInfoBranches     EvtInfo;
+        VtxInfoBranches     VtxInfo;
         MuonInfoBranches    MuonInfo;
         TrackInfoBranches   TrackInfo;
         BInfoBranches       BInfo;
@@ -194,6 +196,7 @@ void Bfinder::beginJob()
 {//{{{
     root = fs->make<TTree>("root","root");
     EvtInfo.regTree(root);
+    VtxInfo.regTree(root);
     MuonInfo.regTree(root);
     TrackInfo.regTree(root);
     BInfo.regTree(root);
@@ -251,6 +254,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //CLEAN all memory
     memset(&EvtInfo     ,0x00,sizeof(EvtInfo)   );
+    memset(&VtxInfo     ,0x00,sizeof(VtxInfo)   );
     memset(&MuonInfo    ,0x00,sizeof(MuonInfo)  );
     memset(&TrackInfo   ,0x00,sizeof(TrackInfo) );
     memset(&BInfo       ,0x00,sizeof(BInfo)    );
@@ -265,7 +269,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtInfo.LumiNo  = iEvent.luminosityBlock();
     EvtInfo.Orbit   = iEvent.orbitNumber();
     EvtInfo.McFlag  = !iEvent.isRealData();
-    EvtInfo.nTrgBook= N_TRIGGER_BOOKINGS;
+//    EvtInfo.nTrgBook= N_TRIGGER_BOOKINGS;
 
 //Using HI HLT analysis now
 /*
@@ -307,7 +311,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
-//    iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
+    //iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
     iEvent.getByLabel(bsLabel_, beamSpotHandle);
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
@@ -316,24 +320,17 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::cout<< "No beam spot available from EventSetup \n";
     }
 
-        //get vertex informationa
+    //get vertex informationa
     edm::Handle<reco::VertexCollection> VertexHandle;
-//    iEvent.getByLabel("offlinePrimaryVertexHandle", VertexHandle);
-//    iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
+    //iEvent.getByLabel("offlinePrimaryVertexHandle", VertexHandle);
+    //iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
     iEvent.getByLabel(pvLabel_, VertexHandle);
-    if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
+
+/*   if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
         //int nVtxTrks = 0;//outdated PV definition
         double max_tkSt = 0;
-        for(std::vector<reco::Vertex>::const_iterator it_vtx = VertexHandle->begin();
-            it_vtx != VertexHandle->end(); it_vtx++){
+        for(std::vector<reco::Vertex>::const_iterator it_vtx = VertexHandle->begin(); it_vtx != VertexHandle->end(); it_vtx++){
             if (!it_vtx->isValid()) continue;
-            ////find primary vertex with most number of associated tracks, outdated PV defination
-            //int tksize = it_vtx->tracksSize();
-            //if(nVtxTrks < tksize){
-            //    nVtxTrks = tksize;
-            //    thePrimaryV = Vertex(*it_vtx);
-            //}
-
             //find primary primary vertex with largest St
             double tkSt = 0;
             for(std::vector<reco::TrackBaseRef>::const_iterator it_tk = it_vtx->tracks_begin();
@@ -344,6 +341,40 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 max_tkSt = tkSt;
                 thePrimaryV = Vertex(*it_vtx);
             }
+        }
+    }else{ 
+        thePrimaryV = Vertex(beamSpot.position(), beamSpot.covariance3D());
+    }
+    RefVtx = thePrimaryV.position();
+*/
+    double PVBS_Pt_Max = -100.;
+    reco::Vertex PVtx_BS;
+    if( VertexHandle.isValid() && !VertexHandle.failedToGet() && VertexHandle->size() > 0) {
+//        const vector<reco::Vertex> VerticesBS = *VertexHandle;
+        for(std::vector<reco::Vertex>::const_iterator it_vtx = VertexHandle->begin();it_vtx != VertexHandle->end(); it_vtx++ ) {
+        if (VtxInfo.Size>=MAX_Vertices) {
+            std::cout << "PVBS " << VtxInfo.Size << std::endl;
+            fprintf(stderr,"ERROR: number of  Vertices exceeds the size of array.\n");
+            break;//exit(0);
+        }
+        VtxInfo.isValid[VtxInfo.Size] = it_vtx->isValid();
+        VtxInfo.isFake[VtxInfo.Size] = it_vtx->isFake();
+        VtxInfo.Ndof[VtxInfo.Size] = it_vtx->ndof();
+        VtxInfo.NormalizedChi2[VtxInfo.Size] = it_vtx->normalizedChi2();
+        VtxInfo.x[VtxInfo.Size] = it_vtx->x(); 
+        VtxInfo.y[VtxInfo.Size] = it_vtx->y();
+        VtxInfo.z[VtxInfo.Size] = it_vtx->z();
+        VtxInfo.Pt_Sum[VtxInfo.Size] = 0.;
+        VtxInfo.Pt_Sum2[VtxInfo.Size] = 0.;
+        for (reco::Vertex::trackRef_iterator it = it_vtx->tracks_begin(); it != it_vtx->tracks_end(); it++) {
+           VtxInfo.Pt_Sum[VtxInfo.Size] += (*it)->pt();
+           VtxInfo.Pt_Sum2[VtxInfo.Size] += ((*it)->pt() * (*it)->pt());
+        }
+        if( VtxInfo.Pt_Sum[VtxInfo.Size] >= PVBS_Pt_Max ){
+            PVBS_Pt_Max = VtxInfo.Pt_Sum[VtxInfo.Size];
+            thePrimaryV = *it_vtx;
+        }            
+        VtxInfo.Size++;
         }
     }else{ 
         thePrimaryV = Vertex(beamSpot.position(), beamSpot.covariance3D());
@@ -890,6 +921,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //TrackInfo.p              [TrackInfo.size] = tk_it->p();
                         TrackInfo.striphit       [TrackInfo.size] = tk_it->track()->hitPattern().numberOfValidStripHits();
                         TrackInfo.pixelhit       [TrackInfo.size] = tk_it->track()->hitPattern().numberOfValidPixelHits();
+                        TrackInfo.nStripLayer    [TrackInfo.size] = tk_it->track()->hitPattern().stripLayersWithMeasurement();
+                        TrackInfo.nPixelLayer    [TrackInfo.size] = tk_it->track()->hitPattern().pixelLayersWithMeasurement();
                         TrackInfo.fpbarrelhit    [TrackInfo.size] = tk_it->track()->hitPattern().hasValidHitInFirstPixelBarrel();
                         TrackInfo.fpendcaphit    [TrackInfo.size] = tk_it->track()->hitPattern().hasValidHitInFirstPixelEndcap();
                         TrackInfo.chi2           [TrackInfo.size] = tk_it->track()->chi2();
@@ -1041,7 +1074,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 if(it_gen->mother()->mother()->mother()->daughter(0)->pdgId() == 553 ||  it_gen->mother()->mother()->mother()->daughter(0)->pdgId() == 443){
                                     if (it_gen->mother()->mother()->mother()->daughter(0)->numberOfDaughters()>=2) {
                                         if (abs(it_gen->mother()->mother()->mother()->daughter(0)->daughter(0)->pdgId()) == 13){
-                                        isGenSignal = true;
+                                            isGenSignal = true;
                                         }
                                     }
                                 }
