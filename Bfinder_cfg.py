@@ -150,6 +150,7 @@ if not runOnMC :
 	removeMCMatching(process, ['All'] )
 
 process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
+from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import *
 ###Criterias from Hyunchul's 
 process.muonL1Info.maxDeltaR = 0.3
 process.muonL1Info.fallbackToME1 = True
@@ -190,6 +191,8 @@ if UseGenPlusSim:
 
 if UsepatMuonsWithTrigger:
 	process.demo.MuonLabel = cms.InputTag('patMuonsWithTrigger')	
+	if runOnMC:
+		addMCinfo(process)
 
 ### SetUp HLT info
 process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
