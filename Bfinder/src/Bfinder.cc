@@ -164,6 +164,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::ParameterSet theConfig;
 //      std::vector<std::string> TriggersForMatching_;
         std::vector<int> Bchannel_;
+        bool AppliedMuID_;
 //        edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
         edm::InputTag muonLabel_;
@@ -209,6 +210,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     //now do what ever initialization is needed
 //  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
     Bchannel_            = iConfig.getParameter<std::vector<int> >("Bchannel");
+    AppliedMuID_            = iConfig.getParameter<bool>("AppliedMuID");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
     muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
@@ -450,29 +452,31 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             break;//exit(0);
                         }
                         mu_hindex = int(mu_it - input_muons.begin());
-                        
-                        MuonCutLevel->Fill(0);
-                        //if(!(mu_it->innerTrack().isNonnull()*mu_it->globalTrack().isNonnull())) {continue;}
-                        //MuonCutLevel->Fill(1);
-                        if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) continue;
-                        MuonCutLevel->Fill(2);
-                        //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;
-                        //MuonCutLevel->Fill(3);
-                        //if (mu_it->p()>200 || mu_it->pt()>200)                  continue;
-                        //MuonCutLevel->Fill(4);
-                        if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))  continue;
-                        MuonCutLevel->Fill(5);
-                        if (fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
-                            fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
-                           ) continue;
-                        if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
-                            mu_it->innerTrack()->normalizedChi2()>1.8                           //||
-                           ) continue;
-                        //if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6  &&
-                        //    mu_it->innerTrack()->hitPattern().numberOfValidStripHits()<11
-                        //   ) continue;
-                        if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6) continue;
-                        MuonCutLevel->Fill(6);
+  
+                        if(AppliedMuID_){
+                            MuonCutLevel->Fill(0);
+                            //if(!(mu_it->innerTrack().isNonnull()*mu_it->globalTrack().isNonnull())) {continue;}
+                            //MuonCutLevel->Fill(1);
+                            if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) continue;
+                            MuonCutLevel->Fill(2);
+                            //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;
+                            //MuonCutLevel->Fill(3);
+                            //if (mu_it->p()>200 || mu_it->pt()>200)                  continue;
+                            //MuonCutLevel->Fill(4);
+                            if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))  continue;
+                            MuonCutLevel->Fill(5);
+                            if (fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
+                                fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
+                               ) continue;
+                            if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
+                                mu_it->innerTrack()->normalizedChi2()>1.8                           //||
+                               ) continue;
+                            //if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6  &&
+                            //    mu_it->innerTrack()->hitPattern().numberOfValidStripHits()<11
+                            //   ) continue;
+                            if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6) continue;
+                            MuonCutLevel->Fill(6);
+                        }
                         
                         MuonInfo.index          [MuonInfo.size] = MuonInfo.size;
                         MuonInfo.handle_index   [MuonInfo.size] = mu_hindex;
@@ -498,6 +502,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.iso_hcal       [MuonInfo.size] = mu_it->hcalIso();
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
+
+                        MuonInfo.isTrackerMuon  [MuonInfo.size] = mu_it->isTrackerMuon();
+                        MuonInfo.isGlobalMuon   [MuonInfo.size] = mu_it->isGlobalMuon();
+                        MuonInfo.dxyToPV        [MuonInfo.size] = mu_it->innerTrack()->dxy(thePrimaryV.position());
+                        MuonInfo.dzToPV         [MuonInfo.size] = mu_it->innerTrack()->dz(thePrimaryV.position());
+                        MuonInfo.normchi2       [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
+                        MuonInfo.i_nTrackerLayer[MuonInfo.size] = mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement();
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();

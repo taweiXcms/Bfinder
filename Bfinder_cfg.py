@@ -13,7 +13,7 @@ HIFormat = True
 UseGenPlusSim = False
 
 ### Using pat muon with trigger or not
-UsepatMuonsWithTrigger = False
+UsepatMuonsWithTrigger = True
 
 process = cms.Process("demo")
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -168,13 +168,14 @@ process.muonMatchHLTTrackMu.maxDPtRel = 10.0
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
 	Bchannel 		= cms.vint32(
-		1,#RECONSTRUCTION: J/psi + K
+		0,#RECONSTRUCTION: J/psi + K
 		0,#RECONSTRUCTION: J/psi + Pi
 		0,#RECONSTRUCTION: J/psi + Ks 
 		0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
 		0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 		0,#RECONSTRUCTION: J/psi + phi
 		0,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+    AppliedMuID     = cms.bool(False),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
 	MuonLabel       = cms.InputTag('selectedPatMuons'),         #selectedPatMuons

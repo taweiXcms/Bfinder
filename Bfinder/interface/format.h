@@ -187,6 +187,13 @@ class VtxInfoBranches { //{{{
         int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
 
+        bool    isTrackerMuon[ MAX_MUON];
+        bool    isGlobalMuon[ MAX_MUON];
+        double  dxyToPV[ MAX_MUON];
+        double  dzToPV[ MAX_MUON];
+        double  normchi2[ MAX_MUON];
+        int     i_nTrackerLayer[ MAX_MUON];
+
         void regTree(TTree *root){//{{{
             root->Branch("MuonInfo.size"          , &size         , "MuonInfo.size/I"			);
             root->Branch("MuonInfo.index"         , index         , "MuonInfo.index[MuonInfo.size]/I"	);
@@ -220,6 +227,13 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.n_matches"     , n_matches     , "MuonInfo.n_matches[MuonInfo.size]/D");
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
+
+            root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
+            root->Branch("MuonInfo.isGlobalMuon"  , isGlobalMuon  , "MuonInfo.isGlobalMuon[MuonInfo.size]/O");
+            root->Branch("MuonInfo.dxyToPV"      , dxyToPV      , "MuonInfo.dxyToPV[MuonInfo.size]/D");
+            root->Branch("MuonInfo.dzToPV"        , dzToPV        , "MuonInfo.dzToPV[MuonInfo.size]/D");
+            root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/D");
+            root->Branch("MuonInfo.i_nTrackerLayer", i_nTrackerLayer, "MuonInfo.i_nTrackerLayer[MuonInfo.size]/I");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
@@ -255,6 +269,13 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.n_matches"     , n_matches);
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
+
+            root->SetBranchAddress("MuonInfo.isTrackerMuon" , isTrackerMuon);
+            root->SetBranchAddress("MuonInfo.isGlobalMuon"  , isGlobalMuon);
+            root->SetBranchAddress("MuonInfo.dxyToPV"      , dxyToPV);
+            root->SetBranchAddress("MuonInfo.dzToPV"        , dzToPV);
+            root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
+            root->SetBranchAddress("MuonInfo.i_nTrackerLayer", i_nTrackerLayer);
 
         }//}}}
 
