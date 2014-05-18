@@ -166,13 +166,13 @@ process.muonMatchHLTTrackMu.maxDPtRel = 10.0
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
 	Bchannel 		= cms.vint32(
-		0,#RECONSTRUCTION: J/psi + K
-		0,#RECONSTRUCTION: J/psi + Pi
-		0,#RECONSTRUCTION: J/psi + Ks 
-		0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
-		0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
-		0,#RECONSTRUCTION: J/psi + phi
-		0,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+		1,#RECONSTRUCTION: J/psi + K
+		1,#RECONSTRUCTION: J/psi + Pi
+		1,#RECONSTRUCTION: J/psi + Ks 
+		1,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
+		1,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
+		1,#RECONSTRUCTION: J/psi + phi
+		1,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
     MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
     AppliedMuID     = cms.bool(False),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
