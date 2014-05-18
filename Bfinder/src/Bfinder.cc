@@ -1,12 +1,13 @@
 // vim:set ts=4 sw=4 fdm=marker et:
 //Update:
 // 2013Nov13   twang   clear up different channel into single function
-//                     clear up irrelevant things
 // 2013Nov23   twang   GenInfo
 // 2014Jan07   twang   Modification for private MC
 // 2014Feb05   twang   fix MC matching
 // 2014Mar05   twang   various update
 // 2014Mar08   twang   add VtxInfo
+// 2014May18   twang   Add option for applying MuonID
+// 2014May18   twang   Add Muon trigger matching obj infomation
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -164,6 +165,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::ParameterSet theConfig;
 //      std::vector<std::string> TriggersForMatching_;
         std::vector<int> Bchannel_;
+        std::vector<std::string> MuonTriggerMatchingPath_;
         bool AppliedMuID_;
 //        edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
@@ -209,7 +211,8 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
     //now do what ever initialization is needed
 //  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
-    Bchannel_            = iConfig.getParameter<std::vector<int> >("Bchannel");
+    Bchannel_= iConfig.getParameter<std::vector<int> >("Bchannel");
+    MuonTriggerMatchingPath_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingPath");
     AppliedMuID_            = iConfig.getParameter<bool>("AppliedMuID");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
@@ -413,8 +416,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // Double check size=0.
     MuonInfo.size   = 0;
     TrackInfo.size  = 0;
-    BInfo.uj_size  = 0;
-    BInfo.size     = 0;
+    BInfo.uj_size   = 0;
+    BInfo.size      = 0;
     GenInfo.size    = 0;
     
     std::vector<int> B_counter;
@@ -422,10 +425,17 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         B_counter.push_back(0);
     }
 
+    //Branches of type std::vector pointer must reserve memory before using
+    MuonInfo.MuTrgMatchTrgObjE = new std::vector<std::vector<double>>();
+    MuonInfo.MuTrgMatchTrgObjPt = new std::vector<std::vector<double>>();
+    MuonInfo.MuTrgMatchTrgObjEta = new std::vector<std::vector<double>>();
+    MuonInfo.MuTrgMatchTrgObjPhi = new std::vector<std::vector<double>>();
+
     std::vector<pat::Muon>              input_muons;
     std::vector<pat::GenericParticle>   input_tracks;
     input_muons = *muons;
     input_tracks = *tks;
+
     try{
         const reco::GenParticle* genMuonPtr[MAX_MUON];
         memset(genMuonPtr,0x00,MAX_MUON);
@@ -460,9 +470,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) continue;
                             MuonCutLevel->Fill(2);
                             //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;
-                            //MuonCutLevel->Fill(3);
+                            MuonCutLevel->Fill(3);
                             //if (mu_it->p()>200 || mu_it->pt()>200)                  continue;
-                            //MuonCutLevel->Fill(4);
+                            MuonCutLevel->Fill(4);
                             if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))  continue;
                             MuonCutLevel->Fill(5);
                             if (fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
@@ -477,6 +487,32 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6) continue;
                             MuonCutLevel->Fill(6);
                         }
+                        //Get Muon HLT Trigger matching
+                        MuonInfo.MuTrgMatchPathSize = MuonTriggerMatchingPath_.size();
+                        std::vector<double> trgobjE;
+                        std::vector<double> trgobjPt;
+                        std::vector<double> trgobjEta;
+                        std::vector<double> trgobjPhi;
+                        for(int _m = 0; _m < MuonInfo.MuTrgMatchPathSize; _m++){
+                            pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
+                            if (match.empty()) {
+                                trgobjE.push_back(-999.);
+                                trgobjPt.push_back(-999.);
+                                trgobjEta.push_back(-999.);
+                                trgobjPhi.push_back(-999.);
+                                std::cout << "Muon didn't reach station 2, according to CMS.SteppingHelixPropagator" << std::endl;
+                            } else {
+                                trgobjE.push_back(match[0].energy());
+                                trgobjPt.push_back(match[0].pt());
+                                trgobjEta.push_back(match[0].eta());
+                                trgobjPhi.push_back(match[0].phi());
+                                std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
+                            }
+                        }
+                        MuonInfo.MuTrgMatchTrgObjE->push_back(trgobjE);
+                        MuonInfo.MuTrgMatchTrgObjPt->push_back(trgobjPt);
+                        MuonInfo.MuTrgMatchTrgObjEta->push_back(trgobjEta);
+                        MuonInfo.MuTrgMatchTrgObjPhi->push_back(trgobjPhi);
                         
                         MuonInfo.index          [MuonInfo.size] = MuonInfo.size;
                         MuonInfo.handle_index   [MuonInfo.size] = mu_hindex;
@@ -484,31 +520,27 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.pt             [MuonInfo.size] = mu_it->pt();
                         MuonInfo.eta            [MuonInfo.size] = mu_it->eta();
                         MuonInfo.phi            [MuonInfo.size] = mu_it->phi();
+                        MuonInfo.isTrackerMuon  [MuonInfo.size] = mu_it->isTrackerMuon();
+                        MuonInfo.isGlobalMuon   [MuonInfo.size] = mu_it->isGlobalMuon();
+                        MuonInfo.normchi2       [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
                         MuonInfo.i_striphit     [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidStripHits();
                         MuonInfo.i_pixelhit     [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidPixelHits();
                         MuonInfo.i_nStripLayer  [MuonInfo.size] = mu_it->innerTrack()->hitPattern().stripLayersWithMeasurement();
                         MuonInfo.i_nPixelLayer  [MuonInfo.size] = mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement();
+                        //mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() == MuonInfo.i_nStripLayer + MuonInfo.i_nPixelLayer
                         MuonInfo.i_chi2         [MuonInfo.size] = mu_it->innerTrack()->chi2();
                         MuonInfo.i_ndf          [MuonInfo.size] = mu_it->innerTrack()->ndof();
                         MuonInfo.fpbarrelhit    [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
                         MuonInfo.fpendcaphit    [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelEndcap();
                         MuonInfo.d0             [MuonInfo.size] = mu_it->track()->d0();
                         MuonInfo.dz             [MuonInfo.size] = mu_it->track()->dz();
-                        MuonInfo.dzPV           [MuonInfo.size] = mu_it->track()->dz(RefVtx);
-                        MuonInfo.dxyPV          [MuonInfo.size] = mu_it->track()->dxy(RefVtx);
+                        MuonInfo.dzPV           [MuonInfo.size] = mu_it->track()->dz(RefVtx);//==mu_it->innerTrack()->dxy(thePrimaryV.position());
+                        MuonInfo.dxyPV          [MuonInfo.size] = mu_it->track()->dxy(RefVtx);//==mu_it->innerTrack()->dz(thePrimaryV.position());
                         MuonInfo.iso_trk        [MuonInfo.size] = mu_it->trackIso();//R<0.3
-                        //MuonInfo.iso_calo       [MuonInfo.size] = mu_it->caloIso();//sum of two iso
                         MuonInfo.iso_ecal       [MuonInfo.size] = mu_it->ecalIso();
                         MuonInfo.iso_hcal       [MuonInfo.size] = mu_it->hcalIso();
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
-
-                        MuonInfo.isTrackerMuon  [MuonInfo.size] = mu_it->isTrackerMuon();
-                        MuonInfo.isGlobalMuon   [MuonInfo.size] = mu_it->isGlobalMuon();
-                        MuonInfo.dxyToPV        [MuonInfo.size] = mu_it->innerTrack()->dxy(thePrimaryV.position());
-                        MuonInfo.dzToPV         [MuonInfo.size] = mu_it->innerTrack()->dz(thePrimaryV.position());
-                        MuonInfo.normchi2       [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
-                        MuonInfo.i_nTrackerLayer[MuonInfo.size] = mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement();
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();

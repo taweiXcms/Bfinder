@@ -1,8 +1,4 @@
 // vim:set ts=4 sw=4 fdm=marker et:
-//Update:
-// 2013Nov13   twang   clear up irrelevant things
-// 2013Nov23   twang   GenInfo
-// 2014Mar08   twabg   Add VtxInfo
 #ifndef _XBFRAMEFORMAT_H_
 #define _XBFRAMEFORMAT_H_
 
@@ -161,6 +157,9 @@ class VtxInfoBranches { //{{{
         double 	pt           [ MAX_MUON];
         double	eta          [ MAX_MUON];
         double 	phi          [ MAX_MUON];
+        bool    isTrackerMuon[ MAX_MUON];
+        bool    isGlobalMuon [ MAX_MUON];
+        double  normchi2     [ MAX_MUON];
         int	    i_striphit   [ MAX_MUON];
         int	    i_pixelhit   [ MAX_MUON];
         int	    g_striphit   [ MAX_MUON];
@@ -180,19 +179,18 @@ class VtxInfoBranches { //{{{
         int	    fpendcaphit  [ MAX_MUON];
         int	    muqual       [ MAX_MUON];
         double  iso_trk      [ MAX_MUON];
-        //double  iso_calo     [ MAX_MUON];
         double  iso_ecal     [ MAX_MUON];
         double  iso_hcal     [ MAX_MUON];
         double  n_matches    [ MAX_MUON];
         int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
 
-        bool    isTrackerMuon[ MAX_MUON];
-        bool    isGlobalMuon[ MAX_MUON];
-        double  dxyToPV[ MAX_MUON];
-        double  dzToPV[ MAX_MUON];
-        double  normchi2[ MAX_MUON];
-        int     i_nTrackerLayer[ MAX_MUON];
+
+        int	    MuTrgMatchPathSize;
+        std::vector<std::vector<double > > *MuTrgMatchTrgObjE;
+        std::vector<std::vector<double > > *MuTrgMatchTrgObjPt;
+        std::vector<std::vector<double > > *MuTrgMatchTrgObjEta;
+        std::vector<std::vector<double > > *MuTrgMatchTrgObjPhi;
 
         void regTree(TTree *root){//{{{
             root->Branch("MuonInfo.size"          , &size         , "MuonInfo.size/I"			);
@@ -202,6 +200,9 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.pt"            , pt            , "MuonInfo.pt[MuonInfo.size]/D"		);
             root->Branch("MuonInfo.eta"           , eta           , "MuonInfo.eta[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.phi"           , phi           , "MuonInfo.phi[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
+            root->Branch("MuonInfo.isGlobalMuon"  , isGlobalMuon  , "MuonInfo.isGlobalMuon[MuonInfo.size]/O");
+            root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/D");
             root->Branch("MuonInfo.i_striphit"    , i_striphit    , "MuonInfo.i_striphit[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.i_pixelhit"    , i_pixelhit    , "MuonInfo.i_pixelhit[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.i_nStripLayer" , i_nStripLayer , "MuonInfo.i_nStripLayer[MuonInfo.size]/I"	);
@@ -221,19 +222,17 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.fpendcaphit"   , fpendcaphit   , "MuonInfo.fpendcaphit[MuonInfo.size]/I");
             root->Branch("MuonInfo.muqual"        , muqual        , "MuonInfo.muqual[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.iso_trk"       , iso_trk       , "MuonInfo.iso_trk[MuonInfo.size]/D");
-            //root->Branch("MuonInfo.iso_calo"    , iso_calo      , "MuonInfo.iso_calo[MuonInfo.size]/D");
             root->Branch("MuonInfo.iso_ecal"      , iso_ecal      , "MuonInfo.iso_ecal[MuonInfo.size]/D");
             root->Branch("MuonInfo.iso_hcal"      , iso_hcal      , "MuonInfo.iso_hcal[MuonInfo.size]/D");
             root->Branch("MuonInfo.n_matches"     , n_matches     , "MuonInfo.n_matches[MuonInfo.size]/D");
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
 
-            root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
-            root->Branch("MuonInfo.isGlobalMuon"  , isGlobalMuon  , "MuonInfo.isGlobalMuon[MuonInfo.size]/O");
-            root->Branch("MuonInfo.dxyToPV"      , dxyToPV      , "MuonInfo.dxyToPV[MuonInfo.size]/D");
-            root->Branch("MuonInfo.dzToPV"        , dzToPV        , "MuonInfo.dzToPV[MuonInfo.size]/D");
-            root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/D");
-            root->Branch("MuonInfo.i_nTrackerLayer", i_nTrackerLayer, "MuonInfo.i_nTrackerLayer[MuonInfo.size]/I");
+            root->Branch("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize, "MuonInfo.MuTrgMatchPathSize/I");
+            root->Branch("MuonInfo.MuTrgMatchTrgObjE", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjE);
+            root->Branch("MuonInfo.MuTrgMatchTrgObjPt","std::vector<std::vector<double>>", &MuTrgMatchTrgObjPt);
+            root->Branch("MuonInfo.MuTrgMatchTrgObjEta", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjEta);
+            root->Branch("MuonInfo.MuTrgMatchTrgObjPhi", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjPhi);
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
@@ -244,6 +243,9 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.pt"            , pt             );
             root->SetBranchAddress("MuonInfo.eta"           , eta            );
             root->SetBranchAddress("MuonInfo.phi"           , phi            );
+            root->SetBranchAddress("MuonInfo.isTrackerMuon" , isTrackerMuon);
+            root->SetBranchAddress("MuonInfo.isGlobalMuon"  , isGlobalMuon);
+            root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
             root->SetBranchAddress("MuonInfo.i_striphit"    , i_striphit	);
             root->SetBranchAddress("MuonInfo.i_pixelhit"    , i_pixelhit	);
             root->SetBranchAddress("MuonInfo.i_nStripLayer" , i_nStripLayer);
@@ -263,19 +265,17 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.fpendcaphit"   , fpendcaphit    );
             root->SetBranchAddress("MuonInfo.muqual"        , muqual         );
             root->SetBranchAddress("MuonInfo.iso_trk"       , iso_trk);
-            //root->SetBranchAddress("MuonInfo.iso_calo"    , iso_calo);
             root->SetBranchAddress("MuonInfo.iso_ecal"      , iso_ecal);
             root->SetBranchAddress("MuonInfo.iso_hcal"      , iso_hcal);
             root->SetBranchAddress("MuonInfo.n_matches"     , n_matches);
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
 
-            root->SetBranchAddress("MuonInfo.isTrackerMuon" , isTrackerMuon);
-            root->SetBranchAddress("MuonInfo.isGlobalMuon"  , isGlobalMuon);
-            root->SetBranchAddress("MuonInfo.dxyToPV"      , dxyToPV);
-            root->SetBranchAddress("MuonInfo.dzToPV"        , dzToPV);
-            root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
-            root->SetBranchAddress("MuonInfo.i_nTrackerLayer", i_nTrackerLayer);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjE", &MuTrgMatchTrgObjE);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPt", &MuTrgMatchTrgObjPt);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjEta", &MuTrgMatchTrgObjEta);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPhi", &MuTrgMatchTrgObjPhi);
 
         }//}}}
 

@@ -1,5 +1,3 @@
-# 2014Feb05   twang   fix HI MC HLT process name
-# 2014Mar08   twang   add patMuonsWithTrigger
 import FWCore.ParameterSet.Config as cms
 
 ### Run on MC?
@@ -175,6 +173,7 @@ process.demo = cms.EDAnalyzer('Bfinder',
 		0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 		0,#RECONSTRUCTION: J/psi + phi
 		0,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
     AppliedMuID     = cms.bool(False),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
