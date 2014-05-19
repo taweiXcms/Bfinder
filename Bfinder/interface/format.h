@@ -22,15 +22,15 @@ class EvtInfoBranches{ //{{{
 	    int	    LumiNo;
 	    int	    Orbit;
 	    bool	McFlag;
-        int     trgCount;                   //number of successfully triggered HLT path in the booking.
-        int     nTrgBook;                   //N_TRIGGER_BOOKING
-        char    trgBook[N_TRIGGER_BOOKINGS];//status of booked triggers
-		int 	nHLT;                       //# of HLT of the event 
-        bool    hltBits[N_TRIGGER_BOOKINGS];//is HLT of the event acceptted?
         int     nBX;
         int     BXPU[MAX_BX];
         int     nPU[MAX_BX];
         float   trueIT[MAX_BX];
+        //int     trgCount;                   //number of successfully triggered HLT path in the booking.
+        //int     nTrgBook;                   //N_TRIGGER_BOOKING
+        //char    trgBook[N_TRIGGER_BOOKINGS];//status of booked triggers
+		//int 	nHLT;                       //# of HLT of the event 
+        //bool    hltBits[N_TRIGGER_BOOKINGS];//is HLT of the event acceptted?
 		//std::vector<std::string> *hltnames;
 		//bool	hltflag[N_TRIGGER_NAMES]; //status of HLT
 		//int	nHLTm; //# of HLT hope to be matched
@@ -52,15 +52,15 @@ class EvtInfoBranches{ //{{{
 			root->Branch("EvtInfo.LumiNo"     , &LumiNo                    , "EvtInfo.LumiNo/I"			);
 			root->Branch("EvtInfo.Orbit"      , &Orbit                     , "EvtInfo.Orbit/I"			);
 			root->Branch("EvtInfo.McFlag"     , &McFlag                    , "EvtInfo.McFlag/O"			);
-            root->Branch("EvtInfo.trgCount"   , &trgCount                  , "EvtInfo.trgCount/I"       );
-            root->Branch("EvtInfo.nTrgBook"   , &nTrgBook                  , "EvtInfo.nTrgBook/I"       );
-            root->Branch("EvtInfo.trgBook"    , trgBook                    , "EvtInfo.trgBook[EvtInfo.nTrgBook]/B");//notice /B
-			root->Branch("EvtInfo.nHLT"       , &nHLT                      , "EvtInfo.nHLT/I"			);
-            root->Branch("EvtInfo.hltBits"    , hltBits                    , "EvtInfo.hltBits[EvtInfo.nHLT]/O");
 			root->Branch("EvtInfo.nBX"        , &nBX                       , "EvtInfo.nBX/I" 			);
 			root->Branch("EvtInfo.BXPU"       , BXPU                       , "EvtInfo.BXPU[EvtInfo.nBX]/I");
 			root->Branch("EvtInfo.nPU"        , nPU                        , "EvtInfo.nPU[EvtInfo.nBX]/I");
 			root->Branch("EvtInfo.trueIT"     , trueIT                     , "EvtInfo.trueIT[EvtInfo.nBX]/F");
+            //root->Branch("EvtInfo.trgCount"   , &trgCount                  , "EvtInfo.trgCount/I"       );
+            //root->Branch("EvtInfo.nTrgBook"   , &nTrgBook                  , "EvtInfo.nTrgBook/I"       );
+            //root->Branch("EvtInfo.trgBook"    , trgBook                    , "EvtInfo.trgBook[EvtInfo.nTrgBook]/B");//notice /B
+			//root->Branch("EvtInfo.nHLT"       , &nHLT                      , "EvtInfo.nHLT/I"			);
+            //root->Branch("EvtInfo.hltBits"    , hltBits                    , "EvtInfo.hltBits[EvtInfo.nHLT]/O");
 			//root->Branch("EvtInfo.hltnames" , "std::vector<std::string>" , &hltnames);
 			//root->Branch("EvtInfo.hltflag"  , hltflag                    , "EvtInfo.hltflag[EvtInfo.nHLT]/O"	);
 			//root->Branch("EvtInfo.nHLTm"    , &nHLTm                     , "EvtInfo.nHLTm/I"			);
@@ -83,15 +83,15 @@ class EvtInfoBranches{ //{{{
             root->SetBranchAddress("EvtInfo.LumiNo"   ,&LumiNo      );
             root->SetBranchAddress("EvtInfo.Orbit"    ,&Orbit       );
             root->SetBranchAddress("EvtInfo.McFlag"   ,&McFlag      );
-            root->SetBranchAddress("EvtInfo.trgCount" ,&trgCount    );
-            root->SetBranchAddress("EvtInfo.nTrgBook" ,&nTrgBook    );
-            root->SetBranchAddress("EvtInfo.trgBook"  ,trgBook      );
-            root->SetBranchAddress("EvtInfo.nHLT"     ,&nHLT	    );
-            root->SetBranchAddress("EvtInfo.hltBits"  ,hltBits      );
 			root->SetBranchAddress("EvtInfo.nBX"      ,&nBX         );
 			root->SetBranchAddress("EvtInfo.BXPU"     ,BXPU         );
 			root->SetBranchAddress("EvtInfo.nPU"      ,nPU          );
 			root->SetBranchAddress("EvtInfo.trueIT"   ,trueIT       );
+            //root->SetBranchAddress("EvtInfo.trgCount" ,&trgCount    );
+            //root->SetBranchAddress("EvtInfo.nTrgBook" ,&nTrgBook    );
+            //root->SetBranchAddress("EvtInfo.trgBook"  ,trgBook      );
+            //root->SetBranchAddress("EvtInfo.nHLT"     ,&nHLT	    );
+            //root->SetBranchAddress("EvtInfo.hltBits"  ,hltBits      );
             //root->SetBranchAddress("EvtInfo.hltnames" ,&hltnames	);
             //root->SetBranchAddress("EvtInfo.hltflag"  ,hltflag	);
             //root->SetBranchAddress("EvtInfo.nHLTm"	  ,&nHLTm	);

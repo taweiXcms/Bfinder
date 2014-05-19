@@ -8,6 +8,7 @@
 // 2014Mar08   twang   add VtxInfo
 // 2014May18   twang   Add option for applying MuonID
 // 2014May18   twang   Add Muon trigger matching obj infomation
+// 2014May29   twang   Save all gen pi/K with ancestor B meson
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -125,7 +126,8 @@ class Bfinder : public edm::EDAnalyzer
         virtual void endRun(edm::Run const&, edm::EventSetup const&);
         virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
         virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-
+        
+        virtual bool GetAncestor(const reco::Candidate* p);
         virtual void BranchOut2MuTk(
             BInfoBranches &BInfo,
             std::vector<pat::GenericParticle> input_tracks,
@@ -140,7 +142,6 @@ class Bfinder : public edm::EDAnalyzer
             float Tk_MASS,
             int channel_number
         );
-
         virtual void BranchOut2MuX_XtoTkTk(
             BInfoBranches &BInfo,
             std::vector<pat::GenericParticle> input_tracks,
@@ -266,7 +267,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     memset(&GenInfo     ,0x00,sizeof(GenInfo)   );
 
     // EvtInfo section{{{
-    //EvtInfo.hltnames->clear();
     EvtInfo.RunNo   = iEvent.id().run();
     EvtInfo.EvtNo   = iEvent.id().event();
     //std::cout<<"(EvtInfo.EvtNo)"<<EvtInfo.EvtNo<<std::endl;
@@ -274,10 +274,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtInfo.LumiNo  = iEvent.luminosityBlock();
     EvtInfo.Orbit   = iEvent.orbitNumber();
     EvtInfo.McFlag  = !iEvent.isRealData();
-//    EvtInfo.nTrgBook= N_TRIGGER_BOOKINGS;
+    //EvtInfo.hltnames->clear();
+    //EvtInfo.nTrgBook= N_TRIGGER_BOOKINGS;
 
-//Using HI HLT analysis now
-/*
+    //Using HI HLT analysis now
+    /*
     //HLT{{{
     edm::Handle<TriggerResults> TrgResultsHandle; //catch triggerresults
     bool with_TriggerResults = iEvent.getByLabel(hltLabel_,TrgResultsHandle);
@@ -307,7 +308,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             EvtInfo.hltBits[i] = (TrgResultsHandle->accept(i) == true) ? 1:0;
         }
     }//end(!with_TriggerResults)}}}
-*/
+    */
 
     // Handle primary vertex properties
     Vertex thePrimaryV;
@@ -331,7 +332,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
     iEvent.getByLabel(pvLabel_, VertexHandle);
 
-/*   if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
+    /*  
+    if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
         //int nVtxTrks = 0;//outdated PV definition
         double max_tkSt = 0;
         for(std::vector<reco::Vertex>::const_iterator it_vtx = VertexHandle->begin(); it_vtx != VertexHandle->end(); it_vtx++){
@@ -351,11 +353,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         thePrimaryV = Vertex(beamSpot.position(), beamSpot.covariance3D());
     }
     RefVtx = thePrimaryV.position();
-*/
+    */
+
     double PVBS_Pt_Max = -100.;
     reco::Vertex PVtx_BS;
     if( VertexHandle.isValid() && !VertexHandle.failedToGet() && VertexHandle->size() > 0) {
-//        const vector<reco::Vertex> VerticesBS = *VertexHandle;
+        //const vector<reco::Vertex> VerticesBS = *VertexHandle;
         for(std::vector<reco::Vertex>::const_iterator it_vtx = VertexHandle->begin();it_vtx != VertexHandle->end(); it_vtx++ ) {
         if (VtxInfo.Size>=MAX_Vertices) {
             std::cout << "PVBS " << VtxInfo.Size << std::endl;
@@ -500,13 +503,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 trgobjPt.push_back(-999.);
                                 trgobjEta.push_back(-999.);
                                 trgobjPhi.push_back(-999.);
-                                std::cout << "Muon didn't reach station 2, according to CMS.SteppingHelixPropagator" << std::endl;
+                                //std::cout << "Muon didn't match Trigger Object" << std::endl;
                             } else {
                                 trgobjE.push_back(match[0].energy());
                                 trgobjPt.push_back(match[0].pt());
                                 trgobjEta.push_back(match[0].eta());
                                 trgobjPhi.push_back(match[0].phi());
-                                std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
+                                //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
                             }
                         }
                         MuonInfo.MuTrgMatchTrgObjE->push_back(trgobjE);
@@ -567,13 +570,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                         MuonInfo.muqual         [MuonInfo.size] = qm;   
 
-                        //2.tracker hits requirement for MC/2011/2012 soft pion
-                        //1.make sure non-zero for binary test
+                        //1.every digit after this must be 1 since only binary of the form 000111 will have: (b&b+1)==0 
                         //0.pass all cuts
-                        if (!iEvent.isRealData() || 
-                            (iEvent.id().run() < 180297 && mu_it->innerTrack()->hitPattern().numberOfValidStripHits() > 10) || 
-                            (iEvent.id().run() > 180296 && mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 )
-                           ) MuonInfo.isGoodCand[MuonInfo.size] += 1 << 2;
                         MuonInfo.isGoodCand[MuonInfo.size] += 1 << 1;
                         if (((MuonInfo.isGoodCand[MuonInfo.size]>>1)&((MuonInfo.isGoodCand[MuonInfo.size]>>1)+1)) == 0)
                             MuonInfo.isGoodCand[MuonInfo.size] += 1;
@@ -713,8 +711,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                                     ujmu2KP.momentum().z(),
                                                     ujmu2KP.energy());
                             //uj_4vec.Print();
-                            //uj_mu1_4vec.Print();
-                            //uj_mu2_4vec.Print();
 
                             BInfo.uj_index         [BInfo.uj_size]= BInfo.uj_size;
                             BInfo.uj_mass          [BInfo.uj_size]= uj_4vec.Mag();
@@ -741,19 +737,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             BInfo.uj_rfmu2_py      [BInfo.uj_size]= uj_mu2_4vec.Py();
                             BInfo.uj_rfmu2_pz      [BInfo.uj_size]= uj_mu2_4vec.Pz();
 
-                            //4.|uj_Eta| < 1.2?
-                            //3.good muon candidates?
-                            //2.make sure non-zero for binary test
-                            //1.Xb or X3872
+                            //1.good muon candidates?
                             //0.passed all selections
-                            if (fabs(uj_4vec.Eta()) < 1.2)//Eta < 1.2
-                                BInfo.uj_isGoodCand[BInfo.uj_size] += 1 << 4;
-                            if (MuonInfo.isGoodCand[mu1_index]%2 == 1 && MuonInfo.isGoodCand[mu2_index]%2 == 1)
-                                BInfo.uj_isGoodCand[BInfo.uj_size] += 1 << 3;
                             BInfo.uj_isGoodCand[BInfo.uj_size] += 1 << 2;
-                            if (uj_4vec.Mag() > 7)//Xb or X3872
+                            if (MuonInfo.isGoodCand[mu1_index]%2 == 1 && MuonInfo.isGoodCand[mu2_index]%2 == 1)
                                 BInfo.uj_isGoodCand[BInfo.uj_size] += 1 << 1;
-                            if (((BInfo.uj_isGoodCand[BInfo.uj_size]>>2)&((BInfo.uj_isGoodCand[BInfo.uj_size]>>2)+1))==0)
+                            if (((BInfo.uj_isGoodCand[BInfo.uj_size]>>1)&((BInfo.uj_isGoodCand[BInfo.uj_size]>>1)+1))==0)
                                 BInfo.uj_isGoodCand[BInfo.uj_size] += 1;
 
                             BInfo.uj_size++;
@@ -949,7 +938,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         for(int iXb=0; iXb < BInfo.size; iXb++){
                             if(BInfo.rftk1_index[iXb] == -tk_hindex-1){
                                 listOfRelativeXbCands.push_back(iXb+1);
-                            }else if(BInfo.rftk2_index[iXb] == -tk_hindex-1){
+                            //}else if(BInfo.rftk2_index[iXb] == -tk_hindex-1){
+                            }if(BInfo.rftk2_index[iXb] == -tk_hindex-1){
                                 listOfRelativeXbCands.push_back(-iXb-1);
                             }
                         }
@@ -979,8 +969,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         if (!iEvent.isRealData())
                             genTrackPtr [TrackInfo.size] = tk_it->genParticle();
 
-                        //1. make sure non-zero for binary test
-                        //0. isGoodCand
+                        //0.passed all selections
                         TrackInfo.isGoodCand     [TrackInfo.size]+= 1 << 1;
                         if (((TrackInfo.isGoodCand[TrackInfo.size]>>1)&((TrackInfo.isGoodCand[TrackInfo.size]>>1)+1))==0)
                             TrackInfo.isGoodCand     [TrackInfo.size]+= 1;
@@ -990,20 +979,28 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             if (listOfRelativeXbCands[iCands]>0){
                                 BInfo.rftk1_index[listOfRelativeXbCands[iCands]-1] = TrackInfo.size;
                                 if ((TrackInfo.isGoodCand[TrackInfo.size]&1) == 1){
+                                    BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 1;
                                     if (BInfo.rftk2_index[listOfRelativeXbCands[iCands]-1]>=0){
-                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
-                                    }else{
-                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 2;
+                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1);
                                     }
+//                                    if (BInfo.rftk2_index[listOfRelativeXbCands[iCands]-1]>=0){
+//                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
+//                                    }else{
+//                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 2;
+//                                    }
                                 }
                             }else{
                                 BInfo.rftk2_index[-listOfRelativeXbCands[iCands]-1] = TrackInfo.size;
                                 if ((TrackInfo.isGoodCand[TrackInfo.size]&1) == 1){
+                                    BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
                                     if (BInfo.rftk1_index[-listOfRelativeXbCands[iCands]-1]>=0){
-                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
-                                    }else{
-                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
+                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>1)&1);
                                     }
+//                                    if (BInfo.rftk1_index[-listOfRelativeXbCands[iCands]-1]>=0){
+//                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
+//                                    }else{
+//                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
+//                                    }
                                 }
                             }
                         }
@@ -1029,14 +1026,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
-                if (it_gen->status() > 2 && it_gen->status() != 8) continue;
-                //if is pion/kaon must be final state
+                if (it_gen->status() > 2 && it_gen->status() != 8) continue;//only status 1, 2, 8(simulated)
+
+                /*
                 if (
-//                    (abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
+                    //(abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
                     (abs(it_gen->pdgId()) == 211 && it_gen->status() == 2) ||//pi +-
-//                    (abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
+                    //(abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
                     (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
-                ) continue;
+                ) continue;//only status=1 pi+- and K+-
+                */
 
                 bool isGenSignal = false;
                 //save target intermediat state particle
@@ -1057,8 +1056,20 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     it_gen->pdgId() == 100443   ||//Psi(2S)
                     it_gen->pdgId() == 553      ||//Upsilon
                     it_gen->pdgId() == 100553     //Upsilon(2S)
-                   ) isGenSignal = true;
+                   ) isGenSignal = true;//b, c, s mesons
 
+                if (abs(it_gen->pdgId()) == 13) isGenSignal = true;//all mu
+
+                if (abs(it_gen->pdgId()) == 111 || 
+                    abs(it_gen->pdgId()) == 211 
+                    ){
+                    reco::GenParticle _deRef = (*it_gen);
+                    reco::Candidate* Myself = dynamic_cast<reco::Candidate*>(&_deRef);
+                    //std::cout<<Myself->pdgId()<<"-----------"<<std::endl;
+                    isGenSignal = GetAncestor(Myself);
+                }//all pi from a b meson
+
+                /*
                 if (abs(it_gen->pdgId()) == 13                              &&
                     it_gen->numberOfMothers() == 1                          &&
                     (it_gen->mother()->pdgId() == 443 ||
@@ -1125,8 +1136,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                     }
                 }
-                
-/*
+                */
+                /*
                 if ((it_gen->pdgId() == 443 || it_gen->pdgId() == 553)      &&
                     (it_gen->mother()->pdgId() == 100443 ||
                      it_gen->mother()->pdgId() == 100553 )                  &&
@@ -1142,7 +1153,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     abs(it_gen->daughter(0)->daughter(0)->pdgId()) == 13    &&
                     abs(it_gen->daughter(1)->pdgId()) == 211 
                    ) isGenSignal = true;//signal xb
-*/
+                */
                 if (!isGenSignal) continue;
 
                 int iMo1 = -1,  iMo2 = -1,  iDa1 = -1,  iDa2 = -1;
@@ -1288,6 +1299,17 @@ void Bfinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     edm::ParameterSetDescription desc;
     desc.setUnknown();
     descriptions.addDefault(desc);
+}
+
+bool Bfinder::GetAncestor(const reco::Candidate* p)
+{
+    if(p->numberOfMothers()==0) return false;
+    else{
+        const reco::Candidate* MyMom = p->mother(0);
+        int mpid = abs(MyMom->pdgId());
+        if(abs(int(mpid/100) % 100) == 5) return true;
+        else return GetAncestor(MyMom);
+    }
 }
 
 //{{{
