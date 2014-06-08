@@ -50,7 +50,8 @@ else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
     #process.GlobalTag.globaltag = cms.string( 'FT_P_V42_AN2::All' ) #for 2012D
-    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' )
+    process.GlobalTag.globaltag = cms.string( 'GR_P_V43F::All' ) ##/PAMuon/HIRun2013-28Sep2013-v1/RECO                                                                                                      
+    #process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##/PAMuon/HIRun2013-PromptReco-v1/RECO
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
