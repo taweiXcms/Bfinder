@@ -271,6 +271,10 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
 
+            MuTrgMatchTrgObjE = new std::vector<std::vector<double > >();
+            MuTrgMatchTrgObjPt= new std::vector<std::vector<double > >();                                                                                                                                   
+            MuTrgMatchTrgObjEta= new std::vector<std::vector<double > >();
+            MuTrgMatchTrgObjPhi= new std::vector<std::vector<double > >();
             root->SetBranchAddress("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize);
             root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjE", &MuTrgMatchTrgObjE);
             root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPt", &MuTrgMatchTrgObjPt);
