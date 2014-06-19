@@ -181,6 +181,7 @@ class VtxInfoBranches { //{{{
         double  iso_trk      [ MAX_MUON];
         double  iso_ecal     [ MAX_MUON];
         double  iso_hcal     [ MAX_MUON];
+        int     type         [ MAX_MUON];
         double  n_matches    [ MAX_MUON];
         int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
@@ -224,6 +225,7 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.iso_trk"       , iso_trk       , "MuonInfo.iso_trk[MuonInfo.size]/D");
             root->Branch("MuonInfo.iso_ecal"      , iso_ecal      , "MuonInfo.iso_ecal[MuonInfo.size]/D");
             root->Branch("MuonInfo.iso_hcal"      , iso_hcal      , "MuonInfo.iso_hcal[MuonInfo.size]/D");
+            root->Branch("MuonInfo.type"          , type         ,  "MuonInfo.type[MuonInfo.size]/I"   );
             root->Branch("MuonInfo.n_matches"     , n_matches     , "MuonInfo.n_matches[MuonInfo.size]/D");
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
@@ -267,6 +269,7 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.iso_trk"       , iso_trk);
             root->SetBranchAddress("MuonInfo.iso_ecal"      , iso_ecal);
             root->SetBranchAddress("MuonInfo.iso_hcal"      , iso_hcal);
+            root->SetBranchAddress("MuonInfo.type"          , type          );
             root->SetBranchAddress("MuonInfo.n_matches"     , n_matches);
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);

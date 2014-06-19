@@ -542,6 +542,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.iso_trk        [MuonInfo.size] = mu_it->trackIso();//R<0.3
                         MuonInfo.iso_ecal       [MuonInfo.size] = mu_it->ecalIso();
                         MuonInfo.iso_hcal       [MuonInfo.size] = mu_it->hcalIso();
+                        MuonInfo.type           [MuonInfo.size] = mu_it->type();
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
 
