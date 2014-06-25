@@ -545,6 +545,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.type           [MuonInfo.size] = mu_it->type();
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
+                        MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();//For T&P usage
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();
