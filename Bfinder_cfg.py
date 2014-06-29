@@ -8,7 +8,7 @@ ivars = VarParsing.VarParsing('analysis')
 ivars.inputFiles='file:/mnt/hadoop/cms/store/himc/HiWinter13/PYTHIA6_inclBtoPsiMuMu_5TeV02/GEN-SIM-RECO/pa_STARTHI53_V27-v1/20000/F66E8E9B-AD56-E311-9214-848F69FD3D0D.root'
 ivars.outputFile='Bfinder_all.root'
 # get and parse the command line arguments
-#ivars.parseArguments()
+ivars.parseArguments()
 
 ### Run on MC?
 runOnMC = True
