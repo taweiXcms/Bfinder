@@ -237,7 +237,7 @@ if UsepatMuonsWithTrigger:
 process.p = cms.Path(	
 	process.filter*process.mergedMuons*process.patDefaultSequence*process.demo
 )
-process.e = cms.EndPath(process.out)
+#process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
 	process.p
 	,process.hltAna
