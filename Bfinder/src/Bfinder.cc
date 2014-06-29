@@ -455,7 +455,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
                 //if (input_tracks.size() > 1 && input_muons.size() > 1){
                 if (input_tracks.size() > 0 && input_muons.size() > 1){
-
                     //MuonInfo section{{{
                     int mu_hindex = -1;
                     for(std::vector<pat::Muon>::const_iterator mu_it=input_muons.begin();
@@ -542,7 +541,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.iso_trk        [MuonInfo.size] = mu_it->trackIso();//R<0.3
                         MuonInfo.iso_ecal       [MuonInfo.size] = mu_it->ecalIso();
                         MuonInfo.iso_hcal       [MuonInfo.size] = mu_it->hcalIso();
-                        MuonInfo.type           [MuonInfo.size] = mu_it->type();
+                        MuonInfo.type           [MuonInfo.size] = mu_it->type();//CaloMuon = 1<<4  GlobalMuon = 1<<1  PFMuon = 1<<5  StandAloneMuon = 1<<3  TrackerMuon = 1<<2
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
                         MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();//For T&P usage

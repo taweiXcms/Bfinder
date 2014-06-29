@@ -1,11 +1,11 @@
 import FWCore.ParameterSet.Config as cms
-
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='root://eoscms//eos/cms/store/user/twang/HIBmeson_20131220/test_20140106/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_102_2_VpA.root'
 #ivars.inputFiles='file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBdKs/step4/HIJINGemb_BdJpsiKs_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_Bd_JpsiKs_mumu.root'
 #ivars.inputFiles='file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/localRun/RunMore/PyquenMix_embedHIJING_Bp2JpsiKp_Bpt5_5TeV_boostedMC.root'
-ivars.inputFiles='file:/net/hisrv0001/home/tawei/twang/Hijing_PPb502_MinimumBias/PyquenMix_STARTHI53_V27_HIJINGembed_pPb_step4_RAW2DIGI_L1Reco_RECO_Bpt5_BuJpsiK_20140225/5dc89fb1319c58a400229c5d020a3799/HIJINGemb_BuJpsiK_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_92_1_Yd0.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hijing_PPb502_MinimumBias/PyquenMix_STARTHI53_V27_HIJINGembed_pPb_step4_RAW2DIGI_L1Reco_RECO_Bpt5_BuJpsiK_20140225/5dc89fb1319c58a400229c5d020a3799/HIJINGemb_BuJpsiK_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_92_1_Yd0.root'
+ivars.inputFiles='file:/mnt/hadoop/cms/store/himc/HiWinter13/PYTHIA6_inclBtoPsiMuMu_5TeV02/GEN-SIM-RECO/pa_STARTHI53_V27-v1/20000/F66E8E9B-AD56-E311-9214-848F69FD3D0D.root'
 ivars.outputFile='Bfinder_all.root'
 ivars.parseArguments()
 
@@ -34,18 +34,16 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 #process.load("Configuration.Geometry.GeometryIdeal_cff")
 #process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 
-### keep only Pat:: part 
-from PhysicsTools.PatAlgos.patEventContent_cff import *
 ### output module
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('test.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-    outputCommands = cms.untracked.vstring('drop *',
+    outputCommands = cms.untracked.vstring('drop *'
     )
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### Set global tag
 if runOnMC:
@@ -66,7 +64,6 @@ else:
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(ivars.inputFiles)
 )
-#process.load("_eos_cms_store_user_twang_HIBmeson_20131220_test_20140106_JpsiKp_cff")
 
 ### Set basic filter
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
@@ -98,6 +95,8 @@ process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
 ### Setup Pat
 ### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
+### keep only Pat:: part 
+#from PhysicsTools.PatAlgos.patEventContent_cff import *
 if HIFormat:
 	process.muonMatch.matched = cms.InputTag("hiGenParticles")
 	process.genParticlePlusGEANT.genParticles = cms.InputTag("hiGenParticles")
@@ -154,6 +153,11 @@ if not runOnMC :
 
 process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
 from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import *
+if runOnMC:
+	addMCinfo(process)
+	process.muonMatch.resolveByMatchQuality = True
+changeTriggerProcessName(process, "HLT")
+switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
 ###Criterias from Hyunchul's 
 process.muonL1Info.maxDeltaR = 0.3
 process.muonL1Info.fallbackToME1 = True
@@ -167,6 +171,21 @@ process.muonMatchHLTCtfTrack.maxDeltaR = 0.1
 process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
 process.muonMatchHLTTrackMu.maxDeltaR = 0.1
 process.muonMatchHLTTrackMu.maxDPtRel = 10.0
+
+# Merge muons, calomuons in a single collection for T&P
+from RecoMuon.MuonIdentification.calomuons_cfi import calomuons;
+process.mergedMuons = cms.EDProducer("CaloMuonMerger",                                                                                                                                                  
+    muons     = cms.InputTag("muons"),
+    mergeCaloMuons = cms.bool(True),  ### NEEDED TO RUN ON AOD
+    caloMuons = cms.InputTag("calomuons"),
+    minCaloCompatibility = cms.double(0.6),
+    mergeTracks = cms.bool(False),
+    tracks = cms.InputTag("generalTracks"),
+)
+changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
+process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
+process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
 
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
@@ -190,14 +209,10 @@ process.demo = cms.EDAnalyzer('Bfinder',
 )
 if HIFormat:
 	process.demo.GenLabel = cms.InputTag('hiGenParticles')
-
 if UseGenPlusSim:
 	process.demo.GenLabel = cms.InputTag('genParticlePlusGEANT')
-
 if UsepatMuonsWithTrigger:
 	process.demo.MuonLabel = cms.InputTag('patMuonsWithTrigger')	
-	if runOnMC:
-		addMCinfo(process)
 
 ### SetUp HLT info
 process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
@@ -215,15 +230,15 @@ process.TFileService = cms.Service("TFileService",
 
 if runOnMC:
 	process.patDefaultSequence *= process.genParticlePlusGEANT
-
 if UsepatMuonsWithTrigger:
 	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
 
 process.p = cms.Path(	
-	process.filter*process.patDefaultSequence*process.demo
+	process.filter*process.mergedMuons*process.patDefaultSequence*process.demo
 )
-
+process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
 	process.p
 	,process.hltAna
+    ,process.e
 )
