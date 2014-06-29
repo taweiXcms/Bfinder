@@ -183,10 +183,15 @@ process.mergedMuons = cms.EDProducer("CaloMuonMerger",
     mergeTracks = cms.bool(False),
     tracks = cms.InputTag("generalTracks"),
 )
-changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
-process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
-process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
-process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
+#changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
+#process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
+#process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+#process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
+##Or we change the muonMatch source of our patMuonsWithoutTrigger
+process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
+process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
+process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
+process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
 
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
