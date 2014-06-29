@@ -240,5 +240,5 @@ process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
 	process.p
 	,process.hltAna
-    ,process.e
+#    ,process.e
 )
