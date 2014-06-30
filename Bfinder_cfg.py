@@ -190,7 +190,8 @@ process.mergedMuons = cms.EDProducer("CaloMuonMerger",
 ##Or we change the muonMatch source of our patMuonsWithoutTrigger
 process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
 process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
-process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
+if runOnMC:
+	process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
 process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
 
 ### Set Bfinder option
