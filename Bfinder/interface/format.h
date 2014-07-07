@@ -186,6 +186,11 @@ class VtxInfoBranches { //{{{
         int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
         bool    outerTrackisNonnull [MAX_MUON];
+        bool    TMOneStationTight [MAX_MUON];
+        bool    TrackerMuonArbitrated [MAX_MUON];
+        bool    isTriggered [MAX_MUON];
+        bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
+        bool    passMuID [MAX_MUON];
 
         int	    MuTrgMatchPathSize;
         std::vector<std::vector<double > > *MuTrgMatchTrgObjE;
@@ -230,6 +235,10 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
             root->Branch("MuonInfo.outerTrackisNonnull" ,outerTrackisNonnull, "MuonInfo.outerTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.TMOneStationTight" ,TMOneStationTight, "MuonInfo.TMOneStationTight[MuonInfo.size]/O");
+            root->Branch("MuonInfo.TrackerMuonArbitrated" ,TrackerMuonArbitrated, "MuonInfo.TrackerMuonArbitrated[MuonInfo.size]/O");
+            root->Branch("MuonInfo.isTriggered" ,isTriggered, "MuonInfo.isTriggered[MuonInfo.size]/O");
+            root->Branch("MuonInfo.passMuID" ,passMuID, "MuonInfo.passMuID[MuonInfo.size]/O");
 
             root->Branch("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize, "MuonInfo.MuTrgMatchPathSize/I");
             root->Branch("MuonInfo.MuTrgMatchTrgObjE", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjE);
@@ -275,6 +284,10 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
             root->SetBranchAddress("MuonInfo.outerTrackisNonnull"    , outerTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.TMOneStationTight" , TMOneStationTight);
+            root->SetBranchAddress("MuonInfo.TrackerMuonArbitrated" , TrackerMuonArbitrated);
+            root->SetBranchAddress("MuonInfo.isTriggered" , isTriggered);
+            root->SetBranchAddress("MuonInfo.passMuID" , passMuID);
 
             MuTrgMatchTrgObjE = new std::vector<std::vector<double > >();
             MuTrgMatchTrgObjPt= new std::vector<std::vector<double > >();                                                                                                                                   

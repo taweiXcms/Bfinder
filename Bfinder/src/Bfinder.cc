@@ -464,37 +464,53 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             break;//exit(0);
                         }
                         mu_hindex = int(mu_it - input_muons.begin());
-  
-                        if(AppliedMuID_){
-                            MuonCutLevel->Fill(0);
-                            //if(!(mu_it->innerTrack().isNonnull()*mu_it->globalTrack().isNonnull())) {continue;}
-                            //MuonCutLevel->Fill(1);
-                            if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) continue;
+ 
+                        MuonInfo.passMuID[MuonInfo.size] = true;
+                        MuonCutLevel->Fill(0);
+                        if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) 
+                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                        else 
+                            MuonCutLevel->Fill(1);
+
+                        if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))
+                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                        else 
                             MuonCutLevel->Fill(2);
-                            //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;
+
+                        if (fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
+                            fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
+                           ) 
+                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                        else 
                             MuonCutLevel->Fill(3);
-                            //if (mu_it->p()>200 || mu_it->pt()>200)                  continue;
+
+                        if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
+                            mu_it->innerTrack()->normalizedChi2()>1.8
+                           ) 
+                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                        else 
                             MuonCutLevel->Fill(4);
-                            if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))  continue;
+
+                        if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6)
+                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                        else 
                             MuonCutLevel->Fill(5);
-                            if (fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
-                                fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
-                               ) continue;
-                            if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
-                                mu_it->innerTrack()->normalizedChi2()>1.8                           //||
-                               ) continue;
-                            //if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6  &&
-                            //    mu_it->innerTrack()->hitPattern().numberOfValidStripHits()<11
-                            //   ) continue;
-                            if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6) continue;
-                            MuonCutLevel->Fill(6);
-                        }
+                        //outdated selections
+                        //if(!(mu_it->innerTrack().isNonnull()*mu_it->globalTrack().isNonnull())) {continue;}
+                        //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;
+                        //if (mu_it->p()>200 || mu_it->pt()>200)                  continue;
+                        //if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6  &&
+                        //    mu_it->innerTrack()->hitPattern().numberOfValidStripHits()<11
+                        //   ) continue;
+
+
                         //Get Muon HLT Trigger matching
                         MuonInfo.MuTrgMatchPathSize = MuonTriggerMatchingPath_.size();
                         std::vector<double> trgobjE;
                         std::vector<double> trgobjPt;
                         std::vector<double> trgobjEta;
                         std::vector<double> trgobjPhi;
+                        MuonInfo.isTriggered[MuonInfo.size] = false;
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchPathSize; _m++){
                             pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
                             if (match.empty()) {
@@ -509,6 +525,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 trgobjEta.push_back(match[0].eta());
                                 trgobjPhi.push_back(match[0].phi());
                                 //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
+                                //save first path for convenience
+                                if(_m == 0){
+                                    MuonInfo.isTriggered[MuonInfo.size] = true;
+                                }                        
                             }
                         }
                         MuonInfo.MuTrgMatchTrgObjE->push_back(trgobjE);
@@ -545,6 +565,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
                         MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();//For T&P usage
+                        MuonInfo.TMOneStationTight[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TMOneStationTight);//For Muon ID for convenience
+                        MuonInfo.TrackerMuonArbitrated[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TrackerMuonArbitrated);//For Muon ID for convenience
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();
@@ -562,7 +584,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             MuonInfo.g_ndf      [MuonInfo.size] = -1;
                             MuonInfo.nmuhit     [MuonInfo.size] = -1;
                         }
-                        //https://cmssdt.cern.ch/SDT/doxygen/CMSSW_4_4_6/doc/html/da/d18/namespacemuon.html
+                        //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMuonAnalysis
                         int qm = 0;
                         for(int qi=1; qi!= 24; ++qi){
                             if (muon::isGoodMuon(*mu_it, muon::SelectionType(qi))){
@@ -570,6 +592,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             }
                         }
                         MuonInfo.muqual         [MuonInfo.size] = qm;   
+
+                        // Basic Muon selection for fitting
+                        //Can not be just CaloMuon or empty type
+                        if((MuonInfo.type[MuonInfo.size]|(1<<4))==(1<<4)) {
+                            MuonInfo.isNeededMuon[MuonInfo.size] = false;
+                        }
+                        else MuonInfo.isNeededMuon[MuonInfo.size] = true;
 
                         //1.every digit after this must be 1 since only binary of the form 000111 will have: (b&b+1)==0 
                         //0.pass all cuts
@@ -603,10 +632,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackCutLevel->Fill(2);
                         if (tk_it->pt()<0.4)                                continue;
                         TrackCutLevel->Fill(3);
+                        if (fabs(tk_it->eta()) > 2.5)                       continue;
+                        TrackCutLevel->Fill(4);
+                        //outdated selections
                         //if (tk_it->p()>200 || tk_it->pt()>200)              continue;
                         //TrackCutLevel->Fill(4);
-                        if (fabs(tk_it->eta()) > 2.5)                       continue;
-                        TrackCutLevel->Fill(5);
                         //if (tk_it->track()->hitPattern().numberOfValidStripHits()<10)continue;
                         //TrackCutLevel->Fill(6);
                         //if (tk_it->track()->hitPattern().numberOfValidPixelHits()<2) continue;
@@ -621,11 +651,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     bool gogogo = false;
                     for(std::vector<pat::Muon>::const_iterator mu_it1=input_muons.begin();
                         mu_it1 != input_muons.end() ; mu_it1++){
-                        //Check if it in MuonInfo
+                        //Check if it in MuonInfo and isNeedeMuon
                         mu1_hindex = int(mu_it1 - input_muons.begin());
                         gogogo = false;
                         for(int i=0; i < MuonInfo.size; i++){
-                            if (mu1_hindex == MuonInfo.handle_index[i]){
+                            if (mu1_hindex == MuonInfo.handle_index[i] && MuonInfo.isNeededMuon[i]){
                                 gogogo = true;
                                 break;
                             }
@@ -642,7 +672,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             mu2_hindex = int(mu_it2 - input_muons.begin()); 
                             gogogo = false;
                             for(int j=0; j < MuonInfo.size; j++){
-                                if(mu2_hindex == MuonInfo.handle_index[j]){
+                                if(mu2_hindex == MuonInfo.handle_index[j] && MuonInfo.isNeededMuon[j]){
                                     gogogo = true;
                                     break;
                                 }
