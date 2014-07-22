@@ -619,6 +619,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         bool isMuonTrack = false; //remove muon track
                         for(std::vector<pat::Muon>::iterator it=input_muons.begin() ; it != input_muons.end() ; it++){
                             if (!it->track().isNonnull())                   continue;
+                            if((it->type()|(1<<4))==(1<<4)) continue;//Don't clean track w.r.t. calo muon 
                             if (fabs(tk_it->pt() -it->track()->pt() )<0.00001 &&
                                 fabs(tk_it->eta()-it->track()->eta())<0.00001 &&
                                 fabs(tk_it->phi()-it->track()->phi())<0.00001 ){
