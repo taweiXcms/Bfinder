@@ -188,11 +188,8 @@ process.mergedMuons = cms.EDProducer("CaloMuonMerger",
 #process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
 #process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
 ##Or we change the muonMatch source of our patMuonsWithoutTrigger
-
-#Yen-Jie: CaloMuon merging seems to be buggy, reduced the number of B candidates?
-###Commented out for the moment###
-#process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
-#process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
+process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
+process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
 
 if runOnMC:
 	process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
