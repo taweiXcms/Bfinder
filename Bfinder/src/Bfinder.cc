@@ -760,8 +760,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             BInfo.uj_vtxZE         [BInfo.uj_size]= sqrt(ujVFPvtx->error().czz());
                             BInfo.uj_vtxdof        [BInfo.uj_size]= ujVFPvtx->degreesOfFreedom();
                             BInfo.uj_vtxchi2       [BInfo.uj_size]= ujVFPvtx->chiSquared();
-                            BInfo.uj_rfmu1_index   [BInfo.uj_size]= mu1_index;
-                            BInfo.uj_rfmu2_index   [BInfo.uj_size]= mu2_index;
+                            BInfo.uj_rfmu1_index   [BInfo.uj_size]= mu1_hindex;
+                            BInfo.uj_rfmu2_index   [BInfo.uj_size]= mu2_hindex;
                             BInfo.uj_rfmu1_px      [BInfo.uj_size]= uj_mu1_4vec.Px();
                             BInfo.uj_rfmu1_py      [BInfo.uj_size]= uj_mu1_4vec.Py();
                             BInfo.uj_rfmu1_pz      [BInfo.uj_size]= uj_mu1_4vec.Pz();
@@ -772,7 +772,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //1.good muon candidates?
                             //0.passed all selections
                             BInfo.uj_isGoodCand[BInfo.uj_size] += 1 << 2;
-                            if (MuonInfo.isGoodCand[mu1_index]%2 == 1 && MuonInfo.isGoodCand[mu2_index]%2 == 1)
+                            if (MuonInfo.isGoodCand[mu1_hindex]%2 == 1 && MuonInfo.isGoodCand[mu2_hindex]%2 == 1)
                                 BInfo.uj_isGoodCand[BInfo.uj_size] += 1 << 1;
                             if (((BInfo.uj_isGoodCand[BInfo.uj_size]>>1)&((BInfo.uj_isGoodCand[BInfo.uj_size]>>1)+1))==0)
                                 BInfo.uj_isGoodCand[BInfo.uj_size] += 1;
