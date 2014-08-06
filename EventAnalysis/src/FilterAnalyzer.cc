@@ -1,22 +1,3 @@
-// -*- C++ -*-
-//
-// Package:    FilterAnalyzer
-// Class:      FilterAnalyzer
-// 
-/**\class FilterAnalyzer FilterAnalyzer.cc CmsHi/FilterAnalyzer/src/FilterAnalyzer.cc
-
- Description: [one line class summary]
-
- Implementation:
-     [Notes on implementation]
-*/
-//
-// Original Author:  Yetkin Yilmaz,32 4-A08,+41227673039,
-//         Created:  Sun Nov 20 13:04:12 CET 2011
-// $Id: FilterAnalyzer.cc,v 1.1 2011/11/20 13:59:44 yilmaz Exp $
-//
-//
-
 
 // system include files
 #include <memory>
@@ -48,24 +29,24 @@ using namespace std;
 //
 
 class FilterAnalyzer : public edm::EDAnalyzer {
-   public:
-      explicit FilterAnalyzer(const edm::ParameterSet&);
-      ~FilterAnalyzer();
+public:
+  explicit FilterAnalyzer(const edm::ParameterSet&);
+  ~FilterAnalyzer();
 
-      static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 
-   private:
-      virtual void beginJob() ;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
+private:
+  virtual void beginJob() ;
+  virtual void analyze(const edm::Event&, const edm::EventSetup&);
+  virtual void endJob() ;
 
-      virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-      virtual void endRun(edm::Run const&, edm::EventSetup const&);
-      virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-      virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+  virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+  virtual void endRun(edm::Run const&, edm::EventSetup const&);
+  virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+  virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
 
-      // ----------member data ---------------------------
+  // ----------member data ---------------------------
 
   edm::InputTag hltresults_;
   vector<string> superFilters_;
@@ -93,7 +74,7 @@ FilterAnalyzer::FilterAnalyzer(const edm::ParameterSet& conf)
 {
 
 
-   //now do what ever initialization is needed
+  //now do what ever initialization is needed
   hltresults_   = conf.getParameter<edm::InputTag> ("hltresults");
   superFilters_  = conf.getParameter<vector<string> > ("superFilters");
   _Debug  = conf.getUntrackedParameter<bool> ("Debug",0);
@@ -109,9 +90,9 @@ FilterAnalyzer::FilterAnalyzer(const edm::ParameterSet& conf)
 
 FilterAnalyzer::~FilterAnalyzer()
 {
- 
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
+
+  // do anything here that needs to be done at desctruction time
+  // (e.g. close files, deallocate resources etc.)
 
 }
 
@@ -124,78 +105,82 @@ FilterAnalyzer::~FilterAnalyzer()
 void
 FilterAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
-   edm::Handle<edm::TriggerResults>  hltresults;
+  using namespace edm;
+  edm::Handle<edm::TriggerResults>  hltresults;
 
-   iEvent.getByLabel(hltresults_,hltresults);
-   edm::TriggerNames const& triggerNames = iEvent.triggerNames(*hltresults);
-   int ntrigs = hltresults->size();
-   
-   if (HltEvtCnt==0){
-     for (int itrig = 0; itrig != ntrigs; ++itrig) {
-       TString trigName = triggerNames.triggerName(itrig);
-       HltTree->Branch(trigName,trigflag+itrig,trigName+"/I");
-     }
-     HltEvtCnt++;
-   }
-   
-   bool saveEvent = 1;
+  iEvent.getByLabel(hltresults_,hltresults);
+  edm::TriggerNames const& triggerNames = iEvent.triggerNames(*hltresults);
+  int ntrigs = hltresults->size();
 
-   for (int itrig = 0; itrig != ntrigs; ++itrig){
-     std::string trigName=triggerNames.triggerName(itrig);
-     bool accept = hltresults->accept(itrig);
+  if (HltEvtCnt==0){
+    for (int itrig = 0; itrig != ntrigs; ++itrig) {
+      TString trigName = triggerNames.triggerName(itrig);
+      HltTree->Branch(trigName,trigflag+itrig,trigName+"/I");
+    }
+    HltEvtCnt++;
+  }
 
-     for(unsigned int ifilter = 0; ifilter<superFilters_.size(); ++ifilter){
-       if(_Debug) cout<<"trigName "<<trigName.data()<<"    superFilters_[ifilter] "<<superFilters_[ifilter]<<endl;
-       if(trigName == superFilters_[ifilter]) saveEvent = saveEvent && accept;
-     }
+  bool saveEvent = 1;
 
-     if (accept){trigflag[itrig] = 1;}
-     else {trigflag[itrig] = 0;}
-     
-     if (_Debug){
-       if (_Debug) std::cout << "%HLTInfo --  Number of HLT Triggers: " << ntrigs << std::endl;
-       std::cout << "%HLTInfo --  HLTTrigger(" << itrig << "): " << trigName << " = " << accept << std::endl;
-     }
-   }
-   
-   if(saveEvent) HltTree->Fill();
+  for (int itrig = 0; itrig != ntrigs; ++itrig){
+    std::string trigName=triggerNames.triggerName(itrig);
+    bool accept = hltresults->accept(itrig);
+
+    for(unsigned int ifilter = 0; ifilter<superFilters_.size(); ++ifilter){
+      if(_Debug) cout<<"trigName "<<trigName.data()
+		     <<"    superFilters_[ifilter] "
+		     <<superFilters_[ifilter]<<endl;
+      if(trigName == superFilters_[ifilter]) saveEvent = saveEvent && accept;
+    }
+
+    if (accept){trigflag[itrig] = 1;}
+    else {trigflag[itrig] = 0;}
+
+    if (_Debug){
+      if (_Debug) std::cout << "%HLTInfo --  Number of HLT Triggers: "
+			    << ntrigs << std::endl;
+      std::cout << "%HLTInfo --  HLTTrigger(" << itrig << "): "
+		<< trigName << " = " << accept << std::endl;
+    }
+  }
+
+  if(saveEvent) HltTree->Fill();
 
 }
 
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+void
 FilterAnalyzer::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
-FilterAnalyzer::endJob() 
+void
+FilterAnalyzer::endJob()
 {
 }
 
 // ------------ method called when starting to processes a run  ------------
-void 
+void
 FilterAnalyzer::beginRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void 
+void
 FilterAnalyzer::endRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void 
+void
 FilterAnalyzer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-void 
+void
 FilterAnalyzer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }

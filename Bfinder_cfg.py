@@ -223,7 +223,7 @@ if UsepatMuonsWithTrigger:
 	process.demo.MuonLabel = cms.InputTag('patMuonsWithTrigger')	
 
 ### SetUp HLT info
-process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
+process.load('Bfinder.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
 #if HIFormat:
 	#process.hltanalysis.HLTProcessName = cms.string("HISIGNAL")

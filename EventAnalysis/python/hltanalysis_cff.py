@@ -1,5 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
+#from HeavyIonsAnalysis.EventAnalysis.hltobject_cfi import *
+#Modified for Bfinder
+from Bfinder.EventAnalysis.hltobject_cfi import *
 from HLTrigger.HLTanalyzers.HLTBitAnalyser_cfi import *
 
 hltbitanalysis.UseTFileService = cms.untracked.bool(True)
@@ -17,7 +20,7 @@ hltanalysis = hltbitanalysis.clone(
     )
 
 skimanalysis = cms.EDAnalyzer("FilterAnalyzer",
-                              hltresults = cms.InputTag("TriggerResults","","hiForestAna2011"),
+                              hltresults = cms.InputTag("TriggerResults","","HiForest"),
                               superFilters = cms.vstring("")
                               )
 
