@@ -526,7 +526,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 trgobjEta.push_back(match[0].eta());
                                 trgobjPhi.push_back(match[0].phi());
                                 //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
-                                //save first path for convenience
                                 MuonInfo.isTriggered[MuonInfo.size] = true;
                             }
                         }
