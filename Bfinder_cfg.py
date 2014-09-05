@@ -44,7 +44,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 ### Set global tag
 if runOnMC:
@@ -205,7 +205,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 		1,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 		1,#RECONSTRUCTION: J/psi + phi
 		1,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
-    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
+#    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
+    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
     AppliedMuID     = cms.bool(False),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),

@@ -512,7 +512,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         std::vector<double> trgobjPhi;
                         MuonInfo.isTriggered[MuonInfo.size] = false;
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchPathSize; _m++){
-                            pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
+//                            pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
+                            pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str(), true, false);
                             if (match.empty()) {
                                 trgobjE.push_back(-999.);
                                 trgobjPt.push_back(-999.);
@@ -526,9 +527,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 trgobjPhi.push_back(match[0].phi());
                                 //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
                                 //save first path for convenience
-                                if(_m == 0){
-                                    MuonInfo.isTriggered[MuonInfo.size] = true;
-                                }                        
+                                MuonInfo.isTriggered[MuonInfo.size] = true;
                             }
                         }
                         MuonInfo.MuTrgMatchTrgObjE->push_back(trgobjE);
