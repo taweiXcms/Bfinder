@@ -10,6 +10,10 @@ ivars.outputFile='Bfinder_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
+### Add Calo muons
+### Since CMSSW_5_3_20, Improved muon best track were by default ran by the pat sequence, Calo muon will thus potential crash the code (since no track is associated with Calo muon)
+AddCaloMuon = False
+
 ### Run on MC?
 runOnMC = True
 
@@ -63,6 +67,7 @@ else:
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
+    skipEvents=cms.untracked.uint32(0),
 	fileNames = cms.untracked.vstring(ivars.inputFiles)
 )
 
@@ -183,17 +188,19 @@ process.mergedMuons = cms.EDProducer("CaloMuonMerger",
     mergeTracks = cms.bool(False),
     tracks = cms.InputTag("generalTracks"),
 )
-#changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
-#process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
-#process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
-#process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
-##Or we change the muonMatch source of our patMuonsWithoutTrigger
-process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
-process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
+if AddCaloMuon:
+    #changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
+    #process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
+    #process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+    #process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
 
-if runOnMC:
-	process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
-process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
+    #Or we change the muonMatch source of our patMuonsWithoutTrigger
+    process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
+    pocess.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
+    if runOnMC:
+        process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
+        process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
+    process.patDefaultSequence = process.mergedMuons*process.patDefaultSequence
 
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
@@ -206,7 +213,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 		1,#RECONSTRUCTION: J/psi + phi
 		1,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
-    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
+    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
+#    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
     AppliedMuID     = cms.bool(False),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
@@ -224,6 +232,7 @@ if UsepatMuonsWithTrigger:
 	process.demo.MuonLabel = cms.InputTag('patMuonsWithTrigger')	
 
 ### SetUp HLT info
+#process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
 process.load('Bfinder.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
 #if HIFormat:
@@ -243,7 +252,7 @@ if UsepatMuonsWithTrigger:
 	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
 
 process.p = cms.Path(	
-	process.filter*process.mergedMuons*process.patDefaultSequence*process.demo
+    process.filter*process.patDefaultSequence*process.demo
 )
 #process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
