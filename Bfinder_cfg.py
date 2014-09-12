@@ -200,7 +200,7 @@ if AddCaloMuon:
     if runOnMC:
         process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
         process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
-    process.patDefaultSequence = process.mergedMuons*process.patDefaultSequence
+    process.patDefaultSequence = cms.Sequence(process.mergedMuons*process.patDefaultSequence)
 
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
