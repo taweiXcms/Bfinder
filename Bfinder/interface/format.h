@@ -159,39 +159,43 @@ class VtxInfoBranches { //{{{
         double 	phi          [ MAX_MUON];
         bool    isTrackerMuon[ MAX_MUON];
         bool    isGlobalMuon [ MAX_MUON];
-        double  normchi2     [ MAX_MUON];
-        int	    i_striphit   [ MAX_MUON];
-        int	    i_pixelhit   [ MAX_MUON];
-        int	    g_striphit   [ MAX_MUON];
-        int	    g_pixelhit   [ MAX_MUON];
-        int     i_nStripLayer[ MAX_MUON];
-        int     i_nPixelLayer[ MAX_MUON];
-        double	i_chi2       [ MAX_MUON];
-        double	i_ndf        [ MAX_MUON];
-        double	g_chi2       [ MAX_MUON];
-        double	g_ndf        [ MAX_MUON];
-        int	    nmuhit       [ MAX_MUON];
-        double	d0           [ MAX_MUON];
-        double	dz           [ MAX_MUON];
-        double	dzPV         [ MAX_MUON];
-        double	dxyPV        [ MAX_MUON];
-        int	    fpbarrelhit  [ MAX_MUON];
-        int	    fpendcaphit  [ MAX_MUON];
         int	    muqual       [ MAX_MUON];
         double  iso_trk      [ MAX_MUON];
         double  iso_ecal     [ MAX_MUON];
         double  iso_hcal     [ MAX_MUON];
         int     type         [ MAX_MUON];
         double  n_matches    [ MAX_MUON];
-        int     isGoodCand   [ MAX_MUON];
-        int     geninfo_index[ MAX_MUON];
-        bool    outerTrackisNonnull [MAX_MUON];
         bool    TMOneStationTight [MAX_MUON];
         bool    TrackerMuonArbitrated [MAX_MUON];
-        bool    isTriggered [MAX_MUON];
+        int     isGoodCand   [ MAX_MUON];
+        int     geninfo_index[ MAX_MUON];
         bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
         bool    passMuID [MAX_MUON];
 
+        bool    outerTrackisNonnull  [MAX_MUON];
+        bool    innerTrackisNonnull  [MAX_MUON];
+        bool    globalTrackisNonnull [MAX_MUON];
+        int     innerTrackQuality    [MAX_MUON];
+        double  normchi2     [ MAX_MUON];
+        int	    i_striphit   [ MAX_MUON];
+        int	    i_pixelhit   [ MAX_MUON];
+        int     i_nStripLayer[ MAX_MUON];
+        int     i_nPixelLayer[ MAX_MUON];
+        double	i_chi2       [ MAX_MUON];
+        double	i_ndf        [ MAX_MUON];
+        int	    fpbarrelhit  [ MAX_MUON];
+        int	    fpendcaphit  [ MAX_MUON];
+        double	d0           [ MAX_MUON];
+        double	dz           [ MAX_MUON];
+        double	dzPV         [ MAX_MUON];
+        double	dxyPV        [ MAX_MUON];
+        double	g_chi2       [ MAX_MUON];
+        double	g_ndf        [ MAX_MUON];
+        int	    g_striphit   [ MAX_MUON];
+        int	    g_pixelhit   [ MAX_MUON];
+        int	    nmuhit       [ MAX_MUON];
+
+        bool    isTriggered  [MAX_MUON];
         int	    MuTrgMatchPathSize;
         std::vector<std::vector<double > > *MuTrgMatchTrgObjE;
         std::vector<std::vector<double > > *MuTrgMatchTrgObjPt;
@@ -208,6 +212,7 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.phi"           , phi           , "MuonInfo.phi[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
             root->Branch("MuonInfo.isGlobalMuon"  , isGlobalMuon  , "MuonInfo.isGlobalMuon[MuonInfo.size]/O");
+            root->Branch("MuonInfo.innerTrackQuality"    , innerTrackQuality    , "MuonInfo.innerTrackQuality[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/D");
             root->Branch("MuonInfo.i_striphit"    , i_striphit    , "MuonInfo.i_striphit[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.i_pixelhit"    , i_pixelhit    , "MuonInfo.i_pixelhit[MuonInfo.size]/I"	);
@@ -235,6 +240,8 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
             root->Branch("MuonInfo.outerTrackisNonnull" ,outerTrackisNonnull, "MuonInfo.outerTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.innerTrackisNonnull" ,innerTrackisNonnull, "MuonInfo.innerTrackisNonnull[MuonInfo.size]/O");
+            root->Branch("MuonInfo.globalTrackisNonnull" ,globalTrackisNonnull, "MuonInfo.globalTrackisNonnull[MuonInfo.size]/O");
             root->Branch("MuonInfo.TMOneStationTight" ,TMOneStationTight, "MuonInfo.TMOneStationTight[MuonInfo.size]/O");
             root->Branch("MuonInfo.TrackerMuonArbitrated" ,TrackerMuonArbitrated, "MuonInfo.TrackerMuonArbitrated[MuonInfo.size]/O");
             root->Branch("MuonInfo.isTriggered" ,isTriggered, "MuonInfo.isTriggered[MuonInfo.size]/O");
@@ -257,6 +264,7 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.phi"           , phi            );
             root->SetBranchAddress("MuonInfo.isTrackerMuon" , isTrackerMuon);
             root->SetBranchAddress("MuonInfo.isGlobalMuon"  , isGlobalMuon);
+            root->SetBranchAddress("MuonInfo.innerTrackQuality"    , innerTrackQuality	);
             root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
             root->SetBranchAddress("MuonInfo.i_striphit"    , i_striphit	);
             root->SetBranchAddress("MuonInfo.i_pixelhit"    , i_pixelhit	);
@@ -284,6 +292,8 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
             root->SetBranchAddress("MuonInfo.outerTrackisNonnull"    , outerTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.innerTrackisNonnull"    , innerTrackisNonnull);
+            root->SetBranchAddress("MuonInfo.globalTrackisNonnull"    , globalTrackisNonnull);
             root->SetBranchAddress("MuonInfo.TMOneStationTight" , TMOneStationTight);
             root->SetBranchAddress("MuonInfo.TrackerMuonArbitrated" , TrackerMuonArbitrated);
             root->SetBranchAddress("MuonInfo.isTriggered" , isTriggered);
@@ -327,6 +337,7 @@ class TrackInfoBranches{//{{{
         double	dxyPV        [ MAX_TRACK];
         int     isGoodCand   [ MAX_TRACK];
         int     geninfo_index[ MAX_TRACK];
+        int     trackQuality[ MAX_TRACK];
 
         void regTree(TTree *root){//{{{
             root->Branch("TrackInfo.size"           ,&size		    ,"TrackInfo.size/I"			);
@@ -350,6 +361,7 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.dxyPV"          ,dxyPV          ,"TrackInfo.dxyPV[TrackInfo.size]/D"		);
             root->Branch("TrackInfo.isGoodCand"     ,isGoodCand     ,"TrackInfo.isGoodCand[TrackInfo.size]/I");
             root->Branch("TrackInfo.geninfo_index"     ,geninfo_index     ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
+            root->Branch("TrackInfo.trackQuality"     ,trackQuality     ,"TrackInfo.trackQuality[TrackInfo.size]/I");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
@@ -374,6 +386,7 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.dxyPV"       , dxyPV       );
             root->SetBranchAddress("TrackInfo.isGoodCand"  , isGoodCand  );
             root->SetBranchAddress("TrackInfo.geninfo_index"  , geninfo_index  );
+            root->SetBranchAddress("TrackInfo.trackQuality"  , trackQuality  );
         }//}}}
 };//}}}
 

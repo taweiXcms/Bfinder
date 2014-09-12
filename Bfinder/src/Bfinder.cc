@@ -438,7 +438,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::vector<pat::GenericParticle>   input_tracks;
     input_muons = *muons;
     input_tracks = *tks;
-
     try{
         const reco::GenParticle* genMuonPtr[MAX_MUON];
         memset(genMuonPtr,0x00,MAX_MUON);
@@ -469,32 +468,33 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonCutLevel->Fill(0);
                         if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) 
                             { MuonInfo.passMuID[MuonInfo.size] = false; }
-                        else 
+                        else {
                             MuonCutLevel->Fill(1);
-
-                        if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))
-                            { MuonInfo.passMuID[MuonInfo.size] = false; }
-                        else 
-                            MuonCutLevel->Fill(2);
-
-                        if (fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
-                            fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
-                           ) 
-                            { MuonInfo.passMuID[MuonInfo.size] = false; }
-                        else 
-                            MuonCutLevel->Fill(3);
-
-                        if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
-                            mu_it->innerTrack()->normalizedChi2()>1.8
-                           ) 
-                            { MuonInfo.passMuID[MuonInfo.size] = false; }
-                        else 
-                            MuonCutLevel->Fill(4);
-
-                        if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6)
-                            { MuonInfo.passMuID[MuonInfo.size] = false; }
-                        else 
-                            MuonCutLevel->Fill(5);
+                            if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))
+                                { MuonInfo.passMuID[MuonInfo.size] = false; }
+                            else {
+                                MuonCutLevel->Fill(2);
+                                if(!mu_it->innerTrack().isNonnull())
+                                    { MuonInfo.passMuID[MuonInfo.size] = false; } 
+                                else {
+                                    MuonCutLevel->Fill(3);
+                                    if (  fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
+                                          fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
+                                       ) 
+                                        { MuonInfo.passMuID[MuonInfo.size] = false; }
+                                    else {
+                                        MuonCutLevel->Fill(4);
+                                        if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
+                                            mu_it->innerTrack()->normalizedChi2()>1.8
+                                           ) 
+                                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                                        else {
+                                            MuonCutLevel->Fill(5);
+                                            if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6)
+                                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                                            else 
+                                                MuonCutLevel->Fill(6);
+                        }}}}}
                         //outdated selections
                         //if(!(mu_it->innerTrack().isNonnull()*mu_it->globalTrack().isNonnull())) {continue;}
                         //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;
@@ -512,7 +512,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         std::vector<double> trgobjPhi;
                         MuonInfo.isTriggered[MuonInfo.size] = false;
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchPathSize; _m++){
-//                            pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
+                            //pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
                             pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str(), true, false);
                             if (match.empty()) {
                                 trgobjE.push_back(-999.);
@@ -542,33 +542,46 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.phi            [MuonInfo.size] = mu_it->phi();
                         MuonInfo.isTrackerMuon  [MuonInfo.size] = mu_it->isTrackerMuon();
                         MuonInfo.isGlobalMuon   [MuonInfo.size] = mu_it->isGlobalMuon();
-                        MuonInfo.normchi2       [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
-                        MuonInfo.i_striphit     [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidStripHits();
-                        MuonInfo.i_pixelhit     [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidPixelHits();
-                        MuonInfo.i_nStripLayer  [MuonInfo.size] = mu_it->innerTrack()->hitPattern().stripLayersWithMeasurement();
-                        MuonInfo.i_nPixelLayer  [MuonInfo.size] = mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement();
-                        //mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() == MuonInfo.i_nStripLayer + MuonInfo.i_nPixelLayer
-                        MuonInfo.i_chi2         [MuonInfo.size] = mu_it->innerTrack()->chi2();
-                        MuonInfo.i_ndf          [MuonInfo.size] = mu_it->innerTrack()->ndof();
-                        MuonInfo.fpbarrelhit    [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
-                        MuonInfo.fpendcaphit    [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelEndcap();
-                        MuonInfo.d0             [MuonInfo.size] = mu_it->track()->d0();
-                        MuonInfo.dz             [MuonInfo.size] = mu_it->track()->dz();
-                        MuonInfo.dzPV           [MuonInfo.size] = mu_it->track()->dz(RefVtx);//==mu_it->innerTrack()->dxy(thePrimaryV.position());
-                        MuonInfo.dxyPV          [MuonInfo.size] = mu_it->track()->dxy(RefVtx);//==mu_it->innerTrack()->dz(thePrimaryV.position());
                         MuonInfo.iso_trk        [MuonInfo.size] = mu_it->trackIso();//R<0.3
                         MuonInfo.iso_ecal       [MuonInfo.size] = mu_it->ecalIso();
                         MuonInfo.iso_hcal       [MuonInfo.size] = mu_it->hcalIso();
                         MuonInfo.type           [MuonInfo.size] = mu_it->type();//CaloMuon = 1<<4  GlobalMuon = 1<<1  PFMuon = 1<<5  StandAloneMuon = 1<<3  TrackerMuon = 1<<2
                         MuonInfo.n_matches      [MuonInfo.size] = mu_it->numberOfMatches();//only in chamber
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
-                        MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();//For T&P usage
                         MuonInfo.TMOneStationTight[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TMOneStationTight);//For Muon ID for convenience
                         MuonInfo.TrackerMuonArbitrated[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TrackerMuonArbitrated);//For Muon ID for convenience
 
                         if (!iEvent.isRealData())
                             genMuonPtr [MuonInfo.size] = mu_it->genParticle();
 
+                        MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();
+                        MuonInfo.innerTrackisNonnull[MuonInfo.size] = mu_it->innerTrack().isNonnull();
+                        if(mu_it->innerTrack().isNonnull()){
+                            for(int tq = -1; tq < reco::TrackBase::qualitySize; tq++){
+                            if (mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) MuonInfo.innerTrackQuality[MuonInfo.size] += 1 << (tq);
+                            //std::cout<<"type: "<<mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))<<std::endl;
+                            //enum    TrackQuality {
+                            //  undefQuality = -1, loose = 0, tight = 1, highPurity = 2,
+                            //  confirmed = 3, goodIterative = 4, looseSetWithPV = 5, highPuritySetWithPV = 6,
+                            //  qualitySize = 7
+                            //}
+                            }
+                            MuonInfo.normchi2                [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
+                            MuonInfo.i_striphit              [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidStripHits();
+                            MuonInfo.i_pixelhit              [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidPixelHits();
+                            MuonInfo.i_nStripLayer           [MuonInfo.size] = mu_it->innerTrack()->hitPattern().stripLayersWithMeasurement();
+                            MuonInfo.i_nPixelLayer           [MuonInfo.size] = mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement();
+                            MuonInfo.i_chi2                  [MuonInfo.size] = mu_it->innerTrack()->chi2();
+                            MuonInfo.i_ndf                   [MuonInfo.size] = mu_it->innerTrack()->ndof();
+                            MuonInfo.fpbarrelhit             [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
+                            MuonInfo.fpendcaphit             [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelEndcap();
+                            MuonInfo.d0                      [MuonInfo.size] = mu_it->track()->d0();
+                            MuonInfo.dz                      [MuonInfo.size] = mu_it->track()->dz();
+                            MuonInfo.dzPV                    [MuonInfo.size] = mu_it->track()->dz(RefVtx);//==mu_it->innerTrack()->dxy(thePrimaryV.position());
+                            MuonInfo.dxyPV                   [MuonInfo.size] = mu_it->track()->dxy(RefVtx);//==mu_it->innerTrack()->dz(thePrimaryV.position());
+                            //mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() == MuonInfo.i_nStripLayer + MuonInfo.i_nPixelLayer
+                        }
+                        MuonInfo.globalTrackisNonnull[MuonInfo.size] = mu_it->globalTrack().isNonnull();
                         if(mu_it->isGlobalMuon()){
                             MuonInfo.g_striphit [MuonInfo.size] = mu_it->globalTrack()->hitPattern().numberOfValidStripHits();
                             MuonInfo.g_pixelhit [MuonInfo.size] = mu_it->globalTrack()->hitPattern().numberOfValidPixelHits();
@@ -975,6 +988,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                         if (listOfRelativeXbCands.size() == 0) continue;//drop unused tracks
 
+
                         TrackInfo.index          [TrackInfo.size] = TrackInfo.size;
                         TrackInfo.handle_index   [TrackInfo.size] = tk_hindex;
                         TrackInfo.charge         [TrackInfo.size] = tk_it->charge();
@@ -995,6 +1009,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
+                        if(tk_it->track().isNonnull()){
+                            for(int tq = -1; tq < reco::TrackBase::qualitySize; tq++){
+                            if (tk_it->track()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) TrackInfo.trackQuality[TrackInfo.size] += 1 << (tq);
+                        }}
 
                         if (!iEvent.isRealData())
                             genTrackPtr [TrackInfo.size] = tk_it->genParticle();
