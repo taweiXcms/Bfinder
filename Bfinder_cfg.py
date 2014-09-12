@@ -196,7 +196,7 @@ if AddCaloMuon:
 
     #Or we change the muonMatch source of our patMuonsWithoutTrigger
     process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
-    pocess.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
+    process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
     if runOnMC:
         process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
         process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
