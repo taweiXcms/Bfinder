@@ -3,7 +3,7 @@
 #define _XBFRAMEFORMAT_H_
 
 #define MAX_XB 8192
-#define MAX_MUON 64
+#define MAX_MUON 256
 #define MAX_TRACK 4096 
 #define MAX_GEN 4096 
 #define MAX_BX 128

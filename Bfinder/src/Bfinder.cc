@@ -1,14 +1,7 @@
 // vim:set ts=4 sw=4 fdm=marker et:
-//Update:
-// 2013Nov13   twang   clear up different channel into single function
-// 2013Nov23   twang   GenInfo
-// 2014Jan07   twang   Modification for private MC
-// 2014Feb05   twang   fix MC matching
-// 2014Mar05   twang   various update
-// 2014Mar08   twang   add VtxInfo
-// 2014May18   twang   Add option for applying MuonID
-// 2014May18   twang   Add Muon trigger matching obj infomation
-// 2014May29   twang   Save all gen pi/K with ancestor B meson
+// Ntuplt creator for B meson related analysis.
+// Maintain and contact: ta-wei wang
+// Email: "tawei@mit.edu" or "ta-wei.wang@cern.ch"
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -131,7 +124,7 @@ class Bfinder : public edm::EDAnalyzer
         virtual void BranchOut2MuTk(
             BInfoBranches &BInfo,
             std::vector<pat::GenericParticle> input_tracks,
-            bool isNeededTrack[MAX_TRACK],
+            std::vector<bool> isNeededTrack,
             TLorentzVector v4_mu1,
             TLorentzVector v4_mu2,
             reco::TransientTrack muonPTT,
@@ -145,7 +138,7 @@ class Bfinder : public edm::EDAnalyzer
         virtual void BranchOut2MuX_XtoTkTk(
             BInfoBranches &BInfo,
             std::vector<pat::GenericParticle> input_tracks,
-            bool isNeededTrack[MAX_TRACK],
+            std::vector<bool> isNeededTrack,
             TLorentzVector v4_mu1,
             TLorentzVector v4_mu2,
             reco::TransientTrack muonPTT,
@@ -458,11 +451,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     int mu_hindex = -1;
                     for(std::vector<pat::Muon>::const_iterator mu_it=input_muons.begin();
                         mu_it != input_muons.end() ; mu_it++){
-                        if(mu_hindex >= MAX_MUON){
+                        mu_hindex = int(mu_it - input_muons.begin());
+                        if(MuonInfo.size >= MAX_MUON){
                             fprintf(stderr,"ERROR: number of muons exceeds the size of array.\n");
                             break;//exit(0);
                         }
-                        mu_hindex = int(mu_it - input_muons.begin());
  
                         MuonInfo.passMuID[MuonInfo.size] = true;
                         MuonCutLevel->Fill(0);
@@ -622,13 +615,14 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of MuonInfo.\n");
 
                     //Preselect tracks{{{
-                    bool isNeededTrack[MAX_TRACK];// Are the tracks redundant?
-                    memset(isNeededTrack,false,MAX_TRACK);
+                    std::vector<bool> isNeededTrack;// Are the tracks redundant?
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end(); tk_it++){
+                        isNeededTrack.push_back(false);
                         TrackCutLevel->Fill(0);//number of all tracks
                         bool isMuonTrack = false; //remove muon track
-                        for(std::vector<pat::Muon>::iterator it=input_muons.begin() ; it != input_muons.end() ; it++){
+                        for(std::vector<pat::Muon>::iterator it=input_muons.begin() ; 
+                            it != input_muons.end(); it++){
                             if (!it->track().isNonnull())                   continue;
                             if((it->type()|(1<<4))==(1<<4)) continue;//Don't clean track w.r.t. calo muon 
                             if (fabs(tk_it->pt() -it->track()->pt() )<0.00001 &&
@@ -662,7 +656,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     int mu1_hindex = -1;
                     bool gogogo = false;
                     for(std::vector<pat::Muon>::const_iterator mu_it1=input_muons.begin();
-                        mu_it1 != input_muons.end() ; mu_it1++){
+                        mu_it1 != input_muons.end(); mu_it1++){
                         //Check if it in MuonInfo and isNeedeMuon
                         mu1_hindex = int(mu_it1 - input_muons.begin());
                         gogogo = false;
@@ -680,7 +674,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         int mu2_index = -1;
                         int mu2_hindex = -1; 
                         for(std::vector<pat::Muon>::const_iterator mu_it2=input_muons.begin();
-                            mu_it2 != input_muons.end() ; mu_it2++){
+                            mu_it2 != input_muons.end(); mu_it2++){
                             mu2_hindex = int(mu_it2 - input_muons.begin()); 
                             gogogo = false;
                             for(int j=0; j < MuonInfo.size; j++){
@@ -1075,6 +1069,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
                 if (it_gen->status() > 2 && it_gen->status() != 8) continue;//only status 1, 2, 8(simulated)
+                if(GenInfo.size >= MAX_GEN){
+                    fprintf(stderr,"ERROR: number of gens exceeds the size of array.\n");
+                    break;;
+                }
 
                 /*
                 if (
@@ -1364,7 +1362,7 @@ bool Bfinder::GetAncestor(const reco::Candidate* p)
 void Bfinder::BranchOut2MuTk(
     BInfoBranches &BInfo, 
     std::vector<pat::GenericParticle> input_tracks, 
-    bool isNeededTrack[MAX_TRACK],
+    std::vector<bool> isNeededTrack,
     TLorentzVector v4_mu1, 
     TLorentzVector v4_mu2,
     reco::TransientTrack muonPTT,
@@ -1497,7 +1495,7 @@ void Bfinder::BranchOut2MuTk(
 void Bfinder::BranchOut2MuX_XtoTkTk(
     BInfoBranches &BInfo, 
     std::vector<pat::GenericParticle> input_tracks, 
-    bool isNeededTrack[MAX_TRACK],
+    std::vector<bool> isNeededTrack,
     TLorentzVector v4_mu1, 
     TLorentzVector v4_mu2,
     reco::TransientTrack muonPTT,
