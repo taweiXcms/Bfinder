@@ -11,8 +11,7 @@ ivars.outputFile='Bfinder_all.root'
 ivars.parseArguments()
 
 ### Add Calo muons
-### Since CMSSW_5_3_20, Improved muon best track were by default ran by the pat sequence, Calo muon will thus potential crash the code (since no track is associated with Calo muon)
-AddCaloMuon = False
+AddCaloMuon = True
 
 ### Run on MC?
 runOnMC = True
