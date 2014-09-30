@@ -527,6 +527,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.MuTrgMatchTrgObjEta->push_back(trgobjEta);
                         MuonInfo.MuTrgMatchTrgObjPhi->push_back(trgobjPhi);
                         
+                        //Muon general info.
                         MuonInfo.index          [MuonInfo.size] = MuonInfo.size;
                         MuonInfo.handle_index   [MuonInfo.size] = mu_hindex;
                         MuonInfo.charge         [MuonInfo.size] = mu_it->charge();
@@ -543,21 +544,35 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
                         MuonInfo.TMOneStationTight[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TMOneStationTight);//For Muon ID for convenience
                         MuonInfo.TrackerMuonArbitrated[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TrackerMuonArbitrated);//For Muon ID for convenience
+                        if (!iEvent.isRealData()) genMuonPtr [MuonInfo.size] = mu_it->genParticle();
 
-                        if (!iEvent.isRealData())
-                            genMuonPtr [MuonInfo.size] = mu_it->genParticle();
+                        //Muon standalone info.
+                        MuonInfo.isStandAloneMuon[MuonInfo.size] = false;
+                        if(mu_it->isStandAloneMuon()){
+                            MuonInfo.isStandAloneMuon[MuonInfo.size] = true;
+                            reco::TrackRef tkref;
+                            tkref = mu_it->standAloneMuon();
+                            const reco::Track &trk = *tkref;
+                            MuonInfo.StandAloneMuon_charge         [MuonInfo.size] = trk.charge();
+                            MuonInfo.StandAloneMuon_pt             [MuonInfo.size] = trk.pt();
+                            MuonInfo.StandAloneMuon_eta            [MuonInfo.size] = trk.eta();
+                            MuonInfo.StandAloneMuon_phi            [MuonInfo.size] = trk.phi();
+                            MuonInfo.StandAloneMuon_d0             [MuonInfo.size] = trk.d0();
+                            MuonInfo.StandAloneMuon_dz             [MuonInfo.size] = trk.dz();
+                            MuonInfo.StandAloneMuon_dzPV           [MuonInfo.size] = trk.dz(RefVtx);
+                            MuonInfo.StandAloneMuon_dxyPV          [MuonInfo.size] = trk.dxy(RefVtx);
+                            //std::cout<<"sta pt: "<<trk.pt()<<std::endl; std::cout<<"pt: "<<mu_it->pt()<<std::endl;
+                        }
 
                         MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();
                         MuonInfo.innerTrackisNonnull[MuonInfo.size] = mu_it->innerTrack().isNonnull();
+                        //Muon inner track info.
                         if(mu_it->innerTrack().isNonnull()){
+                            //Muon inner track track quality
+                            //enum TrackQuality { undefQuality = -1, loose = 0, tight = 1, highPurity = 2, confirmed = 3, goodIterative = 4, looseSetWithPV = 5, highPuritySetWithPV = 6, qualitySize = 7}
                             for(int tq = -1; tq < reco::TrackBase::qualitySize; tq++){
-                            if (mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) MuonInfo.innerTrackQuality[MuonInfo.size] += 1 << (tq);
-                            //std::cout<<"type: "<<mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))<<std::endl;
-                            //enum    TrackQuality {
-                            //  undefQuality = -1, loose = 0, tight = 1, highPurity = 2,
-                            //  confirmed = 3, goodIterative = 4, looseSetWithPV = 5, highPuritySetWithPV = 6,
-                            //  qualitySize = 7
-                            //}
+                                if (mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) MuonInfo.innerTrackQuality[MuonInfo.size] += 1 << (tq);
+                                //std::cout<<"type: "<<mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))<<std::endl;
                             }
                             MuonInfo.normchi2                [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
                             MuonInfo.i_striphit              [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidStripHits();
@@ -574,6 +589,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             MuonInfo.dxyPV                   [MuonInfo.size] = mu_it->track()->dxy(RefVtx);//==mu_it->innerTrack()->dz(thePrimaryV.position());
                             //mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() == MuonInfo.i_nStripLayer + MuonInfo.i_nPixelLayer
                         }
+                        //Muon global track info.
                         MuonInfo.globalTrackisNonnull[MuonInfo.size] = mu_it->globalTrack().isNonnull();
                         if(mu_it->isGlobalMuon()){
                             MuonInfo.g_striphit [MuonInfo.size] = mu_it->globalTrack()->hitPattern().numberOfValidStripHits();
@@ -588,6 +604,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             MuonInfo.g_ndf      [MuonInfo.size] = -1;
                             MuonInfo.nmuhit     [MuonInfo.size] = -1;
                         }
+                        //Muon quality
                         //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMuonAnalysis
                         int qm = 0;
                         for(int qi=1; qi!= 24; ++qi){
