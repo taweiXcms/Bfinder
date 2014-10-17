@@ -6,7 +6,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/localRun/RunMore/PyquenMix_embedHIJING_Bp2JpsiKp_Bpt5_5TeV_boostedMC.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hijing_PPb502_MinimumBias/PyquenMix_STARTHI53_V27_HIJINGembed_pPb_step4_RAW2DIGI_L1Reco_RECO_Bpt5_BuJpsiK_20140225/5dc89fb1319c58a400229c5d020a3799/HIJINGemb_BuJpsiK_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_92_1_Yd0.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/himc/HiWinter13/PYTHIA6_inclBtoPsiMuMu_5TeV02/GEN-SIM-RECO/pa_STARTHI53_V27-v1/20000/F66E8E9B-AD56-E311-9214-848F69FD3D0D.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/PAMuon_HIRun2013-PromptReco-v1_RECO/38291323-E567-E211-8DD9-5404A63886C5.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2013/PAMuon/RECO/PromptReco-v1/000/210/676/00000/38291323-E567-E211-8DD9-5404A63886C5.root'
 ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/MC_samples/hckim-HIJINGemb_inclBtoPsiMuMu_5TeV_boost_FEVTDEBUGHLT_v7All/HIJINGemb_inclBtoPsiMuMu_5TeV_boost_RECO_STARTHI53_V27_evt600_3446_1_4Qm.root'
 ivars.outputFile='Bfinder_all.root'
 # get and parse the command line arguments
@@ -88,8 +88,12 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 	thresh = cms.untracked.double(0.25)
 )
 
+# Common offline event selection
+process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
+
 #process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
-process.filter = cms.Sequence(process.noscraping)
+#process.filter = cms.Sequence(process.noscraping)
+process.filter = cms.Sequence(process.PAcollisionEventSelection)
 
 ##Producing Gen list with SIM particles
 process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
