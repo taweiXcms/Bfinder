@@ -170,7 +170,8 @@ class VtxInfoBranches { //{{{
         int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
         bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
-        bool    passMuID [MAX_MUON];
+        bool    BfinderMuID [MAX_MUON];
+        bool    SoftMuID [MAX_MUON];
 
         bool    isStandAloneMuon            [ MAX_MUON];
         int 	StandAloneMuon_charge       [ MAX_MUON];
@@ -232,7 +233,8 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.TrackerMuonArbitrated" ,TrackerMuonArbitrated, "MuonInfo.TrackerMuonArbitrated[MuonInfo.size]/O");
             root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
-            root->Branch("MuonInfo.passMuID" ,passMuID, "MuonInfo.passMuID[MuonInfo.size]/O");
+            root->Branch("MuonInfo.BfinderMuID" ,BfinderMuID, "MuonInfo.BfinderMuID[MuonInfo.size]/O");
+            root->Branch("MuonInfo.SoftMuID" ,SoftMuID, "MuonInfo.SoftMuID[MuonInfo.size]/O");
 
             root->Branch("MuonInfo.isStandAloneMuon"             , isStandAloneMuon             , "MuonInfo.isStandAloneMuon[MuonInfo.size]/O"		);
             root->Branch("MuonInfo.StandAloneMuon_charge"        , StandAloneMuon_charge        , "MuonInfo.StandAloneMuon_charge[MuonInfo.size]/I"	);
@@ -295,7 +297,8 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.TrackerMuonArbitrated" , TrackerMuonArbitrated);
             root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
-            root->SetBranchAddress("MuonInfo.passMuID" , passMuID);
+            root->SetBranchAddress("MuonInfo.BfinderMuID" , BfinderMuID);
+            root->SetBranchAddress("MuonInfo.SoftMuID" , SoftMuID);
 
             root->SetBranchAddress("MuonInfo.isStandAloneMuon"             , isStandAloneMuon              );
             root->SetBranchAddress("MuonInfo.StandAloneMuon_charge"        , StandAloneMuon_charge         );

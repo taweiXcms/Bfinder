@@ -160,7 +160,6 @@ class Bfinder : public edm::EDAnalyzer
 //      std::vector<std::string> TriggersForMatching_;
         std::vector<int> Bchannel_;
         std::vector<std::string> MuonTriggerMatchingPath_;
-        bool AppliedMuID_;
 //        edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
         edm::InputTag muonLabel_;
@@ -207,7 +206,6 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 //  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
     Bchannel_= iConfig.getParameter<std::vector<int> >("Bchannel");
     MuonTriggerMatchingPath_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingPath");
-    AppliedMuID_            = iConfig.getParameter<bool>("AppliedMuID");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
     muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
@@ -457,37 +455,56 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             break;//exit(0);
                         }
  
-                        MuonInfo.passMuID[MuonInfo.size] = true;
                         MuonCutLevel->Fill(0);
-                        if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) 
-                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                        if (!(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())) ;
                         else {
                             MuonCutLevel->Fill(1);
-                            if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight))
-                                { MuonInfo.passMuID[MuonInfo.size] = false; }
+                            if (!muon::isGoodMuon(*mu_it,muon::TMOneStationTight)) ;
                             else {
                                 MuonCutLevel->Fill(2);
-                                if(!mu_it->innerTrack().isNonnull())
-                                    { MuonInfo.passMuID[MuonInfo.size] = false; } 
+                                if(!mu_it->innerTrack().isNonnull()) ;
                                 else {
                                     MuonCutLevel->Fill(3);
                                     if (  fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
                                           fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
-                                       ) 
-                                        { MuonInfo.passMuID[MuonInfo.size] = false; }
+                                       ) ;
                                     else {
                                         MuonCutLevel->Fill(4);
                                         if (mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement()<1    ||
                                             mu_it->innerTrack()->normalizedChi2()>1.8
-                                           ) 
-                                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                                           ) ;
                                         else {
                                             MuonCutLevel->Fill(5);
-                                            if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6)
-                                            { MuonInfo.passMuID[MuonInfo.size] = false; }
+                                            if (mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement()<6) ;
                                             else 
                                                 MuonCutLevel->Fill(6);
                         }}}}}
+
+                        MuonInfo.BfinderMuID[MuonInfo.size] = false;
+                        if(mu_it->innerTrack().isNonnull()){
+                            if( (mu_it->isTrackerMuon() || mu_it->isGlobalMuon()) 
+                            && (muon::isGoodMuon(*mu_it,muon::TMOneStationTight)) 
+                            && fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) < 3.
+                            && fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  < 30.
+                            && mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement() > 0 
+                            && mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5
+                            && mu_it->innerTrack()->normalizedChi2() <= 1.8
+                            )
+                                MuonInfo.BfinderMuID[MuonInfo.size] = true;
+                        }
+                        
+                        MuonInfo.SoftMuID[MuonInfo.size] = false;
+                        if(mu_it->innerTrack().isNonnull()){
+                            if( (muon::isGoodMuon(*mu_it,muon::TMOneStationTight)) 
+                            && mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5
+                            && mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement() > 0 
+                            && mu_it->innerTrack()->quality(reco::TrackBase::highPurity)
+                            && fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) < 0.3
+                            && fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  < 20.
+                            )
+                                MuonInfo.SoftMuID[MuonInfo.size] = true;
+                        }
+
                         //outdated selections
                         //if(!(mu_it->innerTrack().isNonnull()*mu_it->globalTrack().isNonnull())) {continue;}
                         //if (!(mu_it->isGlobalMuon()*mu_it->track().isAvailable()*mu_it->globalTrack().isAvailable())) continue;

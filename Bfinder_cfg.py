@@ -220,7 +220,6 @@ process.demo = cms.EDAnalyzer('Bfinder',
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
     MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
-    AppliedMuID     = cms.bool(False),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
 	MuonLabel       = cms.InputTag('selectedPatMuons'),         #selectedPatMuons
