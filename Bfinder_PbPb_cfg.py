@@ -7,16 +7,21 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hijing_PPb502_MinimumBias/PyquenMix_STARTHI53_V27_HIJINGembed_pPb_step4_RAW2DIGI_L1Reco_RECO_Bpt5_BuJpsiK_20140225/5dc89fb1319c58a400229c5d020a3799/HIJINGemb_BuJpsiK_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_92_1_Yd0.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/himc/HiWinter13/PYTHIA6_inclBtoPsiMuMu_5TeV02/GEN-SIM-RECO/pa_STARTHI53_V27-v1/20000/F66E8E9B-AD56-E311-9214-848F69FD3D0D.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2013/PAMuon/RECO/PromptReco-v1/000/210/676/00000/38291323-E567-E211-8DD9-5404A63886C5.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/MC_samples/hckim-HIJINGemb_inclBtoPsiMuMu_5TeV_boost_FEVTDEBUGHLT_v7All/HIJINGemb_inclBtoPsiMuMu_5TeV_boost_RECO_STARTHI53_V27_evt600_3446_1_4Qm.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/MC_samples/hckim-HIJINGemb_inclBtoPsiMuMu_5TeV_boost_FEVTDEBUGHLT_v7All/HIJINGemb_inclBtoPsiMuMu_5TeV_boost_RECO_STARTHI53_V27_evt600_3446_1_4Qm.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2011/HIDiMuon/RECO/25Oct2012-v1/00001/6AEAB3A5-1A21-E211-A508-D4AE5264CC75.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2011/HIHighPt/RECO/14Mar2014-v2/00000/06B96D13-E0B8-E311-BFD5-FA163ED7EAFC.root'
+#ivars.inputFiles='file:/net/hisrv0001/home/tawei/HeavyFlavor_20131030/RECO/reco20141216/CMSSW_5_3_20/src/reco_test_RECODEBUG_all.root'
+ivars.inputFiles='file:/net/hisrv0001/home/tawei/HeavyFlavor_20131030/Gen_HiBmeson_20150121/PbPbtest/CMSSW_5_3_20/src/test/RECO.root'
 ivars.outputFile='Bfinder_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
 ### Add Calo muons
-AddCaloMuon = True
+AddCaloMuon = False
 
 ### Run on MC?
 runOnMC = True
+#runOnMC = False
 
 ### HI label?
 HIFormat = True
@@ -36,6 +41,7 @@ process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
+#process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 #process.load("Configuration.Geometry.GeometryIdeal_cff")
 #process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
@@ -58,7 +64,8 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
     #process.GlobalTag.globaltag = cms.string( 'START52_V7::All' )
     #process.GlobalTag.globaltag = cms.string( 'START53_V17::All' )
-    process.GlobalTag.globaltag = cms.string( 'START53_V27::All' )
+    process.GlobalTag.globaltag = cms.string( 'STARTHI53_LV1::All' ) ##PbPb
+#    process.GlobalTag.globaltag = cms.string( 'START53_V27::All' ) ##pPb
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
@@ -77,7 +84,8 @@ process.source = cms.Source("PoolSource",
 ### Set basic filter
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
 	#vertexCollection = cms.InputTag('offlinePrimaryVertices'),
-	vertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
+#	vertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
+	vertexCollection = cms.InputTag('hiSelectedVertex'),
 	minimumNDOF = cms.uint32(4) ,
 	maxAbsZ = cms.double(24),	
 	maxd0 = cms.double(2)	
@@ -92,10 +100,12 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 
 # Common offline event selection
 process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
+process.PAprimaryVertexFilter.src = cms.InputTag("hiSelectedVertex")
 
 #process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
 #process.filter = cms.Sequence(process.noscraping)
-process.filter = cms.Sequence(process.PAcollisionEventSelection)
+#process.filter = cms.Sequence(process.PAcollisionEventSelection)
+process.filter = cms.Sequence(process.collisionEventSelection)
 
 ##Producing Gen list with SIM particles
 process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
@@ -108,6 +118,13 @@ process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
 ### Setup Pat
 ### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
+process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+process.patMuons.embedTcMETMuonCorrs = cms.bool(False)
+from PhysicsTools.PatAlgos.tools.helpers import *
+#removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patDefaultSequence")
+removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patCandidates")
+process.patMuons.pvSrc = cms.InputTag("hiSelectedVertex")
+
 ### keep only Pat:: part 
 #from PhysicsTools.PatAlgos.patEventContent_cff import *
 if HIFormat:
@@ -124,7 +141,8 @@ from PhysicsTools.PatAlgos.tools.trackTools import *
 if runOnMC:
     makeTrackCandidates(process,              # patAODTrackCands
         label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
-        tracks=cms.InputTag('generalTracks'), # input track collection
+#        tracks=cms.InputTag('generalTracks'), # input track collection
+        tracks=cms.InputTag('hiGeneralTracks'), # input track collection
     	particleType='pi+',                   # particle type (for assigning a mass)
         preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
         selection='pt > 0.3',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
@@ -147,7 +165,8 @@ if runOnMC:
 else :
     makeTrackCandidates(process,              # patAODTrackCands
         label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
-        tracks=cms.InputTag('generalTracks'), # input track collection
+#        tracks=cms.InputTag('generalTracks'), # input track collection
+        tracks=cms.InputTag('hiGeneralTracks'), # input track collection
         particleType='pi+',                   # particle type (for assigning a mass)
         preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
         selection='pt > 0.3',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
@@ -193,7 +212,8 @@ process.mergedMuons = cms.EDProducer("CaloMuonMerger",
     caloMuons = cms.InputTag("calomuons"),
     minCaloCompatibility = cms.double(0.6),
     mergeTracks = cms.bool(False),
-    tracks = cms.InputTag("generalTracks"),
+#    tracks = cms.InputTag("generalTracks"),
+    tracks = cms.InputTag("hiGeneralTracks"),
 )
 if AddCaloMuon:
     #changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
@@ -258,7 +278,8 @@ if UsepatMuonsWithTrigger:
 	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
 
 process.p = cms.Path(	
-    process.filter*process.patDefaultSequence*process.demo
+    process.patDefaultSequence*process.demo
+#    process.filter*process.patDefaultSequence*process.demo
 )
 #process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
