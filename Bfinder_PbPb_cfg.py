@@ -248,8 +248,12 @@ process.demo = cms.EDAnalyzer('Bfinder',
 	TrackLabel      = cms.InputTag('selectedPatTrackCands'),    #selectedPat
     PUInfoLabel     = cms.InputTag("addPileupInfo"),
     BSLabel     = cms.InputTag("offlineBeamSpot"),
-    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS")
+    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    tkPtCut = cms.double(0.4),
+    RunOnMC = cms.bool(False)
 )
+if runOnMC:
+    process.demo.RunOnMC = cms.bool(True)
 if HIFormat:
 	process.demo.GenLabel = cms.InputTag('hiGenParticles')
 if UseGenPlusSim:

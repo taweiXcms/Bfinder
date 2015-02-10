@@ -167,6 +167,8 @@ class Bfinder : public edm::EDAnalyzer
         edm::InputTag puInfoLabel_;
         edm::InputTag bsLabel_;
         edm::InputTag pvLabel_;
+        double tkPtCut_;
+        bool RunOnMC_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -213,6 +215,8 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
+    tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
+    RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -670,7 +674,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackCutLevel->Fill(1);//number of non muon tracks
                         if (tk_it->track()->normalizedChi2()>5)             continue;
                         TrackCutLevel->Fill(2);
-                        if (tk_it->pt()<0.4)                                continue;
+                        //if (tk_it->pt()<0.4)                                continue;
+                        if (tk_it->pt()<tkPtCut_)                                continue;
                         TrackCutLevel->Fill(3);
                         if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
@@ -1088,7 +1093,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }//Muonss
 
         // GenInfo section{{{
-        if (!iEvent.isRealData()){
+        //if (!iEvent.isRealData()){
+        if (RunOnMC_){
         //if (1){
             //edm::Handle< std::vector<reco::GenParticle> > gens;
             edm::Handle<reco::GenParticleCollection> gens;
@@ -1120,18 +1126,18 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 bool isGenSignal = false;
                 //save target intermediat state particle
                 if (
-                    abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
                     abs(int(it_gen->pdgId()/100) % 100) == 4  ||//c menson
                     abs(int(it_gen->pdgId()/100) % 100) == 5  ||//b menson
                     abs(it_gen->pdgId()) == 511 ||//B_0
                     abs(it_gen->pdgId()) == 521 ||//B_+-
                     abs(it_gen->pdgId()) == 531 ||//B_s
-                    abs(it_gen->pdgId()) == 311 ||//K0
                     abs(it_gen->pdgId()) == 130 ||//KL
-                    abs(it_gen->pdgId()) == 310 ||//KS
-                    abs(it_gen->pdgId()) == 313 ||//K*0(892)
-                    abs(it_gen->pdgId()) == 323 ||//K*+-(892)
-                    abs(it_gen->pdgId()) == 333 ||//phi(1020)
+                    //abs(it_gen->pdgId()) == 311 ||//K0
+                    //abs(it_gen->pdgId()) == 321 ||//K+
+                    //abs(it_gen->pdgId()) == 310 ||//KS
+                    //abs(it_gen->pdgId()) == 313 ||//K*0(892)
+                    //abs(it_gen->pdgId()) == 323 ||//K*+-(892)
+                    //abs(it_gen->pdgId()) == 333 ||//phi(1020)
                     it_gen->pdgId() == 443      ||//Jpsi
                     it_gen->pdgId() == 100443   ||//Psi(2S)
                     it_gen->pdgId() == 553      ||//Upsilon
@@ -1140,8 +1146,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                 if (abs(it_gen->pdgId()) == 13) isGenSignal = true;//all mu
 
-                if (abs(it_gen->pdgId()) == 111 || 
-                    abs(it_gen->pdgId()) == 211 
+                if (
+                    abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
+                    abs(it_gen->pdgId()) == 111 || //pi0
+                    abs(it_gen->pdgId()) == 211 //pi+
                     ){
                     reco::GenParticle _deRef = (*it_gen);
                     reco::Candidate* Myself = dynamic_cast<reco::Candidate*>(&_deRef);
