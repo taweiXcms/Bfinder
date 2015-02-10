@@ -278,8 +278,8 @@ if UsepatMuonsWithTrigger:
 	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
 
 process.p = cms.Path(	
-    process.patDefaultSequence*process.demo
-#    process.filter*process.patDefaultSequence*process.demo
+#    process.patDefaultSequence*process.demo
+    process.filter*process.patDefaultSequence*process.demo
 )
 #process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
