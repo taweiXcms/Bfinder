@@ -654,8 +654,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                     //Preselect tracks{{{
                     std::vector<bool> isNeededTrack;// Are the tracks redundant?
+                    int PassedTrk = 0;
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end(); tk_it++){
+                        if(PassedTrk >= MAX_TRACK){
+                            fprintf(stderr,"ERROR: number of tracks exceeds the size of array.\n");
+                            break;
+                        }
                         isNeededTrack.push_back(false);
                         TrackCutLevel->Fill(0);//number of all tracks
                         bool isMuonTrack = false; //remove muon track
@@ -687,6 +692,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (tk_it->track()->hitPattern().numberOfValidPixelHits()<2) continue;
                         //TrackCutLevel->Fill(7);
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
+                        PassedTrk++;
                     }//end of track preselection}}}
                     //printf("-----*****DEBUG:End of track preselection.\n");
 
@@ -696,6 +702,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     bool gogogo = false;
                     for(std::vector<pat::Muon>::const_iterator mu_it1=input_muons.begin();
                         mu_it1 != input_muons.end(); mu_it1++){
+                        //check if muon track is non null
+                        if(!mu_it1->track().isNonnull()) continue;
                         //Check if it in MuonInfo and isNeedeMuon
                         mu1_hindex = int(mu_it1 - input_muons.begin());
                         gogogo = false;
@@ -714,6 +722,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         int mu2_hindex = -1; 
                         for(std::vector<pat::Muon>::const_iterator mu_it2=input_muons.begin();
                             mu_it2 != input_muons.end(); mu_it2++){
+                            //check if muon track is non null
+                            if(!mu_it2->track().isNonnull()) continue;
+                            //Check if it in MuonInfo and isNeedeMuon
                             mu2_hindex = int(mu_it2 - input_muons.begin()); 
                             gogogo = false;
                             for(int j=0; j < MuonInfo.size; j++){
@@ -1002,11 +1013,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     // TrackInfo section {{{
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
-                        if(TrackInfo.size >= MAX_TRACK){
-                            fprintf(stderr,"ERROR: number of tracks exceeds the size of array.\n");
-                            break;;
-                        }
                         int tk_hindex = int(tk_it - input_tracks.begin());
+                        if(tk_hindex>=int(isNeededTrack.size())) break;
                         if (isNeededTrack[tk_hindex]==false) continue;
 
                         //Create list of relative xb candidates for later filling
@@ -1019,7 +1027,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 listOfRelativeXbCands.push_back(-iXb-1);
                             }
                         }
-                        if (listOfRelativeXbCands.size() == 0) continue;//drop unused tracks
+                        //if (listOfRelativeXbCands.size() == 0) continue;//drop unused tracks
 
 
                         TrackInfo.index          [TrackInfo.size] = TrackInfo.size;
@@ -1427,6 +1435,7 @@ void Bfinder::BranchOut2MuTk(
   for(std::vector<pat::GenericParticle>::const_iterator tk_it1=input_tracks.begin();
       tk_it1 != input_tracks.end() ; tk_it1++){
       tk1_hindex = int(tk_it1 - input_tracks.begin());
+      if(tk1_hindex>=int(isNeededTrack.size())) break;
       if (!isNeededTrack[tk1_hindex]) continue;
       if (abs(tk_it1->charge()) != 1) continue;
       
@@ -1564,11 +1573,13 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
     for(std::vector<pat::GenericParticle>::const_iterator tk_it1=input_tracks.begin();
         tk_it1 != input_tracks.end() ; tk_it1++){
         tk1_hindex = int(tk_it1 - input_tracks.begin());
+        if(tk1_hindex>=int(isNeededTrack.size())) break;
         if (!isNeededTrack[tk1_hindex]) continue;
         if (tk_it1->charge()<0) continue;
         
         for(std::vector<pat::GenericParticle>::const_iterator tk_it2=input_tracks.begin();
             tk_it2 != input_tracks.end() ; tk_it2++){
+            if(tk2_hindex>=int(isNeededTrack.size())) break;
             tk2_hindex = int(tk_it2 - input_tracks.begin());
             if (!isNeededTrack[tk2_hindex]) continue;
             if (tk_it2->charge()>0) continue;

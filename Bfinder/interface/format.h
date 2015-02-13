@@ -2,13 +2,13 @@
 #ifndef _XBFRAMEFORMAT_H_
 #define _XBFRAMEFORMAT_H_
 
-#define MAX_XB 8192
+#define MAX_XB 16384
 #define MAX_MUON 512
-#define MAX_TRACK 4096 
+#define MAX_TRACK 8192
 #define MAX_GEN 4096 
 #define MAX_BX 128
 #define MAX_Vertices 4096
-#define N_TRIGGER_BOOKINGS 5842
+//#define N_TRIGGER_BOOKINGS 5842
 
 #include <string>
 #include <vector>
