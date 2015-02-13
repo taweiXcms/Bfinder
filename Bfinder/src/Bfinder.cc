@@ -1067,30 +1067,30 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         for(unsigned int iCands=0; iCands < listOfRelativeXbCands.size(); iCands++){
                             if (listOfRelativeXbCands[iCands]>0){
                                 BInfo.rftk1_index[listOfRelativeXbCands[iCands]-1] = TrackInfo.size;
-                                if ((TrackInfo.isGoodCand[TrackInfo.size]&1) == 1){
-                                    BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 1;
-                                    if (BInfo.rftk2_index[listOfRelativeXbCands[iCands]-1]>=0){
-                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1);
-                                    }
-//                                    if (BInfo.rftk2_index[listOfRelativeXbCands[iCands]-1]>=0){
-//                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
-//                                    }else{
-//                                        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 2;
-//                                    }
-                                }
+                                //if ((TrackInfo.isGoodCand[TrackInfo.size]&1) == 1){
+                                //    BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 1;
+                                //    if (BInfo.rftk2_index[listOfRelativeXbCands[iCands]-1]>=0){
+                                //        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1);
+                                //    }
+                                //    if (BInfo.rftk2_index[listOfRelativeXbCands[iCands]-1]>=0){
+                                //        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
+                                //    }else{
+                                //        BInfo.isGoodCand[listOfRelativeXbCands[iCands]-1] += 1 << 2;
+                                //    }
+                                //}
                             }else{
                                 BInfo.rftk2_index[-listOfRelativeXbCands[iCands]-1] = TrackInfo.size;
-                                if ((TrackInfo.isGoodCand[TrackInfo.size]&1) == 1){
-                                    BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
-                                    if (BInfo.rftk1_index[-listOfRelativeXbCands[iCands]-1]>=0){
-                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>1)&1);
-                                    }
-//                                    if (BInfo.rftk1_index[-listOfRelativeXbCands[iCands]-1]>=0){
-//                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
-//                                    }else{
-//                                        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
-//                                    }
-                                }
+                                //if ((TrackInfo.isGoodCand[TrackInfo.size]&1) == 1){
+                                //    BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
+                                //    if (BInfo.rftk1_index[-listOfRelativeXbCands[iCands]-1]>=0){
+                                //        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>1)&1);
+                                //    }
+                                //    if (BInfo.rftk1_index[-listOfRelativeXbCands[iCands]-1]>=0){
+                                //        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += ((BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1]>>2)&1)<<2;
+                                //    }else{
+                                //        BInfo.isGoodCand[-listOfRelativeXbCands[iCands]-1] += 1 << 2;
+                                //    }
+                                //}
                             }
                         }
                         TrackInfo.size++;
