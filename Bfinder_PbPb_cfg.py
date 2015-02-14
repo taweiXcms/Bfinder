@@ -268,7 +268,8 @@ process.load('Bfinder.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
 process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 if HIFormat:
-	process.hltanalysis.mctruth = cms.InputTag("hiGenParticles")
+	#process.hltanalysis.mctruth = cms.InputTag("hiGenParticles")# Will cause segmentation violation
+	#process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 	#process.hltanalysis.HLTProcessName = cms.string("HISIGNAL")
 	#process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
 	#process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
