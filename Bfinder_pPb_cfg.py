@@ -8,7 +8,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/himc/HiWinter13/PYTHIA6_inclBtoPsiMuMu_5TeV02/GEN-SIM-RECO/pa_STARTHI53_V27-v1/20000/F66E8E9B-AD56-E311-9214-848F69FD3D0D.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2013/PAMuon/RECO/PromptReco-v1/000/210/676/00000/38291323-E567-E211-8DD9-5404A63886C5.root'
 ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/MC_samples/hckim-HIJINGemb_inclBtoPsiMuMu_5TeV_boost_FEVTDEBUGHLT_v7All/HIJINGemb_inclBtoPsiMuMu_5TeV_boost_RECO_STARTHI53_V27_evt600_3446_1_4Qm.root'
-ivars.outputFile='Bfinder_all.root'
+ivars.outputFile='Bfinder_pPb_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
@@ -18,7 +18,7 @@ AddCaloMuon = True
 ### Run on MC?
 runOnMC = True
 
-### HI label?
+### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
 HIFormat = True
 #HIFormat = False
 
@@ -227,7 +227,9 @@ process.demo = cms.EDAnalyzer('Bfinder',
 	TrackLabel      = cms.InputTag('selectedPatTrackCands'),    #selectedPat
     PUInfoLabel     = cms.InputTag("addPileupInfo"),
     BSLabel     = cms.InputTag("offlineBeamSpot"),
-    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS")
+    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    tkPtCut = cms.double(0.4),
+    RunOnMC = cms.bool(False)
 )
 if HIFormat:
 	process.demo.GenLabel = cms.InputTag('hiGenParticles')
@@ -240,7 +242,8 @@ if UsepatMuonsWithTrigger:
 #process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
 process.load('Bfinder.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
-#if HIFormat:
+if HIFormat:
+	process.hltanalysis.mctruth = cms.InputTag("hiGenParticles")
 	#process.hltanalysis.HLTProcessName = cms.string("HISIGNAL")
 	#process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
 	#process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")

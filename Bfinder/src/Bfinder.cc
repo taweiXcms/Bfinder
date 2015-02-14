@@ -369,6 +369,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         VtxInfo.z[VtxInfo.Size] = it_vtx->z();
         VtxInfo.Pt_Sum[VtxInfo.Size] = 0.;
         VtxInfo.Pt_Sum2[VtxInfo.Size] = 0.;
+        //if its hiSelectedVertex, then there will be only one vertex and will have no associated tracks
+        if(int(VertexHandle->end()-VertexHandle->begin())==1){
+            thePrimaryV = *it_vtx;
+            VtxInfo.Size++;
+            break;
+        }
         for (reco::Vertex::trackRef_iterator it = it_vtx->tracks_begin(); it != it_vtx->tracks_end(); it++) {
            VtxInfo.Pt_Sum[VtxInfo.Size] += (*it)->pt();
            VtxInfo.Pt_Sum2[VtxInfo.Size] += ((*it)->pt() * (*it)->pt());
