@@ -267,7 +267,7 @@ if UsepatMuonsWithTrigger:
 process.load('Bfinder.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
 process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
-if HIFormat:
+#if HIFormat:
 	#process.hltanalysis.mctruth = cms.InputTag("hiGenParticles")# Will cause segmentation violation
 	#process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 	#process.hltanalysis.HLTProcessName = cms.string("HISIGNAL")
