@@ -442,7 +442,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     try{
         const reco::GenParticle* genMuonPtr[MAX_MUON];
         memset(genMuonPtr,0x00,MAX_MUON);
-        const reco::GenParticle* genTrackPtr[MAX_GEN];
+        const reco::GenParticle* genTrackPtr[MAX_TRACK];
         memset(genTrackPtr,0x00,MAX_GEN);
         //standard check for validity of input data
         if (input_muons.size() == 0){
