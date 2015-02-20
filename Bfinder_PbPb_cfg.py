@@ -252,6 +252,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 #    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
     PVLabel     = cms.InputTag("hiSelectedVertex"),
     tkPtCut = cms.double(0.4),
+    jpsiPtCut = cms.double(4.0),
+    bPtCut = cms.double(5.0),
     RunOnMC = cms.bool(False)
 )
 if runOnMC:
@@ -280,7 +282,7 @@ process.TFileService = cms.Service("TFileService",
 	fileName = cms.string(ivars.outputFile)
 )
 
-if runOnMC:
+if runOnMC and UseGenPlusSim:
 	process.patDefaultSequence *= process.genParticlePlusGEANT
 if UsepatMuonsWithTrigger:
 	process.patDefaultSequence *= process.patMuonsWithTriggerSequence

@@ -168,6 +168,8 @@ class Bfinder : public edm::EDAnalyzer
         edm::InputTag bsLabel_;
         edm::InputTag pvLabel_;
         double tkPtCut_;
+        double jpsiPtCut_;
+        double bPtCut_;
         bool RunOnMC_;
 
         edm::Service<TFileService> fs;
@@ -216,6 +218,8 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
+    jpsiPtCut_ = iConfig.getParameter<double>("jpsiPtCut");
+    bPtCut_ = iConfig.getParameter<double>("bPtCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
@@ -400,7 +404,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     EvtInfo.PVchi2  = thePrimaryV.chi2();
 
     // get pile-up information
-    if (!iEvent.isRealData()){
+    if (!iEvent.isRealData() && RunOnMC_){
         edm::Handle<std::vector< PileupSummaryInfo > >  PUHandle;
         iEvent.getByLabel(puInfoLabel_, PUHandle);
         std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -571,7 +575,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
                         MuonInfo.TMOneStationTight[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TMOneStationTight);//For Muon ID for convenience
                         MuonInfo.TrackerMuonArbitrated[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TrackerMuonArbitrated);//For Muon ID for convenience
-                        if (!iEvent.isRealData()) genMuonPtr [MuonInfo.size] = mu_it->genParticle();
+                        if (!iEvent.isRealData() && RunOnMC_) genMuonPtr [MuonInfo.size] = mu_it->genParticle();
 
                         //Muon standalone info.
                         MuonInfo.isStandAloneMuon[MuonInfo.size] = false;
@@ -748,6 +752,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             v4_mu1.SetPtEtaPhiM(mu_it1->pt(),mu_it1->eta(),mu_it1->phi(),MUON_MASS);
                             v4_mu2.SetPtEtaPhiM(mu_it2->pt(),mu_it2->eta(),mu_it2->phi(),MUON_MASS);
                             if (fabs((v4_mu1+v4_mu2).Mag()-JPSI_MASS)>0.4) continue;
+                            if((v4_mu1+v4_mu2).Pt()<jpsiPtCut_)continue;
     
                             //Fit 2 muon
                             reco::TransientTrack muonPTT(mu_it1->track(), &(*bField) );
@@ -1061,7 +1066,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             if (tk_it->track()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) TrackInfo.trackQuality[TrackInfo.size] += 1 << (tq);
                         }}
 
-                        if (!iEvent.isRealData())
+                        if (!iEvent.isRealData() && RunOnMC_)
                             genTrackPtr [TrackInfo.size] = tk_it->genParticle();
 
                         //0.passed all selections
@@ -1107,8 +1112,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }//Muonss
 
         // GenInfo section{{{
-        //if (!iEvent.isRealData()){
-        if (RunOnMC_){
+        if (!iEvent.isRealData() && RunOnMC_){
+        //if (RunOnMC_){
         //if (1){
             //edm::Handle< std::vector<reco::GenParticle> > gens;
             edm::Handle<reco::GenParticleCollection> gens;
@@ -1449,6 +1454,7 @@ void Bfinder::BranchOut2MuTk(
       v4_tk1.SetPtEtaPhiM(tk_it1->pt(),tk_it1->eta(),tk_it1->phi(),KAON_MASS);
   
       if ((v4_mu1+v4_mu2+v4_tk1).Mag()<mass_window[0]-0.2 || (v4_mu1+v4_mu2+v4_tk1).Mag()>mass_window[1]+0.2) continue;
+      if((v4_mu1+v4_mu2+v4_tk1).Pt()<bPtCut_)continue;
       
       reco::TransientTrack kaonTT(tk_it1->track(), &(*bField) );
       if (!kaonTT.isValid()) continue;
@@ -1597,6 +1603,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             else {if (fabs((v4_tk1+v4_tk2).Mag())>TkTk_window) continue;}//if no tktk mass constrain, require it to be at least < some window
             
             if ((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()<mass_window[0]-0.2 || (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()>mass_window[1]+0.2) continue;
+            if((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Pt()<bPtCut_)continue;
             
             reco::TransientTrack tk1PTT(tk_it1->track(), &(*bField) );
             reco::TransientTrack tk2MTT(tk_it2->track(), &(*bField) );

@@ -229,6 +229,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
     BSLabel     = cms.InputTag("offlineBeamSpot"),
     PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
     tkPtCut = cms.double(0.4),
+    jpsiPtCut = cms.double(0.0),
+    bPtCut = cms.double(0.0),
     RunOnMC = cms.bool(False)
 )
 if HIFormat:
@@ -254,7 +256,7 @@ process.TFileService = cms.Service("TFileService",
 	fileName = cms.string(ivars.outputFile)
 )
 
-if runOnMC:
+if runOnMC and UseGenPlusSim:
 	process.patDefaultSequence *= process.genParticlePlusGEANT
 if UsepatMuonsWithTrigger:
 	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
