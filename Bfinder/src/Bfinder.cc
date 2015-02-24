@@ -1119,11 +1119,15 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             edm::Handle<reco::GenParticleCollection> gens;
             iEvent.getByLabel(genLabel_, gens);
 
+            std::vector<const reco::Candidate *> sel_cands;
+            //deprecated
+            /*
             std::vector<const reco::Candidate *> cands;
             for(std::vector<reco::GenParticle>::const_iterator it_gen = gens->begin();
                 it_gen != gens->end(); it_gen++ ){
                 cands.push_back(&*it_gen);
             }
+            */
 
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
@@ -1263,6 +1267,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 */
                 if (!isGenSignal) continue;
 
+                /*deprecated
                 int iMo1 = -1,  iMo2 = -1,  iDa1 = -1,  iDa2 = -1;
                 for(std::vector<const reco::Candidate *>::iterator iCands = cands.begin();
                     iCands != cands.end(); iCands++){
@@ -1285,6 +1290,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             iDa1 = iCands - cands.begin();
                     }
                 }
+                */
                 //Find all other particle in TrackInfo
                 //printf("-----*****DEBUG:Start of matching.\n");
                 //if (abs(it_gen->pdgId()) == 13){
@@ -1322,14 +1328,45 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.status[GenInfo.size]        = it_gen->status();
                 GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
                 GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
-                GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
-                GenInfo.mo2[GenInfo.size]           = iMo2;
-                GenInfo.da1[GenInfo.size]           = iDa1;
-                GenInfo.da2[GenInfo.size]           = iDa2;
+                //GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
+                //GenInfo.mo2[GenInfo.size]           = iMo2;
+                //GenInfo.da1[GenInfo.size]           = iDa1;
+                //GenInfo.da2[GenInfo.size]           = iDa2;
+                GenInfo.mo1[GenInfo.size]           = -1;//To be matched later.
+                GenInfo.mo2[GenInfo.size]           = -1;
+                GenInfo.da1[GenInfo.size]           = -1;
+                GenInfo.da2[GenInfo.size]           = -1;
                 GenInfo.size++;
+                sel_cands.push_back(&*it_gen);
             }
-
             //printf("-----*****DEBUG:End of gens loop.\n");
+
+            int geninfo_idx = 0;
+            for(std::vector<const reco::Candidate *>::iterator sCands = sel_cands.begin();
+                sCands != sel_cands.end(); sCands++){
+                geninfo_idx = int(sCands-sel_cands.begin());
+                for(int nGenMo = 0; nGenMo < std::min(2,int((*sCands)->numberOfMothers())); nGenMo++){
+                //if((*sCands)->numberOfMothers()==1){
+                    for(std::vector<const reco::Candidate *>::iterator mCands = sel_cands.begin();
+                    mCands != sel_cands.end(); mCands++){
+                        if((*sCands)->mother(nGenMo) == *mCands){
+                        //if((*sCands)->mother(0) == *mCands){
+                            if(nGenMo == 0) GenInfo.mo1[geninfo_idx] = int(mCands-sel_cands.begin());
+                            if(nGenMo == 1) GenInfo.mo2[geninfo_idx] = int(mCands-sel_cands.begin());
+                        }
+                    }
+                }
+                for(int nGenDa = 0; nGenDa < std::min(2,int((*sCands)->numberOfDaughters())); nGenDa++){
+                    for(std::vector<const reco::Candidate *>::iterator mCands = sel_cands.begin();
+                    mCands != sel_cands.end(); mCands++){
+                        if((*sCands)->daughter(nGenDa) == *mCands){
+                            if(nGenDa == 0) GenInfo.da1[geninfo_idx] = int(mCands-sel_cands.begin());
+                            if(nGenDa == 1) GenInfo.da2[geninfo_idx] = int(mCands-sel_cands.begin());
+                        }
+                    }
+                }
+            }
+            /*deprecated
             //Pass handle_index to igen
             for(int igen = 0; igen < GenInfo.size; igen++){
                 int iMo1 = GenInfo.mo1[igen];
@@ -1359,6 +1396,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                    GenInfo.da2[igen] = -1;
             }
             //printf("-----*****DEBUG:End of IndexToIgen\n");
+            */
         }//isRealData}}}
         //printf("-----*****DEBUG:End of GenInfo.\n");
         //std::cout<<"Start to fill!\n";

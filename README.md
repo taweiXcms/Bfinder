@@ -1,5 +1,5 @@
 Few actions now needed, please do:
-"mv DataFormats  HeavyIonsAnalysis RecoHI ../"
+mv DataFormats  HeavyIonsAnalysis RecoHI ../
 Before scram b (compile).
 
 Comments==========
