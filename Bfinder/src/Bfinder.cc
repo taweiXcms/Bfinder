@@ -601,7 +601,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         if(mu_it->innerTrack().isNonnull()){
                             //Muon inner track track quality
                             //enum TrackQuality { undefQuality = -1, loose = 0, tight = 1, highPurity = 2, confirmed = 3, goodIterative = 4, looseSetWithPV = 5, highPuritySetWithPV = 6, qualitySize = 7}
-                            for(int tq = -1; tq < reco::TrackBase::qualitySize; tq++){
+                            for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){
                                 if (mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) MuonInfo.innerTrackQuality[MuonInfo.size] += 1 << (tq);
                                 //std::cout<<"type: "<<mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))<<std::endl;
                             }
