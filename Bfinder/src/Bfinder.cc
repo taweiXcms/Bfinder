@@ -647,9 +647,14 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                         // Basic Muon selection for fitting
                         //Can not be just CaloMuon or empty type
-                        if((MuonInfo.type[MuonInfo.size]|(1<<4))==(1<<4)) {
-                            MuonInfo.isNeededMuon[MuonInfo.size] = false;
-                        }
+                        if((MuonInfo.type[MuonInfo.size]|(1<<4))==(1<<4)
+                            //Some extra selection
+                            //|| !mu_it->outerTrack().isNonnull()
+                            //|| !mu_it->innerTrack().isNonnull()
+                            //|| mu_it->innerTrack()->hitPattern().stripLayersWithMeasurement()<6
+                            || !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
+                        ){
+                            MuonInfo.isNeededMuon[MuonInfo.size] = false;}
                         else MuonInfo.isNeededMuon[MuonInfo.size] = true;
 
                         //1.every digit after this must be 1 since only binary of the form 000111 will have: (b&b+1)==0 
