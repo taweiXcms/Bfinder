@@ -3,7 +3,7 @@
 #define _XBFRAMEFORMAT_H_
 
 #define MAX_XB 16384
-//#define MAX_XB 32768
+//#define MAX_XB 32768//When the size get too large, SetBranchAddress will fail
 #define MAX_MUON 512
 #define MAX_TRACK 8192
 #define MAX_GEN 4096 
