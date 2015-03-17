@@ -252,7 +252,7 @@ process.demo = cms.EDAnalyzer('Bfinder',
 #    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
     PVLabel     = cms.InputTag("hiSelectedVertex"),
     tkPtCut = cms.double(1.0),
-    jpsiPtCut = cms.double(4.0),
+    jpsiPtCut = cms.double(0.0),
     bPtCut = cms.double(5.0),
     RunOnMC = cms.bool(False)
 )
