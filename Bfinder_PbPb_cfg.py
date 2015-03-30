@@ -10,8 +10,9 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/MC_samples/hckim-HIJINGemb_inclBtoPsiMuMu_5TeV_boost_FEVTDEBUGHLT_v7All/HIJINGemb_inclBtoPsiMuMu_5TeV_boost_RECO_STARTHI53_V27_evt600_3446_1_4Qm.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2011/HIDiMuon/RECO/25Oct2012-v1/00001/6AEAB3A5-1A21-E211-A508-D4AE5264CC75.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2011/HIHighPt/RECO/14Mar2014-v2/00000/06B96D13-E0B8-E311-BFD5-FA163ED7EAFC.root'
-#ivars.inputFiles='file:/net/hisrv0001/home/tawei/HeavyFlavor_20131030/RECO/reco20141216/CMSSW_5_3_20/src/reco_test_RECODEBUG_all.root'
-#ivars.inputFiles='file:/net/hisrv0001/home/tawei/HeavyFlavor_20131030/Gen_HiBmeson_20150121/PbPbtest/CMSSW_5_3_20/src/test/RECO.root'
+#ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/RAW/v1/000/183/013/RECO_02A69E73-C01F-E111-A008-00237DDC5AF6.root'
+#ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/USER/L2DoubleMu3Skim_v10_38dff9fa051006d6e895e3c1df676d76-v1/40000/RECO_02F09DEB-FACF-E411-9976-7845C4FB82F2.root'
+#ivars.inputFiles='file:/net/hisrv0001/home/tawei/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_20150327/cf203613c3d0bfa79df606745a236cc7/reco_94_1_fEZ.root'
 ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
