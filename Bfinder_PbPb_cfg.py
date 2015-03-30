@@ -82,6 +82,12 @@ process.source = cms.Source("PoolSource",
     skipEvents=cms.untracked.uint32(0),
 	fileNames = cms.untracked.vstring(ivars.inputFiles)
 )
+### Using JSON file
+if not runOnMC:
+    import PhysicsTools.PythonAnalysis.LumiList as LumiList
+    process.source.lumisToProcess = LumiList.LumiList(filename =
+    '/net/hisrv0001/home/tawei/HeavyFlavor_20131030/Bfinder/CMSSW_5_3_20/src/Bfinder/JSON/Cert_181530-183126_HI7TeV_25Oct2012ReReco_Collisions11_JSON_MuonPhys_HF_manualPatch.txt'
+    ).getVLuminosityBlockRange()
 
 ### Set basic filter
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
