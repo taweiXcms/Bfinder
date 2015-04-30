@@ -1,15 +1,4 @@
-test branch
+Special temparary version for CMSSW741
 
-Few actions now needed, please do:
-mv DataFormats  HeavyIonsAnalysis RecoHI ../
-Before scram b (compile).
-
-Comments==========
-In:
-DataFormats/PatCandidates/src/Muon.cc
-DataFormats/MuonReco/src/MuonCocktails.cc
-Comment out the error log which seems to be delaying the program
-
-Add:
-HeavyIonsAnalysis/Configuration/python/collisionEventSelection_cff.py
-For HI event selection
+Remove DataFormats, RecoHI, HeavyIonsAnalysis/EventAnalysis, EventAnalysis/src/HiEvtAnalyzer.cc, EventAnalysis/python/hievtanalyzer_data_cfi.py 
+comment removeAllPATObjectsBut from Bfinder_cfg.py
