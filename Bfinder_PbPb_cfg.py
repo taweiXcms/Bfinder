@@ -185,7 +185,7 @@ else :
     l1cands = getattr(process, 'patTrackCands')
     l1cands.addGenMatch = False
 from PhysicsTools.PatAlgos.tools.coreTools import *
-removeAllPATObjectsBut(process, ['Muons'])
+#removeAllPATObjectsBut(process, ['Muons'])
 #removeSpecificPATObjects(process, ['Jets'])
 
 if not runOnMC :
