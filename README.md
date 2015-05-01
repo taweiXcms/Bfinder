@@ -8,6 +8,7 @@ Before compile:
 mv HeavyIonsAnalysis ../
 
 Update log:
-Remove DataFormats, RecoHI, HeavyIonsAnalysis/EventAnalysis, EventAnalysis/src/HiEvtAnalyzer.cc, EventAnalysis/python/hievtanalyzer_data_cfi.py 
-Remove removeAllPATObjectsBut from Bfinder_cfg.py
-Bfinder_PbPb_cfg.py: Added several ad-hoc fixs.
+	Remove DataFormats, RecoHI, HeavyIonsAnalysis/EventAnalysis, EventAnalysis/src/HiEvtAnalyzer.cc, EventAnalysis/python/hievtanalyzer_data_cfi.py 
+	Remove removeAllPATObjectsBut from Bfinder_cfg.py
+	Bfinder_PbPb_cfg.py: Added several ad-hoc fixs.
+	Add pp config. 
