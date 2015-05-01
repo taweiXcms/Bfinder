@@ -13,7 +13,9 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/RAW/v1/000/183/013/RECO_02A69E73-C01F-E111-A008-00237DDC5AF6.root'
 #ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/USER/L2DoubleMu3Skim_v10_38dff9fa051006d6e895e3c1df676d76-v1/40000/RECO_02F09DEB-FACF-E411-9976-7845C4FB82F2.root'
 #ivars.inputFiles='file:/net/hisrv0001/home/tawei/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_20150327/cf203613c3d0bfa79df606745a236cc7/reco_94_1_fEZ.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_20150327/cf203613c3d0bfa79df606745a236cc7/reco_976_1_Hr7.root'
+ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
@@ -22,8 +24,8 @@ ivars.parseArguments()
 AddCaloMuon = False
 
 ### Run on MC?
-runOnMC = True
-#runOnMC = False
+#runOnMC = True
+runOnMC = False
 
 ### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
 HIFormat = True
@@ -57,7 +59,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1))
 
 ### Set global tag
 if runOnMC:
@@ -72,10 +74,11 @@ else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
     #process.GlobalTag.globaltag = cms.string( 'FT_P_V42_AN2::All' ) #for 2012D
-    process.GlobalTag.globaltag = cms.string( 'GR_R_53_LV6::All' ) ##PbPb
+#    process.GlobalTag.globaltag = cms.string( 'GR_R_53_LV6::All' ) ##PbPb
 #    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pp
 #    process.GlobalTag.globaltag = cms.string( 'GR_P_V43F::All' ) ##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
 #    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
+    process.GlobalTag.globaltag = cms.string( 'GR_R_74_V8A::All' ) ##CMSSW_7_4_0_pre8 PbPb
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
@@ -126,12 +129,31 @@ process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
 ### Setup Pat
 ### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
-process.patMuons.embedTcMETMuonCorrs = cms.bool(False)
-from PhysicsTools.PatAlgos.tools.helpers import *
-#removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patDefaultSequence")
-removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patCandidates")
-process.patMuons.pvSrc = cms.InputTag("hiSelectedVertex")
+######MODIFIED
+process.particleFlowPtrs.src = "particleFlowTmp"
+process.pfPileUp.Vertices = cms.InputTag("hiSelectedVertex")
+process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
+process.pfPileUpPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
+process.patElectrons.electronSource = cms.InputTag("gedGsfElectronsTmp")
+process.elPFIsoDepositChargedPAT.src = cms.InputTag("gedGsfElectronsTmp")
+process.elPFIsoDepositChargedAllPAT.src = cms.InputTag("gedGsfElectronsTmp")
+process.elPFIsoDepositNeutralPAT.src = cms.InputTag("gedGsfElectronsTmp")
+process.elPFIsoDepositGammaPAT.src = cms.InputTag("gedGsfElectronsTmp")
+process.elPFIsoDepositPUPAT.src = cms.InputTag("gedGsfElectronsTmp")
+process.patPhotons.photonSource = cms.InputTag("photons")
+process.patPhotons.electronSource = cms.InputTag("gedGsfElectronsTmp")
+process.phPFIsoDepositChargedPAT.src = cms.InputTag("photons")
+process.phPFIsoDepositChargedAllPAT.src = cms.InputTag("photons")
+process.phPFIsoDepositNeutralPAT.src = cms.InputTag("photons")
+process.phPFIsoDepositGammaPAT.src = cms.InputTag("photons")
+process.phPFIsoDepositPUPAT.src = cms.InputTag("photons")
+#process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+#process.patMuons.embedTcMETMuonCorrs = cms.bool(False)
+#from PhysicsTools.PatAlgos.tools.helpers import *
+##removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patDefaultSequence")
+#removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patCandidates")
+#process.patMuons.pvSrc = cms.InputTag("hiSelectedVertex")
+######MODIFIED
 
 ### keep only Pat:: part 
 #from PhysicsTools.PatAlgos.patEventContent_cff import *
@@ -144,7 +166,8 @@ if UseGenPlusSim:
 	process.muonMatch.matched = cms.InputTag("genParticlePlusGEANT")
 
 #process.allLayer1Jets.addJetCorrFactors = False
-from PhysicsTools.PatAlgos.tools.trackTools import *
+#from PhysicsTools.PatAlgos.tools.trackTools import *######MODIFIED
+from Bfinder.tempTools.trackTools import *######MODIFIED
 #process.load( 'PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cff' )
 if runOnMC:
     makeTrackCandidates(process,              # patAODTrackCands
@@ -185,14 +208,16 @@ else :
     l1cands = getattr(process, 'patTrackCands')
     l1cands.addGenMatch = False
 from PhysicsTools.PatAlgos.tools.coreTools import *
+from Bfinder.tempTools.tempTools import *######MODIFIED
 #removeAllPATObjectsBut(process, ['Muons'])
-#removeSpecificPATObjects(process, ['Jets'])
+removeSpecificPATObjects(process, ['Photons', 'Electrons', 'Taus', 'Jets', 'METs', 'Muons'])######MODIFIED
 
 if not runOnMC :
 	removeMCMatching(process, ['All'] )
 
 process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
 from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import *
+process.patMuonsWithoutTrigger.pfMuonSource = cms.InputTag("particleFlowTmp")######MODIFIED
 if runOnMC:
 	addMCinfo(process)
 	process.muonMatch.resolveByMatchQuality = True
