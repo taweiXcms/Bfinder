@@ -70,7 +70,8 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START53_V17::All' )
 #    process.GlobalTag.globaltag = cms.string( 'STARTHI53_LV1::All' ) ##PbPb
 #    process.GlobalTag.globaltag = cms.string( 'START53_V27::All' ) ##pPb
-    process.GlobalTag.globaltag = cms.string( 'MCHI1_74_V4::All' ) ##PbPb for 7_4_0_pre8
+#    process.GlobalTag.globaltag = cms.string( 'MCHI1_74_V4::All' ) ##PbPb for 7_4_0_pre8
+    process.GlobalTag.globaltag = cms.string( 'MCHI1_74_V6::All' ) ##PbPb for 7_4_2
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
@@ -80,6 +81,7 @@ else:
 #    process.GlobalTag.globaltag = cms.string( 'GR_P_V43F::All' ) ##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
 #    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
     process.GlobalTag.globaltag = cms.string( 'GR_R_74_V8A::All' ) ##CMSSW_7_4_0_pre8 PbPb
+#    process.GlobalTag.globaltag = cms.string( 'GR_R_74_V12A::All' ) ##CMSSW_7_4_2 PbPb
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
