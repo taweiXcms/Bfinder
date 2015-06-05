@@ -290,7 +290,9 @@ process.demo = cms.EDAnalyzer('Bfinder',
     tkPtCut = cms.double(1.0),
     jpsiPtCut = cms.double(3.0),
     bPtCut = cms.double(5.0),
-    RunOnMC = cms.bool(False)
+    RunOnMC = cms.bool(False),
+	doTkPreCut = cms.bool(True),
+	doMuPreCut = cms.bool(True)
 )
 if runOnMC:
     process.demo.RunOnMC = cms.bool(True)

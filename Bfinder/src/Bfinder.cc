@@ -171,6 +171,8 @@ class Bfinder : public edm::EDAnalyzer
         double jpsiPtCut_;
         double bPtCut_;
         bool RunOnMC_;
+        bool doTkPreCut_;
+        bool doMuPreCut_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -217,6 +219,9 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
+
+    doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
+    doMuPreCut_ = iConfig.getParameter<bool>("doMuPreCut");
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     jpsiPtCut_ = iConfig.getParameter<double>("jpsiPtCut");
     bPtCut_ = iConfig.getParameter<double>("bPtCut");
@@ -647,14 +652,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                         // Basic Muon selection for fitting
                         //Can not be just CaloMuon or empty type
-                        if((MuonInfo.type[MuonInfo.size]|(1<<4))==(1<<4)
-                            //Some extra selection
-                            //|| !mu_it->outerTrack().isNonnull()
-                            //|| !mu_it->innerTrack().isNonnull()
-                            //|| mu_it->innerTrack()->hitPattern().stripLayersWithMeasurement()<6
-                            || !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
+                        if((MuonInfo.type[MuonInfo.size]|(1<<4))==(1<<4)){
+                            MuonInfo.isNeededMuon[MuonInfo.size] = false;
+                        }
+                        else if(doMuPreCut_ &&
+                                (   !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
+                                //||  some other cut
+                                )
                         ){
-                            MuonInfo.isNeededMuon[MuonInfo.size] = false;}
+                            MuonInfo.isNeededMuon[MuonInfo.size] = false;
+                        }
                         else MuonInfo.isNeededMuon[MuonInfo.size] = true;
 
                         //1.every digit after this must be 1 since only binary of the form 000111 will have: (b&b+1)==0 
@@ -692,20 +699,19 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                         if (isMuonTrack)                                    continue;
                         TrackCutLevel->Fill(1);//number of non muon tracks
-                        if (tk_it->track()->normalizedChi2()>5)             continue;
+                        if (tk_it->pt()<tkPtCut_)                           continue;
                         TrackCutLevel->Fill(2);
-                        //if (tk_it->pt()<0.4)                                continue;
-                        if (tk_it->pt()<tkPtCut_)                                continue;
-                        TrackCutLevel->Fill(3);
                         if (fabs(tk_it->eta()) > 2.5)                       continue;
-                        TrackCutLevel->Fill(4);
-                        //outdated selections
-                        //if (tk_it->p()>200 || tk_it->pt()>200)              continue;
-                        //TrackCutLevel->Fill(4);
-                        //if (tk_it->track()->hitPattern().numberOfValidStripHits()<10)continue;
-                        //TrackCutLevel->Fill(6);
-                        //if (tk_it->track()->hitPattern().numberOfValidPixelHits()<2) continue;
-                        //TrackCutLevel->Fill(7);
+                        TrackCutLevel->Fill(3);
+                        if(doTkPreCut_){
+                            if (!tk_it->track()->qualityByName("highPurity"))        continue;
+                            TrackCutLevel->Fill(4);
+                            //outdated selections
+                            //if (tk_it->track()->normalizedChi2()>5)             continue;
+                            //if (tk_it->p()>200 || tk_it->pt()>200)              continue;
+                            //if (tk_it->track()->hitPattern().numberOfValidStripHits()<10)continue;
+                            //if (tk_it->track()->hitPattern().numberOfValidPixelHits()<2) continue;
+                        }
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
                         PassedTrk++;
                     }//end of track preselection}}}
@@ -1065,6 +1071,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->qualityByName("highPurity");
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         if(tk_it->track().isNonnull()){
                             for(int tq = -1; tq < reco::TrackBase::qualitySize; tq++){
