@@ -398,7 +398,7 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.isGoodCand"     ,isGoodCand     ,"TrackInfo.isGoodCand[TrackInfo.size]/I");
             root->Branch("TrackInfo.geninfo_index"     ,geninfo_index     ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
             root->Branch("TrackInfo.trackQuality"     ,trackQuality     ,"TrackInfo.trackQuality[TrackInfo.size]/I");
-            root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/I");
+            root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/O");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
