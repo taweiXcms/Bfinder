@@ -231,7 +231,9 @@ process.demo = cms.EDAnalyzer('Bfinder',
     tkPtCut = cms.double(0.4),
     jpsiPtCut = cms.double(0.0),
     bPtCut = cms.double(0.0),
-    RunOnMC = cms.bool(False)
+    RunOnMC = cms.bool(False),
+    doTkPreCut = cms.bool(True),
+    doMuPreCut = cms.bool(True)
 )
 if HIFormat:
 	process.demo.GenLabel = cms.InputTag('hiGenParticles')

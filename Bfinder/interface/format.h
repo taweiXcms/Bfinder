@@ -372,7 +372,8 @@ class TrackInfoBranches{//{{{
         double	dxyPV        [ MAX_TRACK];
         int     isGoodCand   [ MAX_TRACK];
         int     geninfo_index[ MAX_TRACK];
-        int     trackQuality[ MAX_TRACK];
+        int     trackQuality [ MAX_TRACK];
+        bool    highPurity   [ MAX_TRACK];
 
         void regTree(TTree *root){//{{{
             root->Branch("TrackInfo.size"           ,&size		    ,"TrackInfo.size/I"			);
@@ -397,6 +398,7 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.isGoodCand"     ,isGoodCand     ,"TrackInfo.isGoodCand[TrackInfo.size]/I");
             root->Branch("TrackInfo.geninfo_index"     ,geninfo_index     ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
             root->Branch("TrackInfo.trackQuality"     ,trackQuality     ,"TrackInfo.trackQuality[TrackInfo.size]/I");
+            root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/I");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
@@ -422,6 +424,7 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.isGoodCand"  , isGoodCand  );
             root->SetBranchAddress("TrackInfo.geninfo_index"  , geninfo_index  );
             root->SetBranchAddress("TrackInfo.trackQuality"  , trackQuality  );
+            root->SetBranchAddress("TrackInfo.highPurity"  , highPurity  );
         }//}}}
 };//}}}
 
