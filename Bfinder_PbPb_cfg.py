@@ -248,7 +248,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 		1,#RECONSTRUCTION: J/psi + phi
 		1,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
-    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
+#    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
+    MuonTriggerMatchingPath = cms.vstring("HLT_HIL2DoubleMu3_v*"),
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
