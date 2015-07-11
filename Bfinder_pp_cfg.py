@@ -1,17 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
-#ivars.inputFiles='root://eoscms//eos/cms/store/user/twang/HIBmeson_20131220/test_20140106/JpsiKp/PyquenMix_embedHIJING_Bp2JpsiKp_5TeV_102_2_VpA.root'
-#ivars.inputFiles='file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/subGENSIM_20140219/subBu/step4/HIJINGemb_BdJpsiKstar_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO.root'
-#ivars.inputFiles='file:/afs/cern.ch/work/t/twang/MITHIG/GenHIBmeson_20131220/BoostGen5GeVB_20140214/localRun/RunMore/PyquenMix_embedHIJING_Bp2JpsiKp_Bpt5_5TeV_boostedMC.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hijing_PPb502_MinimumBias/PyquenMix_STARTHI53_V27_HIJINGembed_pPb_step4_RAW2DIGI_L1Reco_RECO_Bpt5_BuJpsiK_20140225/5dc89fb1319c58a400229c5d020a3799/HIJINGemb_BuJpsiK_TuneZ2star_5TeV_cff_step4_RAW2DIGI_L1Reco_RECO_92_1_Yd0.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/himc/HiWinter13/PYTHIA6_inclBtoPsiMuMu_5TeV02/GEN-SIM-RECO/pa_STARTHI53_V27-v1/20000/F66E8E9B-AD56-E311-9214-848F69FD3D0D.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2013/PAMuon/RECO/PromptReco-v1/000/210/676/00000/38291323-E567-E211-8DD9-5404A63886C5.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/MC_samples/hckim-HIJINGemb_inclBtoPsiMuMu_5TeV_boost_FEVTDEBUGHLT_v7All/HIJINGemb_inclBtoPsiMuMu_5TeV_boost_RECO_STARTHI53_V27_evt600_3446_1_4Qm.root'
-#ivars.inputFiles='file:/net/hisrv0001/home/tawei/HeavyFlavor_20131030/Gen_HiBmeson_20150121/PbPbtest/CMSSW_7_4_0_pre8/src/GenPP/step3_RAW2DIGI_L1Reco_RECO_VALIDATION.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_97_1_SUD.root'
-ivars.inputFiles='file:/net/hisrv0001/home/tawei/HeavyFlavor_20131030/Bfinder/TempFor_CMSSW_7_4_1_20150430/test/CMSSW_7_4_1/src/data/store/relval/CMSSW_7_4_1/RelValBuJpsiK_13/GEN-SIM-RECO/MCRUN2_74_V9_gensim_740pre7-v1/00000/382A5F31-12EC-E411-879A-0025905A48EC.root'
-ivars.outputFile='Bfinder_pp_all.root'
+
+#ivars.inputFiles=('/store/data/Run2015B/DoubleMuonLowMass/RECO/PromptReco-v1/000/251/164/00000/3A6C9FDB-A326-E511-93D3-02163E013948.root',
+#    '/store/data/Run2015B/DoubleMuonLowMass/RECO/PromptReco-v1/000/251/167/00000/007DC049-A726-E511-844D-02163E011EDB.root')
+
+ivars.inputFiles=('/store/data/Run2015B/Charmonium/AOD/PromptReco-v1/000/251/168/00000/1602316B-CF26-E511-BCBA-02163E011BF3.root')
+
+ivars.outputFile='Bfinder_pp_charmonium.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
@@ -20,8 +16,8 @@ ivars.parseArguments()
 AddCaloMuon = False
 
 ### Run on MC?
-runOnMC = True
-#runOnMC = False
+#runOnMC = True
+runOnMC = False
 
 ### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
 #HIFormat = True
@@ -38,7 +34,7 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 ### Set TransientTrackBuilder 
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 ### Set Geometry/GlobalTag/BField
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 #process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
@@ -55,7 +51,10 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 
 ### Set global tag
 if runOnMC:
@@ -65,15 +64,13 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START52_V7::All' )
     #process.GlobalTag.globaltag = cms.string( 'START53_V17::All' )
 #    process.GlobalTag.globaltag = cms.string( 'START53_V27::All' ) ##pPb
-    process.GlobalTag.globaltag = cms.string( 'GR_R_74_V8A::All' ) ##PbPb 740pre8 data
+    process.GlobalTag.globaltag = cms.string( 'MCRUN2_74_V9::All' ) 
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
 #    process.GlobalTag.globaltag = cms.string( 'FT_P_V42_AN2::All' ) #for 2012D
 #    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pp
-    process.GlobalTag.globaltag = cms.string( 'GR_R_74_V8A::All' ) ##PbPb 740pre8 data
-#    process.GlobalTag.globaltag = cms.string( 'GR_P_V43F::All' ) ##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
-#    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
+    process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_Prompt_v0', '')
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
@@ -98,11 +95,11 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 )
 
 # Common offline event selection
-process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
+#process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
 
-#process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
+process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
 #process.filter = cms.Sequence(process.noscraping)
-process.filter = cms.Sequence(process.PAcollisionEventSelection)
+#process.filter = cms.Sequence(process.PAcollisionEventSelection)
 
 ##Producing Gen list with SIM particles
 process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
@@ -228,10 +225,10 @@ process.demo = cms.EDAnalyzer('Bfinder',
 		1,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
 		1,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 		1,#RECONSTRUCTION: J/psi + phi
-		1,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
-#    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
-    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
-#    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
+		1,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+		1,#RECONSTRUCTION: J/psi + lambda (p+, pi-) 
+		1,),#RECONSTRUCTION: J/psi + lambda (p-, pi+) 
+    MuonTriggerMatchingPath = cms.vstring("HLT_Dimuon*", "HLT_DoubleMu*"),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
 	MuonLabel       = cms.InputTag('selectedPatMuons'),         #selectedPatMuons

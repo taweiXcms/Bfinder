@@ -98,6 +98,8 @@
 #define PHI_MASS    1.019455
 #define JPSI_MASS   3.096916
 #define PSI2S_MASS  3.686109
+#define PROTON_MASS 0.938272046
+#define LAMBDA_MASS 1.115683
 
 //
 // class declaration
@@ -330,34 +332,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::cout<< "No beam spot available from EventSetup \n";
     }
 
-    //get vertex informationa
+    //get vertex information
     edm::Handle<reco::VertexCollection> VertexHandle;
-    //iEvent.getByLabel("offlinePrimaryVertexHandle", VertexHandle);
-    //iEvent.getByLabel("offlinePrimaryVerticesWithBS", VertexHandle);
     iEvent.getByLabel(pvLabel_, VertexHandle);
-
-    /*  
-    if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
-        //int nVtxTrks = 0;//outdated PV definition
-        double max_tkSt = 0;
-        for(std::vector<reco::Vertex>::const_iterator it_vtx = VertexHandle->begin(); it_vtx != VertexHandle->end(); it_vtx++){
-            if (!it_vtx->isValid()) continue;
-            //find primary primary vertex with largest St
-            double tkSt = 0;
-            for(std::vector<reco::TrackBaseRef>::const_iterator it_tk = it_vtx->tracks_begin();
-                it_tk != it_vtx->tracks_end(); it_tk++){
-                tkSt += it_tk->get()->pt();
-            }
-            if (tkSt > max_tkSt){
-                max_tkSt = tkSt;
-                thePrimaryV = Vertex(*it_vtx);
-            }
-        }
-    }else{ 
-        thePrimaryV = Vertex(beamSpot.position(), beamSpot.covariance3D());
-    }
-    RefVtx = thePrimaryV.position();
-    */
 
     double PVBS_Pt_Max = -100.;
     reco::Vertex PVtx_BS;
@@ -375,12 +352,15 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         VtxInfo.NormalizedChi2[VtxInfo.Size] = it_vtx->normalizedChi2();
         VtxInfo.x[VtxInfo.Size] = it_vtx->x(); 
         VtxInfo.y[VtxInfo.Size] = it_vtx->y();
-        VtxInfo.z[VtxInfo.Size] = it_vtx->z();
+            VtxInfo.z[VtxInfo.Size] = it_vtx->z();
+            VtxInfo.xE[VtxInfo.Size] = it_vtx->xError();
+            VtxInfo.yE[VtxInfo.Size] = it_vtx->yError();
+            VtxInfo.zE[VtxInfo.Size] = it_vtx->zError();
         VtxInfo.Pt_Sum[VtxInfo.Size] = 0.;
         VtxInfo.Pt_Sum2[VtxInfo.Size] = 0.;
         //if its hiSelectedVertex, then there will be only one vertex and will have no associated tracks
         if(int(VertexHandle->end()-VertexHandle->begin())==1){
-            thePrimaryV = *it_vtx;
+            //thePrimaryV = *it_vtx;
             VtxInfo.Size++;
             break;
         }
@@ -390,13 +370,17 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
         if( VtxInfo.Pt_Sum[VtxInfo.Size] >= PVBS_Pt_Max ){
             PVBS_Pt_Max = VtxInfo.Pt_Sum[VtxInfo.Size];
-            thePrimaryV = *it_vtx;
+            //thePrimaryV = *it_vtx;
         }            
         VtxInfo.Size++;
         }
     }else{ 
         thePrimaryV = Vertex(beamSpot.position(), beamSpot.covariance3D());
     }
+    
+    // KFC@2050711: Let's use beam spot by default. Will select the best PV offline.
+    thePrimaryV = Vertex(beamSpot.position(), beamSpot.covariance3D());
+    
     RefVtx = thePrimaryV.position();
 
     EvtInfo.PVx     = thePrimaryV.position().x();
@@ -762,7 +746,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             TLorentzVector v4_mu1,v4_mu2;
                             v4_mu1.SetPtEtaPhiM(mu_it1->pt(),mu_it1->eta(),mu_it1->phi(),MUON_MASS);
                             v4_mu2.SetPtEtaPhiM(mu_it2->pt(),mu_it2->eta(),mu_it2->phi(),MUON_MASS);
-                            if (fabs((v4_mu1+v4_mu2).Mag()-JPSI_MASS)>0.4) continue;
+                            //KFC@20150711: take out the jpsi mass cut for the full distribution stored in ntuple
+                            //if (fabs((v4_mu1+v4_mu2).Mag()-JPSI_MASS)>0.4) continue;
                             if((v4_mu1+v4_mu2).Pt()<jpsiPtCut_)continue;
     
                             //Fit 2 muon
@@ -804,7 +789,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             if(chi2_prob_uj < 0.01) continue;
                             XbujCutLevel->Fill(4);
 
-                            if (fabs(ujVFP->currentState().mass()-JPSI_MASS)>0.3) continue;
+                            //KFC@20150711: take out the jpsi mass cut for the full distribution stored in ntuple
+                            //if (fabs(ujVFP->currentState().mass()-JPSI_MASS)>0.3) continue;
 
                             TLorentzVector uj_4vec,uj_mu1_4vec,uj_mu2_4vec;
                             uj_4vec.SetPxPyPzE(ujVFP->currentState().kinematicParameters().momentum().x(),
@@ -824,8 +810,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             BInfo.uj_index         [BInfo.uj_size]= BInfo.uj_size;
                             BInfo.uj_mass          [BInfo.uj_size]= uj_4vec.Mag();
                             BInfo.uj_pt            [BInfo.uj_size]= uj_4vec.Pt();
-                            BInfo.uj_eta            [BInfo.uj_size]= uj_4vec.Eta();
-                            BInfo.uj_phi            [BInfo.uj_size]= uj_4vec.Phi();
+                            BInfo.uj_eta           [BInfo.uj_size]= uj_4vec.Eta();
+                            BInfo.uj_phi           [BInfo.uj_size]= uj_4vec.Phi();
                             BInfo.uj_px            [BInfo.uj_size]= uj_4vec.Px();
                             BInfo.uj_py            [BInfo.uj_size]= uj_4vec.Py();
                             BInfo.uj_pz            [BInfo.uj_size]= uj_4vec.Pz();
@@ -856,6 +842,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                             BInfo.uj_size++;
                             muonParticles.clear();
+                            
+                            //KFC@20150711: apply J/psi mass cut only before the B reconstruction
+                            if (fabs(ujVFP->currentState().mass()-JPSI_MASS)>0.3) continue;
 
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + K
@@ -880,6 +869,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + Pi
                             //////////////////////////////////////////////////////////////////////////
+                            //KFC@20150711: extend the upper bound for J/psi+pi reconstruction for Bc
+                            mass_window[0] = 4.3;
+                            mass_window[1] = 7.4;
                             if(Bchannel_[1] == 1){
                                 BranchOut2MuTk(
                                     BInfo,
@@ -900,7 +892,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + Ks
                             //////////////////////////////////////////////////////////////////////////
-
+                            mass_window[0] = 4.3;
+                            mass_window[1] = 6.4;
                             if(Bchannel_[2] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -925,7 +918,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + K* (K+, Pi-)
                             //////////////////////////////////////////////////////////////////////////
-
+                            mass_window[0] = 4.3;
+                            mass_window[1] = 6.4;
                             if(Bchannel_[3] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -950,7 +944,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + K* (K-, Pi+)
                             //////////////////////////////////////////////////////////////////////////
-
+                            mass_window[0] = 4.3;
+                            mass_window[1] = 6.4;
                             if(Bchannel_[4] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -975,7 +970,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + phi
                             //////////////////////////////////////////////////////////////////////////
-                            
+                            mass_window[0] = 4.3;
+                            mass_window[1] = 6.4;
                             if(Bchannel_[5] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -1000,7 +996,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
                             //////////////////////////////////////////////////////////////////////////
-                            mass_window[0] = 3;
+                            mass_window[0] = 3.0;
                             mass_window[1] = 6.4;
                             if(Bchannel_[6] == 1){
                                 BranchOut2MuX_XtoTkTk(
@@ -1020,6 +1016,58 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                     PION_MASS,
                                     7,
                                     0
+                                );
+                            }
+                            
+                            //////////////////////////////////////////////////////////////////////////
+                            // RECONSTRUCTION: J/psi + lambda (p+, pi-)
+                            //////////////////////////////////////////////////////////////////////////
+                            mass_window[0] = 4.6;
+                            mass_window[1] = 6.7;
+                            if(Bchannel_[7] == 1){
+                                BranchOut2MuX_XtoTkTk(
+                                    BInfo,
+                                    input_tracks,
+                                    isNeededTrack,
+                                    v4_mu1,
+                                    v4_mu2,
+                                    muonPTT,
+                                    muonMTT,
+                                    B_counter,
+                                    mass_window,
+                                    JPSI_MASS,
+                                    LAMBDA_MASS,
+                                    0.3,
+                                    PROTON_MASS,
+                                    PION_MASS,
+                                    8,
+                                    1
+                                );
+                            }
+                            
+                            //////////////////////////////////////////////////////////////////////////
+                            // RECONSTRUCTION: J/psi + lambda (p-, pi+)
+                            //////////////////////////////////////////////////////////////////////////
+                            mass_window[0] = 4.6;
+                            mass_window[1] = 6.7;
+                            if(Bchannel_[8] == 1){
+                                BranchOut2MuX_XtoTkTk(
+                                    BInfo,
+                                    input_tracks,
+                                    isNeededTrack,
+                                    v4_mu1,
+                                    v4_mu2,
+                                    muonPTT,
+                                    muonMTT,
+                                    B_counter,
+                                    mass_window,
+                                    JPSI_MASS,
+                                    LAMBDA_MASS,
+                                    0.3,
+                                    PION_MASS,
+                                    PROTON_MASS,
+                                    9,
+                                    1
                                 );
                             }
                             

@@ -120,7 +120,10 @@ class VtxInfoBranches { //{{{
 		float   Pt_Sum2[MAX_Vertices];
 		float   x[MAX_Vertices];
 		float   y[MAX_Vertices];
-		float   z[MAX_Vertices];
+        float   z[MAX_Vertices];
+        float   xE[MAX_Vertices];
+        float   yE[MAX_Vertices];
+        float   zE[MAX_Vertices];
 
 		void regTree(TTree *root) { //{{{
 			root->Branch("VtxInfo.Size"	    , &Size	       , "VtxInfo.Size/I"	    );
@@ -132,7 +135,10 @@ class VtxInfoBranches { //{{{
 			root->Branch("VtxInfo.Pt_Sum2"	    , &Pt_Sum2[0]	       , "VtxInfo.Pt_Sum2[VtxInfo.Size]/F"	    );
 			root->Branch("VtxInfo.x"	    , &x[0]	       , "VtxInfo.x[VtxInfo.Size]/F"	    );
 			root->Branch("VtxInfo.y"	    , &y[0]	       , "VtxInfo.y[VtxInfo.Size]/F"	    );
-			root->Branch("VtxInfo.z"	    , &z[0]	       , "VtxInfo.z[VtxInfo.Size]/F"	    );
+            root->Branch("VtxInfo.z"	    , &z[0]	       , "VtxInfo.z[VtxInfo.Size]/F"	    );
+            root->Branch("VtxInfo.xE"	    , &xE[0]	       , "VtxInfo.xE[VtxInfo.Size]/F"	    );
+            root->Branch("VtxInfo.yE"	    , &yE[0]	       , "VtxInfo.yE[VtxInfo.Size]/F"	    );
+            root->Branch("VtxInfo.zE"	    , &zE[0]	       , "VtxInfo.zE[VtxInfo.Size]/F"	    );
 		} //}}}
 	    
 		void setbranchadd(TTree *root) { //{{{
@@ -145,7 +151,10 @@ class VtxInfoBranches { //{{{
 			root->SetBranchAddress("VtxInfo.Pt_Sum2"        , &Pt_Sum2[0]  	 );
 			root->SetBranchAddress("VtxInfo.x"        , &x[0]  	 );
 			root->SetBranchAddress("VtxInfo.y"        , &y[0]  	 );
-			root->SetBranchAddress("VtxInfo.z"        , &z[0]  	 );
+            root->SetBranchAddress("VtxInfo.z"        , &z[0]  	 );
+            root->SetBranchAddress("VtxInfo.xE"        , &xE[0]  	 );
+            root->SetBranchAddress("VtxInfo.yE"        , &yE[0]  	 );
+            root->SetBranchAddress("VtxInfo.zE"        , &zE[0]  	 );
 		} //}}}		    
 };//}}}
 
