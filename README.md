@@ -1,3 +1,7 @@
+D meson reconstruction is added to this version in CMSSW_5_3_20
+git checkout Dfinder
+
+=================
 Few actions now needed, please do:
 mv DataFormats  HeavyIonsAnalysis RecoHI ../
 Before scram b (compile).
