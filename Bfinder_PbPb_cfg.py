@@ -13,7 +13,8 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/RAW/v1/000/183/013/RECO_02A69E73-C01F-E111-A008-00237DDC5AF6.root'
 #ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/USER/L2DoubleMu3Skim_v10_38dff9fa051006d6e895e3c1df676d76-v1/40000/RECO_02F09DEB-FACF-E411-9976-7845C4FB82F2.root'
 #ivars.inputFiles='file:/net/hisrv0001/home/tawei/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_20150327/cf203613c3d0bfa79df606745a236cc7/reco_94_1_fEZ.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
+ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt/49063ee7960b4ac6745251f7107935ce/RECO_99_1_JJv.root'
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
@@ -57,7 +58,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### Set global tag
 if runOnMC:
@@ -239,14 +240,25 @@ if AddCaloMuon:
 
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
+	Dchannel 		= cms.vint32(
+		1,#RECONSTRUCTION: K+pi-
+		0,#RECONSTRUCTION: K-pi+
+		0,#RECONSTRUCTION: K-pi+pi+
+		0,#RECONSTRUCTION: K+pi-pi-
+		0,#RECONSTRUCTION: K-pi+pi+pi-
+		0,#RECONSTRUCTION: K+pi-pi+pi-
+		0,#RECONSTRUCTION: K+K-(Phi)pi+
+		0,#RECONSTRUCTION: K+K-(Phi)pi-
+	),
 	Bchannel 		= cms.vint32(
-		1,#RECONSTRUCTION: J/psi + K
-		1,#RECONSTRUCTION: J/psi + Pi
-		1,#RECONSTRUCTION: J/psi + Ks 
-		1,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
-		1,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
-		1,#RECONSTRUCTION: J/psi + phi
-		1,),#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+		0,#RECONSTRUCTION: J/psi + K
+		0,#RECONSTRUCTION: J/psi + Pi
+		0,#RECONSTRUCTION: J/psi + Ks 
+		0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
+		0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
+		0,#RECONSTRUCTION: J/psi + phi
+		0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+	),
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v1"),
 #    MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
     MuonTriggerMatchingPath = cms.vstring("HLT_HIL2DoubleMu3_v*"),
@@ -260,8 +272,12 @@ process.demo = cms.EDAnalyzer('Bfinder',
 #    PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
     PVLabel     = cms.InputTag("hiSelectedVertex"),
     tkPtCut = cms.double(1.0),
-    jpsiPtCut = cms.double(3.0),
-    bPtCut = cms.double(5.0),
+    tkEtaCut = cms.double(1.1),
+    jpsiPtCut = cms.double(3.0),#before fit
+    bPtCut = cms.double(5.0),#before fit
+    dPtCut = cms.double(0.0),#before fit
+    bEtaCut = cms.double(2.4),#before fit, not used currently
+    dEtaCut = cms.double(1.5),#before fit, not used currently
     RunOnMC = cms.bool(False),
     doTkPreCut = cms.bool(True),
     doMuPreCut = cms.bool(True)
