@@ -1,6 +1,9 @@
 D meson reconstruction is added to this version in CMSSW_5_3_20
 git checkout Dfinder
 
+note:
+D vertex probability: 0.05 (in B we use 0.01)
+
 =================
 Few actions now needed, please do:
 mv DataFormats  HeavyIonsAnalysis RecoHI ../
