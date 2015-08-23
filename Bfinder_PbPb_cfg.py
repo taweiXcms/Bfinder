@@ -58,7 +58,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(4))
 
 ### Set global tag
 if runOnMC:
@@ -245,8 +245,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 		0,#RECONSTRUCTION: K-pi+
 		0,#RECONSTRUCTION: K-pi+pi+
 		0,#RECONSTRUCTION: K+pi-pi-
-		0,#RECONSTRUCTION: K-pi+pi+pi-
-		0,#RECONSTRUCTION: K+pi-pi+pi-
+		0,#RECONSTRUCTION: K-pi-pi+pi+
+		0,#RECONSTRUCTION: K+pi+pi-pi-
 		0,#RECONSTRUCTION: K+K-(Phi)pi+
 		0,#RECONSTRUCTION: K+K-(Phi)pi-
 	),
