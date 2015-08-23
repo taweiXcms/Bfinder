@@ -2573,6 +2573,11 @@ void Bfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.rftk2_phi[DInfo.size]       = tktk_tk2_4vec.Phi();
         DInfo.rftk1_index[DInfo.size]     = -selectedTkhidxSet[i][0]-1;
         DInfo.rftk2_index[DInfo.size]     = -selectedTkhidxSet[i][1]-1;
+        //document the mass hypothesis
+        if( fabs(tktk_tk1_4vec.Mag()-PION_MASS) < 0.001) DInfo.rftk1_MassHypo[DInfo.size] = 211;
+        else if( fabs(tktk_tk1_4vec.Mag()-KAON_MASS) < 0.001) DInfo.rftk1_MassHypo[DInfo.size] = 321;
+        if( fabs(tktk_tk2_4vec.Mag()-PION_MASS) < 0.001) DInfo.rftk2_MassHypo[DInfo.size] = 211;
+        else if( fabs(tktk_tk2_4vec.Mag()-KAON_MASS) < 0.001) DInfo.rftk2_MassHypo[DInfo.size] = 321;
         if(TkMass.size()>2){
             DInfo.rftk3_px[DInfo.size]    = tktk_tk3_4vec.Px();
             DInfo.rftk3_py[DInfo.size]    = tktk_tk3_4vec.Py();
@@ -2581,6 +2586,8 @@ void Bfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.rftk3_eta[DInfo.size]   = tktk_tk3_4vec.Eta();
             DInfo.rftk3_phi[DInfo.size]   = tktk_tk3_4vec.Phi();
             DInfo.rftk3_index[DInfo.size] = -selectedTkhidxSet[i][2]-1;
+            if( fabs(tktk_tk3_4vec.Mag()-PION_MASS) < 0.001) DInfo.rftk3_MassHypo[DInfo.size] = 211;
+            else if( fabs(tktk_tk3_4vec.Mag()-KAON_MASS) < 0.001) DInfo.rftk3_MassHypo[DInfo.size] = 321;
         }
         if(TkMass.size()>3){
             DInfo.rftk4_px[DInfo.size]    = tktk_tk4_4vec.Px();
@@ -2590,6 +2597,8 @@ void Bfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.rftk4_eta[DInfo.size]   = tktk_tk4_4vec.Eta();
             DInfo.rftk4_phi[DInfo.size]   = tktk_tk4_4vec.Phi();
             DInfo.rftk4_index[DInfo.size] = -selectedTkhidxSet[i][3]-1;
+            if( fabs(tktk_tk4_4vec.Mag()-PION_MASS) < 0.001) DInfo.rftk4_MassHypo[DInfo.size] = 211;
+            else if( fabs(tktk_tk4_4vec.Mag()-KAON_MASS) < 0.001) DInfo.rftk4_MassHypo[DInfo.size] = 321;
         }
 
         DInfo.type[DInfo.size] = Dchannel_number;
