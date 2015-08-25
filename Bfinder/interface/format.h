@@ -776,6 +776,10 @@ public:
     int     rftk2_index[MAX_XB];
     int     rftk3_index[MAX_XB];
     int     rftk4_index[MAX_XB];
+    int     rftk1_MassHypo[MAX_XB];
+    int     rftk2_MassHypo[MAX_XB];
+    int     rftk3_MassHypo[MAX_XB];
+    int     rftk4_MassHypo[MAX_XB];
 
     
     void regTree(TTree *root){//{{{
@@ -855,6 +859,11 @@ public:
         root->Branch("DInfo.rftk2_index"   , rftk2_index       , "DInfo.rftk2_index[DInfo.size]/I");
         root->Branch("DInfo.rftk3_index"   , rftk3_index       , "DInfo.rftk3_index[DInfo.size]/I");
         root->Branch("DInfo.rftk4_index"   , rftk4_index       , "DInfo.rftk4_index[DInfo.size]/I");
+
+        root->Branch("DInfo.rftk1_MassHypo"   , rftk1_MassHypo       , "DInfo.rftk1_MassHypo[DInfo.size]/I");
+        root->Branch("DInfo.rftk2_MassHypo"   , rftk2_MassHypo       , "DInfo.rftk2_MassHypo[DInfo.size]/I");
+        root->Branch("DInfo.rftk3_MassHypo"   , rftk3_MassHypo       , "DInfo.rftk3_MassHypo[DInfo.size]/I");
+        root->Branch("DInfo.rftk4_MassHypo"   , rftk4_MassHypo       , "DInfo.rftk4_MassHypo[DInfo.size]/I");
         
     }//}}}
     
@@ -936,6 +945,11 @@ public:
         root->SetBranchAddress("DInfo.rftk2_index"     ,rftk2_index   	);
         root->SetBranchAddress("DInfo.rftk3_index"     ,rftk3_index   	);
         root->SetBranchAddress("DInfo.rftk4_index"     ,rftk4_index   	);
+
+        root->SetBranchAddress("DInfo.rftk1_MassHypo"     ,rftk1_MassHypo   	);
+        root->SetBranchAddress("DInfo.rftk2_MassHypo"     ,rftk2_MassHypo   	);
+        root->SetBranchAddress("DInfo.rftk3_MassHypo"     ,rftk3_MassHypo   	);
+        root->SetBranchAddress("DInfo.rftk4_MassHypo"     ,rftk4_MassHypo   	);
     }//}}}
 };//}}}
 
