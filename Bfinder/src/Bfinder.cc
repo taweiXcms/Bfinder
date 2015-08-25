@@ -1751,6 +1751,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.mo2[GenInfo.size]           = -1;
                 GenInfo.da1[GenInfo.size]           = -1;
                 GenInfo.da2[GenInfo.size]           = -1;
+                GenInfo.da3[GenInfo.size]           = -1;
+                GenInfo.da4[GenInfo.size]           = -1;
                 GenInfo.size++;
                 sel_cands.push_back(&*it_gen);
             }
@@ -1771,12 +1773,14 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                     }
                 }
-                for(int nGenDa = 0; nGenDa < std::min(2,int((*sCands)->numberOfDaughters())); nGenDa++){
+                for(int nGenDa = 0; nGenDa < std::min(4,int((*sCands)->numberOfDaughters())); nGenDa++){
                     for(std::vector<const reco::Candidate *>::iterator mCands = sel_cands.begin();
                     mCands != sel_cands.end(); mCands++){
                         if((*sCands)->daughter(nGenDa) == *mCands){
                             if(nGenDa == 0) GenInfo.da1[geninfo_idx] = int(mCands-sel_cands.begin());
                             if(nGenDa == 1) GenInfo.da2[geninfo_idx] = int(mCands-sel_cands.begin());
+                            if(nGenDa == 2) GenInfo.da3[geninfo_idx] = int(mCands-sel_cands.begin());
+                            if(nGenDa == 3) GenInfo.da4[geninfo_idx] = int(mCands-sel_cands.begin());
                         }
                     }
                 }

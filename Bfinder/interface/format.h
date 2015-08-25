@@ -970,6 +970,8 @@ class GenInfoBranches{//{{{
         int     mo2         [MAX_GEN];
         int     da1         [MAX_GEN];
         int     da2         [MAX_GEN];
+        int     da3         [MAX_GEN];
+        int     da4         [MAX_GEN];
 
         void regTree(TTree *root){//{{{
             root->Branch("GenInfo.size"         ,&size          ,"GenInfo.size/I");
@@ -987,6 +989,8 @@ class GenInfoBranches{//{{{
             root->Branch("GenInfo.mo2"          ,mo2            ,"GenInfo.mo2[GenInfo.size]/I");
             root->Branch("GenInfo.da1"          ,da1            ,"GenInfo.da1[GenInfo.size]/I");
             root->Branch("GenInfo.da2"          ,da2            ,"GenInfo.da2[GenInfo.size]/I");
+            root->Branch("GenInfo.da3"          ,da3            ,"GenInfo.da3[GenInfo.size]/I");
+            root->Branch("GenInfo.da4"          ,da4            ,"GenInfo.da4[GenInfo.size]/I");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
@@ -1005,6 +1009,8 @@ class GenInfoBranches{//{{{
             root->SetBranchAddress("GenInfo.mo2"          ,mo2            );
             root->SetBranchAddress("GenInfo.da1"          ,da1            );
             root->SetBranchAddress("GenInfo.da2"          ,da2            );
+            root->SetBranchAddress("GenInfo.da3"          ,da3            );
+            root->SetBranchAddress("GenInfo.da4"          ,da4            );
         }//}}}
 };//}}}
 #endif
