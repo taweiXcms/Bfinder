@@ -159,6 +159,9 @@ class VtxInfoBranches { //{{{
         double 	pt           [ MAX_MUON];
         double	eta          [ MAX_MUON];
         double 	phi          [ MAX_MUON];
+        double 	ptErr        [ MAX_MUON];
+        double	etaErr       [ MAX_MUON];
+        double 	phiErr       [ MAX_MUON];
         bool    isTrackerMuon[ MAX_MUON];
         bool    isGlobalMuon [ MAX_MUON];
         int	    muqual       [ MAX_MUON];
@@ -223,6 +226,9 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.pt"            , pt            , "MuonInfo.pt[MuonInfo.size]/D"		);
             root->Branch("MuonInfo.eta"           , eta           , "MuonInfo.eta[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.phi"           , phi           , "MuonInfo.phi[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.pt Err"        , ptErr         , "MuonInfo.ptErr[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.etaErr"        , etaErr        , "MuonInfo.etaErr[MuonInfo.size]/D"	);
+            root->Branch("MuonInfo.phiErr"        , phiErr        , "MuonInfo.phiErr[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
             root->Branch("MuonInfo.isGlobalMuon"  , isGlobalMuon  , "MuonInfo.isGlobalMuon[MuonInfo.size]/O");
             root->Branch("MuonInfo.muqual"        , muqual        , "MuonInfo.muqual[MuonInfo.size]/I"	);
@@ -287,6 +293,9 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.pt"            , pt             );
             root->SetBranchAddress("MuonInfo.eta"           , eta            );
             root->SetBranchAddress("MuonInfo.phi"           , phi            );
+            root->SetBranchAddress("MuonInfo.ptErr"         , ptErr          );
+            root->SetBranchAddress("MuonInfo.etaErr"        , etaErr         );
+            root->SetBranchAddress("MuonInfo.phiErr"        , phiErr         );
             root->SetBranchAddress("MuonInfo.isTrackerMuon" , isTrackerMuon);
             root->SetBranchAddress("MuonInfo.isGlobalMuon"  , isGlobalMuon);
             root->SetBranchAddress("MuonInfo.muqual"        , muqual         );
@@ -358,6 +367,9 @@ class TrackInfoBranches{//{{{
         double  pt           [ MAX_TRACK];
         double  eta          [ MAX_TRACK];
         double  phi          [ MAX_TRACK];
+        double  ptErr        [ MAX_TRACK];
+        double  etaErr       [ MAX_TRACK];
+        double  phiErr       [ MAX_TRACK];
         //double  p            [ MAX_TRACK];
         int     striphit     [ MAX_TRACK];
         int     pixelhit     [ MAX_TRACK];
@@ -384,6 +396,9 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.pt"             ,pt             ,"TrackInfo.pt[TrackInfo.size]/D"	);
             root->Branch("TrackInfo.eta"            ,eta            ,"TrackInfo.eta[TrackInfo.size]/D"	);
             root->Branch("TrackInfo.phi"            ,phi            ,"TrackInfo.phi[TrackInfo.size]/D"	);
+            root->Branch("TrackInfo.ptErr"          ,ptErr          ,"TrackInfo.ptErr[TrackInfo.size]/D"	);
+            root->Branch("TrackInfo.etaErr"         ,etaErr         ,"TrackInfo.etaErr[TrackInfo.size]/D"	);
+            root->Branch("TrackInfo.phiErr"         ,phiErr         ,"TrackInfo.phiErr[TrackInfo.size]/D"	);
             root->Branch("TrackInfo.striphit"	    ,striphit	    ,"TrackInfo.striphit[TrackInfo.size]/I"	);
             root->Branch("TrackInfo.pixelhit"	    ,pixelhit	    ,"TrackInfo.pixelhit[TrackInfo.size]/I"	);
             root->Branch("TrackInfo.nStripLayer"	,nStripLayer	,"TrackInfo.nStripLayer[TrackInfo.size]/I"	);
@@ -410,6 +425,9 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.pt"          , pt          );
             root->SetBranchAddress("TrackInfo.eta"         , eta         );
             root->SetBranchAddress("TrackInfo.phi"         , phi         );
+            root->SetBranchAddress("TrackInfo.ptErr"       , ptErr       );
+            root->SetBranchAddress("TrackInfo.etaErr"      , etaErr      );
+            root->SetBranchAddress("TrackInfo.phiErr"      , phiErr      );
             root->SetBranchAddress("TrackInfo.striphit"    , striphit    );
             root->SetBranchAddress("TrackInfo.pixelhit"    , pixelhit    );
             root->SetBranchAddress("TrackInfo.nStripLayer" , nStripLayer );

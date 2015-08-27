@@ -662,6 +662,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             MuonInfo.i_ndf                   [MuonInfo.size] = mu_it->innerTrack()->ndof();
                             MuonInfo.fpbarrelhit             [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelBarrel();
                             MuonInfo.fpendcaphit             [MuonInfo.size] = mu_it->innerTrack()->hitPattern().hasValidHitInFirstPixelEndcap();
+                            MuonInfo.ptErr                   [MuonInfo.size] = mu_it->track()->ptError();
+                            MuonInfo.etaErr                  [MuonInfo.size] = mu_it->track()->etaError();
+                            MuonInfo.phiErr                  [MuonInfo.size] = mu_it->track()->phiError();
                             MuonInfo.d0                      [MuonInfo.size] = mu_it->track()->d0();
                             MuonInfo.dz                      [MuonInfo.size] = mu_it->track()->dz();
                             MuonInfo.dzPV                    [MuonInfo.size] = mu_it->track()->dz(RefVtx);//==mu_it->innerTrack()->dxy(thePrimaryV.position());
@@ -749,13 +752,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
                         if(doTkPreCut_){
-                            if (!(tk_it->track()->qualityByName("highPurity")))        continue;
-                            TrackCutLevel->Fill(5);
+                            if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
                             //if (tk_it->p()>200 || tk_it->pt()>200)              continue;
                             //if (tk_it->track()->hitPattern().numberOfValidStripHits()<10)continue;
                             //if (tk_it->track()->hitPattern().numberOfValidPixelHits()<2) continue;
+                            TrackCutLevel->Fill(5);
                         }
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
                         PassedTrk++;
@@ -1441,13 +1444,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             }
                         }
                         //if (listOfRelativeXbCands.size() == 0) continue;//drop unused tracks
-
+                        //
                         TrackInfo.index          [TrackInfo.size] = TrackInfo.size;
                         TrackInfo.handle_index   [TrackInfo.size] = tk_hindex;
                         TrackInfo.charge         [TrackInfo.size] = tk_it->charge();
                         TrackInfo.pt             [TrackInfo.size] = tk_it->pt();
                         TrackInfo.eta            [TrackInfo.size] = tk_it->eta();
                         TrackInfo.phi            [TrackInfo.size] = tk_it->phi();
+                        TrackInfo.ptErr          [TrackInfo.size] = tk_it->track()->ptError();
+                        TrackInfo.etaErr         [TrackInfo.size] = tk_it->track()->etaError();
+                        TrackInfo.phiErr         [TrackInfo.size] = tk_it->track()->phiError();
                         //TrackInfo.p              [TrackInfo.size] = tk_it->p();
                         TrackInfo.striphit       [TrackInfo.size] = tk_it->track()->hitPattern().numberOfValidStripHits();
                         TrackInfo.pixelhit       [TrackInfo.size] = tk_it->track()->hitPattern().numberOfValidPixelHits();
@@ -1461,7 +1467,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
-                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->qualityByName("highPurity");
+                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
+
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         if(tk_it->track().isNonnull()){
                             for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){

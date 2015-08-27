@@ -58,7 +58,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(4))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 ### Set global tag
 if runOnMC:
@@ -241,7 +241,7 @@ if AddCaloMuon:
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
 	Dchannel 		= cms.vint32(
-		1,#RECONSTRUCTION: K+pi-
+		0,#RECONSTRUCTION: K+pi-
 		0,#RECONSTRUCTION: K-pi+
 		0,#RECONSTRUCTION: K-pi+pi+
 		0,#RECONSTRUCTION: K+pi-pi-
@@ -279,7 +279,7 @@ process.demo = cms.EDAnalyzer('Bfinder',
     bEtaCut = cms.double(2.4),#before fit, not used currently
     dEtaCut = cms.double(1.5),#before fit, not used currently
     RunOnMC = cms.bool(False),
-    doTkPreCut = cms.bool(True),
+    doTkPreCut = cms.bool(False),
     doMuPreCut = cms.bool(True)
 )
 if runOnMC:
