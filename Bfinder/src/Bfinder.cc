@@ -603,6 +603,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.outerTrackisNonnull[MuonInfo.size] = mu_it->outerTrack().isNonnull();
                         MuonInfo.innerTrackisNonnull[MuonInfo.size] = mu_it->innerTrack().isNonnull();
                         //Muon inner track info.
+                        
                         if(mu_it->innerTrack().isNonnull()){
                             //Muon inner track track quality
                             //enum TrackQuality { undefQuality = -1, loose = 0, tight = 1, highPurity = 2, confirmed = 3, goodIterative = 4, looseSetWithPV = 5, highPuritySetWithPV = 6, qualitySize = 7}
@@ -704,7 +705,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(3);
                         if(doTkPreCut_){
-                            if (!tk_it->track()->qualityByName("highPurity"))        continue;
+                            if (!(tk_it->track()->qualityByName("highPurity")))        continue;
                             TrackCutLevel->Fill(4);
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
@@ -1074,7 +1075,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->qualityByName("highPurity");
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         if(tk_it->track().isNonnull()){
-                            for(int tq = -1; tq < reco::TrackBase::qualitySize; tq++){
+                            for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){
                             if (tk_it->track()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) TrackInfo.trackQuality[TrackInfo.size] += 1 << (tq);
                         }}
 
