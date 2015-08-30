@@ -705,7 +705,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(3);
                         if(doTkPreCut_){
-                            if (!(tk_it->track()->qualityByName("highPurity")))        continue;
+                            if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
                             TrackCutLevel->Fill(4);
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
@@ -1072,7 +1072,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
-                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->qualityByName("highPurity");
+                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         if(tk_it->track().isNonnull()){
                             for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){
