@@ -172,7 +172,6 @@ class VtxInfoBranches { //{{{
         double  n_matches    [ MAX_MUON];
         bool    TMOneStationTight [MAX_MUON];
         bool    TrackerMuonArbitrated [MAX_MUON];
-        int     isGoodCand   [ MAX_MUON];
         int     geninfo_index[ MAX_MUON];
         bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
         bool    BfinderMuID [MAX_MUON];
@@ -239,7 +238,6 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.n_matches"     , n_matches     , "MuonInfo.n_matches[MuonInfo.size]/D");
             root->Branch("MuonInfo.TMOneStationTight" ,TMOneStationTight, "MuonInfo.TMOneStationTight[MuonInfo.size]/O");
             root->Branch("MuonInfo.TrackerMuonArbitrated" ,TrackerMuonArbitrated, "MuonInfo.TrackerMuonArbitrated[MuonInfo.size]/O");
-            root->Branch("MuonInfo.isGoodCand"    , isGoodCand    , "MuonInfo.isGoodCand[MuonInfo.size]/I");
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
             root->Branch("MuonInfo.BfinderMuID" ,BfinderMuID, "MuonInfo.BfinderMuID[MuonInfo.size]/O");
             root->Branch("MuonInfo.SoftMuID" ,SoftMuID, "MuonInfo.SoftMuID[MuonInfo.size]/O");
@@ -306,7 +304,6 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.n_matches"     , n_matches);
             root->SetBranchAddress("MuonInfo.TMOneStationTight" , TMOneStationTight);
             root->SetBranchAddress("MuonInfo.TrackerMuonArbitrated" , TrackerMuonArbitrated);
-            root->SetBranchAddress("MuonInfo.isGoodCand"    , isGoodCand);
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
             root->SetBranchAddress("MuonInfo.BfinderMuID" , BfinderMuID);
             root->SetBranchAddress("MuonInfo.SoftMuID" , SoftMuID);
@@ -383,7 +380,6 @@ class TrackInfoBranches{//{{{
         double	d0error      [ MAX_TRACK];
         double	dzPV         [ MAX_TRACK];
         double	dxyPV        [ MAX_TRACK];
-        int     isGoodCand   [ MAX_TRACK];
         int     geninfo_index[ MAX_TRACK];
         int     trackQuality [ MAX_TRACK];
         bool    highPurity   [ MAX_TRACK];
@@ -411,7 +407,6 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.d0error"	    ,d0error	    ,"TrackInfo.d0error[TrackInfo.size]/D"	);
             root->Branch("TrackInfo.dzPV"           ,dzPV           ,"TrackInfo.dzPV[TrackInfo.size]/D"		);
             root->Branch("TrackInfo.dxyPV"          ,dxyPV          ,"TrackInfo.dxyPV[TrackInfo.size]/D"		);
-            root->Branch("TrackInfo.isGoodCand"     ,isGoodCand     ,"TrackInfo.isGoodCand[TrackInfo.size]/I");
             root->Branch("TrackInfo.geninfo_index"     ,geninfo_index     ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
             root->Branch("TrackInfo.trackQuality"     ,trackQuality     ,"TrackInfo.trackQuality[TrackInfo.size]/I");
             root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/O");
@@ -440,7 +435,6 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.d0error"     , d0error     );
             root->SetBranchAddress("TrackInfo.dzPV"        , dzPV        );
             root->SetBranchAddress("TrackInfo.dxyPV"       , dxyPV       );
-            root->SetBranchAddress("TrackInfo.isGoodCand"  , isGoodCand  );
             root->SetBranchAddress("TrackInfo.geninfo_index"  , geninfo_index  );
             root->SetBranchAddress("TrackInfo.trackQuality"  , trackQuality  );
             root->SetBranchAddress("TrackInfo.highPurity"  , highPurity  );
@@ -468,7 +462,6 @@ public:
     double	uj_vtxchi2[MAX_XB];
     int     uj_rfmu1_index[MAX_XB];
     int     uj_rfmu2_index[MAX_XB];
-    int     uj_isGoodCand[MAX_XB];
     
     double  uj_rfmu1_px[MAX_XB];//after vertexing
     double  uj_rfmu1_py[MAX_XB];
@@ -500,7 +493,6 @@ public:
     int     rfuj_index[MAX_XB];
     int     rftk1_index[MAX_XB];
     int     rftk2_index[MAX_XB];
-    int     isGoodCand[MAX_XB];
     int     type[MAX_XB];
     
     double  rfmu1_px[MAX_XB];
@@ -558,7 +550,6 @@ public:
         root->Branch("BInfo.uj_vtxchi2"       , uj_vtxchi2     , "BInfo.uj_vtxchi2[BInfo.uj_size]/D"	);
         root->Branch("BInfo.uj_rfmu1_index"   , uj_rfmu1_index , "BInfo.uj_rfmu1_index[BInfo.uj_size]/I"	);
         root->Branch("BInfo.uj_rfmu2_index"   , uj_rfmu2_index , "BInfo.uj_rfmu2_index[BInfo.uj_size]/I"	);
-        root->Branch("BInfo.uj_isGoodCand"    , uj_isGoodCand  , "BInfo.uj_isGoodCand[BInfo.uj_size]/I"	);
         
         root->Branch("BInfo.uj_rfmu1_px"      , uj_rfmu1_px    , "BInfo.uj_rfmu1_px[BInfo.uj_size]/D");
         root->Branch("BInfo.uj_rfmu1_py"      , uj_rfmu1_py    , "BInfo.uj_rfmu1_py[BInfo.uj_size]/D");
@@ -590,7 +581,6 @@ public:
         root->Branch("BInfo.rfuj_index"       , rfuj_index     , "BInfo.rfuj_index[BInfo.size]/I");
         root->Branch("BInfo.rftk1_index"      , rftk1_index    , "BInfo.rftk1_index[BInfo.size]/I");
         root->Branch("BInfo.rftk2_index"      , rftk2_index    , "BInfo.rftk2_index[BInfo.size]/I");
-        root->Branch("BInfo.isGoodCand"       , isGoodCand     , "BInfo.isGoodCand[BInfo.size]/I"	);
         root->Branch("BInfo.type"             , type           , "BInfo.type[BInfo.size]/I"	);
         
         root->Branch("BInfo.rfmu1_px"         , rfmu1_px       , "BInfo.rfmu1_px[BInfo.size]/D"	);
@@ -651,7 +641,6 @@ public:
         root->SetBranchAddress("BInfo.uj_vtxchi2"      ,uj_vtxchi2 );
         root->SetBranchAddress("BInfo.uj_rfmu1_index"  ,uj_rfmu1_index );
         root->SetBranchAddress("BInfo.uj_rfmu2_index"  ,uj_rfmu2_index );
-        root->SetBranchAddress("BInfo.uj_isGoodCand"   ,uj_isGoodCand );
         
         root->SetBranchAddress("BInfo.size"            ,&size        );
         root->SetBranchAddress("BInfo.index"           ,index       	);
@@ -676,7 +665,6 @@ public:
         root->SetBranchAddress("BInfo.rfuj_index"      ,rfuj_index   	);
         root->SetBranchAddress("BInfo.rftk1_index"     ,rftk1_index   	);
         root->SetBranchAddress("BInfo.rftk2_index"     ,rftk2_index   	);
-        root->SetBranchAddress("BInfo.isGoodCand"      ,isGoodCand   	);
         root->SetBranchAddress("BInfo.type"            ,type   	);
         
         root->SetBranchAddress("BInfo.rfmu1_px"        ,rfmu1_px 	);
@@ -721,7 +709,6 @@ public:
     
     int	    size;
     int	    index[MAX_XB];
-    int     isGoodCand[MAX_XB];
     int     type[MAX_XB];
     
     double	b4fit_mass[MAX_XB];
@@ -803,7 +790,6 @@ public:
     void regTree(TTree *root){//{{{
         root->Branch("DInfo.size"             , &size          , "DInfo.size/I"			);
         root->Branch("DInfo.index"            , index          , "DInfo.index[DInfo.size]/I"		);
-        root->Branch("DInfo.isGoodCand"       , isGoodCand     , "DInfo.isGoodCand[DInfo.size]/I"	);
         root->Branch("DInfo.type"             , type           , "DInfo.type[DInfo.size]/I"	);
         
         root->Branch("DInfo.b4fit_mass"    , b4fit_mass        , "DInfo.b4fit_mass[DInfo.size]/D"     );
@@ -888,7 +874,6 @@ public:
     void setbranchadd(TTree *root){//{{{
         root->SetBranchAddress("DInfo.size"            ,&size        );
         root->SetBranchAddress("DInfo.index"           ,index       	);
-        root->SetBranchAddress("DInfo.isGoodCand"      ,isGoodCand   	);
         root->SetBranchAddress("DInfo.type"            ,type   	);
         
         root->SetBranchAddress("DInfo.b4fit_mass"      ,b4fit_mass    );
