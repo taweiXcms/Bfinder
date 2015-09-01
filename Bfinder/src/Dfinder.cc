@@ -139,6 +139,7 @@ class Dfinder : public edm::EDAnalyzer
         double tkEtaCut_;
         double dPtCut_;
         double dEtaCut_;
+        double VtxChiProbCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
 
@@ -184,6 +185,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
     dPtCut_ = iConfig.getParameter<double>("dPtCut");
     dEtaCut_ = iConfig.getParameter<double>("dEtaCut");
+    VtxChiProbCut_ = iConfig.getParameter<double>("VtxChiProbCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -1276,8 +1278,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tktkRes_VFP   = tktkRes_VFT->currentParticle();
             tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
             double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
-            //if(chi2_prob_tktkRes < 0.01) continue;
-            if(chi2_prob_tktkRes < 0.05) continue;
+            if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(5);
 
             if(doConstrainFit){
@@ -1298,8 +1299,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DMassCutLevel[Dchannel_number-1]->Fill(7);
 
         double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-        //if(chi2_prob_tktk < 0.01) continue;
-        if(chi2_prob_tktk < 0.05) continue;
+        if(chi2_prob_tktk < VtxChiProbCut_) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(8);
 
         std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();

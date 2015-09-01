@@ -161,6 +161,7 @@ class Bfinder : public edm::EDAnalyzer
         double jpsiPtCut_;
         double bPtCut_;
         double bEtaCut_;
+        double VtxChiProbCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
         bool doMuPreCut_;
@@ -216,7 +217,9 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     jpsiPtCut_ = iConfig.getParameter<double>("jpsiPtCut");
     bPtCut_ = iConfig.getParameter<double>("bPtCut");
     bEtaCut_ = iConfig.getParameter<double>("bEtaCut");
+    VtxChiProbCut_ = iConfig.getParameter<double>("VtxChiProbCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
+   
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -794,7 +797,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             ujVFT->movePointerToTheNextChild();
                             KinematicParameters         ujmu2KP     = ujVFT->currentParticle()->currentState().kinematicParameters();
                             double chi2_prob_uj = TMath::Prob(ujVFPvtx->chiSquared(), ujVFPvtx->degreesOfFreedom());
-                            if(chi2_prob_uj < 0.01) continue;
+                            if(chi2_prob_uj < VtxChiProbCut_) continue;
                             XbujCutLevel->Fill(4);
 
                             if (fabs(ujVFP->currentState().mass()-JPSI_MASS)>0.3) continue;
@@ -1418,7 +1421,7 @@ void Bfinder::BranchOut2MuTk(
       std::vector<RefCountedKinematicParticle> xCands  = xbVFT->finalStateParticles();
       
       double chi2_prob = TMath::Prob(xbVFPvtx->chiSquared(),xbVFPvtx->degreesOfFreedom());
-      if (chi2_prob < 0.01) continue;
+      if (chi2_prob < VtxChiProbCut_) continue;
       XbMassCutLevel[channel_number-1]->Fill(4);
       
       if (xbVFP->currentState().mass()<mass_window[0] || xbVFP->currentState().mass()>mass_window[1]) continue;
@@ -1568,7 +1571,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             RefCountedKinematicVertex   tktk_VFPvtx = tktk_VFT->currentDecayVertex();
             double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),
                                                 tktk_VFPvtx->degreesOfFreedom());
-            if(chi2_prob_tktk < 0.01) continue;
+            if(chi2_prob_tktk < VtxChiProbCut_) continue;
             XbMassCutLevel[channel_number-1]->Fill(3);
 
             std::vector<RefCountedKinematicParticle> Xb_candidate;
@@ -1604,7 +1607,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             std::vector<RefCountedKinematicParticle> xCands  = xbVFT->finalStateParticles();
             
             double chi2_prob = TMath::Prob(xbVFPvtx->chiSquared(),xbVFPvtx->degreesOfFreedom());
-            if (chi2_prob < 0.01) continue;
+            if (chi2_prob < VtxChiProbCut_) continue;
             XbMassCutLevel[channel_number-1]->Fill(6);
             
             //Cut out a mass window

@@ -267,6 +267,7 @@ process.demo = cms.EDAnalyzer('Bfinder',
     jpsiPtCut = cms.double(3.0),#before fit
     bPtCut = cms.double(5.0),#before fit
     bEtaCut = cms.double(2.4),#before fit, not used currently
+	VtxChiProbCut = cms.double(0.01),
     RunOnMC = cms.bool(False),
     doTkPreCut = cms.bool(False),
     doMuPreCut = cms.bool(True)
@@ -294,6 +295,7 @@ process.Dfinder = cms.EDAnalyzer('Dfinder',
     tkEtaCut = cms.double(1.1),#before fit
     dPtCut = cms.double(0.0),#before fit
     dEtaCut = cms.double(1.5),#before fit, not used currently
+	VtxChiProbCut = cms.double(0.05),
     RunOnMC = cms.bool(False),
     doTkPreCut = cms.bool(False),
 )
