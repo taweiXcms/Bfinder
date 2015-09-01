@@ -311,7 +311,8 @@ if UsepatMuonsWithTrigger:
 
 ### SetUp HLT info
 #process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
-process.load('Bfinder.EventAnalysis.hltanalysis_cff')
+#process.load('Bfinder.EventAnalysis.hltanalysis_cff')
+process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
 process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 #if HIFormat:
