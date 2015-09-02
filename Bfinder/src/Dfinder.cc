@@ -444,7 +444,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi-
                     //////////////////////////////////////////////////////////////////////////
-                    float mass_window[2] = {1.7,2.0};
+                    float mass_window[2] = {1.7,2.1};
                     double ResIndex[2] = {0, 1};
                     std::vector<double> TkMass;
                     std::vector<int> TkCharge;
