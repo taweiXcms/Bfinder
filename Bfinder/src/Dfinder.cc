@@ -31,6 +31,7 @@
 //#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
+#include "CommonTools/Statistics/interface/ChiSquared.h"
 
 #include "RecoVertex/TrimmedKalmanVertexFinder/interface/KalmanTrimmedVertexFinder.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/MultiTrackKinematicConstraint.h"
@@ -87,6 +88,7 @@
 #define PHI_MASS    1.019455
 #define JPSI_MASS   3.096916
 #define PSI2S_MASS  3.686109
+#define MD0 1.8648 
 
 //
 // class declaration
@@ -427,7 +429,11 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
                         if(doTkPreCut_){
-                            if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
+                            //if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
+                            //d0 analysis cuts
+                            if(tk_it->track()->hitPattern().numberOfValidHits() < 12) continue;
+                            if(tk_it->track()->ptError()/tk_it->track()->pt() > 0.075) continue;
+                            if(tk_it->track()->normalizedChi2()/tk_it->track()->hitPattern().trackerLayersWithMeasurement() > 0.25) continue;
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
                             //if (tk_it->p()>200 || tk_it->pt()>200)              continue;
@@ -444,7 +450,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi-
                     //////////////////////////////////////////////////////////////////////////
-                    float mass_window[2] = {1.7,2.1};
+                    //float mass_window[2] = {1.7,2.1};
+                    float mass_window[2] = {MD0-0.2,MD0+0.2};
                     double ResIndex[2] = {0, 1};
                     std::vector<double> TkMass;
                     std::vector<int> TkCharge;
@@ -1205,7 +1212,9 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             v4_tk4.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][3]].pt(),input_tracks[selectedTkhidxSet[i][3]].eta(),input_tracks[selectedTkhidxSet[i][3]].phi(),TkMass[3]);
             v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4;
         }
-        if(v4_D.Mag()<mass_window[0]-0.05 || v4_D.Mag()>mass_window[1]+0.05) continue;
+        //cut mass window before fit
+        //if(v4_D.Mag()<mass_window[0]-0.05 || v4_D.Mag()>mass_window[1]+0.05) continue;
+        if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
 
         //if there's tktk Res, also check tktk res mass window
         if(tktkRes_mass > 0) {
@@ -1278,6 +1287,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tktkRes_VFP   = tktkRes_VFT->currentParticle();
             tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
             double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
+
             if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(5);
 
@@ -1304,8 +1314,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 
         std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
 
-        //Cut out a mass window
-        if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
+        //Cut mass window after fit
+        //if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(9);
 
         TLorentzVector tktk_4vec,tktk_tk1_4vec, tktk_tk2_4vec, tktk_tk3_4vec, tktk_tk4_4vec;
@@ -1408,6 +1418,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.rftk2_pt[DInfo.size]        = tktk_tk2_4vec.Pt();
         DInfo.rftk2_eta[DInfo.size]       = tktk_tk2_4vec.Eta();
         DInfo.rftk2_phi[DInfo.size]       = tktk_tk2_4vec.Phi();
+
         DInfo.rftk1_index[DInfo.size]     = -selectedTkhidxSet[i][0]-1;
         DInfo.rftk2_index[DInfo.size]     = -selectedTkhidxSet[i][1]-1;
         //document the mass hypothesis
