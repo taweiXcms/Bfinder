@@ -16,6 +16,8 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
 ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt/49063ee7960b4ac6745251f7107935ce/RECO_99_1_JJv.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2011/HIMinBiasUPC/RECO/14Mar2014-v2/00000/0018A8E7-F9AF-E311-ADAB-FA163E565820.root'
+#ivars.inputFiles='root://xrootd.unl.edu//store/himc/HiFall13DR53X/Pyquen_D0tokaonpion_D0pt1p0_Pthat50_TuneZ2_Unquenched_2760GeV/GEN-SIM-RECO/NoPileUp_STARTHI53_LV1-v1/40000/00179174-C72F-E511-A069-00266CFFC51C.root'
+
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
@@ -59,7 +61,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(30))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2))
 
 ### Set global tag
 if runOnMC:
@@ -291,13 +293,16 @@ process.Dfinder = cms.EDAnalyzer('Dfinder',
     BSLabel     = cms.InputTag("offlineBeamSpot"),
     #PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
     PVLabel     = cms.InputTag("hiSelectedVertex"),
-    tkPtCut = cms.double(1.0),#before fit
+    tkPtCut = cms.double(1.),#before fit
     tkEtaCut = cms.double(1.1),#before fit
-    dPtCut = cms.double(0.0),#before fit
+    dPtCut = cms.double(3.0),#before fit
     dEtaCut = cms.double(1.5),#before fit, not used currently
 	VtxChiProbCut = cms.double(0.05),
+    svpvDistanceCut = cms.double(2.0),
+    MaxDocaCut = cms.double(999.),
+    alphaCut = cms.double(999.),
     RunOnMC = cms.bool(False),
-    doTkPreCut = cms.bool(False),
+    doTkPreCut = cms.bool(True),
 )
 if runOnMC:
     process.demo.RunOnMC = cms.bool(True)

@@ -26,6 +26,8 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"//calculate trajectory distance
+
 #include "SimTracker/Records/interface/TrackAssociatorRecord.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 //#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
@@ -43,7 +45,7 @@
 #include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-
+#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"//proper covariance error calculation
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
 #include "DataFormats/L1GlobalTrigger/interface/L1GtFdlWord.h"
@@ -80,6 +82,7 @@
 #include <TObject.h>
 #include <TFile.h>
 
+#define ELECTRON_MASS 0.0005
 #define MUON_MASS   0.10565837
 #define PION_MASS   0.13957018
 #define KAON_MASS   0.493677
@@ -88,7 +91,8 @@
 #define PHI_MASS    1.019455
 #define JPSI_MASS   3.096916
 #define PSI2S_MASS  3.686109
-#define MD0 1.8648 
+#define PROTON_MASS 0.9383
+#define D0_MASS 1.8648 
 
 //
 // class declaration
@@ -112,9 +116,12 @@ class Dfinder : public edm::EDAnalyzer
         virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
         
         virtual bool GetAncestor(const reco::Candidate* p, int PDGprefix);
+        virtual float getParticleSigma(double mass);
+        virtual double getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticles);
         virtual void BranchOutNTk(
             DInfoBranches &DInfo, 
             std::vector<pat::GenericParticle> input_tracks, 
+            reco::Vertex thePrimaryV,
             std::vector<bool> isNeededTrack,
             std::vector<int> &D_counter,
             float *mass_window,
@@ -142,6 +149,9 @@ class Dfinder : public edm::EDAnalyzer
         double dPtCut_;
         double dEtaCut_;
         double VtxChiProbCut_;
+        double svpvDistanceCut_;
+        double MaxDocaCut_;
+        double alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
 
@@ -188,6 +198,9 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     dPtCut_ = iConfig.getParameter<double>("dPtCut");
     dEtaCut_ = iConfig.getParameter<double>("dEtaCut");
     VtxChiProbCut_ = iConfig.getParameter<double>("VtxChiProbCut");
+    svpvDistanceCut_ = iConfig.getParameter<double>("svpvDistanceCut");
+    MaxDocaCut_ = iConfig.getParameter<double>("MaxDocaCut");
+    alphaCut_ = iConfig.getParameter<double>("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -451,20 +464,20 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     // RECONSTRUCTION: K+pi-
                     //////////////////////////////////////////////////////////////////////////
                     //float mass_window[2] = {1.7,2.1};
-                    float mass_window[2] = {MD0-0.2,MD0+0.2};
+                    float mass_window[2] = {D0_MASS-0.2,D0_MASS+0.2};
                     double ResIndex[2] = {0, 1};
                     std::vector<double> TkMass;
                     std::vector<int> TkCharge;
                     if(Dchannel_[0] == 1){
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 1);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 1);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 1);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 1);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -475,13 +488,13 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     if(Dchannel_[1] == 1){
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 2);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 2);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 2);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 2);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -491,19 +504,19 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     if(Dchannel_[2] == 1){
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -513,19 +526,19 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     if(Dchannel_[3] == 1){
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -535,73 +548,73 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     if(Dchannel_[4] == 1){
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -611,73 +624,73 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     if(Dchannel_[5] == 1){
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -688,39 +701,39 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
                         ResIndex[0] = 0; ResIndex[1] = 1;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
                         ResIndex[0] = 0; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
                         ResIndex[0] = 1; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -731,39 +744,39 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
                         ResIndex[0] = 0; ResIndex[1] = 1;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
                         ResIndex[0] = 0; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
                         ResIndex[0] = 1; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
                         TkMass.clear();
                         TkCharge.clear();
 
                         TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
                         TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
                         TkMass.clear();
                         TkCharge.clear();
                     }
@@ -1102,11 +1115,41 @@ bool Dfinder::GetAncestor(const reco::Candidate* p, int PDGprefix)
         else return GetAncestor(MyMom, PDGprefix);
     }
 }
+float Dfinder::getParticleSigma(double mass)
+{
+    if(mass == ELECTRON_MASS)
+        return 0.013E-9f;
+    else if(mass == MUON_MASS)
+        return 4E-9f;
+    else if(mass == PION_MASS)
+        return 3.5E-7f;
+    else if(mass == KAON_MASS)
+        return 1.6E-5f;
+    else if(mass == PROTON_MASS)
+        return 8E-8f;
+    else
+        return 1E-6;
+} 
+double Dfinder::getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticles)
+{
+    double maxDoca = -1.0;
+    TwoTrackMinimumDistance md;
+    std::vector<RefCountedKinematicParticle>::iterator in_it, out_it;
+    for (out_it = kinParticles.begin(); out_it != kinParticles.end(); ++out_it) {
+        for (in_it = out_it + 1; in_it != kinParticles.end(); ++in_it) {
+            md.calculate((*out_it)->currentState().freeTrajectoryState(),(*in_it)->currentState().freeTrajectoryState());
+            if (md.distance() > maxDoca)
+                maxDoca = md.distance();
+        }
+    }
+    return maxDoca;
+} 
 
 //{{{
 void Dfinder::BranchOutNTk(//input 2~4 tracks
     DInfoBranches &DInfo, 
     std::vector<pat::GenericParticle> input_tracks, 
+    reco::Vertex thePrimaryV,
     std::vector<bool> isNeededTrack,
     std::vector<int> &D_counter,
     float *mass_window,
@@ -1237,13 +1280,14 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         reco::TransientTrack tkTT1(input_tracks[selectedTkhidxSet[i][ResIndex[0]]].track(), &(*bField) );
         if (!tkTT1.isValid()) continue;
         ParticleMass tk_mass = TkMass[ResIndex[0]];
-        float tk_sigma = tk_mass*1.e-6;
+        float tk_sigma;
+        tk_sigma = getParticleSigma(TkMass[ResIndex[0]]);
         tktk_candidate.push_back(pFactory.particle(tkTT1,tk_mass,chi,ndf,tk_sigma));
 
         reco::TransientTrack tkTT2(input_tracks[selectedTkhidxSet[i][ResIndex[1]]].track(), &(*bField) );
         if (!tkTT2.isValid()) continue;
         tk_mass = TkMass[ResIndex[1]];
-        tk_sigma = tk_mass*1.e-6;
+        tk_sigma = getParticleSigma(TkMass[ResIndex[1]]);
         tktk_candidate.push_back(pFactory.particle(tkTT2,tk_mass,chi,ndf,tk_sigma));
         
         //push back the other tracks
@@ -1252,10 +1296,14 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
             if (!tkTT.isValid()) continue;
             tk_mass = TkMass[p];
-            tk_sigma = tk_mass*1.e-6;
+            tk_sigma = getParticleSigma(TkMass[p]);
             tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
         }
         DMassCutLevel[Dchannel_number-1]->Fill(3);
+
+        double MaximumDoca = getMaxDoca(tktk_candidate);
+        if (MaximumDoca > MaxDocaCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(4);
 
         //doing tktk fit
         KinematicParticleVertexFitter   tktk_fitter;
@@ -1283,13 +1331,13 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tktkRes_candidate.push_back(pFactory.particle(tk2Res,tk2_mass,chi,ndf,tk2_sigma));
             tktkRes_VFT = tktkRes_fitter.fit(tktkRes_candidate);
             if(!tktkRes_VFT->isValid()) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(4);
+            DMassCutLevel[Dchannel_number-1]->Fill(5);
             tktkRes_VFP   = tktkRes_VFT->currentParticle();
             tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
             double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
 
             if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(5);
+            DMassCutLevel[Dchannel_number-1]->Fill(6);
 
             if(doConstrainFit){
                 ParticleMass tktkResMass = tktkRes_mass;
@@ -1300,23 +1348,23 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         }
 
         if(!tktk_VFT->isValid()) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(6);
+        DMassCutLevel[Dchannel_number-1]->Fill(7);
 
         tktk_VFT->movePointerToTheTop();
         RefCountedKinematicParticle tktk_VFP   = tktk_VFT->currentParticle();
         RefCountedKinematicVertex   tktk_VFPvtx = tktk_VFT->currentDecayVertex();
         if (!tktk_VFPvtx->vertexIsValid()) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(7);
+        DMassCutLevel[Dchannel_number-1]->Fill(8);
 
         double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
         if(chi2_prob_tktk < VtxChiProbCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(8);
+        DMassCutLevel[Dchannel_number-1]->Fill(9);
 
         std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
 
         //Cut mass window after fit
         //if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(9);
+        DMassCutLevel[Dchannel_number-1]->Fill(10);
 
         TLorentzVector tktk_4vec,tktk_tk1_4vec, tktk_tk2_4vec, tktk_tk3_4vec, tktk_tk4_4vec;
         tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
@@ -1384,6 +1432,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_tk2_4vec.Eta();
             DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_tk2_4vec.Phi();
         }
+
         //fit info
         DInfo.index[DInfo.size]           = DInfo.size;
         DInfo.b4fit_mass[DInfo.size]      = v4_D.Mag();
@@ -1397,6 +1446,14 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.px[DInfo.size]              = tktk_4vec.Px();
         DInfo.py[DInfo.size]              = tktk_4vec.Py();
         DInfo.pz[DInfo.size]              = tktk_4vec.Pz();
+        DInfo.MaxDoca[DInfo.size]         = MaximumDoca;
+
+        VertexDistance3D a3d;
+        DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
+        DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
+        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(11);
+
         DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
         DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
         DInfo.vtxZ[DInfo.size]            = tktk_VFPvtx->position().z();
@@ -1405,6 +1462,14 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.vtxZE[DInfo.size]           = sqrt(tktk_VFPvtx->error().czz());
         DInfo.vtxdof[DInfo.size]          = tktk_VFPvtx->degreesOfFreedom();
         DInfo.vtxchi2[DInfo.size]         = tktk_VFPvtx->chiSquared();
+        
+        TVector3 svpvVec;
+        svpvVec.SetXYZ(DInfo.vtxX[DInfo.size]-EvtInfo.PVx, DInfo.vtxY[DInfo.size]-EvtInfo.PVy, DInfo.vtxZ[DInfo.size]-EvtInfo.PVz);
+        TVector3 dVec;
+        dVec.SetXYZ(DInfo.px[DInfo.size], DInfo.py[DInfo.size], DInfo.pz[DInfo.size]);
+        DInfo.alpha[DInfo.size] = svpvVec.Angle(dVec);
+        if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(12);
 
         DInfo.rftk1_px[DInfo.size]        = tktk_tk1_4vec.Px();
         DInfo.rftk1_py[DInfo.size]        = tktk_tk1_4vec.Py();

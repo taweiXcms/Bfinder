@@ -79,6 +79,7 @@
 #include <TObject.h>
 #include <TFile.h>
 
+#define ELECTRON_MASS 0.0005
 #define MUON_MASS   0.10565837
 #define PION_MASS   0.13957018
 #define KAON_MASS   0.493677
@@ -87,6 +88,8 @@
 #define PHI_MASS    1.019455
 #define JPSI_MASS   3.096916
 #define PSI2S_MASS  3.686109
+#define PROTON_MASS 0.9383
+
 
 //
 // class declaration

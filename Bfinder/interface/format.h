@@ -745,6 +745,10 @@ public:
     double  px[MAX_XB];
     double  py[MAX_XB];
     double  pz[MAX_XB];
+    double  alpha[MAX_XB];
+    double  svpvDistance[MAX_XB];
+    double  svpvDisErr[MAX_XB];
+    double  MaxDoca[MAX_XB];
     double	vtxX[MAX_XB];
     double  vtxY[MAX_XB];
     double  vtxZ[MAX_XB];
@@ -826,6 +830,10 @@ public:
         root->Branch("DInfo.px"            , px                , "DInfo.px[DInfo.size]/D"	);
         root->Branch("DInfo.py"            , py                , "DInfo.py[DInfo.size]/D"	);
         root->Branch("DInfo.pz"            , pz                , "DInfo.pz[DInfo.size]/D"	);
+        root->Branch("DInfo.alpha"         , alpha             , "DInfo.alpha[DInfo.size]/D"	);
+        root->Branch("DInfo.svpvDistance"  , svpvDistance      , "DInfo.svpvDistance[DInfo.size]/D"	);
+        root->Branch("DInfo.svpvDisErr"    , svpvDisErr        , "DInfo.svpvDisErr[DInfo.size]/D"	);
+        root->Branch("DInfo.MaxDoca"       , MaxDoca           , "DInfo.MaxDoca[DInfo.size]/D"	);
         root->Branch("DInfo.vtxX"          , vtxX              , "DInfo.vtxX[DInfo.size]/D"	);
         root->Branch("DInfo.vtxY"          , vtxY              , "DInfo.vtxY[DInfo.size]/D"	);
         root->Branch("DInfo.vtxZ"          , vtxZ              , "DInfo.vtxZ[DInfo.size]/D"	);
@@ -910,6 +918,10 @@ public:
         root->SetBranchAddress("DInfo.px"              ,px     	);
         root->SetBranchAddress("DInfo.py"              ,py    	);
         root->SetBranchAddress("DInfo.pz"              ,pz   	);
+        root->SetBranchAddress("DInfo.alpha"           ,alpha   	);
+        root->SetBranchAddress("DInfo.svpvDistance"    ,svpvDistance   	);
+        root->SetBranchAddress("DInfo.svpvDisErr"      ,svpvDisErr   	);
+        root->SetBranchAddress("DInfo.MaxDoca"         ,MaxDoca   	);
         root->SetBranchAddress("DInfo.vtxX"            ,vtxX    );
         root->SetBranchAddress("DInfo.vtxY"            ,vtxY    );
         root->SetBranchAddress("DInfo.vtxZ"            ,vtxZ    );
