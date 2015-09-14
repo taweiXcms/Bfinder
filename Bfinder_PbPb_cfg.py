@@ -61,7 +61,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(2))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1))
 
 ### Set global tag
 if runOnMC:
@@ -277,8 +277,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 ### Set Dfinder option
 process.Dfinder = cms.EDAnalyzer('Dfinder',
 	Dchannel 		= cms.vint32(
-		0,#RECONSTRUCTION: K+pi-
-		0,#RECONSTRUCTION: K-pi+
+		1,#RECONSTRUCTION: K+pi-
+		1,#RECONSTRUCTION: K-pi+
 		0,#RECONSTRUCTION: K-pi+pi+
 		0,#RECONSTRUCTION: K+pi-pi-
 		0,#RECONSTRUCTION: K-pi-pi+pi+
@@ -329,6 +329,24 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 	#process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
 process.hltAna = cms.Path(process.filter*process.hltanalysis)
 
+### HI infomation
+from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
+process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
+process.hIon = cms.Path(process.filter*process.heavyIon)
+
+### SetUp Evt Info (centrality)
+from HeavyIonsAnalysis.Configuration.CommonFunctions_cff import *
+overrideGT_PbPb2760(process)
+process.HeavyIonGlobalParameters = cms.PSet(
+    centralityVariable = cms.string("HFtowers"),
+    nonDefaultGlauberModel = cms.string("Hydjet_Drum"),
+    centralitySrc = cms.InputTag("hiCentrality")
+    )
+process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
+process.evtAna = cms.Path(process.filter*process.hiEvtAnalyzer)
+if runOnMC:
+	process.hiEvtAnalyzer.doMC = cms.bool(True)
+
 ### Set output
 process.TFileService = cms.Service("TFileService",
 	fileName = cms.string(ivars.outputFile)
@@ -345,7 +363,9 @@ process.p = cms.Path(
 )
 #process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
-	process.p
+	process.hIon
+	,process.p
 	,process.hltAna
-#    ,process.e
+	,process.evtAna
+    #,process.e
 )
