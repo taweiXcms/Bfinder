@@ -332,20 +332,21 @@ process.hltAna = cms.Path(process.filter*process.hltanalysis)
 ### HI infomation
 from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
 process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
-process.hIon = cms.Path(process.filter*process.heavyIon)
 
 ### SetUp Evt Info (centrality)
 from HeavyIonsAnalysis.Configuration.CommonFunctions_cff import *
 overrideGT_PbPb2760(process)
 process.HeavyIonGlobalParameters = cms.PSet(
     centralityVariable = cms.string("HFtowers"),
-    nonDefaultGlauberModel = cms.string("Hydjet_Drum"),
+    nonDefaultGlauberModel = cms.string(""),
     centralitySrc = cms.InputTag("hiCentrality")
     )
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 process.evtAna = cms.Path(process.filter*process.hiEvtAnalyzer)
 if runOnMC:
-	process.hiEvtAnalyzer.doMC = cms.bool(True)
+    process.hiEvtAnalyzer.doMC = cms.bool(True)
+    process.HeavyIonGlobalParameters.nonDefaultGlauberModel = cms.string("Hydjet_Drum")
+    process.evtAna = cms.Path(process.filter*process.heavyIon*process.hiEvtAnalyzer)
 
 ### Set output
 process.TFileService = cms.Service("TFileService",
@@ -363,8 +364,7 @@ process.p = cms.Path(
 )
 #process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
-	process.hIon
-	,process.p
+	process.p
 	,process.hltAna
 	,process.evtAna
     #,process.e
