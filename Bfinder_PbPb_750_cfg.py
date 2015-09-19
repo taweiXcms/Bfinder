@@ -1,11 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_STARTHI53_LV1_Unquenched_PbPb_2760GeV_RAW2DIGI_RECO_BuKp_20150122_50kevt/49063ee7960b4ac6745251f7107935ce/RECO_100_2_Zkn.root'
-#ivars.inputFiles='file:/net/hisrv0001/home/tawei/tawei/Data_samples/HIRun2011/HIDiMuon/USER/L2DoubleMu3Skim_v10_38dff9fa051006d6e895e3c1df676d76-v1/40000/RECO_02F09DEB-FACF-E411-9976-7845C4FB82F2.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_20150327/cf203613c3d0bfa79df606745a236cc7/reco_976_1_Hr7.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Hydjet1p8_TuneDrum_Quenched_MinBias_2760GeV/Pyquen_D0tokaonpion_Pt0_D0pt1p0_TuneZ2_Unquenched_2760GeV_step3_20150612_250kevt/49063ee7960b4ac6745251f7107935ce/RECO_99_1_JJv.root'
-#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/tawei/Data_samples/HIRun2011/HIMinBiasUPC/RECO/14Mar2014-v2/00000/0018A8E7-F9AF-E311-ADAB-FA163E565820.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
+ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
 
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
@@ -19,8 +17,8 @@ runOnMC = True
 #runOnMC = False
 
 ### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
-HIFormat = True
-#HIFormat = False
+#HIFormat = True
+HIFormat = False
 
 ### Include SIM tracks for matching?
 UseGenPlusSim = False
@@ -50,7 +48,30 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(50))
+
+#### HI infomation
+from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
+process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
+
+#### SetUp Evt Info (centrality)
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, '75X_mcRun2_HeavyIon_v1', '')
+
+process.GlobalTag.toGet.extend([
+ cms.PSet(record = cms.string("HeavyIonRcd"),
+tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v740x01_mc"),
+connect = cms.string("frontier://FrontierProd/CMS_COND_31X_PHYSICSTOOLS"),
+label = cms.untracked.string("HFtowersHydjetDrum5")
+ ),
+])
+
+process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
+process.centralityBin.Centrality = cms.InputTag("hiCentrality")
+process.centralityBin.centralityVariable = cms.string("HFtowers")
+process.centralityBin.nonDefaultGlauberModel = cms.string("HydjetDrum5")
+
+process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 
 ### Set global tag
 if runOnMC:
@@ -59,16 +80,22 @@ if runOnMC:
     #process.GlobalTag.globaltag = cms.string( 'START52_V5::All' ) 
     #process.GlobalTag.globaltag = cms.string( 'START52_V7::All' )
     #process.GlobalTag.globaltag = cms.string( 'START53_V17::All' )
-    process.GlobalTag.globaltag = cms.string( 'STARTHI53_LV1::All' ) ##PbPb
-#    process.GlobalTag.globaltag = cms.string( 'START53_V27::All' ) ##pPb
+    #process.GlobalTag.globaltag = cms.string( 'STARTHI53_LV1::All' ) ##PbPb
+    #process.GlobalTag.globaltag = cms.string( 'START53_V27::All' ) ##pPb
+    #process.GlobalTag.globaltag = cms.string( 'MCHI1_74_V4::All' ) ##PbPb for 7_4_0_pre8
+    #process.GlobalTag.globaltag = cms.string( 'MCHI1_74_V6::All' ) ##PbPb for 7_4_2
+    process.GlobalTag.globaltag = cms.string( '75X_mcRun2_HeavyIon_v1' ) ##PbPb for 7_5_0
 else:
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V6_AN2::All' ) #for 2012AB
     #process.GlobalTag.globaltag = cms.string( 'FT_53_V10_AN2::All' )#for 2012C
     #process.GlobalTag.globaltag = cms.string( 'FT_P_V42_AN2::All' ) #for 2012D
-    process.GlobalTag.globaltag = cms.string( 'GR_R_53_LV6::All' ) ##PbPb
-#    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pp
-#    process.GlobalTag.globaltag = cms.string( 'GR_P_V43F::All' ) ##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
-#    process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
+    #process.GlobalTag.globaltag = cms.string( 'GR_R_53_LV6::All' ) ##PbPb
+    #process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pp
+    #process.GlobalTag.globaltag = cms.string( 'GR_P_V43F::All' ) ##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
+    #process.GlobalTag.globaltag = cms.string( 'GR_P_V43D::All' ) ##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
+    #process.GlobalTag.globaltag = cms.string( 'GR_R_74_V8A::All' ) ##CMSSW_7_4_0_pre8 PbPb
+    #process.GlobalTag.globaltag = cms.string( 'GR_R_74_V12A::All' ) ##CMSSW_7_4_2 PbPb
+    process.GlobalTag.globaltag = cms.string( '75X_dataRun2_v2' ) ##CMSSW_7_5_0 PbPb
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
@@ -102,7 +129,6 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 
 # Common offline event selection
 process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
-process.PAprimaryVertexFilter.src = cms.InputTag("hiSelectedVertex")
 
 #process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
 #process.filter = cms.Sequence(process.noscraping)
@@ -120,12 +146,31 @@ process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
 ### Setup Pat
 ### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
-process.patMuons.embedTcMETMuonCorrs = cms.bool(False)
+######MODIFIED
+process.particleFlowPtrs.src = "particleFlowTmp"
+process.pfPileUp.Vertices = cms.InputTag("hiSelectedVertex")
+process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
+process.pfPileUpPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
+process.patElectrons.electronSource = cms.InputTag("gedGsfElectronsTmp")
+process.elPFIsoDepositChargedPAT.src = process.patElectrons.electronSource
+process.elPFIsoDepositChargedAllPAT.src = process.patElectrons.electronSource
+process.elPFIsoDepositNeutralPAT.src = process.patElectrons.electronSource
+process.elPFIsoDepositGammaPAT.src = process.patElectrons.electronSource
+process.elPFIsoDepositPUPAT.src = process.patElectrons.electronSource
+process.patPhotons.photonSource = cms.InputTag("photons")
+process.patPhotons.electronSource = process.patElectrons.electronSource
+process.phPFIsoDepositChargedPAT.src = process.patPhotons.photonSource
+process.phPFIsoDepositChargedAllPAT.src = process.patPhotons.photonSource
+process.phPFIsoDepositNeutralPAT.src = process.patPhotons.photonSource
+process.phPFIsoDepositGammaPAT.src = process.patPhotons.photonSource
+process.phPFIsoDepositPUPAT.src = process.patPhotons.photonSource
+#process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+#process.patMuons.embedTcMETMuonCorrs = cms.bool(False)
 from PhysicsTools.PatAlgos.tools.helpers import *
-#removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patDefaultSequence")
-removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patCandidates")
-process.patMuons.pvSrc = cms.InputTag("hiSelectedVertex")
+##removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patDefaultSequence")
+#removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patCandidates")
+#process.patMuons.pvSrc = cms.InputTag("hiSelectedVertex")
+######MODIFIED
 
 ### keep only Pat:: part 
 #from PhysicsTools.PatAlgos.patEventContent_cff import *
@@ -138,7 +183,8 @@ if UseGenPlusSim:
 	process.muonMatch.matched = cms.InputTag("genParticlePlusGEANT")
 
 #process.allLayer1Jets.addJetCorrFactors = False
-from PhysicsTools.PatAlgos.tools.trackTools import *
+#from PhysicsTools.PatAlgos.tools.trackTools import *######MODIFIED
+from Bfinder.tempTools.trackTools import *######MODIFIED
 #process.load( 'PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cff' )
 if runOnMC:
     makeTrackCandidates(process,              # patAODTrackCands
@@ -179,14 +225,16 @@ else :
     l1cands = getattr(process, 'patTrackCands')
     l1cands.addGenMatch = False
 from PhysicsTools.PatAlgos.tools.coreTools import *
-removeAllPATObjectsBut(process, ['Muons'])
-#removeSpecificPATObjects(process, ['Jets'])
+from Bfinder.tempTools.tempTools import *######MODIFIED
+#removeAllPATObjectsBut(process, ['Muons'])
+removeSpecificPATObjects(process, ['Photons', 'Electrons', 'Taus', 'Jets', 'METs', 'Muons'])######MODIFIED
 
 if not runOnMC :
 	removeMCMatching(process, ['All'] )
 
 process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
 from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import *
+process.patMuonsWithoutTrigger.pfMuonSource = cms.InputTag("particleFlowTmp")######MODIFIED
 if runOnMC:
 	addMCinfo(process)
 	process.muonMatch.resolveByMatchQuality = True
@@ -266,8 +314,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
 ### Set Dfinder option
 process.Dfinder = cms.EDAnalyzer('Dfinder',
 	Dchannel 		= cms.vint32(
-		1,#RECONSTRUCTION: K+pi-
-		1,#RECONSTRUCTION: K-pi+
+		0,#RECONSTRUCTION: K+pi-
+		0,#RECONSTRUCTION: K-pi+
 		0,#RECONSTRUCTION: K-pi+pi+
 		0,#RECONSTRUCTION: K+pi-pi-
 		0,#RECONSTRUCTION: K-pi-pi+pi+
@@ -318,24 +366,11 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 	#process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
 process.hltAna = cms.Path(process.filter*process.hltanalysis)
 
-### HI infomation
-from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
-process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
-
-### SetUp Evt Info (centrality)
-from HeavyIonsAnalysis.Configuration.CommonFunctions_cff import *
-overrideGT_PbPb2760(process)
-process.HeavyIonGlobalParameters = cms.PSet(
-    centralityVariable = cms.string("HFtowers"),
-    nonDefaultGlauberModel = cms.string(""),
-    centralitySrc = cms.InputTag("hiCentrality")
-    )
-process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
-process.evtAna = cms.Path(process.filter*process.hiEvtAnalyzer)
+### Run the hiEvtAnalyzer
+process.evtAna = cms.Path(process.filter*process.centralityBin*process.hiEvtAnalyzer)
 if runOnMC:
     process.hiEvtAnalyzer.doMC = cms.bool(True)
-    process.HeavyIonGlobalParameters.nonDefaultGlauberModel = cms.string("Hydjet_Drum")
-    process.evtAna = cms.Path(process.filter*process.heavyIon*process.hiEvtAnalyzer)
+    process.evtAna = cms.Path(process.filter*process.heavyIon*process.centralityBin*process.hiEvtAnalyzer)
 
 ### Set output
 process.TFileService = cms.Service("TFileService",
