@@ -23,9 +23,6 @@ HIFormat = False
 ### Include SIM tracks for matching?
 UseGenPlusSim = False
 
-### Using pat muon with trigger or not
-UsepatMuonsWithTrigger = True
-
 process = cms.Process("demo")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 ### Set TransientTrackBuilder 
@@ -43,8 +40,13 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('test.root'),
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
-    outputCommands = cms.untracked.vstring('drop *',
+    outputCommands = cms.untracked.vstring('keep *',
     )
+)
+
+### Set output
+process.TFileService = cms.Service("TFileService",
+	fileName = cms.string(ivars.outputFile)
 )
 
 ### Set maxEvents
@@ -102,6 +104,7 @@ process.source = cms.Source("PoolSource",
     skipEvents=cms.untracked.uint32(0),
 	fileNames = cms.untracked.vstring(ivars.inputFiles)
 )
+
 ### Using JSON file
 #if not runOnMC:
 #    #import PhysicsTools.PythonAnalysis.LumiList as LumiList
@@ -144,36 +147,13 @@ process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
 )
 
 ### Setup Pat
-### Ref: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePATMCMatching
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-######MODIFIED
+###### Needed in CMSSW7
 process.particleFlowPtrs.src = "particleFlowTmp"
-process.pfPileUp.Vertices = cms.InputTag("hiSelectedVertex")
 process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
 process.pfPileUpPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
-process.patElectrons.electronSource = cms.InputTag("gedGsfElectronsTmp")
-process.elPFIsoDepositChargedPAT.src = process.patElectrons.electronSource
-process.elPFIsoDepositChargedAllPAT.src = process.patElectrons.electronSource
-process.elPFIsoDepositNeutralPAT.src = process.patElectrons.electronSource
-process.elPFIsoDepositGammaPAT.src = process.patElectrons.electronSource
-process.elPFIsoDepositPUPAT.src = process.patElectrons.electronSource
-process.patPhotons.photonSource = cms.InputTag("photons")
-process.patPhotons.electronSource = process.patElectrons.electronSource
-process.phPFIsoDepositChargedPAT.src = process.patPhotons.photonSource
-process.phPFIsoDepositChargedAllPAT.src = process.patPhotons.photonSource
-process.phPFIsoDepositNeutralPAT.src = process.patPhotons.photonSource
-process.phPFIsoDepositGammaPAT.src = process.patPhotons.photonSource
-process.phPFIsoDepositPUPAT.src = process.patPhotons.photonSource
-#process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
-#process.patMuons.embedTcMETMuonCorrs = cms.bool(False)
-from PhysicsTools.PatAlgos.tools.helpers import *
-##removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patDefaultSequence")
-#removeIfInSequence(process, 'patHPSPFTauDiscriminationUpdate', "patCandidates")
-#process.patMuons.pvSrc = cms.InputTag("hiSelectedVertex")
-######MODIFIED
+###### Needed in CMSSW7
 
-### keep only Pat:: part 
-#from PhysicsTools.PatAlgos.patEventContent_cff import *
 if HIFormat:
 	process.muonMatch.matched = cms.InputTag("hiGenParticles")
 	process.genParticlePlusGEANT.genParticles = cms.InputTag("hiGenParticles")
@@ -182,14 +162,12 @@ if HIFormat:
 if UseGenPlusSim:
 	process.muonMatch.matched = cms.InputTag("genParticlePlusGEANT")
 
-#process.allLayer1Jets.addJetCorrFactors = False
-#from PhysicsTools.PatAlgos.tools.trackTools import *######MODIFIED
-from Bfinder.tempTools.trackTools import *######MODIFIED
-#process.load( 'PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cff' )
+## TrackCand
+from PhysicsTools.PatAlgos.tools.trackTools import *
 if runOnMC:
     makeTrackCandidates(process,              # patAODTrackCands
         label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
-#        tracks=cms.InputTag('generalTracks'), # input track collection
+        #tracks=cms.InputTag('generalTracks'), # input track collection
         tracks=cms.InputTag('hiGeneralTracks'), # input track collection
     	particleType='pi+',                   # particle type (for assigning a mass)
         preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
@@ -213,7 +191,7 @@ if runOnMC:
 else :
     makeTrackCandidates(process,              # patAODTrackCands
         label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
-#        tracks=cms.InputTag('generalTracks'), # input track collection
+        #tracks=cms.InputTag('generalTracks'), # input track collection
         tracks=cms.InputTag('hiGeneralTracks'), # input track collection
         particleType='pi+',                   # particle type (for assigning a mass)
         preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
@@ -224,17 +202,12 @@ else :
     );                                        # you can specify more than one collection for this
     l1cands = getattr(process, 'patTrackCands')
     l1cands.addGenMatch = False
-from PhysicsTools.PatAlgos.tools.coreTools import *
-from Bfinder.tempTools.tempTools import *######MODIFIED
-#removeAllPATObjectsBut(process, ['Muons'])
-removeSpecificPATObjects(process, ['Photons', 'Electrons', 'Taus', 'Jets', 'METs', 'Muons'])######MODIFIED
+process.TrackCandSequence = cms.Sequence(process.patAODTrackCandsUnfiltered*process.patAODTrackCands*process.patTrackCandsMCMatch*process.patTrackCands*process.selectedPatTrackCands)
 
-if not runOnMC :
-	removeMCMatching(process, ['All'] )
-
+## patMuonsWithTrigger
 process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
 from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import *
-process.patMuonsWithoutTrigger.pfMuonSource = cms.InputTag("particleFlowTmp")######MODIFIED
+process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
 if runOnMC:
 	addMCinfo(process)
 	process.muonMatch.resolveByMatchQuality = True
@@ -262,7 +235,7 @@ process.mergedMuons = cms.EDProducer("CaloMuonMerger",
     caloMuons = cms.InputTag("calomuons"),
     minCaloCompatibility = cms.double(0.6),
     mergeTracks = cms.bool(False),
-#    tracks = cms.InputTag("generalTracks"),
+    #tracks = cms.InputTag("generalTracks"),
     tracks = cms.InputTag("hiGeneralTracks"),
 )
 if AddCaloMuon:
@@ -277,7 +250,7 @@ if AddCaloMuon:
     if runOnMC:
         process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
         process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
-    process.patDefaultSequence = cms.Sequence(process.mergedMuons*process.patDefaultSequence)
+    process.patMuonsWithTriggerSequence = cms.Sequence(process.mergedMuons*process.patMuonsWithTriggerSequence)
 
 ### Set Bfinder option
 process.demo = cms.EDAnalyzer('Bfinder',
@@ -295,8 +268,8 @@ process.demo = cms.EDAnalyzer('Bfinder',
     #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
-	MuonLabel       = cms.InputTag('selectedPatMuons'),         #selectedPatMuons
-	TrackLabel      = cms.InputTag('selectedPatTrackCands'),    #selectedPat
+	MuonLabel       = cms.InputTag('patMuonsWithTrigger'),
+	TrackLabel      = cms.InputTag('patTrackCands'),
     PUInfoLabel     = cms.InputTag("addPileupInfo"),
     BSLabel     = cms.InputTag("offlineBeamSpot"),
     #PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
@@ -325,7 +298,7 @@ process.Dfinder = cms.EDAnalyzer('Dfinder',
 	),
 	HLTLabel        = cms.InputTag('TriggerResults::HLT'),
     GenLabel        = cms.InputTag('genParticles'),
-	TrackLabel      = cms.InputTag('selectedPatTrackCands'),    #selectedPat
+	TrackLabel      = cms.InputTag('patTrackCands'),
     PUInfoLabel     = cms.InputTag("addPileupInfo"),
     BSLabel     = cms.InputTag("offlineBeamSpot"),
     #PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
@@ -350,12 +323,8 @@ if HIFormat:
 if UseGenPlusSim:
 	process.demo.GenLabel = cms.InputTag('genParticlePlusGEANT')
 	process.Dfinder.GenLabel = cms.InputTag('genParticlePlusGEANT')
-if UsepatMuonsWithTrigger:
-	process.demo.MuonLabel = cms.InputTag('patMuonsWithTrigger')	
 
 ### SetUp HLT info
-#process.load('Bfinder.HiHLTAlgos.hltanalysis_cff')
-#process.load('Bfinder.EventAnalysis.hltanalysis_cff')
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.hltanalysis.dummyBranches = cms.untracked.vstring()
 process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
@@ -372,24 +341,17 @@ if runOnMC:
     process.hiEvtAnalyzer.doMC = cms.bool(True)
     process.evtAna = cms.Path(process.filter*process.heavyIon*process.centralityBin*process.hiEvtAnalyzer)
 
-### Set output
-process.TFileService = cms.Service("TFileService",
-	fileName = cms.string(ivars.outputFile)
-)
-
 if runOnMC and UseGenPlusSim:
-	process.patDefaultSequence *= process.genParticlePlusGEANT
-if UsepatMuonsWithTrigger:
-	process.patDefaultSequence *= process.patMuonsWithTriggerSequence
+	process.patMuonsWithTriggerSequence *= process.genParticlePlusGEANT
 
 process.p = cms.Path(	
-#    process.patDefaultSequence*process.demo
-    process.filter*process.patDefaultSequence*process.demo*process.Dfinder
+    process.filter*process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.demo*process.Dfinder
 )
+
 #process.e = cms.EndPath(process.out)
 process.schedule = cms.Schedule(
 	process.p
 	,process.hltAna
 	,process.evtAna
-    #,process.e
+#    ,process.e
 )
