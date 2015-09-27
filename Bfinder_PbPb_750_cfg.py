@@ -23,6 +23,9 @@ HIFormat = False
 ### Include SIM tracks for matching?
 UseGenPlusSim = False
 
+### Add centrality filter
+CentralityFilter = True
+
 process = cms.Process("demo")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 ### Set TransientTrackBuilder 
@@ -50,7 +53,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(50))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 #### HI infomation
 from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
@@ -137,6 +140,14 @@ process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
 #process.filter = cms.Sequence(process.noscraping)
 #process.filter = cms.Sequence(process.PAcollisionEventSelection)
 process.filter = cms.Sequence(process.collisionEventSelection)
+
+## Add centrality filter
+if CentralityFilter:
+	process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
+	#process.cenfilter = process.centralityFilter.clone(selectedBins = [0,1,2,3,4])
+	process.cenfilter = process.centralityFilter.clone(selectedBins = range(59,201))
+	print process.cenfilter.selectedBins
+	process.filter = cms.Sequence(process.centralityBin*process.cenfilter*process.collisionEventSelection)
 
 ##Producing Gen list with SIM particles
 process.genParticlePlusGEANT = cms.EDProducer("GenPlusSimParticleProducer",
@@ -336,10 +347,10 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag("hiSelectedVertex")
 process.hltAna = cms.Path(process.filter*process.hltanalysis)
 
 ### Run the hiEvtAnalyzer
-process.evtAna = cms.Path(process.filter*process.centralityBin*process.hiEvtAnalyzer)
+process.evtAna = cms.Path(process.filter*process.hiEvtAnalyzer)
 if runOnMC:
     process.hiEvtAnalyzer.doMC = cms.bool(True)
-    process.evtAna = cms.Path(process.filter*process.heavyIon*process.centralityBin*process.hiEvtAnalyzer)
+    process.evtAna = cms.Path(process.filter*process.heavyIon*process.hiEvtAnalyzer)
 
 if runOnMC and UseGenPlusSim:
 	process.patMuonsWithTriggerSequence *= process.genParticlePlusGEANT
