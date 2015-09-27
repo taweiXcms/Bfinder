@@ -146,7 +146,6 @@ if CentralityFilter:
 	process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
 	#process.cenfilter = process.centralityFilter.clone(selectedBins = [0,1,2,3,4])
 	process.cenfilter = process.centralityFilter.clone(selectedBins = range(59,201))
-	print process.cenfilter.selectedBins
 	process.filter = cms.Sequence(process.centralityBin*process.cenfilter*process.collisionEventSelection)
 
 ##Producing Gen list with SIM particles
