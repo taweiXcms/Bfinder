@@ -196,5 +196,3 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	process.BfinderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder)
 	process.DfinderSequence = cms.Sequence(process.TrackCandSequence*process.Dfinder)
 	process.finderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder*process.Dfinder)
-###Resulting processes
-###process.p
