@@ -95,6 +95,7 @@ process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 process.centralityBin.Centrality = cms.InputTag("hiCentrality")
 process.centralityBin.centralityVariable = cms.string("HFtowers")
 process.centralityBin.nonDefaultGlauberModel = cms.string("HydjetDrum5")
+process.centrality_path = cms.Path(process.centralityBin)
 
 ### Set basic filter
 process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
@@ -144,7 +145,7 @@ if CentralityFilter:
     process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
     #process.cenfilter = process.centralityFilter.clone(selectedBins = [0,1,2,3,4])
     process.cenfilter = process.centralityFilter.clone(selectedBins = range(59,201))
-    process.filter = cms.Sequence(process.centralityBin*process.cenfilter*process.collisionEventSelection)
+    process.filter = cms.Sequence(process.cenfilter*process.collisionEventSelection)
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
@@ -171,8 +172,9 @@ finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
 process.p = cms.Path(process.filter*process.finderSequence)
 
 process.schedule = cms.Schedule(
-	process.p
+	process.centrality_path
 	,process.hltAna
 	,process.evtAna
+	,process.p
 #    ,process.e
 )
