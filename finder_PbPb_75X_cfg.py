@@ -137,7 +137,7 @@ HIFormat = False
 UseGenPlusSim = False
 
 ### Add centrality filter
-CentralityFilter = True
+CentralityFilter = False
 
 ### Add centrality filter
 if CentralityFilter:

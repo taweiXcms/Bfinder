@@ -24,7 +24,7 @@ HIFormat = False
 UseGenPlusSim = False
 
 ### Add centrality filter
-CentralityFilter = True
+CentralityFilter = False
 
 process = cms.Process("demo")
 process.load("FWCore.MessageService.MessageLogger_cfi")
