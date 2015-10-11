@@ -169,7 +169,26 @@ process.hltAna = cms.Path(process.filter*process.hltanalysis)
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
-process.p = cms.Path(process.filter*process.finderSequence)
+process.p = cms.Path(process.filter*process.DfinderSequence)
+process.Bfinder.Bchannel = cms.vint32(
+    0,#RECONSTRUCTION: J/psi + K
+    0,#RECONSTRUCTION: J/psi + Pi
+    0,#RECONSTRUCTION: J/psi + Ks
+    0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
+    0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
+    0,#RECONSTRUCTION: J/psi + phi
+    0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+)
+process.Dfinder.Dchannel = cms.vint32(
+    1,#RECONSTRUCTION: K+pi-
+    1,#RECONSTRUCTION: K-pi+
+    0,#RECONSTRUCTION: K-pi+pi+
+    0,#RECONSTRUCTION: K+pi-pi-
+    0,#RECONSTRUCTION: K-pi-pi+pi+
+    0,#RECONSTRUCTION: K+pi+pi-pi-
+    0,#RECONSTRUCTION: K+K-(Phi)pi+
+    0,#RECONSTRUCTION: K+K-(Phi)pi-
+)
 
 process.schedule = cms.Schedule(
 	process.centrality_path
