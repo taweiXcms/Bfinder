@@ -180,15 +180,22 @@ process.Bfinder.Bchannel = cms.vint32(
     0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 )
 process.Dfinder.Dchannel = cms.vint32(
-    1,#RECONSTRUCTION: K+pi-
-    1,#RECONSTRUCTION: K-pi+
-    0,#RECONSTRUCTION: K-pi+pi+
-    0,#RECONSTRUCTION: K+pi-pi-
-    0,#RECONSTRUCTION: K-pi-pi+pi+
-    0,#RECONSTRUCTION: K+pi+pi-pi-
-    0,#RECONSTRUCTION: K+K-(Phi)pi+
-    0,#RECONSTRUCTION: K+K-(Phi)pi-
+    1,#RECONSTRUCTION: K+pi- : D0bar
+    1,#RECONSTRUCTION: K-pi+ : D0
+    0,#RECONSTRUCTION: K-pi+pi+ : D+
+    0,#RECONSTRUCTION: K+pi-pi- : D-
+    0,#RECONSTRUCTION: K-pi-pi+pi+ : D0
+    0,#RECONSTRUCTION: K+pi+pi-pi- : D0bar
+    0,#RECONSTRUCTION: K+K-(Phi)pi+ : Ds+
+    0,#RECONSTRUCTION: K+K-(Phi)pi- : Ds-
+    0,#RECONSTRUCTION: D0(K-pi+)pi+ : D+*
+    0,#RECONSTRUCTION: D0bar(K+pi-)pi- : D-*
+    0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
+    0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
+process.Dfinder.tkEtaCut = cms.double(2.0)
+process.Dfinder.dPtCut = cms.double(6.0)
+process.Dfinder.svpvDistanceCut = cms.double(0.0)
 
 process.schedule = cms.Schedule(
 	process.centrality_path

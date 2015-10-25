@@ -153,14 +153,18 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
 		Dchannel 		= cms.vint32(
-			0,#RECONSTRUCTION: K+pi-
-			0,#RECONSTRUCTION: K-pi+
-			0,#RECONSTRUCTION: K-pi+pi+
-			0,#RECONSTRUCTION: K+pi-pi-
-			0,#RECONSTRUCTION: K-pi-pi+pi+
-			0,#RECONSTRUCTION: K+pi+pi-pi-
-			0,#RECONSTRUCTION: K+K-(Phi)pi+
-			0,#RECONSTRUCTION: K+K-(Phi)pi-
+	        0,#RECONSTRUCTION: K+pi- : D0bar
+	        0,#RECONSTRUCTION: K-pi+ : D0
+	        0,#RECONSTRUCTION: K-pi+pi+ : D+
+	        0,#RECONSTRUCTION: K+pi-pi- : D-
+	        0,#RECONSTRUCTION: K-pi-pi+pi+ : D0
+	        0,#RECONSTRUCTION: K+pi+pi-pi- : D0bar
+	        0,#RECONSTRUCTION: K+K-(Phi)pi+ : Ds+
+	        0,#RECONSTRUCTION: K+K-(Phi)pi- : Ds-
+	        0,#RECONSTRUCTION: D0(K-pi+)pi+ : D+*
+	        0,#RECONSTRUCTION: D0bar(K+pi-)pi- : D-*
+	        0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
+	        0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 		),
 		HLTLabel        = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel        = cms.InputTag('genParticles'),

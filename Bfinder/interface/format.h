@@ -383,6 +383,8 @@ class TrackInfoBranches{//{{{
         int     geninfo_index[ MAX_TRACK];
         int     trackQuality [ MAX_TRACK];
         bool    highPurity   [ MAX_TRACK];
+        double  trkMVAVal    [ MAX_TRACK];
+        int     trkAlgo      [ MAX_TRACK];
 
         void regTree(TTree *root){//{{{
             root->Branch("TrackInfo.size"           ,&size		    ,"TrackInfo.size/I"			);
@@ -407,37 +409,41 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.d0error"	    ,d0error	    ,"TrackInfo.d0error[TrackInfo.size]/D"	);
             root->Branch("TrackInfo.dzPV"           ,dzPV           ,"TrackInfo.dzPV[TrackInfo.size]/D"		);
             root->Branch("TrackInfo.dxyPV"          ,dxyPV          ,"TrackInfo.dxyPV[TrackInfo.size]/D"		);
-            root->Branch("TrackInfo.geninfo_index"     ,geninfo_index     ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
-            root->Branch("TrackInfo.trackQuality"     ,trackQuality     ,"TrackInfo.trackQuality[TrackInfo.size]/I");
+            root->Branch("TrackInfo.geninfo_index"  ,geninfo_index  ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
+            root->Branch("TrackInfo.trackQuality"   ,trackQuality   ,"TrackInfo.trackQuality[TrackInfo.size]/I");
             root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/O");
+            root->Branch("TrackInfo.trkMVAVal"      ,trkMVAVal      ,"TrackInfo.trkMVAVal[TrackInfo.size]/D");
+            root->Branch("TrackInfo.trkAlgo"        ,trkAlgo        ,"TrackInfo.trkAlgo[TrackInfo.size]/I");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
-            root->SetBranchAddress("TrackInfo.size"        , &size       );
-            root->SetBranchAddress("TrackInfo.index"       , index       );
-            root->SetBranchAddress("TrackInfo.handle_index"       , handle_index       );
-            root->SetBranchAddress("TrackInfo.charge"      , charge      );
-            root->SetBranchAddress("TrackInfo.pt"          , pt          );
-            root->SetBranchAddress("TrackInfo.eta"         , eta         );
-            root->SetBranchAddress("TrackInfo.phi"         , phi         );
-            root->SetBranchAddress("TrackInfo.ptErr"       , ptErr       );
-            root->SetBranchAddress("TrackInfo.etaErr"      , etaErr      );
-            root->SetBranchAddress("TrackInfo.phiErr"      , phiErr      );
-            root->SetBranchAddress("TrackInfo.striphit"    , striphit    );
-            root->SetBranchAddress("TrackInfo.pixelhit"    , pixelhit    );
-            root->SetBranchAddress("TrackInfo.nStripLayer" , nStripLayer );
-            root->SetBranchAddress("TrackInfo.nPixelLayer" , nPixelLayer );
-            root->SetBranchAddress("TrackInfo.fpbarrelhit" , fpbarrelhit );
-            root->SetBranchAddress("TrackInfo.fpendcaphit" , fpendcaphit );
-            root->SetBranchAddress("TrackInfo.chi2"        , chi2        );
-            root->SetBranchAddress("TrackInfo.ndf"         , ndf         );
-            root->SetBranchAddress("TrackInfo.d0"          , d0          );
-            root->SetBranchAddress("TrackInfo.d0error"     , d0error     );
-            root->SetBranchAddress("TrackInfo.dzPV"        , dzPV        );
-            root->SetBranchAddress("TrackInfo.dxyPV"       , dxyPV       );
-            root->SetBranchAddress("TrackInfo.geninfo_index"  , geninfo_index  );
+            root->SetBranchAddress("TrackInfo.size"          , &size       );
+            root->SetBranchAddress("TrackInfo.index"         , index       );
+            root->SetBranchAddress("TrackInfo.handle_index"  , handle_index       );
+            root->SetBranchAddress("TrackInfo.charge"        , charge      );
+            root->SetBranchAddress("TrackInfo.pt"            , pt          );
+            root->SetBranchAddress("TrackInfo.eta"           , eta         );
+            root->SetBranchAddress("TrackInfo.phi"           , phi         );
+            root->SetBranchAddress("TrackInfo.ptErr"         , ptErr       );
+            root->SetBranchAddress("TrackInfo.etaErr"        , etaErr      );
+            root->SetBranchAddress("TrackInfo.phiErr"        , phiErr      );
+            root->SetBranchAddress("TrackInfo.striphit"      , striphit    );
+            root->SetBranchAddress("TrackInfo.pixelhit"      , pixelhit    );
+            root->SetBranchAddress("TrackInfo.nStripLayer"   , nStripLayer );
+            root->SetBranchAddress("TrackInfo.nPixelLayer"   , nPixelLayer );
+            root->SetBranchAddress("TrackInfo.fpbarrelhit"   , fpbarrelhit );
+            root->SetBranchAddress("TrackInfo.fpendcaphit"   , fpendcaphit );
+            root->SetBranchAddress("TrackInfo.chi2"          , chi2        );
+            root->SetBranchAddress("TrackInfo.ndf"           , ndf         );
+            root->SetBranchAddress("TrackInfo.d0"            , d0          );
+            root->SetBranchAddress("TrackInfo.d0error"       , d0error     );
+            root->SetBranchAddress("TrackInfo.dzPV"          , dzPV        );
+            root->SetBranchAddress("TrackInfo.dxyPV"         , dxyPV       );
+            root->SetBranchAddress("TrackInfo.geninfo_index" , geninfo_index  );
             root->SetBranchAddress("TrackInfo.trackQuality"  , trackQuality  );
-            root->SetBranchAddress("TrackInfo.highPurity"  , highPurity  );
+            root->SetBranchAddress("TrackInfo.highPurity"    , highPurity  );
+            root->SetBranchAddress("TrackInfo.trkMVAVal"     , trkMVAVal  );
+            root->SetBranchAddress("TrackInfo.trkAlgo"       , trkAlgo  );
         }//}}}
 };//}}}
 
@@ -731,12 +737,26 @@ public:
     double  tktkRes_vtxZE[MAX_XB];
     double	tktkRes_vtxdof[MAX_XB];
     double	tktkRes_vtxchi2[MAX_XB];
+    double  tktkRes_rftk1_mass[MAX_XB];
     double  tktkRes_rftk1_pt[MAX_XB];
     double  tktkRes_rftk1_eta[MAX_XB];
     double  tktkRes_rftk1_phi[MAX_XB];
+    double  tktkRes_rftk2_mass[MAX_XB];
     double  tktkRes_rftk2_pt[MAX_XB];
     double  tktkRes_rftk2_eta[MAX_XB];
     double  tktkRes_rftk2_phi[MAX_XB];
+    double  tktkRes_rftk3_mass[MAX_XB];
+    double  tktkRes_rftk3_pt[MAX_XB];
+    double  tktkRes_rftk3_eta[MAX_XB];
+    double  tktkRes_rftk3_phi[MAX_XB];
+    double  tktkRes_rftk4_mass[MAX_XB];
+    double  tktkRes_rftk4_pt[MAX_XB];
+    double  tktkRes_rftk4_eta[MAX_XB];
+    double  tktkRes_rftk4_phi[MAX_XB];
+    int     tktkRes_rftk1_index[MAX_XB];
+    int     tktkRes_rftk2_index[MAX_XB];
+    int     tktkRes_rftk3_index[MAX_XB];
+    int     tktkRes_rftk4_index[MAX_XB];
 
     double	mass[MAX_XB];
     double  pt[MAX_XB];
@@ -769,28 +789,40 @@ public:
     double  rftk4_px[MAX_XB];
     double  rftk4_py[MAX_XB];
     double  rftk4_pz[MAX_XB];
+    double  rftk5_px[MAX_XB];
+    double  rftk5_py[MAX_XB];
+    double  rftk5_pz[MAX_XB];
+    double  rftk1_mass[MAX_XB];
     double  rftk1_pt[MAX_XB];
     double  rftk1_eta[MAX_XB];
     double  rftk1_phi[MAX_XB];
+    double  rftk2_mass[MAX_XB];
     double  rftk2_pt[MAX_XB];
     double  rftk2_eta[MAX_XB];
     double  rftk2_phi[MAX_XB];
+    double  rftk3_mass[MAX_XB];
     double  rftk3_pt[MAX_XB];
     double  rftk3_eta[MAX_XB];
     double  rftk3_phi[MAX_XB];
+    double  rftk4_mass[MAX_XB];
     double  rftk4_pt[MAX_XB];
     double  rftk4_eta[MAX_XB];
     double  rftk4_phi[MAX_XB];
+    double  rftk5_mass[MAX_XB];
+    double  rftk5_pt[MAX_XB];
+    double  rftk5_eta[MAX_XB];
+    double  rftk5_phi[MAX_XB];
     int     rftk1_index[MAX_XB];
     int     rftk2_index[MAX_XB];
     int     rftk3_index[MAX_XB];
     int     rftk4_index[MAX_XB];
+    int     rftk5_index[MAX_XB];
     int     rftk1_MassHypo[MAX_XB];
     int     rftk2_MassHypo[MAX_XB];
     int     rftk3_MassHypo[MAX_XB];
     int     rftk4_MassHypo[MAX_XB];
-
-    
+    int     rftk5_MassHypo[MAX_XB];
+   
     void regTree(TTree *root){//{{{
         root->Branch("DInfo.size"             , &size          , "DInfo.size/I"			);
         root->Branch("DInfo.index"            , index          , "DInfo.index[DInfo.size]/I"		);
@@ -816,12 +848,26 @@ public:
         root->Branch("DInfo.tktkRes_vtxZE"         , tktkRes_vtxZE             , "DInfo.tktkRes_vtxZE[DInfo.size]/D"   );
         root->Branch("DInfo.tktkRes_vtxdof"        , tktkRes_vtxdof            , "DInfo.tktkRes_vtxdof[DInfo.size]/D"	);
         root->Branch("DInfo.tktkRes_vtxchi2"       , tktkRes_vtxchi2           , "DInfo.tktkRes_vtxchi2[DInfo.size]/D"	);
+        root->Branch("DInfo.tktkRes_rftk1_mass"    , tktkRes_rftk1_mass        , "DInfo.tktkRes_rftk1_mass[DInfo.size]/D"     );
         root->Branch("DInfo.tktkRes_rftk1_pt"      , tktkRes_rftk1_pt          , "DInfo.tktkRes_rftk1_pt[DInfo.size]/D"     );
         root->Branch("DInfo.tktkRes_rftk1_eta"     , tktkRes_rftk1_eta         , "DInfo.tktkRes_rftk1_eta[DInfo.size]/D"     );
         root->Branch("DInfo.tktkRes_rftk1_phi"     , tktkRes_rftk1_phi         , "DInfo.tktkRes_rftk1_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk2_mass"    , tktkRes_rftk2_mass        , "DInfo.tktkRes_rftk2_mass[DInfo.size]/D"     );
         root->Branch("DInfo.tktkRes_rftk2_pt"      , tktkRes_rftk2_pt          , "DInfo.tktkRes_rftk2_pt[DInfo.size]/D"     );
         root->Branch("DInfo.tktkRes_rftk2_eta"     , tktkRes_rftk2_eta         , "DInfo.tktkRes_rftk2_eta[DInfo.size]/D"     );
         root->Branch("DInfo.tktkRes_rftk2_phi"     , tktkRes_rftk2_phi         , "DInfo.tktkRes_rftk2_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk3_mass"    , tktkRes_rftk3_mass        , "DInfo.tktkRes_rftk3_mass[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk3_pt"      , tktkRes_rftk3_pt          , "DInfo.tktkRes_rftk3_pt[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk3_eta"     , tktkRes_rftk3_eta         , "DInfo.tktkRes_rftk3_eta[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk3_phi"     , tktkRes_rftk3_phi         , "DInfo.tktkRes_rftk3_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk4_mass"    , tktkRes_rftk4_mass        , "DInfo.tktkRes_rftk4_mass[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk4_pt"      , tktkRes_rftk4_pt          , "DInfo.tktkRes_rftk4_pt[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk4_eta"     , tktkRes_rftk4_eta         , "DInfo.tktkRes_rftk4_eta[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk4_phi"     , tktkRes_rftk4_phi         , "DInfo.tktkRes_rftk4_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.tktkRes_rftk1_index"   , tktkRes_rftk1_index       , "DInfo.tktkRes_rftk1_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_rftk2_index"   , tktkRes_rftk2_index       , "DInfo.tktkRes_rftk2_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_rftk3_index"   , tktkRes_rftk3_index       , "DInfo.tktkRes_rftk3_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_rftk4_index"   , tktkRes_rftk4_index       , "DInfo.tktkRes_rftk4_index[DInfo.size]/I");
 
         root->Branch("DInfo.mass"          , mass              , "DInfo.mass[DInfo.size]/D"     );
         root->Branch("DInfo.pt"            , pt                , "DInfo.pt[DInfo.size]/D"	);
@@ -854,29 +900,43 @@ public:
         root->Branch("DInfo.rftk4_px"      , rftk4_px          , "DInfo.rftk4_px[DInfo.size]/D"     );
         root->Branch("DInfo.rftk4_py"      , rftk4_py          , "DInfo.rftk4_py[DInfo.size]/D"     );
         root->Branch("DInfo.rftk4_pz"      , rftk4_pz          , "DInfo.rftk4_pz[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_px"      , rftk5_px          , "DInfo.rftk5_px[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_py"      , rftk5_py          , "DInfo.rftk5_py[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_pz"      , rftk5_pz          , "DInfo.rftk5_pz[DInfo.size]/D"     );
 
+
+        root->Branch("DInfo.rftk1_mass"    , rftk1_mass        , "DInfo.rftk1_mass[DInfo.size]/D"     );
         root->Branch("DInfo.rftk1_pt"      , rftk1_pt          , "DInfo.rftk1_pt[DInfo.size]/D"     );
         root->Branch("DInfo.rftk1_eta"     , rftk1_eta         , "DInfo.rftk1_eta[DInfo.size]/D"     );
         root->Branch("DInfo.rftk1_phi"     , rftk1_phi         , "DInfo.rftk1_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk2_mass"    , rftk2_mass        , "DInfo.rftk2_mass[DInfo.size]/D"     );
         root->Branch("DInfo.rftk2_pt"      , rftk2_pt          , "DInfo.rftk2_pt[DInfo.size]/D"     );
         root->Branch("DInfo.rftk2_eta"     , rftk2_eta         , "DInfo.rftk2_eta[DInfo.size]/D"     );
         root->Branch("DInfo.rftk2_phi"     , rftk2_phi         , "DInfo.rftk2_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk3_mass"    , rftk3_mass        , "DInfo.rftk3_mass[DInfo.size]/D"     );
         root->Branch("DInfo.rftk3_pt"      , rftk3_pt          , "DInfo.rftk3_pt[DInfo.size]/D"     );
         root->Branch("DInfo.rftk3_eta"     , rftk3_eta         , "DInfo.rftk3_eta[DInfo.size]/D"     );
         root->Branch("DInfo.rftk3_phi"     , rftk3_phi         , "DInfo.rftk3_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk4_mass"    , rftk4_mass        , "DInfo.rftk4_mass[DInfo.size]/D"     );
         root->Branch("DInfo.rftk4_pt"      , rftk4_pt          , "DInfo.rftk4_pt[DInfo.size]/D"     );
         root->Branch("DInfo.rftk4_eta"     , rftk4_eta         , "DInfo.rftk4_eta[DInfo.size]/D"     );
         root->Branch("DInfo.rftk4_phi"     , rftk4_phi         , "DInfo.rftk4_phi[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_mass"    , rftk5_mass        , "DInfo.rftk5_mass[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_pt"      , rftk5_pt          , "DInfo.rftk5_pt[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_eta"     , rftk5_eta         , "DInfo.rftk5_eta[DInfo.size]/D"     );
+        root->Branch("DInfo.rftk5_phi"     , rftk5_phi         , "DInfo.rftk5_phi[DInfo.size]/D"     );
         root->Branch("DInfo.rftk1_index"   , rftk1_index       , "DInfo.rftk1_index[DInfo.size]/I");
         root->Branch("DInfo.rftk2_index"   , rftk2_index       , "DInfo.rftk2_index[DInfo.size]/I");
         root->Branch("DInfo.rftk3_index"   , rftk3_index       , "DInfo.rftk3_index[DInfo.size]/I");
         root->Branch("DInfo.rftk4_index"   , rftk4_index       , "DInfo.rftk4_index[DInfo.size]/I");
+        root->Branch("DInfo.rftk5_index"   , rftk5_index       , "DInfo.rftk5_index[DInfo.size]/I");
 
         root->Branch("DInfo.rftk1_MassHypo"   , rftk1_MassHypo       , "DInfo.rftk1_MassHypo[DInfo.size]/I");
         root->Branch("DInfo.rftk2_MassHypo"   , rftk2_MassHypo       , "DInfo.rftk2_MassHypo[DInfo.size]/I");
         root->Branch("DInfo.rftk3_MassHypo"   , rftk3_MassHypo       , "DInfo.rftk3_MassHypo[DInfo.size]/I");
         root->Branch("DInfo.rftk4_MassHypo"   , rftk4_MassHypo       , "DInfo.rftk4_MassHypo[DInfo.size]/I");
-        
+        root->Branch("DInfo.rftk5_MassHypo"   , rftk5_MassHypo       , "DInfo.rftk5_MassHypo[DInfo.size]/I");
+       
     }//}}}
     
     void setbranchadd(TTree *root){//{{{
@@ -904,12 +964,26 @@ public:
         root->SetBranchAddress("DInfo.tktkRes_vtxZE"           ,tktkRes_vtxZE   );
         root->SetBranchAddress("DInfo.tktkRes_vtxdof"	        ,tktkRes_vtxdof	);
         root->SetBranchAddress("DInfo.tktkRes_vtxchi2"         ,tktkRes_vtxchi2 );
+        root->SetBranchAddress("DInfo.tktkRes_rftk1_mass"      ,tktkRes_rftk1_mass  );
         root->SetBranchAddress("DInfo.tktkRes_rftk1_pt"        ,tktkRes_rftk1_pt  );
         root->SetBranchAddress("DInfo.tktkRes_rftk1_eta"       ,tktkRes_rftk1_eta  );
         root->SetBranchAddress("DInfo.tktkRes_rftk1_phi"       ,tktkRes_rftk1_phi  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk2_mass"      ,tktkRes_rftk2_mass  );
         root->SetBranchAddress("DInfo.tktkRes_rftk2_pt"        ,tktkRes_rftk2_pt  );
         root->SetBranchAddress("DInfo.tktkRes_rftk2_eta"       ,tktkRes_rftk2_eta  );
         root->SetBranchAddress("DInfo.tktkRes_rftk2_phi"       ,tktkRes_rftk2_phi  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk3_mass"      ,tktkRes_rftk3_mass  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk3_pt"        ,tktkRes_rftk3_pt  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk3_eta"       ,tktkRes_rftk3_eta  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk3_phi"       ,tktkRes_rftk3_phi  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk4_mass"      ,tktkRes_rftk4_mass  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk4_pt"        ,tktkRes_rftk4_pt  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk4_eta"       ,tktkRes_rftk4_eta  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk4_phi"       ,tktkRes_rftk4_phi  );
+        root->SetBranchAddress("DInfo.tktkRes_rftk1_index"     ,tktkRes_rftk1_index   	);
+        root->SetBranchAddress("DInfo.tktkRes_rftk2_index"     ,tktkRes_rftk2_index   	);
+        root->SetBranchAddress("DInfo.tktkRes_rftk3_index"     ,tktkRes_rftk3_index   	);
+        root->SetBranchAddress("DInfo.tktkRes_rftk4_index"     ,tktkRes_rftk4_index   	);
 
         root->SetBranchAddress("DInfo.mass"            ,mass    );
         root->SetBranchAddress("DInfo.pt"              ,pt     	);
@@ -942,29 +1016,42 @@ public:
         root->SetBranchAddress("DInfo.rftk4_px"        ,rftk4_px  );
         root->SetBranchAddress("DInfo.rftk4_py"        ,rftk4_py  );
         root->SetBranchAddress("DInfo.rftk4_pz"        ,rftk4_pz  );
+        root->SetBranchAddress("DInfo.rftk5_px"        ,rftk5_px  );
+        root->SetBranchAddress("DInfo.rftk5_py"        ,rftk5_py  );
+        root->SetBranchAddress("DInfo.rftk5_pz"        ,rftk5_pz  );
 
+        root->SetBranchAddress("DInfo.rftk1_mass"      ,rftk1_mass);
         root->SetBranchAddress("DInfo.rftk1_pt"        ,rftk1_pt  );
         root->SetBranchAddress("DInfo.rftk1_eta"       ,rftk1_eta  );
         root->SetBranchAddress("DInfo.rftk1_phi"       ,rftk1_phi  );
+        root->SetBranchAddress("DInfo.rftk2_mass"      ,rftk2_mass);
         root->SetBranchAddress("DInfo.rftk2_pt"        ,rftk2_pt  );
         root->SetBranchAddress("DInfo.rftk2_eta"       ,rftk2_eta  );
         root->SetBranchAddress("DInfo.rftk2_phi"       ,rftk2_phi  );
+        root->SetBranchAddress("DInfo.rftk3_mass"      ,rftk3_mass);
         root->SetBranchAddress("DInfo.rftk3_pt"        ,rftk3_pt  );
         root->SetBranchAddress("DInfo.rftk3_eta"       ,rftk3_eta  );
         root->SetBranchAddress("DInfo.rftk3_phi"       ,rftk3_phi  );
+        root->SetBranchAddress("DInfo.rftk4_mass"      ,rftk4_mass);
         root->SetBranchAddress("DInfo.rftk4_pt"        ,rftk4_pt  );
         root->SetBranchAddress("DInfo.rftk4_eta"       ,rftk4_eta  );
         root->SetBranchAddress("DInfo.rftk4_phi"       ,rftk4_phi  );
+        root->SetBranchAddress("DInfo.rftk5_mass"      ,rftk5_mass);
+        root->SetBranchAddress("DInfo.rftk5_pt"        ,rftk5_pt  );
+        root->SetBranchAddress("DInfo.rftk5_eta"       ,rftk5_eta  );
+        root->SetBranchAddress("DInfo.rftk5_phi"       ,rftk5_phi  );
 
         root->SetBranchAddress("DInfo.rftk1_index"     ,rftk1_index   	);
         root->SetBranchAddress("DInfo.rftk2_index"     ,rftk2_index   	);
         root->SetBranchAddress("DInfo.rftk3_index"     ,rftk3_index   	);
         root->SetBranchAddress("DInfo.rftk4_index"     ,rftk4_index   	);
+        root->SetBranchAddress("DInfo.rftk5_index"     ,rftk5_index   	);
 
         root->SetBranchAddress("DInfo.rftk1_MassHypo"     ,rftk1_MassHypo   	);
         root->SetBranchAddress("DInfo.rftk2_MassHypo"     ,rftk2_MassHypo   	);
         root->SetBranchAddress("DInfo.rftk3_MassHypo"     ,rftk3_MassHypo   	);
         root->SetBranchAddress("DInfo.rftk4_MassHypo"     ,rftk4_MassHypo   	);
+        root->SetBranchAddress("DInfo.rftk5_MassHypo"     ,rftk5_MassHypo   	);
     }//}}}
 };//}}}
 

@@ -92,7 +92,8 @@
 #define JPSI_MASS   3.096916
 #define PSI2S_MASS  3.686109
 #define PROTON_MASS 0.9383
-#define D0_MASS 1.8648 
+#define D0_MASS 1.8648
+#define DSTAR_MASS 2.01028
 
 //
 // class declaration
@@ -118,6 +119,8 @@ class Dfinder : public edm::EDAnalyzer
         virtual bool GetAncestor(const reco::Candidate* p, int PDGprefix);
         virtual float getParticleSigma(double mass);
         virtual double getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticles);
+        virtual std::vector< std::vector< std::pair<float, int> > > GetPermu(std::vector< std::pair<float, int> > InVec);
+        virtual std::vector< std::vector< std::pair<float, int> > > DelDuplicate(std::vector< std::vector< std::pair<float, int> > > InVec);
         virtual void BranchOutNTk(
             DInfoBranches &DInfo, 
             std::vector<pat::GenericParticle> input_tracks, 
@@ -125,12 +128,11 @@ class Dfinder : public edm::EDAnalyzer
             std::vector<bool> isNeededTrack,
             std::vector<int> &D_counter,
             float *mass_window,
-            std::vector<double> TkMass,
-            std::vector<int> TkCharge,
+            std::vector< std::pair<float, int> > TkMassCharge,
             double tktkRes_mass,
             double tktkRes_mass_window,
-            double *ResIndex,
             bool doConstrainFit,
+            bool SequentialFit,
             int Dchannel_number
         );
  
@@ -465,321 +467,234 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //////////////////////////////////////////////////////////////////////////
                     //float mass_window[2] = {1.7,2.1};
                     float mass_window[2] = {D0_MASS-0.2,D0_MASS+0.2};
-                    double ResIndex[2] = {0, 1};
                     std::vector<double> TkMass;
                     std::vector<int> TkCharge;
+                    
                     if(Dchannel_[0] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 1);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 1);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 0);
+                        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 1);
+                        }
                     }
-
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi+
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[1] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 2);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 2);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 0);
+                        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 2);
+                        }
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi+pi+
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[2] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 3);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 0);
+                        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 0);
+                        std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 3);
+                        }
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi-pi-
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[3] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 4);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 0);
+                        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 0);
+                        std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 4);
+                        }
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi-pi+pi+
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[4] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 5);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 0);
+                        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 0);
+                        std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
+                        std::pair<float, int> tk4 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        InVec.push_back(tk4);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 5);
+                        }
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi+pi-pi-
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[5] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, -1, -1, ResIndex, false, 6);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 0);
+                        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 0);
+                        std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
+                        std::pair<float, int> tk4 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        InVec.push_back(tk4);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 6);
+                        }
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+K-(Phi)pi+
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[6] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        ResIndex[0] = 0; ResIndex[1] = 1;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        ResIndex[0] = 0; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        ResIndex[0] = 1; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 7);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(-KAON_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 7);
+                        }
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+K-(Phi)pi-
                     //////////////////////////////////////////////////////////////////////////
                     if(Dchannel_[7] == 1){
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        ResIndex[0] = 0; ResIndex[1] = 1;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(1); TkCharge.push_back(-1); TkCharge.push_back(-1);  
-                        ResIndex[0] = 0; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(KAON_MASS); TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(1); TkCharge.push_back(-1);  
-                        ResIndex[0] = 1; ResIndex[1] = 2;
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
-                        TkMass.clear();
-                        TkCharge.clear();
-
-                        TkMass.push_back(PION_MASS); TkMass.push_back(KAON_MASS); TkMass.push_back(KAON_MASS);
-                        TkCharge.push_back(-1); TkCharge.push_back(-1); TkCharge.push_back(1);  
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, TkMass, TkCharge, PHI_MASS, 0.1, ResIndex, false, 8);
-                        TkMass.clear();
-                        TkCharge.clear();
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(-KAON_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 8);
+                        }
                     }
+                    //////////////////////////////////////////////////////////////////////////
+                    // RECONSTRUCTION: D0(K-pi+)pi+
+                    //////////////////////////////////////////////////////////////////////////
+                    float dstar_mass_window[2] = {DSTAR_MASS-0.2,DSTAR_MASS+0.2};
+                    if(Dchannel_[8] == 1){
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 9);
+                        }
+                    }
+                    //////////////////////////////////////////////////////////////////////////
+                    // RECONSTRUCTION: D0bar(K+pi-)pi-
+                    //////////////////////////////////////////////////////////////////////////
+                    if(Dchannel_[9] == 1){
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 10);
+                        }
+                    }
+
+                    //////////////////////////////////////////////////////////////////////////
+                    // RECONSTRUCTION: D0(K-pi-pi+pi+)pi+
+                    //////////////////////////////////////////////////////////////////////////
+                    if(Dchannel_[10] == 1){
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(PION_MASS, 1);
+                        std::pair<float, int> tk4 = std::make_pair(PION_MASS, 1);
+                        std::pair<float, int> tk5 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        InVec.push_back(tk4);
+                        InVec.push_back(tk5);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 11);
+                        }
+                    }
+
+                    //////////////////////////////////////////////////////////////////////////
+                    // RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi-
+                    //////////////////////////////////////////////////////////////////////////
+                    if(Dchannel_[11] == 1){
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 1);
+                        std::pair<float, int> tk4 = std::make_pair(-PION_MASS, 1);
+                        std::pair<float, int> tk5 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        InVec.push_back(tk4);
+                        InVec.push_back(tk5);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        for(unsigned int i = 0; i < PermuVec.size(); i++){
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrack, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 12);
+                        }
+                    }
+
                     printf("D_counter: ");
                     for(unsigned int i = 0; i < Dchannel_.size(); i++){
                         printf("%d/", D_counter[i]);
@@ -789,6 +704,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of DInfo.\n");
 
                     // TrackInfo section {{{
+                    Handle<edm::ValueMap<float> > mvaoutput;
+                    iEvent.getByLabel("hiGeneralTracks", "MVAVals", mvaoutput);
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
@@ -800,6 +717,11 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         std::vector<int> listOfRelativeDCand2;//1~nXb
                         std::vector<int> listOfRelativeDCand3;//1~nXb
                         std::vector<int> listOfRelativeDCand4;//1~nXb
+                        std::vector<int> listOfRelativeDCand5;//1~nXb
+                        std::vector<int> listOfRelativeDResCand1;//1~nXb
+                        std::vector<int> listOfRelativeDResCand2;//1~nXb
+                        std::vector<int> listOfRelativeDResCand3;//1~nXb
+                        std::vector<int> listOfRelativeDResCand4;//1~nXb
                         for(int d=0; d < DInfo.size; d++){
                             if(DInfo.rftk1_index[d] == -tk_hindex-1){
                                 listOfRelativeDCand1.push_back(d+1);
@@ -813,8 +735,25 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             if(DInfo.rftk4_index[d] == -tk_hindex-1){
                                 listOfRelativeDCand4.push_back(d+1);
                             }
+                            if(DInfo.rftk5_index[d] == -tk_hindex-1){
+                                listOfRelativeDCand5.push_back(d+1);
+                            }
+
+                            if(DInfo.tktkRes_rftk1_index[d] == -tk_hindex-1){
+                                listOfRelativeDResCand1.push_back(d+1);
+                            }
+                            if(DInfo.tktkRes_rftk2_index[d] == -tk_hindex-1){
+                                listOfRelativeDResCand2.push_back(d+1);
+                            }
+                            if(DInfo.tktkRes_rftk3_index[d] == -tk_hindex-1){
+                                listOfRelativeDResCand3.push_back(d+1);
+                            }
+                            if(DInfo.tktkRes_rftk4_index[d] == -tk_hindex-1){
+                                listOfRelativeDResCand4.push_back(d+1);
+                            }
                         }
                         //
+
                         TrackInfo.index          [TrackInfo.size] = TrackInfo.size;
                         TrackInfo.handle_index   [TrackInfo.size] = tk_hindex;
                         TrackInfo.charge         [TrackInfo.size] = tk_it->charge();
@@ -839,6 +778,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
+                        TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
+                        TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
 
                         if(tk_it->track().isNonnull()){
                             for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){
@@ -860,6 +801,22 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         }
                         for(unsigned int iCands=0; iCands < listOfRelativeDCand4.size(); iCands++){
                             DInfo.rftk4_index[listOfRelativeDCand4[iCands]-1] = TrackInfo.size;
+                        }
+                        for(unsigned int iCands=0; iCands < listOfRelativeDCand5.size(); iCands++){
+                            DInfo.rftk5_index[listOfRelativeDCand5[iCands]-1] = TrackInfo.size;
+                        }
+
+                        for(unsigned int iCands=0; iCands < listOfRelativeDResCand1.size(); iCands++){
+                            DInfo.tktkRes_rftk1_index[listOfRelativeDResCand1[iCands]-1] = TrackInfo.size;
+                        }
+                        for(unsigned int iCands=0; iCands < listOfRelativeDResCand2.size(); iCands++){
+                            DInfo.tktkRes_rftk2_index[listOfRelativeDResCand2[iCands]-1] = TrackInfo.size;
+                        }
+                        for(unsigned int iCands=0; iCands < listOfRelativeDResCand3.size(); iCands++){
+                            DInfo.tktkRes_rftk3_index[listOfRelativeDResCand3[iCands]-1] = TrackInfo.size;
+                        }
+                        for(unsigned int iCands=0; iCands < listOfRelativeDResCand4.size(); iCands++){
+                            DInfo.tktkRes_rftk4_index[listOfRelativeDResCand4[iCands]-1] = TrackInfo.size;
                         }
                         TrackInfo.size++;
                     }//end of TrackInfo}}}
@@ -1104,7 +1061,7 @@ void Dfinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.setUnknown();
     descriptions.addDefault(desc);
 }
-
+//{{{
 bool Dfinder::GetAncestor(const reco::Candidate* p, int PDGprefix)
 {
     if(p->numberOfMothers()==0) return false;
@@ -1144,7 +1101,49 @@ double Dfinder::getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticle
     }
     return maxDoca;
 } 
+std::vector< std::vector< std::pair<float, int> > > Dfinder::GetPermu(std::vector< std::pair<float, int> > InVec){
+    if(InVec.size() == 1){
+        std::vector< std::vector< std::pair<float, int> > > OneEntryVec;
+        OneEntryVec.push_back(InVec);
+        return OneEntryVec;
+    }
+    std::vector< std::vector< std::pair<float, int> > > NPermu;
+    for(unsigned int i = 0; i < InVec.size(); i++){
+        std::vector< std::pair<float, int> > copy;
+        copy = InVec;
+        copy.erase(copy.begin()+i);
+        std::vector< std::vector< std::pair<float, int> > > Nminus1Permu;
+        Nminus1Permu = GetPermu(copy);
+        for(unsigned int j = 0; j < Nminus1Permu.size(); j++){
+            Nminus1Permu[j].push_back(InVec[i]);
+        }
+        NPermu.insert(NPermu.end(), Nminus1Permu.begin(), Nminus1Permu.end());
+    }
+    return NPermu;
+}
 
+std::vector< std::vector< std::pair<float, int> > > Dfinder::DelDuplicate(std::vector< std::vector< std::pair<float, int> > > InVec){
+    std::vector< std::vector< std::pair<float, int> > > CleanedVec;
+    for(unsigned int i = 0; i < InVec.size(); i++){
+        bool IsDuplicate = false;
+        for(unsigned int j = 0; j < CleanedVec.size(); j++){
+            bool ADuplicate = true;
+            for(unsigned int k = 0; k < InVec[i].size(); k++){
+                if(InVec[i][k] != CleanedVec[j][k]) {
+                    ADuplicate = false;
+                    break;
+                }
+            }
+            if(ADuplicate) {
+                IsDuplicate = ADuplicate;
+                break;
+            }
+        }
+        if(!IsDuplicate) CleanedVec.push_back(InVec[i]);
+    }
+    return CleanedVec;
+}
+//}}}
 //{{{
 void Dfinder::BranchOutNTk(//input 2~4 tracks
     DInfoBranches &DInfo, 
@@ -1153,25 +1152,23 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     std::vector<bool> isNeededTrack,
     std::vector<int> &D_counter,
     float *mass_window,
-    std::vector<double> TkMass,
-    std::vector<int> TkCharge,
+    std::vector< std::pair<float, int> > TkMassCharge,
     double tktkRes_mass,
     double tktkRes_mass_window,
-    double *ResIndex,
     bool doConstrainFit,
+    bool SequentialFit,
     int Dchannel_number
 ){
     if(Dchannel_number > (int)Dchannel_.size()){ printf("Exceeding defined # of channel, exit"); return;}
     float chi = 0.;
     float ndf = 0.;
     KinematicParticleFactoryFromTransientTrack pFactory;
-    //    ParticleMass muon_mass = MUON_MASS; //pdg mass
-    //    float muon_sigma = muon_mass*1.e-6;
 
     int tk1_hindex = -1;
     int tk2_hindex = -1;
     int tk3_hindex = -1;
     int tk4_hindex = -1;
+    int tk5_hindex = -1;
     std::vector< std::vector<double> > selectedTkhidxSet;
     for(std::vector<pat::GenericParticle>::const_iterator tk_it1=input_tracks.begin();
             tk_it1 != input_tracks.end() ; tk_it1++){
@@ -1179,7 +1176,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         tk1_hindex = int(tk_it1 - input_tracks.begin());
         if(tk1_hindex>=int(isNeededTrack.size())) break;
         if(!isNeededTrack[tk1_hindex]) continue;
-        if(tk_it1->charge()!=TkCharge[0]) continue;
+        if(tk_it1->charge()*TkMassCharge[0].first<0) continue;
 
         //for(std::vector<pat::GenericParticle>::const_iterator tk_it2=input_tracks.begin();
         for(std::vector<pat::GenericParticle>::const_iterator tk_it2=tk_it1+1;
@@ -1187,9 +1184,9 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tk2_hindex = int(tk_it2 - input_tracks.begin());
             if(tk2_hindex>=int(isNeededTrack.size())) break;
             if(!isNeededTrack[tk2_hindex]) continue;
-            if(tk_it2->charge()!=TkCharge[1]) continue;
+            if(tk_it2->charge()*TkMassCharge[1].first<0) continue;
             if(tk2_hindex==tk1_hindex) continue;
-            if(TkMass.size()==2){
+            if(TkMassCharge.size()==2){
                 selectedTkhidx.push_back(tk1_hindex);
                 selectedTkhidx.push_back(tk2_hindex);
                 selectedTkhidxSet.push_back(selectedTkhidx);
@@ -1203,10 +1200,10 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                 tk3_hindex = int(tk_it3 - input_tracks.begin());
                 if(tk3_hindex>=int(isNeededTrack.size())) break;
                 if(!isNeededTrack[tk3_hindex]) continue;
-                if(tk_it3->charge()!=TkCharge[2]) continue;
+                if(tk_it3->charge()*TkMassCharge[2].first<0) continue;
                 if(tk3_hindex==tk1_hindex) continue;
                 if(tk3_hindex==tk2_hindex) continue;
-                if(TkMass.size()==3){
+                if(TkMassCharge.size()==3){
                     selectedTkhidx.push_back(tk1_hindex);
                     selectedTkhidx.push_back(tk2_hindex);
                     selectedTkhidx.push_back(tk3_hindex);
@@ -1221,11 +1218,11 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                     tk4_hindex = int(tk_it4 - input_tracks.begin());
                     if(tk4_hindex>=int(isNeededTrack.size())) break;
                     if(!isNeededTrack[tk4_hindex]) continue;
-                    if(tk_it4->charge()!=TkCharge[3]) continue;
+                    if(tk_it4->charge()*TkMassCharge[3].first<0) continue;
                     if(tk4_hindex==tk1_hindex) continue;
                     if(tk4_hindex==tk2_hindex) continue;
                     if(tk4_hindex==tk3_hindex) continue;
-                    if(TkMass.size()==4){
+                    if(TkMassCharge.size()==4){
                         selectedTkhidx.push_back(tk1_hindex);
                         selectedTkhidx.push_back(tk2_hindex);
                         selectedTkhidx.push_back(tk3_hindex);
@@ -1234,36 +1231,55 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                         selectedTkhidx.clear();
                         continue;
                     }
+                    //for(std::vector<pat::GenericParticle>::const_iterator tk_it5=input_tracks.begin();
+                    for(std::vector<pat::GenericParticle>::const_iterator tk_it5=tk_it4+1;
+                            tk_it5 != input_tracks.end() ; tk_it5++){
+                        tk5_hindex = int(tk_it5 - input_tracks.begin());
+                        if(tk5_hindex>=int(isNeededTrack.size())) break;
+                        if(!isNeededTrack[tk5_hindex]) continue;
+                        if(tk_it5->charge()*TkMassCharge[4].first<0) continue;
+                        if(tk5_hindex==tk1_hindex) continue;
+                        if(tk5_hindex==tk2_hindex) continue;
+                        if(tk5_hindex==tk3_hindex) continue;
+                        if(tk5_hindex==tk4_hindex) continue;
+                        if(TkMassCharge.size()==5){
+                            selectedTkhidx.push_back(tk1_hindex);
+                            selectedTkhidx.push_back(tk2_hindex);
+                            selectedTkhidx.push_back(tk3_hindex);
+                            selectedTkhidx.push_back(tk4_hindex);
+                            selectedTkhidx.push_back(tk5_hindex);
+                            selectedTkhidxSet.push_back(selectedTkhidx);
+                            selectedTkhidx.clear();
+                            continue;
+                        }
+                    }
                 }
             }
         }
     }
 
-    TLorentzVector v4_tk1,v4_tk2,v4_tk3,v4_tk4, v4_D;
-    TLorentzVector v4_tkRes1,v4_tkRes2;
     //std::cout<<"selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
     for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
+        std::vector<TLorentzVector> v4_tks;
+        TLorentzVector v4_D, v4_Res;
         //check mass before fit
-        v4_tk1.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][0]].pt(),input_tracks[selectedTkhidxSet[i][0]].eta(),input_tracks[selectedTkhidxSet[i][0]].phi(),TkMass[0]);
-        v4_tk2.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][1]].pt(),input_tracks[selectedTkhidxSet[i][1]].eta(),input_tracks[selectedTkhidxSet[i][1]].phi(),TkMass[1]);
-        v4_D = v4_tk1 + v4_tk2;
-        if(TkMass.size()>2) {
-            v4_tk3.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][2]].pt(),input_tracks[selectedTkhidxSet[i][2]].eta(),input_tracks[selectedTkhidxSet[i][2]].phi(),TkMass[2]);
-            v4_D = v4_tk1 + v4_tk2 + v4_tk3;
-        }
-        if(TkMass.size()>3) {
-            v4_tk4.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][3]].pt(),input_tracks[selectedTkhidxSet[i][3]].eta(),input_tracks[selectedTkhidxSet[i][3]].phi(),TkMass[3]);
-            v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4;
+        for(unsigned int k = 0; k < TkMassCharge.size(); k++){
+            TLorentzVector v4_tk;
+            v4_tk.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][k]].pt(),input_tracks[selectedTkhidxSet[i][k]].eta(),input_tracks[selectedTkhidxSet[i][k]].phi(),fabs(TkMassCharge[k].first));
+            v4_tks.push_back(v4_tk);
+            if(k==0) v4_D = v4_tk;
+            else v4_D = v4_D + v4_tk;
+            if(TkMassCharge[k].second==1){
+                if(k==0) v4_Res = v4_tk;
+                else v4_Res = v4_Res + v4_tk;
+            }
         }
         //cut mass window before fit
         //if(v4_D.Mag()<mass_window[0]-0.05 || v4_D.Mag()>mass_window[1]+0.05) continue;
         if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-
         //if there's tktk Res, also check tktk res mass window
         if(tktkRes_mass > 0) {
-            v4_tkRes1.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][ResIndex[0]]].pt(),input_tracks[selectedTkhidxSet[i][ResIndex[0]]].eta(),input_tracks[selectedTkhidxSet[i][ResIndex[0]]].phi(),TkMass[ResIndex[0]]);
-            v4_tkRes2.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][ResIndex[1]]].pt(),input_tracks[selectedTkhidxSet[i][ResIndex[1]]].eta(),input_tracks[selectedTkhidxSet[i][ResIndex[1]]].phi(),TkMass[ResIndex[1]]);        
-            if (fabs((v4_tkRes1+v4_tkRes2).Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+            if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
         }
         DMassCutLevel[Dchannel_number-1]->Fill(0);
 
@@ -1275,70 +1291,82 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 
         if (DInfo.size >= MAX_XB) break;
         std::vector<RefCountedKinematicParticle> tktk_candidate;
+        std::vector<RefCountedKinematicParticle> tktkRes_candidate;
 
-        //push back the Res tracks as first tow tracks
-        reco::TransientTrack tkTT1(input_tracks[selectedTkhidxSet[i][ResIndex[0]]].track(), &(*bField) );
-        if (!tkTT1.isValid()) continue;
-        ParticleMass tk_mass = TkMass[ResIndex[0]];
+        //push back the Res tracks as first tracks
+        ParticleMass tk_mass;
+        //keep track of the push_back track index
+        std::vector<int> pushbackTrkIdx;
+        std::vector<int> pushbackResTrkIdx;
         float tk_sigma;
-        tk_sigma = getParticleSigma(TkMass[ResIndex[0]]);
-        tktk_candidate.push_back(pFactory.particle(tkTT1,tk_mass,chi,ndf,tk_sigma));
-
-        reco::TransientTrack tkTT2(input_tracks[selectedTkhidxSet[i][ResIndex[1]]].track(), &(*bField) );
-        if (!tkTT2.isValid()) continue;
-        tk_mass = TkMass[ResIndex[1]];
-        tk_sigma = getParticleSigma(TkMass[ResIndex[1]]);
-        tktk_candidate.push_back(pFactory.particle(tkTT2,tk_mass,chi,ndf,tk_sigma));
-        
-        //push back the other tracks
         for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
-            if(p == ResIndex[0] || p == ResIndex[1]) continue;
+            if(TkMassCharge[p].second==0) continue;
             reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
             if (!tkTT.isValid()) continue;
-            tk_mass = TkMass[p];
-            tk_sigma = getParticleSigma(TkMass[p]);
-            tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+            tk_mass = fabs(TkMassCharge[p].first);
+            tk_sigma = getParticleSigma(tk_mass);
+            if(!SequentialFit){
+                tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+                pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
+            }
+            if(tktkRes_mass>0){
+                tktkRes_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+                pushbackResTrkIdx.push_back(selectedTkhidxSet[i][p]);
+            }
         }
-        DMassCutLevel[Dchannel_number-1]->Fill(3);
-
-        double MaximumDoca = getMaxDoca(tktk_candidate);
-        if (MaximumDoca > MaxDocaCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(4);
 
         //doing tktk fit
         KinematicParticleVertexFitter   tktk_fitter;
         RefCountedKinematicTree         tktk_VFT;
+        RefCountedKinematicParticle     tktk_VFP;
+        RefCountedKinematicVertex       tktk_VFPvtx;
+        //constrain fitter
         KinematicConstrainedVertexFitter kcv_tktk_fitter;
-        if(tktkRes_mass<=0){
-            tktk_VFT = tktk_fitter.fit(tktk_candidate);
-        }
-            
-        //if these's a tktk Res, check its fit validity also
+        //fitter for Res
         KinematicParticleVertexFitter   tktkRes_fitter;
         RefCountedKinematicTree         tktkRes_VFT;
         RefCountedKinematicParticle tktkRes_VFP;
         RefCountedKinematicVertex   tktkRes_VFPvtx;
-        std::vector<RefCountedKinematicParticle> tktkResCands;
+
+        //if there is tktk Res, check its fit validity also
         if(tktkRes_mass>0){
-            reco::TransientTrack tk1Res(input_tracks[selectedTkhidxSet[i][ResIndex[0]]].track(), &(*bField) );
-            reco::TransientTrack tk2Res(input_tracks[selectedTkhidxSet[i][ResIndex[1]]].track(), &(*bField) );
-            ParticleMass tk1_mass = TkMass[ResIndex[0]];
-            float tk1_sigma = tk1_mass*1.e-6;
-            ParticleMass tk2_mass = TkMass[ResIndex[1]];
-            float tk2_sigma = tk2_mass*1.e-6;
-            std::vector<RefCountedKinematicParticle> tktkRes_candidate;
-            tktkRes_candidate.push_back(pFactory.particle(tk1Res,tk1_mass,chi,ndf,tk1_sigma));
-            tktkRes_candidate.push_back(pFactory.particle(tk2Res,tk2_mass,chi,ndf,tk2_sigma));
             tktkRes_VFT = tktkRes_fitter.fit(tktkRes_candidate);
             if(!tktkRes_VFT->isValid()) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(5);
+            DMassCutLevel[Dchannel_number-1]->Fill(3);
             tktkRes_VFP   = tktkRes_VFT->currentParticle();
             tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
             double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
 
             if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(6);
+            DMassCutLevel[Dchannel_number-1]->Fill(4);
 
+            if(SequentialFit){
+                //VirtualKinematicParticleFactory vFactory;
+                //float tktkchi = tktk_VFPvtx->chiSquared();
+                //float tktkndf = tktk_VFPvtx->degreesOfFreedom();
+                //tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
+                tktk_candidate.push_back(tktkRes_VFP);
+                pushbackTrkIdx.push_back(-1);//means its a resonance particle
+            }
+        }
+
+        //push back the other tracks
+        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
+            if(TkMassCharge[p].second==1) continue;
+            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
+            if (!tkTT.isValid()) continue;
+            tk_mass = fabs(TkMassCharge[p].first);
+            tk_sigma = getParticleSigma(tk_mass);
+            tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+            pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
+        }
+        DMassCutLevel[Dchannel_number-1]->Fill(5);
+
+        double MaximumDoca = getMaxDoca(tktk_candidate);
+        if (MaximumDoca > MaxDocaCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(6);
+
+        if(tktkRes_mass>0){
             if(doConstrainFit){
                 ParticleMass tktkResMass = tktkRes_mass;
                 MultiTrackKinematicConstraint *tktkResConstraint = new TwoTrackMassKinematicConstraint(tktkResMass);
@@ -1346,13 +1374,16 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             }
             else tktk_VFT = tktk_fitter.fit(tktk_candidate);
         }
+        else{
+            tktk_VFT = tktk_fitter.fit(tktk_candidate);
+        }
 
         if(!tktk_VFT->isValid()) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(7);
 
         tktk_VFT->movePointerToTheTop();
-        RefCountedKinematicParticle tktk_VFP   = tktk_VFT->currentParticle();
-        RefCountedKinematicVertex   tktk_VFPvtx = tktk_VFT->currentDecayVertex();
+        tktk_VFP   = tktk_VFT->currentParticle();
+        tktk_VFPvtx = tktk_VFT->currentDecayVertex();
         if (!tktk_VFPvtx->vertexIsValid()) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(8);
 
@@ -1362,53 +1393,46 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 
         std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
 
-        //Cut mass window after fit
+        //cut mass window after fit
         //if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(10);
 
-        TLorentzVector tktk_4vec,tktk_tk1_4vec, tktk_tk2_4vec, tktk_tk3_4vec, tktk_tk4_4vec;
+        std::vector<TLorentzVector> tktk_4vecs;
+        for(unsigned int k = 0; k < tktkCands.size(); k++){
+            TLorentzVector v4_tk;
+            v4_tk.SetPxPyPzE(tktkCands[k]->currentState().kinematicParameters().momentum().x(),
+                                     tktkCands[k]->currentState().kinematicParameters().momentum().y(),
+                                     tktkCands[k]->currentState().kinematicParameters().momentum().z(),
+                                     tktkCands[k]->currentState().kinematicParameters().energy());
+            tktk_4vecs.push_back(v4_tk);
+        }
+
+        TLorentzVector tktk_4vec;
         tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
                 tktk_VFP->currentState().kinematicParameters().momentum().y(),
                 tktk_VFP->currentState().kinematicParameters().momentum().z(),
                 tktk_VFP->currentState().kinematicParameters().energy());
 
-        tktk_tk1_4vec.SetPxPyPzE(tktkCands[0]->currentState().kinematicParameters().momentum().x(),
-                tktkCands[0]->currentState().kinematicParameters().momentum().y(),
-                tktkCands[0]->currentState().kinematicParameters().momentum().z(),
-                tktkCands[0]->currentState().kinematicParameters().energy());
-        tktk_tk2_4vec.SetPxPyPzE(tktkCands[1]->currentState().kinematicParameters().momentum().x(),
-                tktkCands[1]->currentState().kinematicParameters().momentum().y(),
-                tktkCands[1]->currentState().kinematicParameters().momentum().z(),
-                tktkCands[1]->currentState().kinematicParameters().energy());
-        if(TkMass.size()>2){
-            tktk_tk3_4vec.SetPxPyPzE(tktkCands[2]->currentState().kinematicParameters().momentum().x(),
-                    tktkCands[2]->currentState().kinematicParameters().momentum().y(),
-                    tktkCands[2]->currentState().kinematicParameters().momentum().z(),
-                    tktkCands[2]->currentState().kinematicParameters().energy());
-        }
-        if(TkMass.size()>3){
-            tktk_tk4_4vec.SetPxPyPzE(tktkCands[3]->currentState().kinematicParameters().momentum().x(),
-                    tktkCands[3]->currentState().kinematicParameters().momentum().y(),
-                    tktkCands[3]->currentState().kinematicParameters().momentum().z(),
-                    tktkCands[3]->currentState().kinematicParameters().energy());
-        }
-
         //tktkRes fit info
         if(tktkRes_mass>0){
-            tktkResCands  = tktkRes_VFT->finalStateParticles();
-            TLorentzVector tktkRes_tk1_4vec, tktkRes_tk2_4vec,  tktkRes_4vec;
-            tktkRes_tk1_4vec.SetPxPyPzE(tktkResCands[0]->currentState().kinematicParameters().momentum().x(),
-                    tktkResCands[0]->currentState().kinematicParameters().momentum().y(),
-                    tktkResCands[0]->currentState().kinematicParameters().momentum().z(),
-                    tktkResCands[0]->currentState().kinematicParameters().energy());
-            tktkRes_tk2_4vec.SetPxPyPzE(tktkResCands[1]->currentState().kinematicParameters().momentum().x(),
-                    tktkCands[1]->currentState().kinematicParameters().momentum().y(),
-                    tktkCands[1]->currentState().kinematicParameters().momentum().z(),
-                    tktkCands[1]->currentState().kinematicParameters().energy());
+            std::vector<RefCountedKinematicParticle> tktkResCands = tktkRes_VFT->finalStateParticles();
+
+            std::vector<TLorentzVector> tktkRes_4vecs;
+            for(unsigned int k = 0; k < tktkResCands.size(); k++){
+                TLorentzVector v4_tk;
+                v4_tk.SetPxPyPzE(tktkResCands[k]->currentState().kinematicParameters().momentum().x(),
+                                        tktkResCands[k]->currentState().kinematicParameters().momentum().y(),
+                                        tktkResCands[k]->currentState().kinematicParameters().momentum().z(),
+                                        tktkResCands[k]->currentState().kinematicParameters().energy());
+                tktkRes_4vecs.push_back(v4_tk);
+            }
+
+            TLorentzVector tktkRes_4vec;
             tktkRes_4vec.SetPxPyPzE(tktkRes_VFP->currentState().kinematicParameters().momentum().x(),
                     tktkRes_VFP->currentState().kinematicParameters().momentum().y(),
                     tktkRes_VFP->currentState().kinematicParameters().momentum().z(),
                     tktkRes_VFP->currentState().kinematicParameters().energy());
+
             DInfo.tktkRes_mass[DInfo.size]            = tktkRes_4vec.Mag();
             DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
             DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
@@ -1425,12 +1449,30 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
             DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
     
-            DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_tk1_4vec.Pt();
-            DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_tk1_4vec.Eta();
-            DInfo.tktkRes_rftk1_phi[DInfo.size]       = tktkRes_tk1_4vec.Phi();
-            DInfo.tktkRes_rftk2_pt[DInfo.size]        = tktkRes_tk2_4vec.Pt();
-            DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_tk2_4vec.Eta();
-            DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_tk2_4vec.Phi();
+            DInfo.tktkRes_rftk1_mass[DInfo.size]      = tktkRes_4vecs[0].Mag();
+            DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_4vecs[0].Pt();
+            DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_4vecs[0].Eta();
+            DInfo.tktkRes_rftk1_phi[DInfo.size]       = tktkRes_4vecs[0].Phi();
+            DInfo.tktkRes_rftk1_index[DInfo.size]     = -pushbackResTrkIdx[0]-1;
+            DInfo.tktkRes_rftk2_mass[DInfo.size]      = tktkRes_4vecs[1].Mag();
+            DInfo.tktkRes_rftk2_pt[DInfo.size]        = tktkRes_4vecs[1].Pt();
+            DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_4vecs[1].Eta();
+            DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_4vecs[1].Phi();
+            DInfo.tktkRes_rftk2_index[DInfo.size]     = -pushbackResTrkIdx[1]-1;
+            if(tktkResCands.size()>2){
+                DInfo.tktkRes_rftk3_mass[DInfo.size]      = tktkRes_4vecs[2].Mag();
+                DInfo.tktkRes_rftk3_pt[DInfo.size]        = tktkRes_4vecs[2].Pt();
+                DInfo.tktkRes_rftk3_eta[DInfo.size]       = tktkRes_4vecs[2].Eta();
+                DInfo.tktkRes_rftk3_phi[DInfo.size]       = tktkRes_4vecs[2].Phi();
+                DInfo.tktkRes_rftk3_index[DInfo.size]     = -pushbackResTrkIdx[2]-1;
+            }
+            if(tktkResCands.size()>3){
+                DInfo.tktkRes_rftk4_mass[DInfo.size]      = tktkRes_4vecs[3].Mag();
+                DInfo.tktkRes_rftk4_pt[DInfo.size]        = tktkRes_4vecs[3].Pt();
+                DInfo.tktkRes_rftk4_eta[DInfo.size]       = tktkRes_4vecs[3].Eta();
+                DInfo.tktkRes_rftk4_phi[DInfo.size]       = tktkRes_4vecs[3].Phi();
+                DInfo.tktkRes_rftk4_index[DInfo.size]     = -pushbackResTrkIdx[3]-1;
+            }
         }
 
         //fit info
@@ -1471,48 +1513,68 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(12);
 
-        DInfo.rftk1_px[DInfo.size]        = tktk_tk1_4vec.Px();
-        DInfo.rftk1_py[DInfo.size]        = tktk_tk1_4vec.Py();
-        DInfo.rftk1_pz[DInfo.size]        = tktk_tk1_4vec.Pz();
-        DInfo.rftk2_px[DInfo.size]        = tktk_tk2_4vec.Px();
-        DInfo.rftk2_py[DInfo.size]        = tktk_tk2_4vec.Py();
-        DInfo.rftk2_pz[DInfo.size]        = tktk_tk2_4vec.Pz();
-        DInfo.rftk1_pt[DInfo.size]        = tktk_tk1_4vec.Pt();
-        DInfo.rftk1_eta[DInfo.size]       = tktk_tk1_4vec.Eta();
-        DInfo.rftk1_phi[DInfo.size]       = tktk_tk1_4vec.Phi();
-        DInfo.rftk2_pt[DInfo.size]        = tktk_tk2_4vec.Pt();
-        DInfo.rftk2_eta[DInfo.size]       = tktk_tk2_4vec.Eta();
-        DInfo.rftk2_phi[DInfo.size]       = tktk_tk2_4vec.Phi();
+        DInfo.rftk1_px[DInfo.size]        = tktk_4vecs[0].Px();
+        DInfo.rftk1_py[DInfo.size]        = tktk_4vecs[0].Py();
+        DInfo.rftk1_pz[DInfo.size]        = tktk_4vecs[0].Pz();
+        DInfo.rftk2_px[DInfo.size]        = tktk_4vecs[1].Px();
+        DInfo.rftk2_py[DInfo.size]        = tktk_4vecs[1].Py();
+        DInfo.rftk2_pz[DInfo.size]        = tktk_4vecs[1].Pz();
+        DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
+        DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
+        DInfo.rftk1_eta[DInfo.size]       = tktk_4vecs[0].Eta();
+        DInfo.rftk1_phi[DInfo.size]       = tktk_4vecs[0].Phi();
+        DInfo.rftk2_mass[DInfo.size]      = tktk_4vecs[1].Mag();
+        DInfo.rftk2_pt[DInfo.size]        = tktk_4vecs[1].Pt();
+        DInfo.rftk2_eta[DInfo.size]       = tktk_4vecs[1].Eta();
+        DInfo.rftk2_phi[DInfo.size]       = tktk_4vecs[1].Phi();
 
-        DInfo.rftk1_index[DInfo.size]     = -selectedTkhidxSet[i][0]-1;
-        DInfo.rftk2_index[DInfo.size]     = -selectedTkhidxSet[i][1]-1;
+        DInfo.rftk1_index[DInfo.size]     = -pushbackTrkIdx[0]-1;
+        DInfo.rftk2_index[DInfo.size]     = -pushbackTrkIdx[1]-1;
         //document the mass hypothesis
-        if( fabs(tktk_tk1_4vec.Mag()-PION_MASS) < fabs(tktk_tk1_4vec.Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
+        if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
         else DInfo.rftk1_MassHypo[DInfo.size] = 321;
-        if( fabs(tktk_tk2_4vec.Mag()-PION_MASS) < fabs(tktk_tk2_4vec.Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
+        //If its a Res particle, save it as D0
+        if( DInfo.rftk1_index[DInfo.size] == 0) DInfo.rftk1_MassHypo[DInfo.size] = 421;
+        if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
         else DInfo.rftk2_MassHypo[DInfo.size] = 321;
 
-        if(TkMass.size()>2){
-            DInfo.rftk3_px[DInfo.size]    = tktk_tk3_4vec.Px();
-            DInfo.rftk3_py[DInfo.size]    = tktk_tk3_4vec.Py();
-            DInfo.rftk3_pz[DInfo.size]    = tktk_tk3_4vec.Pz();
-            DInfo.rftk3_pt[DInfo.size]    = tktk_tk3_4vec.Pt();
-            DInfo.rftk3_eta[DInfo.size]   = tktk_tk3_4vec.Eta();
-            DInfo.rftk3_phi[DInfo.size]   = tktk_tk3_4vec.Phi();
-            DInfo.rftk3_index[DInfo.size] = -selectedTkhidxSet[i][2]-1;
-            if( fabs(tktk_tk3_4vec.Mag()-PION_MASS) < fabs(tktk_tk3_4vec.Mag()-KAON_MASS) ) DInfo.rftk3_MassHypo[DInfo.size] = 211;
+std::cout<<"tktk_candidate: "<<tktk_candidate.size()<<std::endl;
+std::cout<<"tktkCands.size: "<<tktkCands.size()<<std::endl;
+        if(tktkCands.size()>2){
+            DInfo.rftk3_px[DInfo.size]    = tktk_4vecs[2].Px();
+            DInfo.rftk3_py[DInfo.size]    = tktk_4vecs[2].Py();
+            DInfo.rftk3_pz[DInfo.size]    = tktk_4vecs[2].Pz();
+            DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
+            DInfo.rftk3_pt[DInfo.size]    = tktk_4vecs[2].Pt();
+            DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
+            DInfo.rftk3_phi[DInfo.size]   = tktk_4vecs[2].Phi();
+            DInfo.rftk3_index[DInfo.size] = -pushbackTrkIdx[2]-1;
+            if( fabs(tktk_4vecs[2].Mag()-PION_MASS) < fabs(tktk_4vecs[2].Mag()-KAON_MASS) ) DInfo.rftk3_MassHypo[DInfo.size] = 211;
             else DInfo.rftk3_MassHypo[DInfo.size] = 321;
         }
-        if(TkMass.size()>3){
-            DInfo.rftk4_px[DInfo.size]    = tktk_tk4_4vec.Px();
-            DInfo.rftk4_py[DInfo.size]    = tktk_tk4_4vec.Py();
-            DInfo.rftk4_pz[DInfo.size]    = tktk_tk4_4vec.Pz();
-            DInfo.rftk4_pt[DInfo.size]    = tktk_tk4_4vec.Pt();
-            DInfo.rftk4_eta[DInfo.size]   = tktk_tk4_4vec.Eta();
-            DInfo.rftk4_phi[DInfo.size]   = tktk_tk4_4vec.Phi();
-            DInfo.rftk4_index[DInfo.size] = -selectedTkhidxSet[i][3]-1;
-            if( fabs(tktk_tk4_4vec.Mag()-PION_MASS) < fabs(tktk_tk4_4vec.Mag()-KAON_MASS) ) DInfo.rftk4_MassHypo[DInfo.size] = 211;
+        if(tktkCands.size()>3){
+            DInfo.rftk4_px[DInfo.size]    = tktk_4vecs[3].Px();
+            DInfo.rftk4_py[DInfo.size]    = tktk_4vecs[3].Py();
+            DInfo.rftk4_pz[DInfo.size]    = tktk_4vecs[3].Pz();
+            DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
+            DInfo.rftk4_pt[DInfo.size]    = tktk_4vecs[3].Pt();
+            DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
+            DInfo.rftk4_phi[DInfo.size]   = tktk_4vecs[3].Phi();
+            DInfo.rftk4_index[DInfo.size] = -pushbackTrkIdx[3]-1;
+            if( fabs(tktk_4vecs[3].Mag()-PION_MASS) < fabs(tktk_4vecs[3].Mag()-KAON_MASS) ) DInfo.rftk4_MassHypo[DInfo.size] = 211;
             else DInfo.rftk4_MassHypo[DInfo.size] = 321;
+        }
+        if(tktkCands.size()>4){
+            DInfo.rftk5_px[DInfo.size]    = tktk_4vecs[4].Px();
+            DInfo.rftk5_py[DInfo.size]    = tktk_4vecs[4].Py();
+            DInfo.rftk5_pz[DInfo.size]    = tktk_4vecs[4].Pz();
+            DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
+            DInfo.rftk5_pt[DInfo.size]    = tktk_4vecs[4].Pt();
+            DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();
+            DInfo.rftk5_phi[DInfo.size]   = tktk_4vecs[4].Phi();
+            DInfo.rftk5_index[DInfo.size] = -pushbackTrkIdx[4]-1;
+            if( fabs(tktk_4vecs[4].Mag()-PION_MASS) < fabs(tktk_4vecs[4].Mag()-KAON_MASS) ) DInfo.rftk5_MassHypo[DInfo.size] = 211;
+            else DInfo.rftk5_MassHypo[DInfo.size] = 321;
         }
 
         DInfo.type[DInfo.size] = Dchannel_number;
