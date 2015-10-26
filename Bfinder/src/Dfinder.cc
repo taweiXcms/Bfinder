@@ -1341,15 +1341,14 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DMassCutLevel[Dchannel_number-1]->Fill(4);
 
             if(SequentialFit){
-                //VirtualKinematicParticleFactory vFactory;
-                //float tktkchi = tktk_VFPvtx->chiSquared();
-                //float tktkndf = tktk_VFPvtx->degreesOfFreedom();
-                //tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
-                tktk_candidate.push_back(tktkRes_VFP);
+                VirtualKinematicParticleFactory vFactory;
+                float tktkchi = tktkRes_VFPvtx->chiSquared();
+                float tktkndf = tktkRes_VFPvtx->degreesOfFreedom();
+                tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
+                //tktk_candidate.push_back(tktkRes_VFP);
                 pushbackTrkIdx.push_back(-1);//means its a resonance particle
             }
         }
-
         //push back the other tracks
         for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
             if(TkMassCharge[p].second==1) continue;
@@ -1361,6 +1360,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
         }
         DMassCutLevel[Dchannel_number-1]->Fill(5);
+
 
         double MaximumDoca = getMaxDoca(tktk_candidate);
         if (MaximumDoca > MaxDocaCut_) continue;
@@ -1530,16 +1530,16 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 
         DInfo.rftk1_index[DInfo.size]     = -pushbackTrkIdx[0]-1;
         DInfo.rftk2_index[DInfo.size]     = -pushbackTrkIdx[1]-1;
+
         //document the mass hypothesis
         if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
         else DInfo.rftk1_MassHypo[DInfo.size] = 321;
         //If its a Res particle, save it as D0
         if( DInfo.rftk1_index[DInfo.size] == 0) DInfo.rftk1_MassHypo[DInfo.size] = 421;
+
         if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
         else DInfo.rftk2_MassHypo[DInfo.size] = 321;
 
-std::cout<<"tktk_candidate: "<<tktk_candidate.size()<<std::endl;
-std::cout<<"tktkCands.size: "<<tktkCands.size()<<std::endl;
         if(tktkCands.size()>2){
             DInfo.rftk3_px[DInfo.size]    = tktk_4vecs[2].Px();
             DInfo.rftk3_py[DInfo.size]    = tktk_4vecs[2].Py();
