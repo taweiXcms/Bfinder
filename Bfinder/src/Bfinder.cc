@@ -1020,7 +1020,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     for(unsigned int i = 0; i < Bchannel_.size(); i++){
                         printf("%d/", B_counter[i]);
                     }
-                    printf("\n");
+                    printf("\n");//}}}
                     //printf("-----*****DEBUG:End of BInfo.\n");
 
                     // TrackInfo section {{{
@@ -1342,7 +1342,7 @@ void Bfinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.setUnknown();
     descriptions.addDefault(desc);
 }
-
+//{{{
 bool Bfinder::GetAncestor(const reco::Candidate* p, int PDGprefix)
 {
     if(p->numberOfMothers()==0) return false;
@@ -1352,8 +1352,7 @@ bool Bfinder::GetAncestor(const reco::Candidate* p, int PDGprefix)
         if(abs(int(mpid/100) % 100) == PDGprefix) return true;
         else return GetAncestor(MyMom, PDGprefix);
     }
-}
-
+}//}}}
 //{{{
 void Bfinder::BranchOut2MuTk(
     BInfoBranches &BInfo, 
