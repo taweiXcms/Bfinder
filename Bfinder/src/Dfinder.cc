@@ -1203,6 +1203,11 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                 //if(v4_D.Mag()<mass_window[0]-0.05 || v4_D.Mag()>mass_window[1]+0.05) continue;
                 if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                 if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                DMassCutLevel[Dchannel_number-1]->Fill(0);
+                if(v4_D.Pt() < dPtCut_)continue;
+                DMassCutLevel[Dchannel_number-1]->Fill(1);
+                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                DMassCutLevel[Dchannel_number-1]->Fill(2);
                 selectedTkhidx.push_back(tk1_hindex);
                 selectedTkhidx.push_back(tk2_hindex);
                 selectedTkhidxSet.push_back(selectedTkhidx);
@@ -1226,6 +1231,11 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                     v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
                     if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                     if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                    DMassCutLevel[Dchannel_number-1]->Fill(0);
+                    if(v4_D.Pt() < dPtCut_)continue;
+                    DMassCutLevel[Dchannel_number-1]->Fill(1);
+                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                    DMassCutLevel[Dchannel_number-1]->Fill(2);
                     selectedTkhidx.push_back(tk1_hindex);
                     selectedTkhidx.push_back(tk2_hindex);
                     selectedTkhidx.push_back(tk3_hindex);
@@ -1251,6 +1261,11 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                         v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
                         if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                         if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                        DMassCutLevel[Dchannel_number-1]->Fill(0);
+                        if(v4_D.Pt() < dPtCut_)continue;
+                        DMassCutLevel[Dchannel_number-1]->Fill(1);
+                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                        DMassCutLevel[Dchannel_number-1]->Fill(2);
                         selectedTkhidx.push_back(tk1_hindex);
                         selectedTkhidx.push_back(tk2_hindex);
                         selectedTkhidx.push_back(tk3_hindex);
@@ -1278,6 +1293,11 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                             v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
                             if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                             if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                            DMassCutLevel[Dchannel_number-1]->Fill(0);
+                            if(v4_D.Pt() < dPtCut_)continue;
+                            DMassCutLevel[Dchannel_number-1]->Fill(1);
+                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                            DMassCutLevel[Dchannel_number-1]->Fill(2);
                             selectedTkhidx.push_back(tk1_hindex);
                             selectedTkhidx.push_back(tk2_hindex);
                             selectedTkhidx.push_back(tk3_hindex);
@@ -1320,6 +1340,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     std::vector<RefCountedKinematicParticle> tktkCands;//output tracks from D fitter
     std::vector<RefCountedKinematicParticle> tktkResCands;//output tracks from Res fitter
     for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
+        if (DInfo.size >= MAX_XB) break;
+
         //clear before using
         v4_tk.Clear();
         tktk_4vecs.clear();
@@ -1330,34 +1352,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         tktkRes_candidate.clear();
         tktkCands.clear();
         tktkResCands.clear();
-
-        //check mass before fit
-//        for(unsigned int k = 0; k < TkMassCharge.size(); k++){
-//            v4_tk.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][k]].pt(),input_tracks[selectedTkhidxSet[i][k]].eta(),input_tracks[selectedTkhidxSet[i][k]].phi(),fabs(TkMassCharge[k].first));
-//            v4_tks.push_back(v4_tk);
-//            if(k==0) v4_D = v4_tk;
-//            else v4_D = v4_D + v4_tk;
-//            if(TkMassCharge[k].second==1){
-//                if(k==0) v4_Res = v4_tk;
-//                else v4_Res = v4_Res + v4_tk;
-//            }
-//        }
-//        //cut mass window before fit
-//        //if(v4_D.Mag()<mass_window[0]-0.05 || v4_D.Mag()>mass_window[1]+0.05) continue;
-//        if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-//        //if there's tktk Res, also check tktk res mass window
-//        if(tktkRes_mass > 0) {
-//            if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
-//        }
-//        DMassCutLevel[Dchannel_number-1]->Fill(0);
-//
-//        if(v4_D.Pt() < dPtCut_)continue;
-//        DMassCutLevel[Dchannel_number-1]->Fill(1);
-//
-//        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-//        DMassCutLevel[Dchannel_number-1]->Fill(2);
-
-        if (DInfo.size >= MAX_XB) break;
 
         //push back the Res tracks as first tracks
         ParticleMass tk_mass;
