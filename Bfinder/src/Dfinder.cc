@@ -1339,6 +1339,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     std::vector<RefCountedKinematicParticle> tktkRes_candidate;//input tracks to Res fitter
     std::vector<RefCountedKinematicParticle> tktkCands;//output tracks from D fitter
     std::vector<RefCountedKinematicParticle> tktkResCands;//output tracks from Res fitter
+
     for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
         if (DInfo.size >= MAX_XB) break;
 
@@ -1519,10 +1520,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 
         //fit info
         DInfo.index[DInfo.size]           = DInfo.size;
-        DInfo.b4fit_mass[DInfo.size]      = v4_D.Mag();
-        DInfo.b4fit_pt[DInfo.size]        = v4_D.Pt();
-        DInfo.b4fit_eta[DInfo.size]       = v4_D.Eta();
-        DInfo.b4fit_phi[DInfo.size]       = v4_D.Phi();
         DInfo.mass[DInfo.size]            = tktk_4vec.Mag();
         DInfo.pt[DInfo.size]              = tktk_4vec.Pt();
         DInfo.eta[DInfo.size]             = tktk_4vec.Eta();
@@ -1532,11 +1529,24 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.pz[DInfo.size]              = tktk_4vec.Pz();
         DInfo.MaxDoca[DInfo.size]         = MaximumDoca;
 
+
         VertexDistance3D a3d;
+        //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
         DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
         DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
         if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(11);
+
+        reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
+        reco::Vertex::Point vp2(tktk_VFPvtx->vertexState().position().x(), tktk_VFPvtx->vertexState().position().y(), 0.);
+        ROOT::Math::SVector<double, 6> sv1(thePrimaryV.covariance(0,0), thePrimaryV.covariance(0,1), thePrimaryV.covariance(1,1), 0., 0., 0.);
+        ROOT::Math::SVector<double, 6> sv2(tktk_VFPvtx->vertexState().error().cxx(), tktk_VFPvtx->vertexState().error().cyx(), tktk_VFPvtx->vertexState().error().cyy(), 0., 0., 0.);
+        reco::Vertex::Error ve1(sv1);
+        reco::Vertex::Error ve2(sv2);
+        reco::Vertex v1(vp1, ve1);
+        reco::Vertex v2(vp2, ve2);
+        DInfo.svpvDistance_2D[DInfo.size] = a3d.distance(v1, v2).value();
+        DInfo.svpvDisErr_2D[DInfo.size] = a3d.distance(v1, v2).error();
 
         DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
         DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
