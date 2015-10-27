@@ -1587,7 +1587,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
         else DInfo.rftk1_MassHypo[DInfo.size] = 321;
         //If its a Res particle, save it as D0
-        if( DInfo.rftk1_index[DInfo.size] == 0) DInfo.rftk1_MassHypo[DInfo.size] = 421;
+        if( DInfo.rftk1_index[DInfo.size] == -1) DInfo.rftk1_MassHypo[DInfo.size] = 421;
 
         if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
         else DInfo.rftk2_MassHypo[DInfo.size] = 321;
