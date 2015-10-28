@@ -6,7 +6,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
 ivars.inputFiles='file:step3_RAW2DIGI_L1Reco_RECO_100_1_74U.root'
 
-ivars.outputFile='Bfinder_PbPb_all.root'
+ivars.outputFile='Bfinder_pp_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
