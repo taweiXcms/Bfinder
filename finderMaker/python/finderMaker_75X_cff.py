@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False):
+def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks"):
 	### Set TransientTrackBuilder 
 	process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 	
@@ -16,8 +16,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	process.load("PhysicsTools.PatAlgos.patSequences_cff")
 	###### Needed in CMSSW7
 	process.particleFlowPtrs.src = "particleFlowTmp"
-	process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
-	process.pfPileUpPFBRECO.Vertices = cms.InputTag("hiSelectedVertex")
+	process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag(VtxLabel)
+	process.pfPileUpPFBRECO.Vertices = cms.InputTag(VtxLabel)
 	###### Needed in CMSSW7
 	
 	if HIFormat:
@@ -33,8 +33,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	if runOnMC:
 	    makeTrackCandidates(process,              # patAODTrackCands
 	        label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
-	        #tracks=cms.InputTag('generalTracks'), # input track collection
-	        tracks=cms.InputTag('hiGeneralTracks'), # input track collection
+	        tracks=cms.InputTag(TrkLabel), # input track collection
 	    	particleType='pi+',                   # particle type (for assigning a mass)
 	        preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
 	        selection='pt > 0.3',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
@@ -57,8 +56,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	else :
 	    makeTrackCandidates(process,              # patAODTrackCands
 	        label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
-	        #tracks=cms.InputTag('generalTracks'), # input track collection
-	        tracks=cms.InputTag('hiGeneralTracks'), # input track collection
+	        tracks=cms.InputTag(TrkLabel), # input track collection
 	        particleType='pi+',                   # particle type (for assigning a mass)
 	        preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
 	        selection='pt > 0.3',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
@@ -101,8 +99,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    caloMuons = cms.InputTag("calomuons"),
 	    minCaloCompatibility = cms.double(0.6),
 	    mergeTracks = cms.bool(False),
-	    #tracks = cms.InputTag("generalTracks"),
-	    tracks = cms.InputTag("hiGeneralTracks"),
+	    tracks = cms.InputTag(TrkLabel),
 	)
 	if AddCaloMuon:
 	    #changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
@@ -138,8 +135,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		TrackLabel      = cms.InputTag('patTrackCands'),
 	    PUInfoLabel     = cms.InputTag("addPileupInfo"),
 	    BSLabel     = cms.InputTag("offlineBeamSpot"),
-	    #PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
-	    PVLabel     = cms.InputTag("hiSelectedVertex"),
+	    PVLabel     = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.0),#before fit
 	    tkEtaCut = cms.double(999.0),#before fit
 	    jpsiPtCut = cms.double(3.0),#before fit
@@ -169,10 +165,10 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		HLTLabel        = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel        = cms.InputTag('genParticles'),
 		TrackLabel      = cms.InputTag('patTrackCands'),
+		MVAMapLabel  = cms.string(TrkLabel),
 	    PUInfoLabel     = cms.InputTag("addPileupInfo"),
 	    BSLabel     = cms.InputTag("offlineBeamSpot"),
-	    #PVLabel     = cms.InputTag("offlinePrimaryVerticesWithBS"),
-	    PVLabel     = cms.InputTag("hiSelectedVertex"),
+	    PVLabel     = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.),#before fit
 	    tkEtaCut = cms.double(1.1),#before fit
 	    dPtCut = cms.double(3.0),#before fit

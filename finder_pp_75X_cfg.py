@@ -3,7 +3,8 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+ivars.inputFiles='file:step3_RAW2DIGI_L1Reco_RECO_100_1_74U.root'
 
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
@@ -32,9 +33,9 @@ CentralityFilter = False
 ### RunFilter
 RunFilter = False
 
-### Vertex/Track label
-VtxLabel = "hiSelectedVertex"
-#TrkLabel = "hiGeneralTracks"
+### Vertex/Track label 
+VtxLabel = "offlinePrimaryVerticesWithBS"
+TrkLabel = "generalTracks"
 
 ### output module
 process.out = cms.OutputModule("PoolOutputModule",
@@ -81,29 +82,30 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 globalTag = ""
 #MC
 if runOnMC:
-	#globalTag = 'START53_V7F::All'#Summer12_DR53X
-	#globalTag = 'STARTHI53_V26::All'
-	#globalTag = 'START52_V5::All'
-	#globalTag = 'START52_V7::All'
-	#globalTag = 'START53_V17::All'
-	#globalTag = 'STARTHI53_LV1::All'##PbPb
-	#globalTag = 'START53_V27::All'##pPb
-	#globalTag = 'MCHI1_74_V4::All'##PbPb for 7_4_0_pre8
-	#globalTag = 'MCHI1_74_V6::All'##PbPb for 7_4_2
-	globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
-	#globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
+    #globalTag = 'START53_V7F::All'#Summer12_DR53X
+    #globalTag = 'STARTHI53_V26::All'
+    #globalTag = 'START52_V5::All'
+    #globalTag = 'START52_V7::All'
+    #globalTag = 'START53_V17::All'
+    #globalTag = 'STARTHI53_LV1::All'##PbPb
+    #globalTag = 'START53_V27::All'##pPb
+    #globalTag = 'MCHI1_74_V4::All'##PbPb for 7_4_0_pre8
+    #globalTag = 'MCHI1_74_V6::All'##PbPb for 7_4_2
+    #globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
+    #globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
+    globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
 #Data
 else:
-	#globalTag = 'FT_53_V6_AN2::All'#for 2012AB
-	#globalTag = 'FT_53_V10_AN2::All'#for 2012C
-	#globalTag = 'FT_P_V42_AN2::All'#for 2012D
-	#globalTag = 'GR_R_53_LV6::All'##PbPb
-	#globalTag = 'GR_P_V43D::All'##pp
-	#globalTag = 'GR_P_V43F::All'##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
-	#globalTag = 'GR_P_V43D::All'##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
-	#globalTag = 'GR_R_74_V8A::All'##CMSSW_7_4_0_pre8 PbPb
-	#globalTag = 'GR_R_74_V12A::All'##CMSSW_7_4_2 PbPb
-	globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
+    #globalTag = 'FT_53_V6_AN2::All'#for 2012AB
+    #globalTag = 'FT_53_V10_AN2::All'#for 2012C
+    #globalTag = 'FT_P_V42_AN2::All'#for 2012D
+    #globalTag = 'GR_R_53_LV6::All'##PbPb
+    #globalTag = 'GR_P_V43D::All'##pp
+    #globalTag = 'GR_P_V43F::All'##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
+    #globalTag = 'GR_P_V43D::All'##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
+    #globalTag = 'GR_R_74_V8A::All'##CMSSW_7_4_0_pre8 PbPb
+    #globalTag = 'GR_R_74_V12A::All'##CMSSW_7_4_2 PbPb
+    globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
 
 process.GlobalTag.globaltag = cms.string(globalTag)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
@@ -147,8 +149,8 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
 process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
 
 #process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
-#process.filter = cms.Sequence(process.noscraping)
-process.filter = cms.Sequence(process.collisionEventSelection)
+process.filter = cms.Sequence(process.noscraping)
+#process.filter = cms.Sequence(process.collisionEventSelection)
 
 ### Add centrality filter
 if CentralityFilter:
@@ -184,7 +186,7 @@ if not RunFilter:
 
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
+finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
 process.p = cms.Path(process.filter*process.DfinderSequence)
 if not RunFilter:
 	process.p = cms.Path(process.DfinderSequence)
@@ -217,9 +219,9 @@ process.Dfinder.dPtCut = cms.double(6.0)
 process.Dfinder.svpvDistanceCut = cms.double(0.0)
 
 process.schedule = cms.Schedule(
-	process.centrality_path
-	,process.hltAna
-	,process.evtAna
+#	process.centrality_path
+	process.hltAna
+#	,process.evtAna
 	,process.p
 #    ,process.e
 )

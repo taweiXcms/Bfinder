@@ -156,6 +156,7 @@ class Dfinder : public edm::EDAnalyzer
         double alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
+        std::string MVAMapLabel_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -194,7 +195,6 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
 
-    doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
     dPtCut_ = iConfig.getParameter<double>("dPtCut");
@@ -204,6 +204,8 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     MaxDocaCut_ = iConfig.getParameter<double>("MaxDocaCut");
     alphaCut_ = iConfig.getParameter<double>("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
+    doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
+    MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
     for(unsigned int i = 0; i < Dchannel_.size(); i++){
@@ -704,7 +706,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                     // TrackInfo section {{{
                     Handle<edm::ValueMap<float> > mvaoutput;
-                    iEvent.getByLabel("hiGeneralTracks", "MVAVals", mvaoutput);
+                    iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
