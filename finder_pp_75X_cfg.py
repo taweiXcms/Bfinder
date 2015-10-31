@@ -93,7 +93,8 @@ if runOnMC:
     #globalTag = 'MCHI1_74_V6::All'##PbPb for 7_4_2
     #globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
     #globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
-    globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
+    #globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
+    globalTag = 'auto:run2_mc_HIon'
 #Data
 else:
     #globalTag = 'FT_53_V6_AN2::All'#for 2012AB
@@ -105,7 +106,8 @@ else:
     #globalTag = 'GR_P_V43D::All'##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
     #globalTag = 'GR_R_74_V8A::All'##CMSSW_7_4_0_pre8 PbPb
     #globalTag = 'GR_R_74_V12A::All'##CMSSW_7_4_2 PbPb
-    globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
+    #globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
+    globalTag = 'auto:run2_data'
 
 process.GlobalTag.globaltag = cms.string(globalTag)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
@@ -220,8 +222,8 @@ process.Dfinder.svpvDistanceCut = cms.double(0.0)
 
 process.schedule = cms.Schedule(
 #	process.centrality_path
-	process.hltAna
 #	,process.evtAna
+	process.hltAna
 	,process.p
 #    ,process.e
 )

@@ -3,7 +3,8 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+ivars.inputFiles='file:/afs/cern.ch/user/t/twang/work/MITHIG/GenHIBmeson_20131220/PbPbB_CMSSW75X_20151026/useOfficialFilter/CMSSW_7_5_3_patch1/src/test/step3_RAW2DIGI_L1Reco_RECO_AOD.root'
 
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
@@ -16,8 +17,8 @@ process = cms.Process("demo")
 AddCaloMuon = False
 
 ### Run on MC?
-runOnMC = True
-#runOnMC = False
+#runOnMC = True
+runOnMC = False
 
 ### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
 #HIFormat = True
@@ -57,6 +58,10 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 process.source = cms.Source("PoolSource",
     skipEvents=cms.untracked.uint32(0),
 	fileNames = cms.untracked.vstring(ivars.inputFiles)
+)
+
+process.options = cms.untracked.PSet(
+	SkipEvent	= cms.untracked.vstring('ProductNotFound')
 )
 
 ### Using JSON file
@@ -106,6 +111,7 @@ else:
 	#globalTag = 'GR_R_74_V12A::All'##CMSSW_7_4_2 PbPb
 	#globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
 	globalTag = 'auto:run2_data'
+	globalTag = 'auto:run2_mc_HIon'
 
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, globalTag, '')
@@ -118,7 +124,9 @@ process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
 process.GlobalTag.toGet.extend([
  cms.PSet(record = cms.string("HeavyIonRcd"),
 tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v740x01_mc"),
+#tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v750x02_mc"),
 connect = cms.string("frontier://FrontierProd/CMS_COND_31X_PHYSICSTOOLS"),
+#connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
 label = cms.untracked.string("HFtowersHydjetDrum5")
  ),
 ])
@@ -149,7 +157,8 @@ process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
 
 #process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
 #process.filter = cms.Sequence(process.noscraping)
-process.filter = cms.Sequence(process.collisionEventSelection)
+#process.filter = cms.Sequence(process.collisionEventSelection)
+process.filter = cms.Sequence(process.collisionEventSelectionAOD)
 
 ### Add centrality filter
 if CentralityFilter:

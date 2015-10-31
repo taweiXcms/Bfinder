@@ -66,7 +66,10 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    );                                        # you can specify more than one collection for this
 	    l1cands = getattr(process, 'patTrackCands')
 	    l1cands.addGenMatch = False
-	process.TrackCandSequence = cms.Sequence(process.patAODTrackCandsUnfiltered*process.patAODTrackCands*process.patTrackCandsMCMatch*process.patTrackCands*process.selectedPatTrackCands)
+	if runOnMC:
+		process.TrackCandSequence = cms.Sequence(process.patAODTrackCandsUnfiltered*process.patAODTrackCands*process.patTrackCandsMCMatch*process.patTrackCands*process.selectedPatTrackCands)
+	else:
+		process.TrackCandSequence = cms.Sequence(process.patAODTrackCandsUnfiltered*process.patAODTrackCands*process.patTrackCands*process.selectedPatTrackCands)
 	
 	## patMuonsWithTrigger
 	process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
