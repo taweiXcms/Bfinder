@@ -94,7 +94,7 @@ if runOnMC:
     #globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
     #globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
     #globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
-    globalTag = 'auto:run2_mc_HIon'
+    globalTag = 'auto:run2_mc'
 #Data
 else:
     #globalTag = 'FT_53_V6_AN2::All'#for 2012AB
