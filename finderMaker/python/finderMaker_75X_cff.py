@@ -74,7 +74,10 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	## patMuonsWithTrigger
 	process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
 	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, changeTriggerProcessName, switchOffAmbiguityResolution
-	process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
+	#process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
+	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
+	process.patMuonsWithoutTrigger.isoDeposits = cms.PSet()
+	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()
 	if runOnMC:
 		addMCinfo(process)
 		process.muonMatch.resolveByMatchQuality = True
