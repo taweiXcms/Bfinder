@@ -300,6 +300,20 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
         theBeamSpotV = Vertex(beamSpot.position(), beamSpot.covariance3D());
+        EvtInfo.BSx             = beamSpot.x0();
+        EvtInfo.BSy             = beamSpot.y0();
+        EvtInfo.BSz             = beamSpot.z0();
+        EvtInfo.BSxErr          = beamSpot.x0Error();
+        EvtInfo.BSyErr          = beamSpot.y0Error();
+        EvtInfo.BSzErr          = beamSpot.z0Error();
+        EvtInfo.BSdxdz          = beamSpot.dxdz();
+        EvtInfo.BSdydz          = beamSpot.dydz();
+        EvtInfo.BSdxdzErr       = beamSpot.dxdzError();
+        EvtInfo.BSdydzErr       = beamSpot.dydzError();
+        EvtInfo.BSWidthX        = beamSpot.BeamWidthX();
+        EvtInfo.BSWidthXErr     = beamSpot.BeamWidthXError();
+        EvtInfo.BSWidthY        = beamSpot.BeamWidthY();
+        EvtInfo.BSWidthYErr     = beamSpot.BeamWidthYError();
     }else{
         std::cout<< "No beam spot available from EventSetup \n";
     }
@@ -1488,9 +1502,12 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
             DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
             DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
-            DInfo.tktkRes_vtxXE[DInfo.size]           = sqrt(tktkRes_VFPvtx->error().cxx());
-            DInfo.tktkRes_vtxYE[DInfo.size]           = sqrt(tktkRes_VFPvtx->error().cyy());
-            DInfo.tktkRes_vtxZE[DInfo.size]           = sqrt(tktkRes_VFPvtx->error().czz());
+            DInfo.tktkRes_vtxXErr[DInfo.size]         = sqrt(tktkRes_VFPvtx->error().cxx());
+            DInfo.tktkRes_vtxYErr[DInfo.size]         = sqrt(tktkRes_VFPvtx->error().cyy());
+            DInfo.tktkRes_vtxZErr[DInfo.size]         = sqrt(tktkRes_VFPvtx->error().czz());
+            DInfo.tktkRes_vtxYXErr[DInfo.size]        = sqrt(tktkRes_VFPvtx->error().cyx());
+            DInfo.tktkRes_vtxZXErr[DInfo.size]        = sqrt(tktkRes_VFPvtx->error().czx());
+            DInfo.tktkRes_vtxZYErr[DInfo.size]        = sqrt(tktkRes_VFPvtx->error().czy());
             DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
             DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
     
@@ -1553,9 +1570,12 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
         DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
         DInfo.vtxZ[DInfo.size]            = tktk_VFPvtx->position().z();
-        DInfo.vtxXE[DInfo.size]           = sqrt(tktk_VFPvtx->error().cxx());
-        DInfo.vtxYE[DInfo.size]           = sqrt(tktk_VFPvtx->error().cyy());
-        DInfo.vtxZE[DInfo.size]           = sqrt(tktk_VFPvtx->error().czz());
+        DInfo.vtxXErr[DInfo.size]         = sqrt(tktk_VFPvtx->error().cxx());
+        DInfo.vtxYErr[DInfo.size]         = sqrt(tktk_VFPvtx->error().cyy());
+        DInfo.vtxZErr[DInfo.size]         = sqrt(tktk_VFPvtx->error().czz());
+        DInfo.vtxYXErr[DInfo.size]        = sqrt(tktk_VFPvtx->error().cyx());
+        DInfo.vtxZXErr[DInfo.size]        = sqrt(tktk_VFPvtx->error().czx());
+        DInfo.vtxZYErr[DInfo.size]        = sqrt(tktk_VFPvtx->error().czy());
         DInfo.vtxdof[DInfo.size]          = tktk_VFPvtx->degreesOfFreedom();
         DInfo.vtxchi2[DInfo.size]         = tktk_VFPvtx->chiSquared();
         

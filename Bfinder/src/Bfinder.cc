@@ -322,6 +322,20 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
         theBeamSpotV = Vertex(beamSpot.position(), beamSpot.covariance3D());
+        EvtInfo.BSx             = beamSpot.x0();
+        EvtInfo.BSy             = beamSpot.y0();
+        EvtInfo.BSz             = beamSpot.z0();
+        EvtInfo.BSxErr          = beamSpot.x0Error();
+        EvtInfo.BSyErr          = beamSpot.y0Error();
+        EvtInfo.BSzErr          = beamSpot.z0Error();
+        EvtInfo.BSdxdz          = beamSpot.dxdz();
+        EvtInfo.BSdydz          = beamSpot.dydz();
+        EvtInfo.BSdxdzErr       = beamSpot.dxdzError();
+        EvtInfo.BSdydzErr       = beamSpot.dydzError();
+        EvtInfo.BSWidthX        = beamSpot.BeamWidthX();
+        EvtInfo.BSWidthXErr     = beamSpot.BeamWidthXError();
+        EvtInfo.BSWidthY        = beamSpot.BeamWidthY();
+        EvtInfo.BSWidthYErr     = beamSpot.BeamWidthYError();
     }else{
         std::cout<< "No beam spot available from EventSetup \n";
     }
