@@ -3,13 +3,16 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
-ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+ivars.inputFiles='file:/data/twang/temp/MBfiles/PbPb/step3_RAW2DIGI_L1Reco_RECO_988_1_Jnq.root'
 
 ivars.outputFile='Bfinder_PbPb_all.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
 process = cms.Process("demo")
+
+RunOnAOD = True
 
 ### Custom options
 ### Add Calo muons
@@ -118,7 +121,9 @@ process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
 process.GlobalTag.toGet.extend([
  cms.PSet(record = cms.string("HeavyIonRcd"),
 tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v740x01_mc"),
+#tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v750x02_mc"),
 connect = cms.string("frontier://FrontierProd/CMS_COND_31X_PHYSICSTOOLS"),
+#connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
 label = cms.untracked.string("HFtowersHydjetDrum5")
  ),
 ])
@@ -150,6 +155,8 @@ process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
 #process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
 #process.filter = cms.Sequence(process.noscraping)
 process.filter = cms.Sequence(process.collisionEventSelection)
+if RunOnAOD:
+	process.filter = cms.Sequence(process.collisionEventSelectionAOD)
 
 ### Add centrality filter
 if CentralityFilter:
@@ -186,12 +193,12 @@ if not RunFilter:
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
-process.p = cms.Path(process.filter*process.DfinderSequence)
+process.p = cms.Path(process.filter*process.finderSequence)
 if not RunFilter:
-	process.p = cms.Path(process.DfinderSequence)
+	process.p = cms.Path(process.finderSequence)
 
 process.Bfinder.Bchannel = cms.vint32(
-    0,#RECONSTRUCTION: J/psi + K
+    1,#RECONSTRUCTION: J/psi + K
     0,#RECONSTRUCTION: J/psi + Pi
     0,#RECONSTRUCTION: J/psi + Ks
     0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
@@ -222,5 +229,12 @@ process.schedule = cms.Schedule(
 	,process.evtAna
 	,process.hltAna
 	,process.p
-#    ,process.e
+    #,process.e
 )
+if RunOnAOD:
+	process.schedule = cms.Schedule(
+	    #process.centrality_path
+	    #,process.evtAna
+	    process.hltAna
+	    ,process.p
+	)
