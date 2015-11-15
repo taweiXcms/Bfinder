@@ -124,7 +124,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	### Set Bfinder option
 	process.Bfinder = cms.EDAnalyzer('Bfinder',
 		Bchannel 		= cms.vint32(
-			0,#RECONSTRUCTION: J/psi + K
+			1,#RECONSTRUCTION: J/psi + K
 			0,#RECONSTRUCTION: J/psi + Pi
 			0,#RECONSTRUCTION: J/psi + Ks 
 			0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
@@ -155,8 +155,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
 		Dchannel 		= cms.vint32(
-	        0,#RECONSTRUCTION: K+pi- : D0bar
-	        0,#RECONSTRUCTION: K-pi+ : D0
+	        1,#RECONSTRUCTION: K+pi- : D0bar
+	        1,#RECONSTRUCTION: K-pi+ : D0
 	        0,#RECONSTRUCTION: K-pi+pi+ : D+
 	        0,#RECONSTRUCTION: K+pi-pi- : D-
 	        0,#RECONSTRUCTION: K-pi-pi+pi+ : D0
@@ -176,15 +176,15 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    BSLabel     = cms.InputTag("offlineBeamSpot"),
 	    PVLabel     = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.),#before fit
-	    tkEtaCut = cms.double(1.1),#before fit
-	    dPtCut = cms.double(3.0),#before fit
+	    tkEtaCut = cms.double(2.0),#before fit
+	    dPtCut = cms.double(8.0),#before fit
 	    dEtaCut = cms.double(1.5),#before fit, not used currently
 		VtxChiProbCut = cms.double(0.05),
-	    svpvDistanceCut = cms.double(2.0),
+	    svpvDistanceCut = cms.double(0.0),
 	    MaxDocaCut = cms.double(999.),
 	    alphaCut = cms.double(999.),
 	    RunOnMC = cms.bool(False),
-	    doTkPreCut = cms.bool(True),
+	    doTkPreCut = cms.bool(False),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)
