@@ -6,15 +6,16 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
 ivars.inputFiles='file:/data/twang/temp/MBfiles/PbPb/step3_RAW2DIGI_L1Reco_RECO_988_1_Jnq.root'
 
-ivars.outputFile='Bfinder_PbPb_all.root'
+ivars.outputFile='finder_PbPb.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
 process = cms.Process("demo")
 
+### Custom options
+### Use AOD event filter
 RunOnAOD = True
 
-### Custom options
 ### Add Calo muons
 AddCaloMuon = False
 
@@ -54,7 +55,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 ### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
@@ -167,15 +168,11 @@ if CentralityFilter:
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
-process.evtAna = cms.Path(process.filter*process.hiEvtAnalyzer)
-if not RunFilter:
-	process.evtAna = cms.Path(process.hiEvtAnalyzer)
+process.evtAna = cms.Path(process.hiEvtAnalyzer)
 
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
-	process.evtAna = cms.Path(process.filter*process.heavyIon*process.hiEvtAnalyzer)
-	if not RunFilter:
-		process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
+	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
@@ -186,16 +183,12 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
     #process.hltanalysis.HLTProcessName = cms.string("HISIGNAL")
     #process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
     #process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
-process.hltAna = cms.Path(process.filter*process.hltanalysis)
-if not RunFilter:
-	process.hltAna = cms.Path(process.hltanalysis)
+process.hltAna = cms.Path(process.hltanalysis)
 
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
-process.p = cms.Path(process.filter*process.finderSequence)
-if not RunFilter:
-	process.p = cms.Path(process.finderSequence)
+process.p = cms.Path(process.finderSequence)
 
 process.Bfinder.Bchannel = cms.vint32(
     1,#RECONSTRUCTION: J/psi + K
@@ -220,9 +213,7 @@ process.Dfinder.Dchannel = cms.vint32(
     0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
     0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
-process.Dfinder.tkEtaCut = cms.double(2.0)
-process.Dfinder.dPtCut = cms.double(6.0)
-process.Dfinder.svpvDistanceCut = cms.double(0.0)
+process.Dfinder.dPtCut = cms.double(8.0)
 
 process.schedule = cms.Schedule(
 	process.centrality_path
@@ -238,3 +229,6 @@ if RunOnAOD:
 	    process.hltAna
 	    ,process.p
 	)
+if RunFilter:
+	for path in process.paths:
+		getattr(process,path)._seq = process.filter * getattr(process,path)._seq
