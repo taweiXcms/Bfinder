@@ -845,9 +845,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             BInfo.uj_vtxX          [BInfo.uj_size]= ujVFPvtx->position().x();
                             BInfo.uj_vtxY          [BInfo.uj_size]= ujVFPvtx->position().y();
                             BInfo.uj_vtxZ          [BInfo.uj_size]= ujVFPvtx->position().z();
-                            BInfo.uj_vtxXE         [BInfo.uj_size]= sqrt(ujVFPvtx->error().cxx());
-                            BInfo.uj_vtxYE         [BInfo.uj_size]= sqrt(ujVFPvtx->error().cyy());
-                            BInfo.uj_vtxZE         [BInfo.uj_size]= sqrt(ujVFPvtx->error().czz());
+                            BInfo.uj_vtxXErr       [BInfo.uj_size]= ujVFPvtx->error().cxx();
+                            BInfo.uj_vtxYErr       [BInfo.uj_size]= ujVFPvtx->error().cyy();
+                            BInfo.uj_vtxZErr       [BInfo.uj_size]= ujVFPvtx->error().czz();
+                            BInfo.uj_vtxYXErr      [BInfo.uj_size]= ujVFPvtx->error().cyx();
+                            BInfo.uj_vtxZXErr      [BInfo.uj_size]= ujVFPvtx->error().czx();
+                            BInfo.uj_vtxZYErr      [BInfo.uj_size]= ujVFPvtx->error().czy();
                             BInfo.uj_vtxdof        [BInfo.uj_size]= ujVFPvtx->degreesOfFreedom();
                             BInfo.uj_vtxchi2       [BInfo.uj_size]= ujVFPvtx->chiSquared();
                             BInfo.uj_rfmu1_index   [BInfo.uj_size]= mu1_hindex;
@@ -1475,9 +1478,12 @@ void Bfinder::BranchOut2MuTk(
       BInfo.vtxX[BInfo.size]    = xbVFPvtx->position().x();
       BInfo.vtxY[BInfo.size]    = xbVFPvtx->position().y();
       BInfo.vtxZ[BInfo.size]    = xbVFPvtx->position().z();
-      BInfo.vtxXE[BInfo.size]   = sqrt(xbVFPvtx->error().cxx());
-      BInfo.vtxYE[BInfo.size]   = sqrt(xbVFPvtx->error().cyy());
-      BInfo.vtxZE[BInfo.size]   = sqrt(xbVFPvtx->error().czz());
+      BInfo.vtxXErr[BInfo.size]   = xbVFPvtx->error().cxx();
+      BInfo.vtxYErr[BInfo.size]   = xbVFPvtx->error().cyy();
+      BInfo.vtxZErr[BInfo.size]   = xbVFPvtx->error().czz();
+      BInfo.vtxYXErr[BInfo.size]  = xbVFPvtx->error().cyx();
+      BInfo.vtxZXErr[BInfo.size]  = xbVFPvtx->error().czx();
+      BInfo.vtxZYErr[BInfo.size]  = xbVFPvtx->error().czy();
       BInfo.vtxdof[BInfo.size]  = xbVFPvtx->degreesOfFreedom();
       BInfo.vtxchi2[BInfo.size] = xbVFPvtx->chiSquared();
       
@@ -1688,9 +1694,12 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.vtxX[BInfo.size]    = xbVFPvtx->position().x();
             BInfo.vtxY[BInfo.size]    = xbVFPvtx->position().y();
             BInfo.vtxZ[BInfo.size]    = xbVFPvtx->position().z();
-            BInfo.vtxXE[BInfo.size]   = sqrt(xbVFPvtx->error().cxx());
-            BInfo.vtxYE[BInfo.size]   = sqrt(xbVFPvtx->error().cyy());
-            BInfo.vtxZE[BInfo.size]   = sqrt(xbVFPvtx->error().czz());
+            BInfo.vtxXErr[BInfo.size]        = xbVFPvtx->error().cxx();
+            BInfo.vtxYErr[BInfo.size]        = xbVFPvtx->error().cyy();
+            BInfo.vtxZErr[BInfo.size]        = xbVFPvtx->error().czz();
+            BInfo.vtxYXErr[BInfo.size]     = xbVFPvtx->error().cyx();
+            BInfo.vtxZXErr[BInfo.size]     = xbVFPvtx->error().czx();
+            BInfo.vtxZYErr[BInfo.size]     = xbVFPvtx->error().czy();
             BInfo.vtxdof[BInfo.size]  = xbVFPvtx->degreesOfFreedom();
             BInfo.vtxchi2[BInfo.size] = xbVFPvtx->chiSquared();
             
@@ -1709,9 +1718,12 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.tktk_vtxX[BInfo.size]    = tktk_VFPvtx->position().x();
             BInfo.tktk_vtxY[BInfo.size]    = tktk_VFPvtx->position().y();
             BInfo.tktk_vtxZ[BInfo.size]    = tktk_VFPvtx->position().z();
-            BInfo.tktk_vtxXE[BInfo.size]   = sqrt(tktk_VFPvtx->error().cxx());
-            BInfo.tktk_vtxYE[BInfo.size]   = sqrt(tktk_VFPvtx->error().cyy());
-            BInfo.tktk_vtxZE[BInfo.size]   = sqrt(tktk_VFPvtx->error().czz());
+            BInfo.tktk_vtxXErr[BInfo.size]   = tktk_VFPvtx->error().cxx();
+            BInfo.tktk_vtxYErr[BInfo.size]   = tktk_VFPvtx->error().cyy();
+            BInfo.tktk_vtxZErr[BInfo.size]   = tktk_VFPvtx->error().czz();
+            BInfo.tktk_vtxYXErr[BInfo.size]  = tktk_VFPvtx->error().cyx();
+            BInfo.tktk_vtxZXErr[BInfo.size]  = tktk_VFPvtx->error().czx();
+            BInfo.tktk_vtxZYErr[BInfo.size]  = tktk_VFPvtx->error().czy();
             BInfo.tktk_vtxdof[BInfo.size]  = tktk_VFPvtx->degreesOfFreedom();
             BInfo.tktk_vtxchi2[BInfo.size] = tktk_VFPvtx->chiSquared();
             BInfo.tktk_rftk1_px[BInfo.size]=tktk_tk1_4vec.Px();
