@@ -1502,12 +1502,12 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
             DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
             DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
-            DInfo.tktkRes_vtxXErr[DInfo.size]         = sqrt(tktkRes_VFPvtx->error().cxx());
-            DInfo.tktkRes_vtxYErr[DInfo.size]         = sqrt(tktkRes_VFPvtx->error().cyy());
-            DInfo.tktkRes_vtxZErr[DInfo.size]         = sqrt(tktkRes_VFPvtx->error().czz());
-            DInfo.tktkRes_vtxYXErr[DInfo.size]        = sqrt(tktkRes_VFPvtx->error().cyx());
-            DInfo.tktkRes_vtxZXErr[DInfo.size]        = sqrt(tktkRes_VFPvtx->error().czx());
-            DInfo.tktkRes_vtxZYErr[DInfo.size]        = sqrt(tktkRes_VFPvtx->error().czy());
+            DInfo.tktkRes_vtxXErr[DInfo.size]         = tktkRes_VFPvtx->error().cxx();
+            DInfo.tktkRes_vtxYErr[DInfo.size]         = tktkRes_VFPvtx->error().cyy();
+            DInfo.tktkRes_vtxZErr[DInfo.size]         = tktkRes_VFPvtx->error().czz();
+            DInfo.tktkRes_vtxYXErr[DInfo.size]        = tktkRes_VFPvtx->error().cyx();
+            DInfo.tktkRes_vtxZXErr[DInfo.size]        = tktkRes_VFPvtx->error().czx();
+            DInfo.tktkRes_vtxZYErr[DInfo.size]        = tktkRes_VFPvtx->error().czy();
             DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
             DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
     
@@ -1570,12 +1570,12 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
         DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
         DInfo.vtxZ[DInfo.size]            = tktk_VFPvtx->position().z();
-        DInfo.vtxXErr[DInfo.size]         = sqrt(tktk_VFPvtx->error().cxx());
-        DInfo.vtxYErr[DInfo.size]         = sqrt(tktk_VFPvtx->error().cyy());
-        DInfo.vtxZErr[DInfo.size]         = sqrt(tktk_VFPvtx->error().czz());
-        DInfo.vtxYXErr[DInfo.size]        = sqrt(tktk_VFPvtx->error().cyx());
-        DInfo.vtxZXErr[DInfo.size]        = sqrt(tktk_VFPvtx->error().czx());
-        DInfo.vtxZYErr[DInfo.size]        = sqrt(tktk_VFPvtx->error().czy());
+        DInfo.vtxXErr[DInfo.size]         = tktk_VFPvtx->error().cxx();
+        DInfo.vtxYErr[DInfo.size]         = tktk_VFPvtx->error().cyy();
+        DInfo.vtxZErr[DInfo.size]         = tktk_VFPvtx->error().czz();
+        DInfo.vtxYXErr[DInfo.size]        = tktk_VFPvtx->error().cyx();
+        DInfo.vtxZXErr[DInfo.size]        = tktk_VFPvtx->error().czx();
+        DInfo.vtxZYErr[DInfo.size]        = tktk_VFPvtx->error().czy();
         DInfo.vtxdof[DInfo.size]          = tktk_VFPvtx->degreesOfFreedom();
         DInfo.vtxchi2[DInfo.size]         = tktk_VFPvtx->chiSquared();
         
