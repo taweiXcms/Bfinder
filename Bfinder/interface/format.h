@@ -267,7 +267,7 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.pt"            , pt            , "MuonInfo.pt[MuonInfo.size]/D"		);
             root->Branch("MuonInfo.eta"           , eta           , "MuonInfo.eta[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.phi"           , phi           , "MuonInfo.phi[MuonInfo.size]/D"	);
-            root->Branch("MuonInfo.pt Err"        , ptErr         , "MuonInfo.ptErr[MuonInfo.size]/D"		);
+            root->Branch("MuonInfo.ptErr"        , ptErr         , "MuonInfo.ptErr[MuonInfo.size]/D"		);
             root->Branch("MuonInfo.etaErr"        , etaErr        , "MuonInfo.etaErr[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.phiErr"        , phiErr        , "MuonInfo.phiErr[MuonInfo.size]/D"	);
             root->Branch("MuonInfo.isTrackerMuon" , isTrackerMuon , "MuonInfo.isTrackerMuon[MuonInfo.size]/O");
