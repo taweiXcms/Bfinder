@@ -3,7 +3,6 @@
 #define _XBFRAMEFORMAT_H_
 
 #define MAX_XB 16384
-//#define MAX_XB 128
 //#define MAX_XB 32768//When the size get too large, SetBranchAddress will fail
 #define MAX_MUON 512
 #define MAX_TRACK 8192
@@ -12,9 +11,97 @@
 #define MAX_Vertices 4096
 //#define N_TRIGGER_BOOKINGS 5842
 
+#include <memory>
+#include <iostream>
+#include <math.h>
 #include <string>
 #include <vector>
+#include <iterator>
+#include <algorithm>
+#include <iostream>
+#include <list>
+
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"//calculate trajectory distance
+
+#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+//#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
+#include "CommonTools/Statistics/interface/ChiSquared.h"
+
+#include "RecoVertex/TrimmedKalmanVertexFinder/interface/KalmanTrimmedVertexFinder.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/MultiTrackKinematicConstraint.h"
+#include "RecoVertex/KinematicFit/interface/KinematicConstrainedVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
+#include "RecoVertex/KinematicFit/interface/TwoTrackMassKinematicConstraint.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
+#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
+#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"//proper covariance error calculation
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
+#include "DataFormats/L1GlobalTrigger/interface/L1GtFdlWord.h"
+#include "DataFormats/Common/interface/Handle.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/Common/interface/RefToBase.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/Candidate/interface/ShallowCloneCandidate.h"
+#include "DataFormats/Candidate/interface/CandMatchMap.h"
+#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
+#include "DataFormats/Math/interface/Error.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/Point3D.h"
+#include "DataFormats/Math/interface/Vector3D.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/TrackReco/interface/DeDxData.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+//#include "Bfinder/Bfinder/interface/TriggerBooking.h"
+#include "TLorentzVector.h"
 #include "TTree.h"
+#include "TBranch.h"
+#include "TH1.h"
+#include "TROOT.h"
+#include "TSystem.h"
+#include "TObject.h"
+#include "TFile.h"
+
+#define ELECTRON_MASS 0.0005
+#define MUON_MASS   0.10565837
+#define PION_MASS   0.13957018
+#define KAON_MASS   0.493677
+#define KSHORT_MASS 0.497614
+#define KSTAR_MASS  0.89594
+#define PHI_MASS    1.019455
+#define JPSI_MASS   3.096916
+#define PSI2S_MASS  3.686109
+#define PROTON_MASS 0.9383
+#define D0_MASS 1.8648
+#define DSTAR_MASS 2.01028
 
 class EvtInfoBranches{ //{{{
 	public:
@@ -533,6 +620,12 @@ public:
     double  pxE[MAX_XB];
     double  pyE[MAX_XB];
     double  pzE[MAX_XB];
+    double  alpha[MAX_XB];
+    double  svpvDistance[MAX_XB];
+    double  svpvDisErr[MAX_XB];
+    double  svpvDistance_2D[MAX_XB];
+    double  svpvDisErr_2D[MAX_XB];
+    double  MaxDoca[MAX_XB];
     double  vtxX[MAX_XB];
     double  vtxY[MAX_XB];
     double  vtxZ[MAX_XB];
@@ -630,6 +723,12 @@ public:
         root->Branch("BInfo.pxE"              , pxE            , "BInfo.pxE[BInfo.size]/D"            );
         root->Branch("BInfo.pyE"              , pyE            , "BInfo.pyE[BInfo.size]/D"            );
         root->Branch("BInfo.pzE"              , pzE            , "BInfo.pzE[BInfo.size]/D"            );
+        root->Branch("BInfo.alpha"            , alpha          , "BInfo.alpha[BInfo.size]/D"	);
+        root->Branch("BInfo.svpvDistance"     , svpvDistance   , "BInfo.svpvDistance[BInfo.size]/D"	);
+        root->Branch("BInfo.svpvDisErr"       , svpvDisErr     , "BInfo.svpvDisErr[BInfo.size]/D"	);
+        root->Branch("BInfo.svpvDistance_2D"  , svpvDistance_2D, "BInfo.svpvDistance_2D[BInfo.size]/D"	);
+        root->Branch("BInfo.svpvDisErr_2D"    , svpvDisErr_2D  , "BInfo.svpvDisErr_2D[BInfo.size]/D"	);
+        root->Branch("BInfo.MaxDoca"          , MaxDoca        , "BInfo.MaxDoca[BInfo.size]/D"	);
         root->Branch("BInfo.vtxX"             , vtxX           , "BInfo.vtxX[BInfo.size]/D"		);
         root->Branch("BInfo.vtxY"             , vtxY           , "BInfo.vtxY[BInfo.size]/D"		);
         root->Branch("BInfo.vtxZ"             , vtxZ           , "BInfo.vtxZ[BInfo.size]/D"		);
@@ -723,6 +822,12 @@ public:
         root->SetBranchAddress("BInfo.pxE"             ,pxE          );
         root->SetBranchAddress("BInfo.pyE"             ,pyE          );
         root->SetBranchAddress("BInfo.pzE"             ,pzE         	);
+        root->SetBranchAddress("BInfo.alpha"           ,alpha   	);
+        root->SetBranchAddress("BInfo.svpvDistance"    ,svpvDistance   	);
+        root->SetBranchAddress("BInfo.svpvDisErr"      ,svpvDisErr   	);
+        root->SetBranchAddress("BInfo.svpvDistance_2D" ,svpvDistance_2D   	);
+        root->SetBranchAddress("BInfo.svpvDisErr_2D"   ,svpvDisErr_2D   	);
+        root->SetBranchAddress("BInfo.MaxDoca"         ,MaxDoca   	);
         root->SetBranchAddress("BInfo.vtxX"            ,vtxX       	);
         root->SetBranchAddress("BInfo.vtxY"            ,vtxY      	);
         root->SetBranchAddress("BInfo.vtxZ"            ,vtxZ     	);
@@ -1192,4 +1297,53 @@ class GenInfoBranches{//{{{
             root->SetBranchAddress("GenInfo.da4"          ,da4            );
         }//}}}
 };//}}}
+
+class CommonFuncts{//{{{
+    public:
+        void test(){
+    }   
+        
+    bool GetAncestor(const reco::Candidate* p, int PDGprefix)
+    {
+        if(p->numberOfMothers()==0) return false;
+        else{
+            const reco::Candidate* MyMom = p->mother(0);
+            int mpid = abs(MyMom->pdgId());
+            if(abs(int(mpid/100) % 100) == PDGprefix) return true;
+            else return GetAncestor(MyMom, PDGprefix);
+        }
+    }
+
+    float getParticleSigma(double mass)
+    {
+        if(mass == ELECTRON_MASS)
+            return 0.013E-9f;
+        else if(mass == MUON_MASS)
+            return 4E-9f;
+        else if(mass == PION_MASS)
+            return 3.5E-7f;
+        else if(mass == KAON_MASS)
+            return 1.6E-5f;
+        else if(mass == PROTON_MASS)
+            return 8E-8f;
+        else
+            return 1E-6;
+    }
+
+    double getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticles)
+    {
+        double maxDoca = -1.0;
+        TwoTrackMinimumDistance md;
+        std::vector<RefCountedKinematicParticle>::iterator in_it, out_it;
+        for (out_it = kinParticles.begin(); out_it != kinParticles.end(); ++out_it) {
+            for (in_it = out_it + 1; in_it != kinParticles.end(); ++in_it) {
+                md.calculate((*out_it)->currentState().freeTrajectoryState(),(*in_it)->currentState().freeTrajectoryState());
+                if (md.distance() > maxDoca)
+                    maxDoca = md.distance();
+            }
+        }
+        return maxDoca;
+    }
+};//}}}
+
 #endif

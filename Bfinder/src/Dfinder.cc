@@ -2,99 +2,7 @@
 // Ntuplt creator for D meson related analysis.
 // Maintain and contact: ta-wei wang
 // Email: "tawei@mit.edu" or "ta-wei.wang@cern.ch"
-#include <memory>
-#include <iostream>
-#include <math.h>
-#include <string>
-#include <vector>
-#include <iterator>
-#include <algorithm>
-#include <iostream>
-#include <list>
-
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Common/interface/TriggerNames.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-
-#include "MagneticField/Engine/interface/MagneticField.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
-#include "TrackingTools/Records/interface/TransientTrackRecord.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
-#include "TrackingTools/PatternTools/interface/TwoTrackMinimumDistance.h"//calculate trajectory distance
-
-#include "SimTracker/Records/interface/TrackAssociatorRecord.h"
-#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
-//#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "CommonTools/Statistics/interface/ChiSquaredProbability.h"
-#include "CommonTools/Statistics/interface/ChiSquared.h"
-
-#include "RecoVertex/TrimmedKalmanVertexFinder/interface/KalmanTrimmedVertexFinder.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/MultiTrackKinematicConstraint.h"
-#include "RecoVertex/KinematicFit/interface/KinematicConstrainedVertexFitter.h"
-#include "RecoVertex/KinematicFit/interface/KinematicParticleVertexFitter.h"
-#include "RecoVertex/KinematicFit/interface/TwoTrackMassKinematicConstraint.h"
-#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
-#include "RecoVertex/KinematicFitPrimitives/interface/KinematicParticleFactoryFromTransientTrack.h"
-#include "RecoVertex/VertexTools/interface/VertexDistanceXY.h"
-#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
-#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-#include "RecoVertex/VertexTools/interface/VertexDistance3D.h"//proper covariance error calculation
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
-#include "DataFormats/L1GlobalTrigger/interface/L1GtFdlWord.h"
-#include "DataFormats/Common/interface/Handle.h"
-#include "DataFormats/Common/interface/Ref.h"
-#include "DataFormats/Common/interface/TriggerResults.h"
-#include "DataFormats/Common/interface/RefToBase.h"
-#include "DataFormats/Common/interface/ValueMap.h"
-#include "DataFormats/Candidate/interface/ShallowCloneCandidate.h"
-#include "DataFormats/Candidate/interface/CandMatchMap.h"
-#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
-#include "DataFormats/Math/interface/Error.h"
-#include "DataFormats/Math/interface/LorentzVector.h"
-#include "DataFormats/Math/interface/Point3D.h"
-#include "DataFormats/Math/interface/Vector3D.h"
-#include "DataFormats/PatCandidates/interface/GenericParticle.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/TrackReco/interface/DeDxData.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/MuonReco/interface/MuonSelectors.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/VertexReco/interface/Vertex.h"
-#include "DataFormats/VertexReco/interface/VertexFwd.h"
-
 #include "Bfinder/Bfinder/interface/format.h"
-//#include "Bfinder/Bfinder/interface/TriggerBooking.h"
-#include "TLorentzVector.h"
-#include "TTree.h"
-#include "TBranch.h"
-#include "TH1.h"
-#include <TROOT.h>
-#include <TSystem.h>
-#include <TObject.h>
-#include <TFile.h>
-
-#define ELECTRON_MASS 0.0005
-#define MUON_MASS   0.10565837
-#define PION_MASS   0.13957018
-#define KAON_MASS   0.493677
-#define KSHORT_MASS 0.497614
-#define KSTAR_MASS  0.89594
-#define PHI_MASS    1.019455
-#define JPSI_MASS   3.096916
-#define PSI2S_MASS  3.686109
-#define PROTON_MASS 0.9383
-#define D0_MASS 1.8648
-#define DSTAR_MASS 2.01028
-
 //
 // class declaration
 //
@@ -116,9 +24,6 @@ class Dfinder : public edm::EDAnalyzer
         virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
         virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
         
-        virtual bool GetAncestor(const reco::Candidate* p, int PDGprefix);
-        virtual float getParticleSigma(double mass);
-        virtual double getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticles);
         virtual std::vector< std::vector< std::pair<float, int> > > GetPermu(std::vector< std::pair<float, int> > InVec);
         virtual std::vector< std::vector< std::pair<float, int> > > DelDuplicate(std::vector< std::vector< std::pair<float, int> > > InVec);
         virtual void BranchOutNTk(
@@ -140,7 +45,7 @@ class Dfinder : public edm::EDAnalyzer
         edm::ESHandle<MagneticField> bField;
         edm::ParameterSet theConfig;
         std::vector<int> Dchannel_;
-//        edm::InputTag hltLabel_;
+        //edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
         edm::InputTag trackLabel_;
         edm::InputTag puInfoLabel_;
@@ -165,6 +70,7 @@ class Dfinder : public edm::EDAnalyzer
         TrackInfoBranches   TrackInfo;
         DInfoBranches       DInfo;
         GenInfoBranches     GenInfo;
+        CommonFuncts        Functs;
 
         //histograms
         TH1F *TrackCutLevel;
@@ -190,7 +96,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     Dchannel_= iConfig.getParameter<std::vector<int> >("Dchannel");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
-//    hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
+    //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
     puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
@@ -906,7 +812,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     reco::GenParticle _deRef = (*it_gen);
                     reco::Candidate* Myself = dynamic_cast<reco::Candidate*>(&_deRef);
                     //std::cout<<Myself->pdgId()<<"-----------"<<std::endl;
-                    isGenSignal = (GetAncestor(Myself, 5) | GetAncestor(Myself, 4));
+                    isGenSignal = (Functs.GetAncestor(Myself, 5) | Functs.GetAncestor(Myself, 4));
                 }//all pi and K from b or c meson
                 if (!isGenSignal) continue;
 
@@ -1042,7 +948,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //std::cout<<"filled!\n";
 }
 
-// ------------ method called once each job just after ending the event loop  ------------
+// ------------ method called once each job just after ending the event loop  ------------{{{
 void Dfinder::endJob()
 {
 }
@@ -1075,47 +981,9 @@ void Dfinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     edm::ParameterSetDescription desc;
     desc.setUnknown();
     descriptions.addDefault(desc);
-}
-//{{{
-bool Dfinder::GetAncestor(const reco::Candidate* p, int PDGprefix)
-{
-    if(p->numberOfMothers()==0) return false;
-    else{
-        const reco::Candidate* MyMom = p->mother(0);
-        int mpid = abs(MyMom->pdgId());
-        if(abs(int(mpid/100) % 100) == PDGprefix) return true;
-        else return GetAncestor(MyMom, PDGprefix);
-    }
-}
-float Dfinder::getParticleSigma(double mass)
-{
-    if(mass == ELECTRON_MASS)
-        return 0.013E-9f;
-    else if(mass == MUON_MASS)
-        return 4E-9f;
-    else if(mass == PION_MASS)
-        return 3.5E-7f;
-    else if(mass == KAON_MASS)
-        return 1.6E-5f;
-    else if(mass == PROTON_MASS)
-        return 8E-8f;
-    else
-        return 1E-6;
-} 
-double Dfinder::getMaxDoca(std::vector<RefCountedKinematicParticle> &kinParticles)
-{
-    double maxDoca = -1.0;
-    TwoTrackMinimumDistance md;
-    std::vector<RefCountedKinematicParticle>::iterator in_it, out_it;
-    for (out_it = kinParticles.begin(); out_it != kinParticles.end(); ++out_it) {
-        for (in_it = out_it + 1; in_it != kinParticles.end(); ++in_it) {
-            md.calculate((*out_it)->currentState().freeTrajectoryState(),(*in_it)->currentState().freeTrajectoryState());
-            if (md.distance() > maxDoca)
-                maxDoca = md.distance();
-        }
-    }
-    return maxDoca;
-} 
+}//}}}
+
+//Functions{{{
 std::vector< std::vector< std::pair<float, int> > > Dfinder::GetPermu(std::vector< std::pair<float, int> > InVec){
     if(InVec.size() == 1){
         std::vector< std::vector< std::pair<float, int> > > OneEntryVec;
@@ -1159,7 +1027,8 @@ std::vector< std::vector< std::pair<float, int> > > Dfinder::DelDuplicate(std::v
     return CleanedVec;
 }
 //}}}
-//{{{
+
+//BranchOutNTk{{{
 void Dfinder::BranchOutNTk(//input 2~4 tracks
     DInfoBranches &DInfo, 
     std::vector<pat::GenericParticle> input_tracks, 
@@ -1381,7 +1250,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
             if (!tkTT.isValid()) continue;
             tk_mass = fabs(TkMassCharge[p].first);
-            tk_sigma = getParticleSigma(tk_mass);
+            tk_sigma = Functs.getParticleSigma(tk_mass);
             if(!SequentialFit){
                 tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
                 pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
@@ -1418,14 +1287,13 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
             if (!tkTT.isValid()) continue;
             tk_mass = fabs(TkMassCharge[p].first);
-            tk_sigma = getParticleSigma(tk_mass);
+            tk_sigma = Functs.getParticleSigma(tk_mass);
             tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
             pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
         }
         DMassCutLevel[Dchannel_number-1]->Fill(5);
 
-
-        double MaximumDoca = getMaxDoca(tktk_candidate);
+        double MaximumDoca = Functs.getMaxDoca(tktk_candidate);
         if (MaximumDoca > MaxDocaCut_) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(6);
 
@@ -1510,7 +1378,13 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_vtxZYErr[DInfo.size]        = tktkRes_VFPvtx->error().czy();
             DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
             DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
-    
+
+            //index initialization to -2
+            DInfo.tktkRes_rftk1_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk2_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk3_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk4_index[DInfo.size]     = -2;
+
             DInfo.tktkRes_rftk1_mass[DInfo.size]      = tktkRes_4vecs[0].Mag();
             DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_4vecs[0].Pt();
             DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_4vecs[0].Eta();
@@ -1547,7 +1421,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.py[DInfo.size]              = tktk_4vec.Py();
         DInfo.pz[DInfo.size]              = tktk_4vec.Pz();
         DInfo.MaxDoca[DInfo.size]         = MaximumDoca;
-
 
         VertexDistance3D a3d;
         //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
@@ -1601,6 +1474,13 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.rftk2_pt[DInfo.size]        = tktk_4vecs[1].Pt();
         DInfo.rftk2_eta[DInfo.size]       = tktk_4vecs[1].Eta();
         DInfo.rftk2_phi[DInfo.size]       = tktk_4vecs[1].Phi();
+
+        //Index initialize to -2
+        DInfo.rftk1_index[DInfo.size] = -2;
+        DInfo.rftk2_index[DInfo.size] = -2;
+        DInfo.rftk3_index[DInfo.size] = -2;
+        DInfo.rftk4_index[DInfo.size] = -2;
+        DInfo.rftk5_index[DInfo.size] = -2;
 
         DInfo.rftk1_index[DInfo.size]     = pushbackTrkIdx[0];
         DInfo.rftk2_index[DInfo.size]     = pushbackTrkIdx[1];
@@ -1660,5 +1540,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     }
 }
 //}}}
+
 //define this as a plug-in
 DEFINE_FWK_MODULE(Dfinder);
