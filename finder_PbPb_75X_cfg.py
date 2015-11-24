@@ -38,7 +38,7 @@ UseGenPlusSim = False
 CentralityFilter = False
 
 ### RunFilter
-RunFilter = False
+RunFilter = True
 
 ### Vertex/Track label
 VtxLabel = "hiSelectedVertex"
