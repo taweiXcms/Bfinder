@@ -366,11 +366,11 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
                         if(doTkPreCut_){
-                            //if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
+                            if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
                             //d0 analysis cuts
-                            if(tk_it->track()->hitPattern().numberOfValidHits() < 12) continue;
-                            if(tk_it->track()->ptError()/tk_it->track()->pt() > 0.075) continue;
-                            if(tk_it->track()->normalizedChi2()/tk_it->track()->hitPattern().trackerLayersWithMeasurement() > 0.25) continue;
+                            //if(tk_it->track()->hitPattern().numberOfValidHits() < 12) continue;
+                            //if(tk_it->track()->ptError()/tk_it->track()->pt() > 0.075) continue;
+                            //if(tk_it->track()->normalizedChi2()/tk_it->track()->hitPattern().trackerLayersWithMeasurement() > 0.25) continue;
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
                             //if (tk_it->p()>200 || tk_it->pt()>200)              continue;

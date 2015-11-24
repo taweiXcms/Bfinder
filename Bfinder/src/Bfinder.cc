@@ -790,7 +790,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //////////////////////////////////////////////////////////////////////////
                             // RECONSTRUCTION: J/psi + K
                             //////////////////////////////////////////////////////////////////////////
-                            float mass_window[2] = {4.3, 6.4};
+                            //float mass_window[2] = {4.3, 6.4};
+                            float mass_window[2] = {5., 6.};
                             if(Bchannel_[0] == 1){
                                 BranchOut2MuTk(
                                     BInfo,
@@ -861,7 +862,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + K* (K+, Pi-)
                             //////////////////////////////////////////////////////////////////////////
 
-                            TkTk_window = 0.4;
+                            //TkTk_window = 0.4;
+                            TkTk_window = 0.25;
                             if(Bchannel_[3] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -888,7 +890,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + K* (K-, Pi+)
                             //////////////////////////////////////////////////////////////////////////
 
-                            TkTk_window = 0.4;
+                            //TkTk_window = 0.4;
+                            TkTk_window = 0.25;
                             if(Bchannel_[4] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -1024,6 +1027,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
 
 
+                        //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_5_patch1/DataFormats/TrackReco/interface/TrackBase.h#L149
                         if(tk_it->track().isNonnull()){
                             for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){
                             if (tk_it->track()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) TrackInfo.trackQuality[TrackInfo.size] += 1 << (tq);
@@ -1525,7 +1529,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             v4_tk1.SetPtEtaPhiM(tk_it1->pt(),tk_it1->eta(),tk_it1->phi(),Tk1_MASS);
             v4_tk2.SetPtEtaPhiM(tk_it2->pt(),tk_it2->eta(),tk_it2->phi(),Tk2_MASS);
             if(TkTk_MASS > 0) {if (fabs((v4_tk1+v4_tk2).Mag()-TkTk_MASS)>TkTk_window) continue;}
-            else {if (fabs((v4_tk1+v4_tk2).Mag())>TkTk_window) continue;}//if no tktk mass constrain, require it to be at least < some window
+            else {if (fabs((v4_tk1+v4_tk2).Mag())>TkTk_window) continue;}//if no tktk mass constrain, require it to be at least < some mass value
             XbMassCutLevel[channel_number-1]->Fill(0);
             
             //if ((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()<mass_window[0]-0.2 || (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()>mass_window[1]+0.2) continue;

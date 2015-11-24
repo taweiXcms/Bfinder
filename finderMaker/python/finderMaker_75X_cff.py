@@ -153,7 +153,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    MaxDocaCut = cms.double(999.),
 	    alphaCut = cms.double(999.),
 	    RunOnMC = cms.bool(False),
-	    doTkPreCut = cms.bool(False),
+	    doTkPreCut = cms.bool(True),
 	    doMuPreCut = cms.bool(True)
 	)
 	### Set Dfinder option
@@ -188,7 +188,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    MaxDocaCut = cms.double(999.),
 	    alphaCut = cms.double(999.),
 	    RunOnMC = cms.bool(False),
-	    doTkPreCut = cms.bool(False),
+	    doTkPreCut = cms.bool(True),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)
