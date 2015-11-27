@@ -1560,17 +1560,17 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             KinematicParticleVertexFitter   tktk_fitter;
             RefCountedKinematicTree         tktk_VFT;
             tktk_VFT = tktk_fitter.fit(tktk_candidate);
-            if(!tktk_VFT->isValid()) continue;
+            if(TkTk_MASS > 0 && !tktk_VFT->isValid()) continue;
             XbMassCutLevel[channel_number-1]->Fill(4);
             
             tktk_VFT->movePointerToTheTop();
             RefCountedKinematicParticle tktk_VFP   = tktk_VFT->currentParticle();
             RefCountedKinematicVertex   tktk_VFPvtx = tktk_VFT->currentDecayVertex();
-            if (!tktk_VFPvtx->vertexIsValid()) continue;
+            if (TkTk_MASS > 0 && !tktk_VFPvtx->vertexIsValid()) continue;
             XbMassCutLevel[channel_number-1]->Fill(5);
 
             double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-            if(chi2_prob_tktk < VtxChiProbCut_) continue;
+            if(TkTk_MASS > 0 && chi2_prob_tktk < VtxChiProbCut_) continue;
             XbMassCutLevel[channel_number-1]->Fill(6);
 
             std::vector<RefCountedKinematicParticle> Xb_candidate;
