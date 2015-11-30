@@ -4,7 +4,7 @@ for CMSSW5
 
 git cms-merge-topic -u CmsHI:forest_CMSSW_5_3_20
 
-for CMSSW7
+for CMSSW7 (CMSSW_7_5_5_patch4)
 
 git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
 

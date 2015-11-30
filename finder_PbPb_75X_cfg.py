@@ -5,7 +5,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Hydjet_Quenched_MinBias_5020GeV_750/Hydjet_Quenched_MinBias_5020GeV_750_HiFall15_step3_20151110/step3_RAW2DIGI_L1Reco_RECO_2054_1_2fm.root'
-#ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BuToJpsiK_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BuToJpsiK_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_20151105/step3_RAW2DIGI_L1Reco_RECO_756_1_ecf.root'
+ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BuToJpsiK_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BuToJpsiK_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_20151105/step3_RAW2DIGI_L1Reco_RECO_756_1_ecf.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BdToJpsiKstar_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BdToJpsiKstar_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_20151105/step3_RAW2DIGI_L1Reco_RECO_698_2_gsq.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BsToJpsiPhi_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BsToJpsiPhi_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_PU_20151105/step3_RAW2DIGI_L1Reco_RECO_721_1_JPr.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_623_1_QKI.root'
@@ -15,11 +15,11 @@ ivars.outputFile='finder_PbPb.root'
 # get and parse the command line arguments
 ivars.parseArguments()
 
-process = cms.Process("demo")
+process = cms.Process('HiForest')
 
 ### Custom options
 ### Use AOD event filter
-RunOnAOD = True
+RunOnAOD = False
 
 ### Add Calo muons
 AddCaloMuon = False
@@ -37,9 +37,6 @@ UseGenPlusSim = False
 
 ### Add centrality filter
 CentralityFilter = False
-
-### RunFilter
-RunFilter = True
 
 ### Vertex/Track label
 VtxLabel = "hiSelectedVertex"
@@ -80,8 +77,8 @@ process.source = cms.Source("PoolSource",
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load("Configuration.StandardSequences.Reconstruction_cff")
-#process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
+#process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
 #process.load("Configuration.Geometry.GeometryIdeal_cff")
 #process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
@@ -124,52 +121,26 @@ from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
 process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
 
 #### SetUp Evt Info (centrality)
-process.GlobalTag.toGet.extend([
- cms.PSet(record = cms.string("HeavyIonRcd"),
-tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v740x01_mc"),
-#tag = cms.string("CentralityTable_HFtowers200_HydjetDrum5_v750x02_mc"),
-connect = cms.string("frontier://FrontierProd/CMS_COND_31X_PHYSICSTOOLS"),
-#connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
-label = cms.untracked.string("HFtowersHydjetDrum5")
- ),
-])
-
 process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 process.centralityBin.Centrality = cms.InputTag("hiCentrality")
 process.centralityBin.centralityVariable = cms.string("HFtowers")
-process.centralityBin.nonDefaultGlauberModel = cms.string("HydjetDrum5")
-process.centrality_path = cms.Path(process.centralityBin)
 
-### Set basic filter
-process.primaryVertexFilter = cms.EDFilter("GoodVertexFilter",
-    vertexCollection = cms.InputTag(VtxLabel),
-    minimumNDOF = cms.uint32(4) ,
-    maxAbsZ = cms.double(24),
-    maxd0 = cms.double(2)
-)
+# redo centrality
+process.load('RecoHI.HiCentralityAlgos.HiCentrality_cfi')
+process.newHiCentrality = process.hiCentrality.clone()
+process.newHiCentrality.produceHFhits = cms.bool(False)
+process.newHiCentrality.produceHFtowers = cms.bool(False)
+process.newHiCentrality.produceEcalhits = cms.bool(False)
+process.newHiCentrality.produceZDChits = cms.bool(True)
+process.newHiCentrality.produceETmidRapidity = cms.bool(False)
+process.newHiCentrality.producePixelhits = cms.bool(False)
+process.newHiCentrality.produceTracks = cms.bool(False)
+process.newHiCentrality.producePixelTracks = cms.bool(False)
+process.newHiCentrality.reUseCentrality = cms.bool(True)
+process.newHiCentrality.srcReUse = cms.InputTag("hiCentrality")
 
-process.noscraping = cms.EDFilter("FilterOutScraping",
-    applyfilter = cms.untracked.bool(True),
-    debugOn = cms.untracked.bool(False),
-    numtrack = cms.untracked.uint32(10),
-    thresh = cms.untracked.double(0.25)
-)
-
-# Common offline event selection
-process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
-
-#process.filter = cms.Sequence(process.primaryVertexFilter+process.noscraping)
-#process.filter = cms.Sequence(process.noscraping)
-process.filter = cms.Sequence(process.collisionEventSelection)
-if RunOnAOD:
-	process.filter = cms.Sequence(process.collisionEventSelectionAOD)
-
-### Add centrality filter
-if CentralityFilter:
-    process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
-    #process.cenfilter = process.centralityFilter.clone(selectedBins = [0,1,2,3,4])
-    process.cenfilter = process.centralityFilter.clone(selectedBins = range(59,201))
-    process.filter = cms.Sequence(process.cenfilter*process.collisionEventSelection)
+#process.centrality_path = cms.Path(process.centralityBin)
+process.centrality_path = cms.Path(process.newHiCentrality*process.centralityBin)
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
@@ -178,6 +149,17 @@ process.evtAna = cms.Path(process.hiEvtAnalyzer)
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
 	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
+process.hiEvtAnalyzer.CentralitySrc = cms.InputTag("newHiCentrality")
+
+### Set basic filter
+# Common offline event selection
+process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
+process.pprimaryVertexFilter = cms.Path(process.primaryVertexFilter)
+process.phfCoincFilter = cms.Path(process.hfCoincFilter )
+process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3 )
+process.pcollisionEventSelection = cms.Path(process.collisionEventSelection)
+if RunOnAOD:
+	process.pcollisionEventSelection = cms.Path(process.collisionEventSelectionAOD)
 
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
@@ -196,7 +178,7 @@ finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
 process.p = cms.Path(process.finderSequence)
 
 process.Bfinder.Bchannel = cms.vint32(
-    1,#RECONSTRUCTION: J/psi + K
+    0,#RECONSTRUCTION: J/psi + K
     0,#RECONSTRUCTION: J/psi + Pi
     0,#RECONSTRUCTION: J/psi + Ks
     0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
@@ -205,8 +187,8 @@ process.Bfinder.Bchannel = cms.vint32(
     0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 )
 process.Dfinder.Dchannel = cms.vint32(
-    1,#RECONSTRUCTION: K+pi- : D0bar
-    1,#RECONSTRUCTION: K-pi+ : D0
+    0,#RECONSTRUCTION: K+pi- : D0bar
+    0,#RECONSTRUCTION: K-pi+ : D0
     0,#RECONSTRUCTION: K-pi+pi+ : D+
     0,#RECONSTRUCTION: K+pi-pi- : D-
     0,#RECONSTRUCTION: K-pi-pi+pi+ : D0
@@ -219,20 +201,16 @@ process.Dfinder.Dchannel = cms.vint32(
     0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
 
-process.schedule = cms.Schedule(
-	process.centrality_path
-	,process.evtAna
-	,process.hltAna
-	,process.p
-    #,process.e
-)
-if RunOnAOD:
-	process.schedule = cms.Schedule(
-	    #process.centrality_path
-	    #,process.evtAna
-	    process.hltAna
-	    ,process.p
-	)
-if RunFilter:
-	for path in process.paths:
-		getattr(process,path)._seq = process.filter * getattr(process,path)._seq
+process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
+
+process.pAna = cms.EndPath(process.skimanalysis)
+
+### Add centrality filter
+if CentralityFilter:
+    process.load("RecoHI.HiCentralityAlgos.CentralityFilter_cfi")
+    #process.cenfilterClone = process.centralityFilter.clone(selectedBins = [0,1,2,3,4])
+    process.cenfilterClone = process.centralityFilter.clone(selectedBins = range(59,201))
+    process.filter = cms.Sequence(process.cenfilterClone)
+    for path in process.paths:
+       getattr(process,path)._seq = process.filter * getattr(process,path)._seq
