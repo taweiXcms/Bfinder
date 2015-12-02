@@ -3,6 +3,7 @@
 // Maintain and contact: ta-wei wang
 // Email: "tawei@mit.edu" or "ta-wei.wang@cern.ch"
 #include "Bfinder/Bfinder/interface/format.h"
+#include "Bfinder/Bfinder/interface/utilities.h"
 //
 // class declaration
 //
@@ -95,6 +96,14 @@ class Bfinder : public edm::EDAnalyzer
         BInfoBranches       BInfo;
         GenInfoBranches     GenInfo;
         CommonFuncts        Functs;
+        BntupleBranches     *Bntuple = new BntupleBranches;
+        TTree* nt0;
+        TTree* nt1;
+        TTree* nt2;
+        TTree* nt3;
+        TTree* nt5;
+        TTree* nt6;
+        TTree* ntGen;
 
         //histograms
         TH1F *MuonCutLevel;
@@ -109,6 +118,13 @@ class Bfinder : public edm::EDAnalyzer
 void Bfinder::beginJob()
 {//{{{
     root = fs->make<TTree>("root","root");
+    nt0   = fs->make<TTree>("ntKp","");     Bntuple->buildBranch(nt0);
+    nt1   = fs->make<TTree>("ntpi","");     Bntuple->buildBranch(nt1);
+    nt2   = fs->make<TTree>("ntKs","");     Bntuple->buildBranch(nt2);
+    nt3   = fs->make<TTree>("ntKstar","");  Bntuple->buildBranch(nt3);
+    nt5   = fs->make<TTree>("ntphi","");    Bntuple->buildBranch(nt5);
+    nt6   = fs->make<TTree>("ntmix","");    Bntuple->buildBranch(nt6);
+    ntGen = fs->make<TTree>("ntGen","");    Bntuple->buildGenBranch(ntGen);
     EvtInfo.regTree(root);
     VtxInfo.regTree(root);
     MuonInfo.regTree(root);
@@ -1269,6 +1285,19 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }//catch 
     root->Fill();
     //std::cout<<"filled!\n";
+    
+    //Made a Bntuple on the fly
+    int ifchannel[7];
+    ifchannel[0] = 1; //jpsi+Kp
+    ifchannel[1] = 1; //jpsi+pi
+    ifchannel[2] = 1; //jpsi+Ks(pi+,pi-)
+    ifchannel[3] = 1; //jpsi+K*(K+,pi-)
+    ifchannel[4] = 1; //jpsi+K*(K-,pi+)
+    ifchannel[5] = 1; //jpsi+phi(K+,K-)
+    ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
+    bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
+    Bntuple->makeNtuple(ifchannel, REAL, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+    if(!REAL) Bntuple->fillGenTree(ntGen, &GenInfo);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------{{{

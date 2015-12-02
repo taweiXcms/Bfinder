@@ -3,6 +3,7 @@
 // Maintain and contact: ta-wei wang
 // Email: "tawei@mit.edu" or "ta-wei.wang@cern.ch"
 #include "Bfinder/Bfinder/interface/format.h"
+#include "Bfinder/Bfinder/interface/utilities.h"
 //
 // class declaration
 //
