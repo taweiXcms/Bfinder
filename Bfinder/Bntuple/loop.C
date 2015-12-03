@@ -7,6 +7,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb_oldSize.root";
   //infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb.root";
   outfile="test.root";
+  REAL = false;
 
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA"<<endl;

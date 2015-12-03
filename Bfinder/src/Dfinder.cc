@@ -86,6 +86,11 @@ class Dfinder : public edm::EDAnalyzer
         DInfoBranches       DInfo;
         GenInfoBranches     GenInfo;
         CommonFuncts        Functs;
+        DntupleBranches     *Dntuple = new DntupleBranches;
+        TTree* ntD1; 
+        TTree* ntD2;
+        TTree* ntD3; 
+        TTree* ntGen;
 
         //histograms
         TH1F *TrackCutLevel;
@@ -98,6 +103,10 @@ class Dfinder : public edm::EDAnalyzer
 void Dfinder::beginJob()
 {//{{{
     root = fs->make<TTree>("root","root");
+    ntD1  = fs->make<TTree>("ntDkpi","");       Dntuple->buildDBranch(ntD1);
+    ntD2  = fs->make<TTree>("ntDkpipi","");     Dntuple->buildDBranch(ntD2);
+    ntD3  = fs->make<TTree>("ntDkpipipi","");   Dntuple->buildDBranch(ntD3);
+    ntGen = fs->make<TTree>("ntGen","");        Dntuple->buildGenBranch(ntGen);
     EvtInfo.regTree(root);
     VtxInfo.regTree(root);
     TrackInfo.regTree(root);
@@ -974,6 +983,18 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }//catch 
     root->Fill();
     //std::cout<<"filled!\n";
+    
+    int isDchannel[6];
+    isDchannel[0] = 1; //k+pi-
+    isDchannel[1] = 1; //k-pi+
+    isDchannel[2] = 0; //k-pi+pi+
+    isDchannel[3] = 0; //k+pi-pi-
+    isDchannel[4] = 0; //k-pi-pi+pi+
+    isDchannel[5] = 0; //k+pi+pi-pi-
+    bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
+    bool skim = false;
+    Dntuple->makeDNtuple(isDchannel, REAL, skim, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3);
+    if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------{{{
