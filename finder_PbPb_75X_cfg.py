@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
+process = cms.Process('HiForest')
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
+
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
 #ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
@@ -12,24 +14,19 @@ ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BuToJpsiK_TuneCUEP8M1_5020
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpipipi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_614_1_jV8.root'
 
 ivars.outputFile='finder_PbPb.root'
-# get and parse the command line arguments
-ivars.parseArguments()
-
-process = cms.Process('HiForest')
+ivars.parseArguments()# get and parse the command line arguments
 
 ### Custom options
+### Run on MC?
+runOnMC = True
+
 ### Use AOD event filter
 RunOnAOD = False
 
 ### Add Calo muons
 AddCaloMuon = False
 
-### Run on MC?
-runOnMC = True
-#runOnMC = False
-
 ### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
-#HIFormat = True
 HIFormat = False
 
 ### Include SIM tracks for matching?
@@ -41,6 +38,9 @@ CentralityFilter = False
 ### Vertex/Track label
 VtxLabel = "hiSelectedVertex"
 #TrkLabel = "hiGeneralTracks"
+
+### Set maxEvents
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### output module
 process.out = cms.OutputModule("PoolOutputModule",
@@ -55,9 +55,6 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.TFileService = cms.Service("TFileService",
 	fileName = cms.string(ivars.outputFile)
 )
-
-### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",

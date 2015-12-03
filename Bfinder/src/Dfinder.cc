@@ -3,6 +3,7 @@
 // Maintain and contact: ta-wei wang
 // Email: "tawei@mit.edu" or "ta-wei.wang@cern.ch"
 #include "Bfinder/Bfinder/interface/format.h"
+#include "Bfinder/Bfinder/interface/Dntuple.h"
 #include "Bfinder/Bfinder/interface/utilities.h"
 //
 // class declaration
@@ -76,6 +77,7 @@ class Dfinder : public edm::EDAnalyzer
         double alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
+        bool doDntupleSkim_;
         std::string MVAMapLabel_;
 
         edm::Service<TFileService> fs;
@@ -135,6 +137,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     alphaCut_ = iConfig.getParameter<double>("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
+    doDntupleSkim_ = iConfig.getParameter<bool>("doDntupleSkim");
     MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -983,7 +986,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }//catch 
     root->Fill();
     //std::cout<<"filled!\n";
-    
+ 
+    //Made a Dntuple on the fly   
     int isDchannel[6];
     isDchannel[0] = 1; //k+pi-
     isDchannel[1] = 1; //k-pi+
@@ -992,8 +996,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     isDchannel[4] = 0; //k-pi-pi+pi+
     isDchannel[5] = 0; //k+pi+pi-pi-
     bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-    bool skim = false;
-    Dntuple->makeDNtuple(isDchannel, REAL, skim, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3);
+    Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3);
     if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
 }
 

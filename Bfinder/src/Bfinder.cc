@@ -3,6 +3,7 @@
 // Maintain and contact: ta-wei wang
 // Email: "tawei@mit.edu" or "ta-wei.wang@cern.ch"
 #include "Bfinder/Bfinder/interface/format.h"
+#include "Bfinder/Bfinder/interface/Bntuple.h"
 #include "Bfinder/Bfinder/interface/utilities.h"
 //
 // class declaration
@@ -85,6 +86,7 @@ class Bfinder : public edm::EDAnalyzer
         bool RunOnMC_;
         bool doTkPreCut_;
         bool doMuPreCut_;
+        bool doBntupleSkim_;
         std::string MVAMapLabel_;
 
         edm::Service<TFileService> fs;
@@ -159,8 +161,8 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     doMuPreCut_ = iConfig.getParameter<bool>("doMuPreCut");
+    doBntupleSkim_ = iConfig.getParameter<bool>("doBntupleSkim");
     MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
-   
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);

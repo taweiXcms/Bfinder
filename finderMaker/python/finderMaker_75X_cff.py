@@ -154,7 +154,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    alphaCut = cms.double(999.),
 	    RunOnMC = cms.bool(False),
 	    doTkPreCut = cms.bool(True),
-	    doMuPreCut = cms.bool(True)
+	    doMuPreCut = cms.bool(True),
+	    doBntupleSkim = cms.bool(True),
 	)
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
@@ -189,6 +190,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    alphaCut = cms.double(999.),
 	    RunOnMC = cms.bool(False),
 	    doTkPreCut = cms.bool(True),
+	    doDntupleSkim = cms.bool(True),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)

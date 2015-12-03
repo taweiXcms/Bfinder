@@ -1,4 +1,5 @@
 #include "format.h"
+#include "Bntuple.h"
 #include "loop.h"
 
 int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", TString outfile="/data/wangj/Data2015/Bntuple/ntB_DoubleMu_pp_20151130.root", bool REAL=true, bool isPbPb=false, int startEntries=0, bool skim=false, bool gskim=true, bool testMatching=false)

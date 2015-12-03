@@ -1,29 +1,26 @@
 import FWCore.ParameterSet.Config as cms
+process = cms.Process('HiForest')
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
+
 #ivars.inputFiles='file:/data/twang/MC_samples/MinBias_TuneCUETP8M1_5p02TeV-pythia8/MinBias_TuneCUETP8M1_5p02TeV_pythia8_pp502Fall15_MCRUN2_71_V1_v1_AOD_CMSSW_7_5_4_20151113/step3_RAW2DIGI_L1Reco_RECO_993_1_q1f.root'
 ivars.inputFiles='file:14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
 #ivars.inputFiles='file:0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
 
 ivars.outputFile='finder_pp.root'
-# get and parse the command line arguments
-ivars.parseArguments()
-
-process = cms.Process('HiForest')
+ivars.parseArguments()# get and parse the command line arguments
 
 ### Custom options
+### Run on MC?
+runOnMC = False
+
 ### Use AOD event filter
 RunOnAOD = True
 
 ### Add Calo muons
 AddCaloMuon = False
 
-### Run on MC?
-#runOnMC = True
-runOnMC = False
-
 ### Switching between "hiGenParticles"(pPb MC) and "genParticles" (pp MC)
-#HIFormat = True
 HIFormat = False
 
 ### Include SIM tracks for matching?
@@ -35,6 +32,9 @@ CentralityFilter = False
 ### Vertex/Track label 
 VtxLabel = "offlinePrimaryVerticesWithBS"
 TrkLabel = "generalTracks"
+
+### Set maxEvents
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### output module
 process.out = cms.OutputModule("PoolOutputModule",
@@ -49,9 +49,6 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.TFileService = cms.Service("TFileService",
 	fileName = cms.string(ivars.outputFile)
 )
-
-### Set maxEvents
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
 
 ### PoolSource will be ignored when running crab
 process.source = cms.Source("PoolSource",
