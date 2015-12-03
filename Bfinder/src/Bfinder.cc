@@ -963,8 +963,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //mass_window[0] = 3;
                             //mass_window[1] = 6.4;
                             //TkTk_window = 1.6;
-                            mass_window[0] = 3.6;
-                            mass_window[1] = 4.0;
+                            mass_window[0] = 3.4;
+                            mass_window[1] = 4.2;
                             TkTk_window = 0;
                             if(Bchannel_[6] == 1){
                                 BranchOut2MuX_XtoTkTk(
