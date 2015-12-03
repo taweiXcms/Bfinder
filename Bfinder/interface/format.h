@@ -1682,7 +1682,8 @@ class BntupleBranches{//{{{
             nt->Branch("Gtk2phi",Gtk2phi,"Gtk2phi[Gsize]/D");
         }
 
-        void makeNtuple(int ifchannel[], bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6){
+        void makeNtuple(int ifchannel[], bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6)
+        {//{{{
             TVector3* bP = new TVector3;
             TVector3* bVtx = new TVector3;
             TLorentzVector* b4P = new TLorentzVector;
@@ -1776,10 +1777,10 @@ class BntupleBranches{//{{{
                     else if(t==6) nt6->Fill();
                 }
             }
-        }
+        }//}}}
 
         void fillGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
-        {
+        {//{{{
             TLorentzVector* bGen = new TLorentzVector;
             int gt=0,sigtype=0;
             int gsize=0;
@@ -1847,11 +1848,11 @@ class BntupleBranches{//{{{
                 gsize++;
             }
             ntGen->Fill();
-        }
+        }//}}}
 
 
         void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, double track_mass1, double track_mass2, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo)
-        {
+        {//{{{
             //Event Info
             RunNo = EvtInfo->RunNo;
             EvtNo = EvtInfo->EvtNo;
@@ -2507,10 +2508,10 @@ class BntupleBranches{//{{{
                     Bgeny[typesize] = b4P->Rapidity();
                 }
             }
-        }
+        }//}}}
 
         bool signalGen(int Btype, int j, GenInfoBranches *GenInfo)
-        {
+        {//{{{
             double BId,MId,tk1Id,tk2Id;
             int twoTks;
             //tk1:positive, tk2:negtive
@@ -2591,7 +2592,7 @@ class BntupleBranches{//{{{
                 }
             }
             return flag;
-        }
+        }//}}}
 
 };//}}}
 
@@ -2931,7 +2932,8 @@ class DntupleBranches{//{{{
             nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/I");
         }
 
-        void makeDNtuple(int isDchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3){
+        void makeDNtuple(int isDchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3)
+        {//{{{
             TVector3* bP = new TVector3;
             TVector3* bVtx = new TVector3;
             TLorentzVector* b4P = new TLorentzVector;
@@ -3006,9 +3008,10 @@ class DntupleBranches{//{{{
                     else if(t==5) ntD3->Fill();
                 }
             }
-        }
+        }//}}}
 
-        void fillDGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true){
+        void fillDGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
+        {//{{{
             TLorentzVector* bGen = new TLorentzVector;
             int gt=0,sigtype=0;
             int gsize=0;
@@ -3036,10 +3039,10 @@ class DntupleBranches{//{{{
                 gsize++;
             }
             ntGen->Fill();
-        }
+        }//}}}
 
         double findMass(int particlePdgId)
-        {
+        {//{{{
             if(TMath::Abs(particlePdgId)==211) return PION_MASS;
             if(TMath::Abs(particlePdgId)==321) return KAON_MASS;
             else
@@ -3047,10 +3050,10 @@ class DntupleBranches{//{{{
                 std::cout<<"ERROR: find particle mass falied >> Particle pdgId: "<<particlePdgId<<std::endl;
                 return 0;
             }
-        }
+        }//}}}
 
         void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo)
-        {
+        {//{{{
             //EvtInfo
             RunNo = EvtInfo->RunNo;
             EvtNo = EvtInfo->EvtNo;
@@ -3571,10 +3574,10 @@ class DntupleBranches{//{{{
                     Dgeny[typesize] = b4P->Rapidity();
                 }
             }//if(!real)
-        }//fillDtree
+        }//fillDtree//}}}
 
         bool isDsignalGen(int dmesontype, int j, GenInfoBranches *GenInfo)
-        {
+        {//{{{
             bool flag=false;
             if(dmesontype==1||dmesontype==2)
             {
@@ -3588,7 +3591,7 @@ class DntupleBranches{//{{{
                 }
             }
             return flag;
-        }
+        }//}}}
 };//}}}
 
 #endif

@@ -7,7 +7,6 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151202/CMSSW_7_5_5_patch4/src/test3/finder_PbPb.root";
   outfile="test_noskim";
   REAL=false;
-//skim = true;
 
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA"<<endl;

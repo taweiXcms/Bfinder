@@ -33,9 +33,6 @@ Int_t BSUBS_PDGID = 531;
 #define MAX_XB 16384
 #define MAX_MUON 4096
 #define MAX_TRACK 8192
-//#define MAX_XB 8192
-//#define MAX_MUON 2048
-//#define MAX_TRACK 4096
 #define MAX_GEN 4096
 #define MAX_BX 128
 #define MAX_Vertices 4096

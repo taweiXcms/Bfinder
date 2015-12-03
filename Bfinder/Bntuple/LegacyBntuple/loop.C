@@ -1,13 +1,9 @@
 #include "loop.h"
 
-int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root",
-	     TString outfile="/data/wangj/Data2015/Bntuple/ntB_DoubleMu_pp_20151130.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true, Bool_t testMatching=false)
+Bool_t iseos = true;
+int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/Run2015E/ExpressPhysics/Merged/HiForestExpress_baobab.root",
+	 TString outfile="/data/wangj/Data2015/Bntuple/ntB_20151130_HiForestExpress_baobab.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=false)
 {
-  //infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_99_1_07c.root";
-  infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb_oldSize.root";
-  //infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb.root";
-  outfile="test.root";
-
   void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Double_t track_mass1, Double_t track_mass2, Bool_t REAL);
   bool signalGen(Int_t Btype, Int_t j);
 
@@ -15,7 +11,10 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
   else cout<<"--- Processing - MC"<<endl;
 
-  TFile* f = TFile::Open(infile);
+  TString ifname;
+  if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
+  else ifname = infile;
+  TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Bfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
   TTree* hiroot  = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
@@ -63,7 +62,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
       hltroot->GetEntry(i);
       if(isPbPb) hiroot->GetEntry(i);
       if(i%100000==0) cout<<setw(8)<<i<<" / "<<nentries<<endl;
-      if(testMatching)
+      if(checkMatching)
 	{
 	  if((Int_t)Bf_HLT_Event!=EvtInfo_EvtNo||Bf_HLT_Run!=EvtInfo_RunNo||Bf_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&(Bf_HiTree_Evt!=EvtInfo_EvtNo||Bf_HiTree_Run!=EvtInfo_RunNo||Bf_HiTree_Lumi!=EvtInfo_LumiNo)))
 	    {
