@@ -132,17 +132,18 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 			0,#RECONSTRUCTION: J/psi + phi
 			0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 		),
+        detailMode = cms.bool(False),
 	    #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
 	    MuonTriggerMatchingPath = cms.vstring("HLT_HIL2DoubleMu3_v*"),
 	    #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
-		HLTLabel        = cms.InputTag('TriggerResults::HLT'),
-	    GenLabel        = cms.InputTag('genParticles'),
-		MuonLabel       = cms.InputTag('patMuonsWithTrigger'),
-		TrackLabel      = cms.InputTag('patTrackCands'),
-        MVAMapLabel  = cms.string(TrkLabel),
-	    PUInfoLabel     = cms.InputTag("addPileupInfo"),
-	    BSLabel     = cms.InputTag("offlineBeamSpot"),
-	    PVLabel     = cms.InputTag(VtxLabel),
+		HLTLabel = cms.InputTag('TriggerResults::HLT'),
+	    GenLabel = cms.InputTag('genParticles'),
+		MuonLabel = cms.InputTag('patMuonsWithTrigger'),
+		TrackLabel = cms.InputTag('patTrackCands'),
+        MVAMapLabel = cms.string(TrkLabel),
+	    PUInfoLabel = cms.InputTag("addPileupInfo"),
+	    BSLabel = cms.InputTag("offlineBeamSpot"),
+	    PVLabel = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.0),#before fit
 	    tkEtaCut = cms.double(999.0),#before fit
 	    jpsiPtCut = cms.double(3.0),#before fit
@@ -155,6 +156,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    RunOnMC = cms.bool(False),
 	    doTkPreCut = cms.bool(True),
 	    doMuPreCut = cms.bool(True),
+	    makeBntuple = cms.bool(True),
 	    doBntupleSkim = cms.bool(True),
 	)
 	### Set Dfinder option
@@ -173,13 +175,14 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	        0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
 	        0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 		),
-		HLTLabel        = cms.InputTag('TriggerResults::HLT'),
-	    GenLabel        = cms.InputTag('genParticles'),
-		TrackLabel      = cms.InputTag('patTrackCands'),
-		MVAMapLabel  = cms.string(TrkLabel),
-	    PUInfoLabel     = cms.InputTag("addPileupInfo"),
-	    BSLabel     = cms.InputTag("offlineBeamSpot"),
-	    PVLabel     = cms.InputTag(VtxLabel),
+        detailMode = cms.bool(False),
+		HLTLabel = cms.InputTag('TriggerResults::HLT'),
+	    GenLabel = cms.InputTag('genParticles'),
+		TrackLabel = cms.InputTag('patTrackCands'),
+		MVAMapLabel = cms.string(TrkLabel),
+	    PUInfoLabel = cms.InputTag("addPileupInfo"),
+	    BSLabel = cms.InputTag("offlineBeamSpot"),
+	    PVLabel = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.),#before fit
 	    tkEtaCut = cms.double(2.0),#before fit
 	    dPtCut = cms.double(8.0),#before fit
@@ -190,6 +193,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    alphaCut = cms.double(999.),
 	    RunOnMC = cms.bool(False),
 	    doTkPreCut = cms.bool(True),
+	    makeDntuple = cms.bool(True),
 	    doDntupleSkim = cms.bool(True),
 	)
 	if runOnMC:

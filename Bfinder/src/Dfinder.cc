@@ -60,6 +60,8 @@ class Dfinder : public edm::EDAnalyzer
         // ----------member data ---------------------------
         edm::ESHandle<MagneticField> bField;
         edm::ParameterSet theConfig;
+
+        bool detailMode_;
         std::vector<int> Dchannel_;
         //edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
@@ -77,6 +79,7 @@ class Dfinder : public edm::EDAnalyzer
         double alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
+        bool makeDntuple_;
         bool doDntupleSkim_;
         std::string MVAMapLabel_;
 
@@ -109,16 +112,18 @@ void Dfinder::beginJob()
     ntD2  = fs->make<TTree>("ntDkpipi","");     Dntuple->buildDBranch(ntD2);
     ntD3  = fs->make<TTree>("ntDkpipipi","");   Dntuple->buildDBranch(ntD3);
     ntGen = fs->make<TTree>("ntGen","");        Dntuple->buildGenBranch(ntGen);
-    EvtInfo.regTree(root);
-    VtxInfo.regTree(root);
-    TrackInfo.regTree(root);
-    DInfo.regTree(root);
-    GenInfo.regTree(root);
+    EvtInfo.regTree(root, detailMode_);
+    VtxInfo.regTree(root, detailMode_);
+    TrackInfo.regTree(root, detailMode_);
+    DInfo.regTree(root, detailMode_);
+    GenInfo.regTree(root, detailMode_);
 }//}}}
 
 Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
     //now do what ever initialization is needed
+    detailMode_ = iConfig.getParameter<bool>("detailMode");
+
     Dchannel_= iConfig.getParameter<std::vector<int> >("Dchannel");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
@@ -137,6 +142,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     alphaCut_ = iConfig.getParameter<double>("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
+    makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
     doDntupleSkim_ = iConfig.getParameter<bool>("doDntupleSkim");
     MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
 
@@ -988,16 +994,18 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //std::cout<<"filled!\n";
  
     //Made a Dntuple on the fly   
-    int isDchannel[6];
-    isDchannel[0] = 1; //k+pi-
-    isDchannel[1] = 1; //k-pi+
-    isDchannel[2] = 0; //k-pi+pi+
-    isDchannel[3] = 0; //k+pi-pi-
-    isDchannel[4] = 0; //k-pi-pi+pi+
-    isDchannel[5] = 0; //k+pi+pi-pi-
-    bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-    Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3);
-    if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
+    if(makeDntuple_){
+        int isDchannel[6];
+        isDchannel[0] = 1; //k+pi-
+        isDchannel[1] = 1; //k-pi+
+        isDchannel[2] = 0; //k-pi+pi+
+        isDchannel[3] = 0; //k+pi-pi-
+        isDchannel[4] = 0; //k-pi-pi+pi+
+        isDchannel[5] = 0; //k+pi+pi-pi-
+        bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
+        Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3);
+        if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
+    }
 }
 
 // ------------ method called once each job just after ending the event loop  ------------{{{
@@ -1427,9 +1435,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
             DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
             DInfo.tktkRes_phi[DInfo.size]             = tktkRes_4vec.Phi();
-            DInfo.tktkRes_px[DInfo.size]              = tktkRes_4vec.Px();
-            DInfo.tktkRes_py[DInfo.size]              = tktkRes_4vec.Py();
-            DInfo.tktkRes_pz[DInfo.size]              = tktkRes_4vec.Pz();
             DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
             DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
             DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
@@ -1523,12 +1528,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(12);
 
-        DInfo.rftk1_px[DInfo.size]        = tktk_4vecs[0].Px();
-        DInfo.rftk1_py[DInfo.size]        = tktk_4vecs[0].Py();
-        DInfo.rftk1_pz[DInfo.size]        = tktk_4vecs[0].Pz();
-        DInfo.rftk2_px[DInfo.size]        = tktk_4vecs[1].Px();
-        DInfo.rftk2_py[DInfo.size]        = tktk_4vecs[1].Py();
-        DInfo.rftk2_pz[DInfo.size]        = tktk_4vecs[1].Pz();
         DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
         DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
         DInfo.rftk1_eta[DInfo.size]       = tktk_4vecs[0].Eta();
@@ -1558,9 +1557,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         else DInfo.rftk2_MassHypo[DInfo.size] = 321;
 
         if(tktkCands.size()>2){
-            DInfo.rftk3_px[DInfo.size]    = tktk_4vecs[2].Px();
-            DInfo.rftk3_py[DInfo.size]    = tktk_4vecs[2].Py();
-            DInfo.rftk3_pz[DInfo.size]    = tktk_4vecs[2].Pz();
             DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
             DInfo.rftk3_pt[DInfo.size]    = tktk_4vecs[2].Pt();
             DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
@@ -1570,9 +1566,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             else DInfo.rftk3_MassHypo[DInfo.size] = 321;
         }
         if(tktkCands.size()>3){
-            DInfo.rftk4_px[DInfo.size]    = tktk_4vecs[3].Px();
-            DInfo.rftk4_py[DInfo.size]    = tktk_4vecs[3].Py();
-            DInfo.rftk4_pz[DInfo.size]    = tktk_4vecs[3].Pz();
             DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
             DInfo.rftk4_pt[DInfo.size]    = tktk_4vecs[3].Pt();
             DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
@@ -1582,9 +1575,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             else DInfo.rftk4_MassHypo[DInfo.size] = 321;
         }
         if(tktkCands.size()>4){
-            DInfo.rftk5_px[DInfo.size]    = tktk_4vecs[4].Px();
-            DInfo.rftk5_py[DInfo.size]    = tktk_4vecs[4].Py();
-            DInfo.rftk5_pz[DInfo.size]    = tktk_4vecs[4].Pz();
             DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
             DInfo.rftk5_pt[DInfo.size]    = tktk_4vecs[4].Pt();
             DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();
@@ -1930,9 +1920,6 @@ void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
             DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
             DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
             DInfo.tktkRes_phi[DInfo.size]             = tktkRes_4vec.Phi();
-            DInfo.tktkRes_px[DInfo.size]              = tktkRes_4vec.Px();
-            DInfo.tktkRes_py[DInfo.size]              = tktkRes_4vec.Py();
-            DInfo.tktkRes_pz[DInfo.size]              = tktkRes_4vec.Pz();
             DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
             DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
             DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
@@ -2026,12 +2013,6 @@ void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
         if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(12);
 
-        DInfo.rftk1_px[DInfo.size]        = tktk_4vecs[0].Px();
-        DInfo.rftk1_py[DInfo.size]        = tktk_4vecs[0].Py();
-        DInfo.rftk1_pz[DInfo.size]        = tktk_4vecs[0].Pz();
-        DInfo.rftk2_px[DInfo.size]        = tktk_4vecs[1].Px();
-        DInfo.rftk2_py[DInfo.size]        = tktk_4vecs[1].Py();
-        DInfo.rftk2_pz[DInfo.size]        = tktk_4vecs[1].Pz();
         DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
         DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
         DInfo.rftk1_eta[DInfo.size]       = tktk_4vecs[0].Eta();
@@ -2061,9 +2042,6 @@ void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
         else DInfo.rftk2_MassHypo[DInfo.size] = 321;
 
         if(tktkCands.size()>2){
-            DInfo.rftk3_px[DInfo.size]    = tktk_4vecs[2].Px();
-            DInfo.rftk3_py[DInfo.size]    = tktk_4vecs[2].Py();
-            DInfo.rftk3_pz[DInfo.size]    = tktk_4vecs[2].Pz();
             DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
             DInfo.rftk3_pt[DInfo.size]    = tktk_4vecs[2].Pt();
             DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
@@ -2073,9 +2051,6 @@ void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
             else DInfo.rftk3_MassHypo[DInfo.size] = 321;
         }
         if(tktkCands.size()>3){
-            DInfo.rftk4_px[DInfo.size]    = tktk_4vecs[3].Px();
-            DInfo.rftk4_py[DInfo.size]    = tktk_4vecs[3].Py();
-            DInfo.rftk4_pz[DInfo.size]    = tktk_4vecs[3].Pz();
             DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
             DInfo.rftk4_pt[DInfo.size]    = tktk_4vecs[3].Pt();
             DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
@@ -2085,9 +2060,6 @@ void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
             else DInfo.rftk4_MassHypo[DInfo.size] = 321;
         }
         if(tktkCands.size()>4){
-            DInfo.rftk5_px[DInfo.size]    = tktk_4vecs[4].Px();
-            DInfo.rftk5_py[DInfo.size]    = tktk_4vecs[4].Py();
-            DInfo.rftk5_pz[DInfo.size]    = tktk_4vecs[4].Pz();
             DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
             DInfo.rftk5_pt[DInfo.size]    = tktk_4vecs[4].Pt();
             DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();

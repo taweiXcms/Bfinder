@@ -64,6 +64,8 @@ class Bfinder : public edm::EDAnalyzer
         // ----------member data ---------------------------
         edm::ESHandle<MagneticField> bField;
         edm::ParameterSet theConfig;
+
+        bool detailMode_;
         //std::vector<std::string> TriggersForMatching_;
         std::vector<int> Bchannel_;
         std::vector<std::string> MuonTriggerMatchingPath_;
@@ -86,6 +88,7 @@ class Bfinder : public edm::EDAnalyzer
         bool RunOnMC_;
         bool doTkPreCut_;
         bool doMuPreCut_;
+        bool makeBntuple_;
         bool doBntupleSkim_;
         std::string MVAMapLabel_;
 
@@ -127,17 +130,19 @@ void Bfinder::beginJob()
     nt5   = fs->make<TTree>("ntphi","");    Bntuple->buildBranch(nt5);
     nt6   = fs->make<TTree>("ntmix","");    Bntuple->buildBranch(nt6);
     ntGen = fs->make<TTree>("ntGen","");    Bntuple->buildGenBranch(ntGen);
-    EvtInfo.regTree(root);
-    VtxInfo.regTree(root);
-    MuonInfo.regTree(root);
-    TrackInfo.regTree(root);
-    BInfo.regTree(root);
-    GenInfo.regTree(root);
+    EvtInfo.regTree(root, detailMode_);
+    VtxInfo.regTree(root, detailMode_);
+    MuonInfo.regTree(root, detailMode_);
+    TrackInfo.regTree(root, detailMode_);
+    BInfo.regTree(root, detailMode_);
+    GenInfo.regTree(root, detailMode_);
 }//}}}
 
 Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
     //now do what ever initialization is needed
+    detailMode_ = iConfig.getParameter<bool>("detailMode");
+
 //  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
     Bchannel_= iConfig.getParameter<std::vector<int> >("Bchannel");
     MuonTriggerMatchingPath_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingPath");
@@ -161,6 +166,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     doMuPreCut_ = iConfig.getParameter<bool>("doMuPreCut");
+    makeBntuple_ = iConfig.getParameter<bool>("makeBntuple");
     doBntupleSkim_ = iConfig.getParameter<bool>("doBntupleSkim");
     MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
 
@@ -795,12 +801,12 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             BInfo.uj_vtxchi2       [BInfo.uj_size]= ujVFPvtx->chiSquared();
                             BInfo.uj_rfmu1_index   [BInfo.uj_size]= mu1_hindex;
                             BInfo.uj_rfmu2_index   [BInfo.uj_size]= mu2_hindex;
-                            BInfo.uj_rfmu1_px      [BInfo.uj_size]= uj_mu1_4vec.Px();
-                            BInfo.uj_rfmu1_py      [BInfo.uj_size]= uj_mu1_4vec.Py();
-                            BInfo.uj_rfmu1_pz      [BInfo.uj_size]= uj_mu1_4vec.Pz();
-                            BInfo.uj_rfmu2_px      [BInfo.uj_size]= uj_mu2_4vec.Px();
-                            BInfo.uj_rfmu2_py      [BInfo.uj_size]= uj_mu2_4vec.Py();
-                            BInfo.uj_rfmu2_pz      [BInfo.uj_size]= uj_mu2_4vec.Pz();
+                            BInfo.uj_rfmu1_pt      [BInfo.uj_size]= uj_mu1_4vec.Pt();
+                            BInfo.uj_rfmu1_eta     [BInfo.uj_size]= uj_mu1_4vec.Eta();
+                            BInfo.uj_rfmu1_phi     [BInfo.uj_size]= uj_mu1_4vec.Phi();
+                            BInfo.uj_rfmu2_pt      [BInfo.uj_size]= uj_mu2_4vec.Pt();
+                            BInfo.uj_rfmu2_eta     [BInfo.uj_size]= uj_mu2_4vec.Eta();
+                            BInfo.uj_rfmu2_phi     [BInfo.uj_size]= uj_mu2_4vec.Phi();
 
                             BInfo.uj_size++;
                             muonParticles.clear();
@@ -1289,17 +1295,19 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //std::cout<<"filled!\n";
     
     //Made a Bntuple on the fly
-    int ifchannel[7];
-    ifchannel[0] = 1; //jpsi+Kp
-    ifchannel[1] = 1; //jpsi+pi
-    ifchannel[2] = 1; //jpsi+Ks(pi+,pi-)
-    ifchannel[3] = 1; //jpsi+K*(K+,pi-)
-    ifchannel[4] = 1; //jpsi+K*(K-,pi+)
-    ifchannel[5] = 1; //jpsi+phi(K+,K-)
-    ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
-    bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-    Bntuple->makeNtuple(ifchannel, REAL, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
-    if(!REAL) Bntuple->fillGenTree(ntGen, &GenInfo);
+    if(makeBntuple_){
+        int ifchannel[7];
+        ifchannel[0] = 1; //jpsi+Kp
+        ifchannel[1] = 1; //jpsi+pi
+        ifchannel[2] = 1; //jpsi+Ks(pi+,pi-)
+        ifchannel[3] = 1; //jpsi+K*(K+,pi-)
+        ifchannel[4] = 1; //jpsi+K*(K-,pi+)
+        ifchannel[5] = 1; //jpsi+phi(K+,K-)
+        ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
+        bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
+        Bntuple->makeNtuple(ifchannel, REAL, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+        if(!REAL) Bntuple->fillGenTree(ntGen, &GenInfo);
+    }
 }
 
 // ------------ method called once each job just after ending the event loop  ------------{{{
@@ -1492,18 +1500,18 @@ void Bfinder::BranchOut2MuTk(
       BInfo.rftk1_index[BInfo.size] = tk1_hindex;
       BInfo.rftk2_index[BInfo.size] = tk1_hindex;
       
-      BInfo.rfmu1_px[BInfo.size]=xb_mu1_4vec.Px();
-      BInfo.rfmu1_py[BInfo.size]=xb_mu1_4vec.Py();
-      BInfo.rfmu1_pz[BInfo.size]=xb_mu1_4vec.Pz();
-      BInfo.rfmu2_px[BInfo.size]=xb_mu2_4vec.Px();
-      BInfo.rfmu2_py[BInfo.size]=xb_mu2_4vec.Py();
-      BInfo.rfmu2_pz[BInfo.size]=xb_mu2_4vec.Pz();
-      BInfo.rftk1_px[BInfo.size]=xb_tk1_4vec.Px();
-      BInfo.rftk1_py[BInfo.size]=xb_tk1_4vec.Py();
-      BInfo.rftk1_pz[BInfo.size]=xb_tk1_4vec.Pz();
-      BInfo.rftk2_px[BInfo.size]=-999.;
-      BInfo.rftk2_py[BInfo.size]=-999.;
-      BInfo.rftk2_pz[BInfo.size]=-999.;
+      BInfo.rfmu1_pt[BInfo.size] =xb_mu1_4vec.Pt();
+      BInfo.rfmu1_eta[BInfo.size]=xb_mu1_4vec.Eta();
+      BInfo.rfmu1_phi[BInfo.size]=xb_mu1_4vec.Phi();
+      BInfo.rfmu2_pt[BInfo.size] =xb_mu2_4vec.Pt();
+      BInfo.rfmu2_eta[BInfo.size]=xb_mu2_4vec.Eta();
+      BInfo.rfmu2_phi[BInfo.size]=xb_mu2_4vec.Phi();
+      BInfo.rftk1_pt[BInfo.size] =xb_tk1_4vec.Pt();
+      BInfo.rftk1_eta[BInfo.size]=xb_tk1_4vec.Eta();
+      BInfo.rftk1_phi[BInfo.size]=xb_tk1_4vec.Phi();
+      BInfo.rftk2_pt[BInfo.size] =-999.;
+      BInfo.rftk2_eta[BInfo.size]=-999.;
+      BInfo.rftk2_phi[BInfo.size]=-999.;
       
       BInfo.type[BInfo.size] = channel_number;
       B_counter[channel_number-1]++;
@@ -1778,33 +1786,33 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                 BInfo.tktk_vtxZYErr[BInfo.size]= tktk_VFPvtx->error().czy();
                 BInfo.tktk_vtxdof[BInfo.size]  = tktk_VFPvtx->degreesOfFreedom();
                 BInfo.tktk_vtxchi2[BInfo.size] = tktk_VFPvtx->chiSquared();
-                BInfo.tktk_rftk1_px[BInfo.size]=tktk_tk1_4vec.Px();
-                BInfo.tktk_rftk1_py[BInfo.size]=tktk_tk1_4vec.Py();
-                BInfo.tktk_rftk1_pz[BInfo.size]=tktk_tk1_4vec.Pz();
-                BInfo.tktk_rftk2_px[BInfo.size]=tktk_tk2_4vec.Px();
-                BInfo.tktk_rftk2_py[BInfo.size]=tktk_tk2_4vec.Py();
-                BInfo.tktk_rftk2_pz[BInfo.size]=tktk_tk2_4vec.Pz();
+                BInfo.tktk_rftk1_pt[BInfo.size] =tktk_tk1_4vec.Pt();
+                BInfo.tktk_rftk1_eta[BInfo.size]=tktk_tk1_4vec.Eta();
+                BInfo.tktk_rftk1_phi[BInfo.size]=tktk_tk1_4vec.Phi();
+                BInfo.tktk_rftk2_pt[BInfo.size] =tktk_tk2_4vec.Pt();
+                BInfo.tktk_rftk2_eta[BInfo.size]=tktk_tk2_4vec.Eta();
+                BInfo.tktk_rftk2_phi[BInfo.size]=tktk_tk2_4vec.Phi();
             }
             
-            BInfo.rfmu1_px[BInfo.size]=xb_mu1_4vec.Px();
-            BInfo.rfmu1_py[BInfo.size]=xb_mu1_4vec.Py();
-            BInfo.rfmu1_pz[BInfo.size]=xb_mu1_4vec.Pz();
-            BInfo.rfmu2_px[BInfo.size]=xb_mu2_4vec.Px();
-            BInfo.rfmu2_py[BInfo.size]=xb_mu2_4vec.Py();
-            BInfo.rfmu2_pz[BInfo.size]=xb_mu2_4vec.Pz();
+            BInfo.rfmu1_pt[BInfo.size] =xb_mu1_4vec.Pt();
+            BInfo.rfmu1_eta[BInfo.size]=xb_mu1_4vec.Eta();
+            BInfo.rfmu1_phi[BInfo.size]=xb_mu1_4vec.Phi();
+            BInfo.rfmu2_pt[BInfo.size] =xb_mu2_4vec.Pt();
+            BInfo.rfmu2_eta[BInfo.size]=xb_mu2_4vec.Eta();
+            BInfo.rfmu2_phi[BInfo.size]=xb_mu2_4vec.Phi();
             //If option == 1, this momentum is the tktk virtual particle p.
-            BInfo.rftk1_px[BInfo.size]=xb_tk1_4vec.Px();
-            BInfo.rftk1_py[BInfo.size]=xb_tk1_4vec.Py();
-            BInfo.rftk1_pz[BInfo.size]=xb_tk1_4vec.Pz();
+            BInfo.rftk1_pt[BInfo.size] =xb_tk1_4vec.Pt();
+            BInfo.rftk1_eta[BInfo.size]=xb_tk1_4vec.Eta();
+            BInfo.rftk1_phi[BInfo.size]=xb_tk1_4vec.Phi();
             if(fit_option == 0){
-                BInfo.rftk2_px[BInfo.size]=xb_tk2_4vec.Px();
-                BInfo.rftk2_py[BInfo.size]=xb_tk2_4vec.Py();
-                BInfo.rftk2_pz[BInfo.size]=xb_tk2_4vec.Pz();
+                BInfo.rftk2_pt[BInfo.size] =xb_tk2_4vec.Pt();
+                BInfo.rftk2_eta[BInfo.size]=xb_tk2_4vec.Eta();
+                BInfo.rftk2_phi[BInfo.size]=xb_tk2_4vec.Phi();
             }
             else if(fit_option == 1){
-                BInfo.rftk2_px[BInfo.size]=-999;
-                BInfo.rftk2_py[BInfo.size]=-999;
-                BInfo.rftk2_pz[BInfo.size]=-999;
+                BInfo.rftk2_pt[BInfo.size]=-999;
+                BInfo.rftk2_eta[BInfo.size]=-999;
+                BInfo.rftk2_phi[BInfo.size]=-999;
             }
             
             BInfo.type[BInfo.size] = channel_number;
