@@ -116,9 +116,9 @@ class BntupleBranches{//{{{
         double   Bujy[MAX_XB];
         double   Bujlxy[MAX_XB];
         
-        //DInfo.trkInfo
-        double   Btrk1Idx[MAX_XB];
-        double   Btrk2Idx[MAX_XB];
+        //BInfo.trkInfo
+        int      Btrk1Idx[MAX_XB];
+        int      Btrk2Idx[MAX_XB];
         double   Btrk1Pt[MAX_XB];
         double   Btrk2Pt[MAX_XB];
         double   Btrk1Eta[MAX_XB];

@@ -64,10 +64,10 @@ class DntupleBranches{//{{{
         bool     DmaxprobMatched[MAX_XB];
 
         //DInfo.trkInfo
-        double   Dtrk1Idx[MAX_XB];
-        double   Dtrk2Idx[MAX_XB];
-        double   Dtrk3Idx[MAX_XB];
-        double   Dtrk4Idx[MAX_XB];
+        int      Dtrk1Idx[MAX_XB];
+        int      Dtrk2Idx[MAX_XB];
+        int      Dtrk3Idx[MAX_XB];
+        int      Dtrk4Idx[MAX_XB];
         double   Dtrk1Pt[MAX_XB];
         double   Dtrk2Pt[MAX_XB];
         double   Dtrk3Pt[MAX_XB];

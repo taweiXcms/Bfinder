@@ -1585,29 +1585,33 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
 
             //doing tktk fit
             std::vector<RefCountedKinematicParticle> tktk_candidate;
-            tktk_candidate.push_back(pFactory.particle(tk1PTT,tk1_mass,chi,ndf,tk1_sigma));
-            tktk_candidate.push_back(pFactory.particle(tk2MTT,tk2_mass,chi,ndf,tk2_sigma));
-            
             KinematicParticleVertexFitter   tktk_fitter;
             RefCountedKinematicTree         tktk_VFT;
-            tktk_VFT = tktk_fitter.fit(tktk_candidate);
-            if(TkTk_MASS > 0 && !tktk_VFT->isValid()) continue;
-            XbMassCutLevel[channel_number-1]->Fill(4);
-            
-            tktk_VFT->movePointerToTheTop();
-            RefCountedKinematicParticle tktk_VFP   = tktk_VFT->currentParticle();
-            RefCountedKinematicVertex   tktk_VFPvtx = tktk_VFT->currentDecayVertex();
-            if (TkTk_MASS > 0 && !tktk_VFPvtx->vertexIsValid()) continue;
-            XbMassCutLevel[channel_number-1]->Fill(5);
+            RefCountedKinematicParticle tktk_VFP;
+            RefCountedKinematicVertex   tktk_VFPvtx;
 
-            double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-            if(TkTk_MASS > 0 && chi2_prob_tktk < VtxChiProbCut_) continue;
-            XbMassCutLevel[channel_number-1]->Fill(6);
+            if(TkTk_MASS > 0){
+                tktk_candidate.push_back(pFactory.particle(tk1PTT,tk1_mass,chi,ndf,tk1_sigma));
+                tktk_candidate.push_back(pFactory.particle(tk2MTT,tk2_mass,chi,ndf,tk2_sigma));
+                tktk_VFT = tktk_fitter.fit(tktk_candidate);
+                if(!tktk_VFT->isValid()) continue;
+                XbMassCutLevel[channel_number-1]->Fill(4);
+                
+                tktk_VFT->movePointerToTheTop();
+                tktk_VFP   = tktk_VFT->currentParticle();
+                tktk_VFPvtx = tktk_VFT->currentDecayVertex();
+                if(!tktk_VFPvtx->vertexIsValid()) continue;
+                XbMassCutLevel[channel_number-1]->Fill(5);
+
+                double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
+                if(chi2_prob_tktk < VtxChiProbCut_) continue;
+                XbMassCutLevel[channel_number-1]->Fill(6);
+            }
 
             std::vector<RefCountedKinematicParticle> Xb_candidate;
             Xb_candidate.push_back(pFactory.particle(muonPTT,muon_mass,chi,ndf,muon_sigma));
             Xb_candidate.push_back(pFactory.particle(muonMTT,muon_mass,chi,ndf,muon_sigma));
-            if(fit_option == 0){
+            if(fit_option == 0 || TkTk_MASS < 0){
                 Xb_candidate.push_back(pFactory.particle(tk1PTT,tk1_mass,chi,ndf,tk1_sigma));
                 Xb_candidate.push_back(pFactory.particle(tk2MTT,tk2_mass,chi,ndf,tk2_sigma));
             }
@@ -1617,7 +1621,15 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                 float tktkndf = tktk_VFPvtx->degreesOfFreedom();
                 Xb_candidate.push_back(vFactory.particle(tktk_VFP->currentState(),tktkchi,tktkndf,tktk_VFP));
             }
+            else{
+                std::cout<<"Unknown fit option, exit"<<std::endl;
+                return;
+            }
+
+            KinematicConstrainedVertexFitter kcvFitter;
             RefCountedKinematicTree xbVFT;
+            RefCountedKinematicParticle     xbVFP; 
+            RefCountedKinematicVertex       xbVFPvtx;
 
             double MaximumDoca = Functs.getMaxDoca(Xb_candidate);
             if (MaximumDoca > MaxDocaCut_) continue;
@@ -1625,14 +1637,13 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             
             ParticleMass uj_mass = MuMu_MASS;
             MultiTrackKinematicConstraint *uj_c = new  TwoTrackMassKinematicConstraint(uj_mass);
-            KinematicConstrainedVertexFitter kcvFitter;
             xbVFT = kcvFitter.fit(Xb_candidate, uj_c);
             if (!xbVFT->isValid()) continue;
             XbMassCutLevel[channel_number-1]->Fill(8);
 
             xbVFT->movePointerToTheTop();
-            RefCountedKinematicParticle     xbVFP       = xbVFT->currentParticle();
-            RefCountedKinematicVertex       xbVFPvtx    = xbVFT->currentDecayVertex();
+            xbVFP       = xbVFT->currentParticle();
+            xbVFPvtx    = xbVFT->currentDecayVertex();
             if (!xbVFPvtx->vertexIsValid()) continue;
             XbMassCutLevel[channel_number-1]->Fill(9);
             
@@ -1643,7 +1654,6 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             //Cut out a mass window
             //if (xbVFP->currentState().mass()<mass_window[0]|| xbVFP->currentState().mass()>mass_window[1]) continue;
             //
-            std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
             std::vector<RefCountedKinematicParticle> xCands  = xbVFT->finalStateParticles();
             
             TLorentzVector xb_4vec,xb_mu1_4vec,xb_mu2_4vec,tktk_4vec,xb_tk1_4vec,xb_tk2_4vec,tktk_tk1_4vec, tktk_tk2_4vec;
@@ -1651,11 +1661,6 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                                xbVFP->currentState().kinematicParameters().momentum().y(),
                                xbVFP->currentState().kinematicParameters().momentum().z(),
                                xbVFP->currentState().kinematicParameters().energy());
-            tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
-                                 tktk_VFP->currentState().kinematicParameters().momentum().y(),
-                                 tktk_VFP->currentState().kinematicParameters().momentum().z(),
-                                 tktk_VFP->currentState().kinematicParameters().energy());
-            
             xb_mu1_4vec.SetPxPyPzE(xCands[0]->currentState().kinematicParameters().momentum().x(),
                                    xCands[0]->currentState().kinematicParameters().momentum().y(),
                                    xCands[0]->currentState().kinematicParameters().momentum().z(),
@@ -1664,14 +1669,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                                    xCands[1]->currentState().kinematicParameters().momentum().y(),
                                    xCands[1]->currentState().kinematicParameters().momentum().z(),
                                    xCands[1]->currentState().kinematicParameters().energy());
-            tktk_tk1_4vec.SetPxPyPzE(tktkCands[0]->currentState().kinematicParameters().momentum().x(),
-                                   tktkCands[0]->currentState().kinematicParameters().momentum().y(),
-                                   tktkCands[0]->currentState().kinematicParameters().momentum().z(),
-                                   tktkCands[0]->currentState().kinematicParameters().energy());
-            tktk_tk2_4vec.SetPxPyPzE(tktkCands[1]->currentState().kinematicParameters().momentum().x(),
-                                   tktkCands[1]->currentState().kinematicParameters().momentum().y(),
-                                   tktkCands[1]->currentState().kinematicParameters().momentum().z(),
-                                   tktkCands[1]->currentState().kinematicParameters().energy());
+
             if(fit_option == 0){
                 xb_tk1_4vec.SetPxPyPzE(xCands[2]->currentState().kinematicParameters().momentum().x(),
                                        xCands[2]->currentState().kinematicParameters().momentum().y(),
@@ -1710,7 +1708,6 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             if( (BInfo.svpvDistance[BInfo.size]/BInfo.svpvDisErr[BInfo.size]) < svpvDistanceCut_) continue;
             XbMassCutLevel[channel_number-1]->Fill(11);
            
-      
             reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
             reco::Vertex::Point vp2(xbVFPvtx->vertexState().position().x(), xbVFPvtx->vertexState().position().y(), 0.);
             ROOT::Math::SVector<double, 6> sv1(thePrimaryV.covariance(0,0), thePrimaryV.covariance(0,1), thePrimaryV.covariance(1,1), 0., 0., 0.);
@@ -1749,30 +1746,45 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.rftk2_index[BInfo.size] = tk2_hindex;
             
             //tktk fit info
-            BInfo.tktk_mass[BInfo.size]    = tktk_4vec.Mag();
-            BInfo.tktk_pt[BInfo.size]      = tktk_4vec.Pt();
-            BInfo.tktk_eta[BInfo.size]     = tktk_4vec.Eta();
-            BInfo.tktk_phi[BInfo.size]     = tktk_4vec.Phi();
-            BInfo.tktk_px[BInfo.size]      = tktk_4vec.Px();
-            BInfo.tktk_py[BInfo.size]      = tktk_4vec.Py();
-            BInfo.tktk_pz[BInfo.size]      = tktk_4vec.Pz();
-            BInfo.tktk_vtxX[BInfo.size]    = tktk_VFPvtx->position().x();
-            BInfo.tktk_vtxY[BInfo.size]    = tktk_VFPvtx->position().y();
-            BInfo.tktk_vtxZ[BInfo.size]    = tktk_VFPvtx->position().z();
-            BInfo.tktk_vtxXErr[BInfo.size] = tktk_VFPvtx->error().cxx();
-            BInfo.tktk_vtxYErr[BInfo.size] = tktk_VFPvtx->error().cyy();
-            BInfo.tktk_vtxZErr[BInfo.size] = tktk_VFPvtx->error().czz();
-            BInfo.tktk_vtxYXErr[BInfo.size]= tktk_VFPvtx->error().cyx();
-            BInfo.tktk_vtxZXErr[BInfo.size]= tktk_VFPvtx->error().czx();
-            BInfo.tktk_vtxZYErr[BInfo.size]= tktk_VFPvtx->error().czy();
-            BInfo.tktk_vtxdof[BInfo.size]  = tktk_VFPvtx->degreesOfFreedom();
-            BInfo.tktk_vtxchi2[BInfo.size] = tktk_VFPvtx->chiSquared();
-            BInfo.tktk_rftk1_px[BInfo.size]=tktk_tk1_4vec.Px();
-            BInfo.tktk_rftk1_py[BInfo.size]=tktk_tk1_4vec.Py();
-            BInfo.tktk_rftk1_pz[BInfo.size]=tktk_tk1_4vec.Pz();
-            BInfo.tktk_rftk2_px[BInfo.size]=tktk_tk2_4vec.Px();
-            BInfo.tktk_rftk2_py[BInfo.size]=tktk_tk2_4vec.Py();
-            BInfo.tktk_rftk2_pz[BInfo.size]=tktk_tk2_4vec.Pz();
+            if(TkTk_MASS > 0){
+                std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
+                tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
+                                     tktk_VFP->currentState().kinematicParameters().momentum().y(),
+                                     tktk_VFP->currentState().kinematicParameters().momentum().z(),
+                                     tktk_VFP->currentState().kinematicParameters().energy());            
+                tktk_tk1_4vec.SetPxPyPzE(tktkCands[0]->currentState().kinematicParameters().momentum().x(),
+                                       tktkCands[0]->currentState().kinematicParameters().momentum().y(),
+                                       tktkCands[0]->currentState().kinematicParameters().momentum().z(),
+                                       tktkCands[0]->currentState().kinematicParameters().energy());
+                tktk_tk2_4vec.SetPxPyPzE(tktkCands[1]->currentState().kinematicParameters().momentum().x(),
+                                       tktkCands[1]->currentState().kinematicParameters().momentum().y(),
+                                       tktkCands[1]->currentState().kinematicParameters().momentum().z(),
+                                       tktkCands[1]->currentState().kinematicParameters().energy());
+                BInfo.tktk_mass[BInfo.size]    = tktk_4vec.Mag();
+                BInfo.tktk_pt[BInfo.size]      = tktk_4vec.Pt();
+                BInfo.tktk_eta[BInfo.size]     = tktk_4vec.Eta();
+                BInfo.tktk_phi[BInfo.size]     = tktk_4vec.Phi();
+                BInfo.tktk_px[BInfo.size]      = tktk_4vec.Px();
+                BInfo.tktk_py[BInfo.size]      = tktk_4vec.Py();
+                BInfo.tktk_pz[BInfo.size]      = tktk_4vec.Pz();
+                BInfo.tktk_vtxX[BInfo.size]    = tktk_VFPvtx->position().x();
+                BInfo.tktk_vtxY[BInfo.size]    = tktk_VFPvtx->position().y();
+                BInfo.tktk_vtxZ[BInfo.size]    = tktk_VFPvtx->position().z();
+                BInfo.tktk_vtxXErr[BInfo.size] = tktk_VFPvtx->error().cxx();
+                BInfo.tktk_vtxYErr[BInfo.size] = tktk_VFPvtx->error().cyy();
+                BInfo.tktk_vtxZErr[BInfo.size] = tktk_VFPvtx->error().czz();
+                BInfo.tktk_vtxYXErr[BInfo.size]= tktk_VFPvtx->error().cyx();
+                BInfo.tktk_vtxZXErr[BInfo.size]= tktk_VFPvtx->error().czx();
+                BInfo.tktk_vtxZYErr[BInfo.size]= tktk_VFPvtx->error().czy();
+                BInfo.tktk_vtxdof[BInfo.size]  = tktk_VFPvtx->degreesOfFreedom();
+                BInfo.tktk_vtxchi2[BInfo.size] = tktk_VFPvtx->chiSquared();
+                BInfo.tktk_rftk1_px[BInfo.size]=tktk_tk1_4vec.Px();
+                BInfo.tktk_rftk1_py[BInfo.size]=tktk_tk1_4vec.Py();
+                BInfo.tktk_rftk1_pz[BInfo.size]=tktk_tk1_4vec.Pz();
+                BInfo.tktk_rftk2_px[BInfo.size]=tktk_tk2_4vec.Px();
+                BInfo.tktk_rftk2_py[BInfo.size]=tktk_tk2_4vec.Py();
+                BInfo.tktk_rftk2_pz[BInfo.size]=tktk_tk2_4vec.Pz();
+            }
             
             BInfo.rfmu1_px[BInfo.size]=xb_mu1_4vec.Px();
             BInfo.rfmu1_py[BInfo.size]=xb_mu1_4vec.Py();
