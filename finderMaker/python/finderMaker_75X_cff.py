@@ -132,7 +132,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 			0,#RECONSTRUCTION: J/psi + phi
 			0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 		),
-        detailMode = cms.bool(False),
+        detailMode = cms.bool(True),
+        dropUnusedTracks = cms.bool(True),
 	    #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
 	    MuonTriggerMatchingPath = cms.vstring("HLT_HIL2DoubleMu3_v*"),
 	    #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
@@ -176,6 +177,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	        0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 		),
         detailMode = cms.bool(False),
+        dropUnusedTracks = cms.bool(False),
 		HLTLabel = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel = cms.InputTag('genParticles'),
 		TrackLabel = cms.InputTag('patTrackCands'),

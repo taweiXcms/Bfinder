@@ -66,6 +66,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::ParameterSet theConfig;
 
         bool detailMode_;
+        bool dropUnusedTracks_;
         //std::vector<std::string> TriggersForMatching_;
         std::vector<int> Bchannel_;
         std::vector<std::string> MuonTriggerMatchingPath_;
@@ -130,18 +131,19 @@ void Bfinder::beginJob()
     nt5   = fs->make<TTree>("ntphi","");    Bntuple->buildBranch(nt5);
     nt6   = fs->make<TTree>("ntmix","");    Bntuple->buildBranch(nt6);
     ntGen = fs->make<TTree>("ntGen","");    Bntuple->buildGenBranch(ntGen);
-    EvtInfo.regTree(root, detailMode_);
-    VtxInfo.regTree(root, detailMode_);
+    EvtInfo.regTree(root);
+    VtxInfo.regTree(root);
     MuonInfo.regTree(root, detailMode_);
     TrackInfo.regTree(root, detailMode_);
     BInfo.regTree(root, detailMode_);
-    GenInfo.regTree(root, detailMode_);
+    GenInfo.regTree(root);
 }//}}}
 
 Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
     //now do what ever initialization is needed
     detailMode_ = iConfig.getParameter<bool>("detailMode");
+    dropUnusedTracks_ = iConfig.getParameter<bool>("dropUnusedTracks");
 
 //  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
     Bchannel_= iConfig.getParameter<std::vector<int> >("Bchannel");
@@ -1024,7 +1026,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 listOfRelativeXbCands2.push_back(iXb+1);
                             }
                         }
-                        //if (listOfRelativeXbCands1.size() == 0 && listOfRelativeXbCands2.size() == 0) continue;//drop unused tracks
+                        if(dropUnusedTracks_ && listOfRelativeXbCands1.size() == 0 && listOfRelativeXbCands2.size() == 0) continue;//drop unused tracks
                         
                         TrackInfo.index          [TrackInfo.size] = TrackInfo.size;
                         TrackInfo.handle_index   [TrackInfo.size] = tk_hindex;

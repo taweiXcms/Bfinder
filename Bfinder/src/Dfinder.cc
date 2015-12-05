@@ -62,6 +62,7 @@ class Dfinder : public edm::EDAnalyzer
         edm::ParameterSet theConfig;
 
         bool detailMode_;
+        bool dropUnusedTracks_;
         std::vector<int> Dchannel_;
         //edm::InputTag hltLabel_;
         edm::InputTag genLabel_;
@@ -112,17 +113,18 @@ void Dfinder::beginJob()
     ntD2  = fs->make<TTree>("ntDkpipi","");     Dntuple->buildDBranch(ntD2);
     ntD3  = fs->make<TTree>("ntDkpipipi","");   Dntuple->buildDBranch(ntD3);
     ntGen = fs->make<TTree>("ntGen","");        Dntuple->buildGenBranch(ntGen);
-    EvtInfo.regTree(root, detailMode_);
-    VtxInfo.regTree(root, detailMode_);
+    EvtInfo.regTree(root);
+    VtxInfo.regTree(root);
     TrackInfo.regTree(root, detailMode_);
     DInfo.regTree(root, detailMode_);
-    GenInfo.regTree(root, detailMode_);
+    GenInfo.regTree(root);
 }//}}}
 
 Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
     //now do what ever initialization is needed
     detailMode_ = iConfig.getParameter<bool>("detailMode");
+    dropUnusedTracks_ = iConfig.getParameter<bool>("dropUnusedTracks");
 
     Dchannel_= iConfig.getParameter<std::vector<int> >("Dchannel");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
@@ -719,7 +721,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 listOfRelativeDResCand4.push_back(d+1);
                             }
                         }
-                        //
+                        
+                        if(dropUnusedTracks_ && listOfRelativeDCand1.size() == 0 && listOfRelativeDCand2.size() == 0 && listOfRelativeDCand3.size() == 0 && listOfRelativeDCand4.size() == 0 && listOfRelativeDCand5.size() == 0 ) continue;//drop unused tracks
 
                         TrackInfo.index          [TrackInfo.size] = TrackInfo.size;
                         TrackInfo.handle_index   [TrackInfo.size] = tk_hindex;
