@@ -133,8 +133,8 @@ process.hiEvtAnalyzer.Vertex = cms.InputTag("offlinePrimaryVertices")
 process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
-if not RunOnAOD:
-	process.hiEvtAnalyzer.doCentrality = cms.bool(True) 
+if RunOnAOD:
+	process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
 	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
