@@ -1,6 +1,6 @@
 //HltInfo
 int           Df_HLT_Run;
-ULong64_t       Df_HLT_Event;
+ULong64_t     Df_HLT_Event;
 int           Df_HLT_LumiBlock;
 void setHltTreeBranch(TTree* hltroot)
 {
@@ -10,9 +10,9 @@ void setHltTreeBranch(TTree* hltroot)
 }
 
 //hiEvtInfo
-int           Df_HiTree_Run;
-int           Df_HiTree_Evt;
-int           Df_HiTree_Lumi;
+unsigned int       Df_HiTree_Run;
+unsigned long long Df_HiTree_Evt;
+unsigned int       Df_HiTree_Lumi;
 void setHiTreeBranch(TTree* hitreeroot)
 {
   hitreeroot->SetBranchAddress("run",&Df_HiTree_Run);
