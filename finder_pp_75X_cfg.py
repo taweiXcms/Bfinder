@@ -4,8 +4,8 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 
 #ivars.inputFiles='file:/data/twang/MC_samples/MinBias_TuneCUETP8M1_5p02TeV-pythia8/MinBias_TuneCUETP8M1_5p02TeV_pythia8_pp502Fall15_MCRUN2_71_V1_v1_AOD_CMSSW_7_5_4_20151113/step3_RAW2DIGI_L1Reco_RECO_993_1_q1f.root'
-ivars.inputFiles='file:14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
-#ivars.inputFiles='file:0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
+ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/AOD/PromptReco-v1/000/262/235/00000/0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
+#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/RECO/PromptReco-v1/000/262/163/00000/14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
 
 ivars.outputFile='finder_pp.root'
 ivars.parseArguments()# get and parse the command line arguments
@@ -120,7 +120,8 @@ process.pACentrality.producePixelTracks = cms.bool(False)
 process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 process.centralityBin.Centrality = cms.InputTag("pACentrality")
 process.centralityBin.centralityVariable = cms.string("HFtowers")
-process.centrality_path = cms.Path(process.siPixelRecHits*process.pACentrality*process.centralityBin)
+if not RunOnAOD:
+	process.centrality_path = cms.Path(process.siPixelRecHits*process.pACentrality*process.centralityBin)
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
@@ -129,11 +130,11 @@ process.hiEvtAnalyzer.CentralitySrc = cms.InputTag("pACentrality")
 process.hiEvtAnalyzer.Vertex = cms.InputTag("offlinePrimaryVertices")
 process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
-process.evtAna = cms.Path(process.hiEvtAnalyzer)
-
-if runOnMC:
-	process.hiEvtAnalyzer.doMC = cms.bool(True)
-	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
+if not RunOnAOD:
+	process.evtAna = cms.Path(process.hiEvtAnalyzer)
+	if runOnMC:
+		process.hiEvtAnalyzer.doMC = cms.bool(True)
+		process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
 ### Set basic filter
 process.PAprimaryVertexFilter = cms.EDFilter("VertexSelector",
@@ -153,14 +154,15 @@ process.pBeamScrapingFilter=cms.Path(process.NoScraping)
 
 # Common offline event selection
 process.load('HeavyIonsAnalysis.Configuration.hfCoincFilter_cff')
-process.phfCoincFilter = cms.Path(process.hfCoincFilter )
-process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3 )
 
 process.PAcollisionEventSelection = cms.Sequence(process.hfCoincFilter *
                                          process.PAprimaryVertexFilter *
                                          process.NoScraping 
                                          )
-process.PAcollisionEventSelection = cms.Path(process.PAcollisionEventSelection)
+if not RunOnAOD:
+	process.phfCoincFilter = cms.Path(process.hfCoincFilter )
+	process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3 )
+	process.PAcollisionEventSelection = cms.Path(process.PAcollisionEventSelection)
 
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')

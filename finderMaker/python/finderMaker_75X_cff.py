@@ -158,7 +158,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    doTkPreCut = cms.bool(True),
 	    doMuPreCut = cms.bool(True),
 	    makeBntuple = cms.bool(True),
-	    doBntupleSkim = cms.bool(True),
+	    doBntupleSkim = cms.bool(False),
 	)
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
@@ -177,7 +177,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	        0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 		),
         detailMode = cms.bool(False),
-        dropUnusedTracks = cms.bool(False),
+        dropUnusedTracks = cms.bool(True),
 		HLTLabel = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel = cms.InputTag('genParticles'),
 		TrackLabel = cms.InputTag('patTrackCands'),
@@ -196,7 +196,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    RunOnMC = cms.bool(False),
 	    doTkPreCut = cms.bool(True),
 	    makeDntuple = cms.bool(True),
-	    doDntupleSkim = cms.bool(True),
+	    doDntupleSkim = cms.bool(False),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)

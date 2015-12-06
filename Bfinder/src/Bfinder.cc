@@ -421,6 +421,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 if (input_tracks.size() > 0 && input_muons.size() > 1){
 
                     //MuonInfo section{{{
+                    int PassedMuon = 0;
                     int mu_hindex = -1;
                     for(std::vector<pat::Muon>::const_iterator mu_it=input_muons.begin();
                         mu_it != input_muons.end() ; mu_it++){
@@ -541,6 +542,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.geninfo_index  [MuonInfo.size] = -1;//initialize for later use
                         MuonInfo.TMOneStationTight[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TMOneStationTight);//For Muon ID for convenience
                         MuonInfo.TrackerMuonArbitrated[MuonInfo.size] = muon::isGoodMuon(*mu_it,muon::TrackerMuonArbitrated);//For Muon ID for convenience
+                        MuonInfo.isSoftMuon[MuonInfo.size] = muon::isSoftMuon(*mu_it, thePrimaryV);
                         if (!iEvent.isRealData() && RunOnMC_) genMuonPtr [MuonInfo.size] = mu_it->genParticle();
 
                         //Muon standalone info.
@@ -616,21 +618,32 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         MuonInfo.muqual         [MuonInfo.size] = qm;   
 
                         // Basic Muon selection for fitting
+                        // Muon in acceptance
+                        //bool MuInAcc = false;
+                        //if(fabs(mu_it->eta())<1.3 && mu_it->pt()>3.3) MuInAcc = true;
+                        //if(fabs(mu_it->eta())>1.3 && fabs(mu_it->eta())<2.2 && mu_it->p()>2.9) MuInAcc = true;
+                        //if(fabs(mu_it->eta())>2.2 && fabs(mu_it->eta())<2.4 && mu_it->pt()>0.8) MuInAcc = true;
+
                         //Can not be just CaloMuon or empty type
                         if((MuonInfo.type[MuonInfo.size]|(1<<4))==(1<<4)){
                             MuonInfo.isNeededMuon[MuonInfo.size] = false;
                         }
                         else if(doMuPreCut_ &&
-                                (   !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
+                                (  !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
+                                //|| !MuInAcc
                                 //||  some other cut
                                 )
                         ){
                             MuonInfo.isNeededMuon[MuonInfo.size] = false;
                         }
-                        else MuonInfo.isNeededMuon[MuonInfo.size] = true;
+                        else {
+                            PassedMuon ++;
+                            MuonInfo.isNeededMuon[MuonInfo.size] = true;
+                        }
 
                         MuonInfo.size++;
                     }//end of MuonInfo}}}
+                    std::cout<<"PassedMuon: "<<PassedMuon<<std::endl;
                     //printf("-----*****DEBUG:End of MuonInfo.\n");
 
                     //Preselect tracks{{{
@@ -676,6 +689,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
                         PassedTrk++;
                     }//end of track preselection}}}
+                    std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
                     //printf("-----*****DEBUG:End of track preselection.\n");
 
                     // BInfo section{{{
