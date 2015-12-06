@@ -134,10 +134,10 @@ process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
 if not RunOnAOD:
-process.hiEvtAnalyzer.doCentrality = cms.bool(True) 
-	if runOnMC:
-		process.hiEvtAnalyzer.doMC = cms.bool(True)
-		process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
+	process.hiEvtAnalyzer.doCentrality = cms.bool(True) 
+if runOnMC:
+	process.hiEvtAnalyzer.doMC = cms.bool(True)
+	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
 ### Set basic filter
 process.PAprimaryVertexFilter = cms.EDFilter("VertexSelector",
