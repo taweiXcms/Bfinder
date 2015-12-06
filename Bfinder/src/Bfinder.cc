@@ -643,7 +643,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                         MuonInfo.size++;
                     }//end of MuonInfo}}}
-                    std::cout<<"PassedMuon: "<<PassedMuon<<std::endl;
+                    //std::cout<<"PassedMuon: "<<PassedMuon<<std::endl;
                     //printf("-----*****DEBUG:End of MuonInfo.\n");
 
                     //Preselect tracks{{{
@@ -689,7 +689,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
                         PassedTrk++;
                     }//end of track preselection}}}
-                    std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
+                    //std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
                     //printf("-----*****DEBUG:End of track preselection.\n");
 
                     // BInfo section{{{
