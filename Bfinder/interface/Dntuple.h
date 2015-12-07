@@ -510,7 +510,7 @@ class DntupleBranches{//{{{
             Dchi2ndf[typesize] = DInfo->vtxchi2[j]/DInfo->vtxdof[j];
             Dchi2cl[typesize] = TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j]);
             Ddtheta[typesize] = bP->Angle(*bVtx);
-            Dlxy[typesize] = ((DInfo_vtxX[j]-EvtInfo_PVx)*b4P->Px() + (DInfo_vtxY[j]-EvtInfo_PVy)*b4P->Py())/DInfo_pt[j];
+            Dlxy[typesize] = ((DInfo->vtxX[j]-EvtInfo->PVx)*b4P->Px() + (DInfo->vtxY[j]-EvtInfo->PVy)*b4P->Py())/DInfo->pt[j];
             Dalpha[typesize] = DInfo->alpha[j];
             DsvpvDistance[typesize] = DInfo->svpvDistance[j];
             DsvpvDisErr[typesize] = DInfo->svpvDisErr[j];

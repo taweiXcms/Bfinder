@@ -459,7 +459,7 @@ class BntupleBranches
               {
                 if(skim)
                   {
-                    if(BInfo_pt[j]<3.) continue;
+                    if(BInfo->pt[j]<3.) continue;
                   }
                 if(BInfo->type[j]==(t+1))
                   {

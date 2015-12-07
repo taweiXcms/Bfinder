@@ -1,11 +1,12 @@
 #include "format.h"
-#include "Dntuple.h"
+#include "../interface/Dntuple.h"
 #include "loop.h"
 
 Bool_t iseos = true;
 int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
          TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
+  
   infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151202/CMSSW_7_5_5_patch4/src/test3/finder_PbPb.root";
   outfile="test";
   REAL=false;
@@ -83,10 +84,10 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
       if(checkMatching)
         {
-          if((Int_t)Bf_HLT_Event!=EvtInfo_EvtNo||Bf_HLT_Run!=EvtInfo_RunNo||Bf_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&(Bf_HiTree_Evt!=EvtInfo_EvtNo||Bf_HiTree_Run!=EvtInfo_RunNo||Bf_HiTree_Lumi!=EvtInfo_LumiNo)))
+          if(((int)Df_HLT_Event!=EvtInfo->EvtNo||(int)Df_HLT_Run!=EvtInfo->RunNo||(int)Df_HLT_LumiBlock!=EvtInfo->LumiNo) || (isPbPb&&((int)Df_HiTree_Evt!=EvtInfo->EvtNo||(int)Df_HiTree_Run!=EvtInfo->RunNo||(int)Df_HiTree_Lumi!=EvtInfo->LumiNo)))
             {
               cout<<"Error: not matched "<<i<<" | ";
-              cout<<"EvtNo("<<Bf_HLT_Event<<","<<EvtInfo_EvtNo<<") RunNo("<<Bf_HLT_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Bf_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<") | EvtNo("<<Bf_HiTree_Evt<<","<<EvtInfo_EvtNo<<") RunNo("<<Bf_HiTree_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Bf_HiTree_Lumi<<","<<EvtInfo_LumiNo<<")"<<endl;
+              cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo->EvtNo<<") RunNo("<<Df_HLT_Run<<","<<EvtInfo->RunNo<<") LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<") | EvtNo("<<Df_HiTree_Evt<<","<<EvtInfo->EvtNo<<") RunNo("<<Df_HiTree_Run<<","<<EvtInfo->RunNo<<") LumiNo("<<Df_HiTree_Lumi<<","<<EvtInfo->LumiNo<<")"<<endl;
               continue;
             }
         }
