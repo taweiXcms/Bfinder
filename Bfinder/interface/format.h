@@ -637,6 +637,7 @@ public:
     double  rftk2_eta[MAX_XB];
     double  rftk2_phi[MAX_XB];
     
+    double	tktk_unfitted_mass[MAX_XB];
     double	tktk_mass[MAX_XB];
     double  tktk_pt[MAX_XB];
     double  tktk_eta[MAX_XB];
@@ -714,6 +715,7 @@ public:
         root->Branch("BInfo.rftk2_index"      , rftk2_index    , "BInfo.rftk2_index[BInfo.size]/I");
         root->Branch("BInfo.type"             , type           , "BInfo.type[BInfo.size]/I"	);
         
+        root->Branch("BInfo.tktk_unfitted_mass" , tktk_unfitted_mass, "BInfo.tktk_unfitted_mass[BInfo.size]/D"     );
         root->Branch("BInfo.tktk_mass"          , tktk_mass        , "BInfo.tktk_mass[BInfo.size]/D"     );
         root->Branch("BInfo.tktk_pt"            , tktk_pt          , "BInfo.tktk_pt[BInfo.size]/D"	);
         root->Branch("BInfo.tktk_eta"            , tktk_eta          , "BInfo.tktk_eta[BInfo.size]/D"	);
@@ -825,6 +827,7 @@ public:
         root->SetBranchAddress("BInfo.rftk2_index"     ,rftk2_index   	);
         root->SetBranchAddress("BInfo.type"            ,type   	);
         
+        root->SetBranchAddress("BInfo.tktk_unfitted_mass",tktk_unfitted_mass    );
         root->SetBranchAddress("BInfo.tktk_mass"         ,tktk_mass    );
         root->SetBranchAddress("BInfo.tktk_pt"           ,tktk_pt     	);
         root->SetBranchAddress("BInfo.tktk_eta"           ,tktk_eta     	);

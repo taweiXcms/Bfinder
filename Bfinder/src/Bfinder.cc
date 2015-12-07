@@ -1614,23 +1614,25 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             RefCountedKinematicParticle tktk_VFP;
             RefCountedKinematicVertex   tktk_VFPvtx;
 
-            if(TkTk_MASS > 0){
-                tktk_candidate.push_back(pFactory.particle(tk1PTT,tk1_mass,chi,ndf,tk1_sigma));
-                tktk_candidate.push_back(pFactory.particle(tk2MTT,tk2_mass,chi,ndf,tk2_sigma));
-                tktk_VFT = tktk_fitter.fit(tktk_candidate);
-                if(!tktk_VFT->isValid()) continue;
+            tktk_candidate.push_back(pFactory.particle(tk1PTT,tk1_mass,chi,ndf,tk1_sigma));
+            tktk_candidate.push_back(pFactory.particle(tk2MTT,tk2_mass,chi,ndf,tk2_sigma));
+            tktk_VFT = tktk_fitter.fit(tktk_candidate);
+            if (tktk_VFT->isValid()){
                 XbMassCutLevel[channel_number-1]->Fill(4);
-                
                 tktk_VFT->movePointerToTheTop();
                 tktk_VFP   = tktk_VFT->currentParticle();
                 tktk_VFPvtx = tktk_VFT->currentDecayVertex();
-                if(!tktk_VFPvtx->vertexIsValid()) continue;
-                XbMassCutLevel[channel_number-1]->Fill(5);
-
-                double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-                if(chi2_prob_tktk < VtxChiProbCut_) continue;
-                XbMassCutLevel[channel_number-1]->Fill(6);
+                if (tktk_VFPvtx->vertexIsValid()){
+                    XbMassCutLevel[channel_number-1]->Fill(5);
+                    double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
+                    if (chi2_prob_tktk >= VtxChiProbCut_){
+                        XbMassCutLevel[channel_number-1]->Fill(6);
+                    }
+                    else if (TkTk_MASS > 0) continue;
+                }
+                else if (TkTk_MASS > 0) continue;
             }
+            else if (TkTk_MASS > 0) continue;
 
             std::vector<RefCountedKinematicParticle> Xb_candidate;
             Xb_candidate.push_back(pFactory.particle(muonPTT,muon_mass,chi,ndf,muon_sigma));
@@ -1770,7 +1772,8 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.rftk2_index[BInfo.size] = tk2_hindex;
             
             //tktk fit info
-            if(TkTk_MASS > 0){
+            BInfo.tktk_unfitted_mass[BInfo.size]    = (v4_tk1+v4_tk2).Mag();
+            if(tktk_VFT->isValid() && tktk_VFPvtx->vertexIsValid()){
                 std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
                 tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
                                      tktk_VFP->currentState().kinematicParameters().momentum().y(),
@@ -1808,6 +1811,9 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                 BInfo.tktk_rftk2_pt[BInfo.size] =tktk_tk2_4vec.Pt();
                 BInfo.tktk_rftk2_eta[BInfo.size]=tktk_tk2_4vec.Eta();
                 BInfo.tktk_rftk2_phi[BInfo.size]=tktk_tk2_4vec.Phi();
+            }
+            else{
+                BInfo.tktk_mass[BInfo.size]    = -1;
             }
             
             BInfo.rfmu1_pt[BInfo.size] =xb_mu1_4vec.Pt();
