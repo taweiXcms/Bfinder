@@ -8,6 +8,7 @@ class DntupleBranches{//{{{
         //EvtInfo
         int      RunNo;
         int      EvtNo;
+        int      LumiNo;
         int      Bsize;
         int      Dsize;
         double   PVx;
@@ -167,6 +168,7 @@ class DntupleBranches{//{{{
             //EvtInfo
             dnt->Branch("RunNo",&RunNo);
             dnt->Branch("EvtNo",&EvtNo);
+            dnt->Branch("LumiNo",&LumiNo);
             dnt->Branch("Dsize",&Dsize);
             dnt->Branch("PVx",&PVx);
             dnt->Branch("PVy",&PVy);
@@ -344,6 +346,31 @@ class DntupleBranches{//{{{
             TVector3* bP = new TVector3;
             TVector3* bVtx = new TVector3;
             TLorentzVector* b4P = new TLorentzVector;
+            RunNo = EvtInfo->RunNo;
+            EvtNo = EvtInfo->EvtNo;
+            LumiNo = EvtInfo->LumiNo;
+            PVx = EvtInfo->PVx;
+            PVy = EvtInfo->PVy;
+            PVz = EvtInfo->PVz;
+            PVxE = EvtInfo->PVxE;
+            PVyE = EvtInfo->PVyE;
+            PVzE = EvtInfo->PVzE;
+            PVnchi2 = EvtInfo->PVnchi2;
+            PVchi2 = EvtInfo->PVchi2;
+            BSx = EvtInfo->BSx;
+            BSy = EvtInfo->BSy;
+            BSz = EvtInfo->BSz;
+            BSxErr = EvtInfo->BSxErr;
+            BSyErr = EvtInfo->BSyErr;
+            BSzErr = EvtInfo->BSzErr;
+            BSdxdz = EvtInfo->BSdxdz;
+            BSdydz = EvtInfo->BSdydz;
+            BSdxdzErr = EvtInfo->BSdxdzErr;
+            BSdydzErr = EvtInfo->BSdydzErr;
+            BSWidthX = EvtInfo->BSWidthX;
+            BSWidthXErr = EvtInfo->BSWidthXErr;
+            BSWidthY = EvtInfo->BSWidthY;
+            BSWidthYErr = EvtInfo->BSWidthYErr;
             int Dtypesize[3]={0,0,0};
             //int Ndbc=0;
             int ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
@@ -370,8 +397,8 @@ class DntupleBranches{//{{{
                         {
                             if(DInfo->alpha[j]>0.13) continue;
                             if((DInfo->pt[j]>=13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<2.5)||
-                                    (DInfo->pt[j]>=5.5&&DInfo->pt[j]<13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<4.)||
-                                    (DInfo->pt[j]<5.5&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<5.)) continue;
+                               (DInfo->pt[j]>=5.5&&DInfo->pt[j]<13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<4.)||
+                               (DInfo->pt[j]<5.5&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<5.)) continue;
                         }
                         if(DInfo->type[j]==(t+1))
                         {
@@ -462,31 +489,7 @@ class DntupleBranches{//{{{
         void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo)
         {//{{{
             //EvtInfo
-            RunNo = EvtInfo->RunNo;
-            EvtNo = EvtInfo->EvtNo;
             Dsize = typesize+1;
-            PVx = EvtInfo->PVx;
-            PVy = EvtInfo->PVy;
-            PVz = EvtInfo->PVz;
-            PVxE = EvtInfo->PVxE;
-            PVyE = EvtInfo->PVyE;
-            PVzE = EvtInfo->PVzE;
-            PVnchi2 = EvtInfo->PVnchi2;
-            PVchi2 = EvtInfo->PVchi2;
-            BSx = EvtInfo->BSx;
-            BSy = EvtInfo->BSy;
-            BSz = EvtInfo->BSz;
-            BSxErr = EvtInfo->BSxErr;
-            BSyErr = EvtInfo->BSyErr;
-            BSzErr = EvtInfo->BSzErr;
-            BSdxdz = EvtInfo->BSdxdz;
-            BSdydz = EvtInfo->BSdydz;
-            BSdxdzErr = EvtInfo->BSdxdzErr;
-            BSdydzErr = EvtInfo->BSdydzErr;
-            BSWidthX = EvtInfo->BSWidthX;
-            BSWidthXErr = EvtInfo->BSWidthXErr;
-            BSWidthY = EvtInfo->BSWidthY;
-            BSWidthYErr = EvtInfo->BSWidthYErr;
 
             //DInfo
             bP->SetPtEtaPhi(DInfo->pt[j],DInfo->eta[j]*0,DInfo->phi[j]);

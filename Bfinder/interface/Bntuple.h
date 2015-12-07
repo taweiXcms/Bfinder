@@ -429,7 +429,31 @@ class BntupleBranches
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
     TLorentzVector* b4P = new TLorentzVector;
-    //TLorentzVector* b4Pout = new TLorentzVector;
+    RunNo = EvtInfo->RunNo;
+    EvtNo = EvtInfo->EvtNo;
+    LumiNo = EvtInfo->LumiNo;
+    PVx = EvtInfo->PVx;
+    PVy = EvtInfo->PVy;
+    PVz = EvtInfo->PVz;
+    PVxE = EvtInfo->PVxE;
+    PVyE = EvtInfo->PVyE;
+    PVzE = EvtInfo->PVzE;
+    PVnchi2 = EvtInfo->PVnchi2;
+    PVchi2 = EvtInfo->PVchi2;
+    BSx = EvtInfo->BSx;
+    BSy = EvtInfo->BSy;
+    BSz = EvtInfo->BSz;
+    BSxErr = EvtInfo->BSxErr;
+    BSyErr = EvtInfo->BSyErr;
+    BSzErr = EvtInfo->BSzErr;
+    BSdxdz = EvtInfo->BSdxdz;
+    BSdydz = EvtInfo->BSdydz;
+    BSdxdzErr = EvtInfo->BSdxdzErr;
+    BSdydzErr = EvtInfo->BSdydzErr;
+    BSWidthX = EvtInfo->BSWidthX;
+    BSWidthXErr = EvtInfo->BSWidthXErr;
+    BSWidthY = EvtInfo->BSWidthY;
+    BSWidthYErr = EvtInfo->BSWidthYErr;
     int Btypesize[7]={0,0,0,0,0,0,0};
     int ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1,tktkflag=-1,tktkMatchedflag=-1;
     double pttem=0,ptMatchedtem=0,probtem=0,probMatchedtem=0,tktktem=0,tktkMatchedtem=0;
@@ -599,32 +623,7 @@ class BntupleBranches
   void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, double track_mass1, double track_mass2, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo)
   {//{{{
     //Event Info
-    RunNo = EvtInfo->RunNo;
-    EvtNo = EvtInfo->EvtNo;
-    LumiNo = EvtInfo->LumiNo;
     Bsize = typesize+1;
-    PVx = EvtInfo->PVx;
-    PVy = EvtInfo->PVy;
-    PVz = EvtInfo->PVz;
-    PVxE = EvtInfo->PVxE;
-    PVyE = EvtInfo->PVyE;
-    PVzE = EvtInfo->PVzE;
-    PVnchi2 = EvtInfo->PVnchi2;
-    PVchi2 = EvtInfo->PVchi2;
-    BSx = EvtInfo->BSx;
-    BSy = EvtInfo->BSy;
-    BSz = EvtInfo->BSz;
-    BSxErr = EvtInfo->BSxErr;
-    BSyErr = EvtInfo->BSyErr;
-    BSzErr = EvtInfo->BSzErr;
-    BSdxdz = EvtInfo->BSdxdz;
-    BSdydz = EvtInfo->BSdydz;
-    BSdxdzErr = EvtInfo->BSdxdzErr;
-    BSdydzErr = EvtInfo->BSdydzErr;
-    BSWidthX = EvtInfo->BSWidthX;
-    BSWidthXErr = EvtInfo->BSWidthXErr;
-    BSWidthY = EvtInfo->BSWidthY;
-    BSWidthYErr = EvtInfo->BSWidthYErr;
     bP->SetPtEtaPhi(BInfo->pt[j],BInfo->eta[j]*0,BInfo->phi[j]);
     bVtx->SetXYZ(BInfo->vtxX[j]-EvtInfo->PVx,
                  BInfo->vtxY[j]-EvtInfo->PVy,
