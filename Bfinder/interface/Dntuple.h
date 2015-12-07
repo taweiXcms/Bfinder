@@ -489,11 +489,11 @@ class DntupleBranches{//{{{
             BSWidthYErr = EvtInfo->BSWidthYErr;
 
             //DInfo
-            bP->SetXYZ(DInfo->px[j],DInfo->py[j],DInfo->pz[j]);
+            bP->SetPtEtaPhi(DInfo->pt[j],DInfo->eta[j]*0,DInfo->phi[j]);
             bVtx->SetXYZ(DInfo->vtxX[j]-EvtInfo->PVx,
-                    DInfo->vtxY[j]-EvtInfo->PVy,
-                    DInfo->vtxZ[j]-EvtInfo->PVz);
-            b4P->SetXYZM(DInfo->px[j],DInfo->py[j],DInfo->pz[j],DInfo->mass[j]);
+                         DInfo->vtxY[j]-EvtInfo->PVy,
+                         DInfo->vtxZ[j]*0-EvtInfo->PVz*0);
+            b4P->SetPtEtaPhiM(DInfo->pt[j],DInfo->eta[j],DInfo->phi[j],DInfo->mass[j]);
             Dindex[typesize] = typesize;
             Dtype[typesize] = DInfo->type[j];
             Dmass[typesize] = DInfo->mass[j];
@@ -510,7 +510,7 @@ class DntupleBranches{//{{{
             Dchi2ndf[typesize] = DInfo->vtxchi2[j]/DInfo->vtxdof[j];
             Dchi2cl[typesize] = TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j]);
             Ddtheta[typesize] = bP->Angle(*bVtx);
-            Dlxy[typesize] = ((DInfo->vtxX[j]-EvtInfo->PVx)*DInfo->px[j] + (DInfo->vtxY[j]-EvtInfo->PVy)*DInfo->py[j])/DInfo->pt[j];
+            Dlxy[typesize] = ((DInfo_vtxX[j]-EvtInfo_PVx)*b4P->Px() + (DInfo_vtxY[j]-EvtInfo_PVy)*b4P->Py())/DInfo_pt[j];
             Dalpha[typesize] = DInfo->alpha[j];
             DsvpvDistance[typesize] = DInfo->svpvDistance[j];
             DsvpvDisErr[typesize] = DInfo->svpvDisErr[j];
@@ -975,9 +975,9 @@ class DntupleBranches{//{{{
                     Dgeneta[typesize] = GenInfo->eta[DgenIndex[typesize]];
                     Dgenphi[typesize] = GenInfo->phi[DgenIndex[typesize]];
                     b4P->SetXYZM(GenInfo->pt[DgenIndex[typesize]]*cos(GenInfo->phi[DgenIndex[typesize]]),
-                            GenInfo->pt[DgenIndex[typesize]]*sin(GenInfo->phi[DgenIndex[typesize]]),
-                            GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
-                            GenInfo->mass[DgenIndex[typesize]]);
+                                 GenInfo->pt[DgenIndex[typesize]]*sin(GenInfo->phi[DgenIndex[typesize]]),
+                                 GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
+                                 GenInfo->mass[DgenIndex[typesize]]);
                     Dgeny[typesize] = b4P->Rapidity();
                 }
             }//if(!real)
