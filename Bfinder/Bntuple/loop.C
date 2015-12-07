@@ -2,7 +2,7 @@
 #include "Bntuple.h"
 #include "loop.h"
 
-int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", TString outfile="/data/wangj/Data2015/Bntuple/ntB_DoubleMu_pp_20151130.root", bool REAL=true, bool isPbPb=false, int startEntries=0, bool skim=false, bool gskim=true, bool testMatching=false)
+int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", TString outfile="/data/wangj/Data2015/Bntuple/ntB_DoubleMu_pp_20151130.root", bool REAL=true, bool isPbPb=false, int startEntries=0, bool skim=false, bool gskim=true, bool testMatching=true)
 {
   //infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_99_1_07c.root";
   infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb_oldSize.root";
@@ -81,7 +81,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
 	}
     ntHlt->Fill();
     if(isPbPb) ntHi->Fill();
-    Bntuple->makeNtuple(ifchannel, REAL, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+    Bntuple->makeNtuple(ifchannel, REAL, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
     if(!REAL) Bntuple->fillGenTree(ntGen, GenInfo, gskim);
   }//entries loop
   outf->Write();

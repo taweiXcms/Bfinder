@@ -2,23 +2,30 @@
 #include "Dntuple.h"
 #include "loop.h"
 
-int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/Run2015E/HIMinimumBias2/Merged/HIForestExpress_run262620.root",
-         TString outfile="./ntD_HIForestExpress_run262620", bool REAL=true, bool isPbPb=true, int startEntries=0, int endEntries=-1, bool skim=false, bool gskim=true)
+Bool_t iseos = true;
+int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
+         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151202/CMSSW_7_5_5_patch4/src/test3/finder_PbPb.root";
   outfile="test";
   REAL=false;
+  iseos=false;
 
   cout<<endl;
-  if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
-  else cout<<"--- Processing - MC"<<endl;
-  
-  TFile* f = TFile::Open(infile);
+  if(REAL) cout<<"--- Processing - REAL DATA";
+  else cout<<"--- Processing - MC";
+  if(isPbPb) cout<<" - PbPb";
+  else cout<<" - pp";
+  cout<<endl;
+
+  TString ifname;
+  if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
+  else ifname = infile;
+  TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
   TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
-  TTree* hiroot;
-  hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
+  TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
 
   DntupleBranches     *Dntuple = new DntupleBranches;
   EvtInfoBranches     *EvtInfo = new EvtInfoBranches;
@@ -37,9 +44,7 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   GenInfo->setbranchadd(root);
 
   Long64_t nentries = root->GetEntries();
-  if( endEntries > nentries )
-      endEntries = nentries;
-  if( endEntries == -1 )  endEntries = nentries;
+  if(endEntries>nentries || endEntries == -1) endEntries = nentries;
   TFile *outf = new TFile(Form("%s_Evtfrom%dto%d.root", outfile.Data(), startEntries, endEntries),"recreate");
 
   int isDchannel[6];
@@ -59,8 +64,8 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   ntHlt->SetName("ntHlt");
   TTree* ntSkim = skimroot->CloneTree(0);
   ntSkim->SetName("ntSkim");
-  TTree* ntHi;
-  ntHi = hiroot->CloneTree(0);
+  TTree* ntHi = hiroot->CloneTree(0);
+  ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
   int flagEvt=0, offsetHltTree=0;
@@ -73,21 +78,20 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
-	  skimroot->GetEntry(i);
+      skimroot->GetEntry(i);
       if(isPbPb) hiroot->GetEntry(i);
-      if(i%100000==0) cout<<setw(7)<<i<<" / "<<nentries<<endl;
-      if((int)Df_HLT_Event!=EvtInfo->EvtNo||Df_HLT_Run!=EvtInfo->RunNo||Df_HLT_LumiBlock!=EvtInfo->LumiNo)
-	{
-	  if(!isPbPb||(isPbPb&&(Df_HiTree_Evt!=EvtInfo->EvtNo||Df_HiTree_Run!=EvtInfo->RunNo||Df_HiTree_Lumi!=EvtInfo->LumiNo)))
-	    {
-	      cout<<"Error: not matched "<<i<<" | ";
-	      cout<<Df_HLT_Event<<","<<EvtInfo->EvtNo<<"   "<<Df_HLT_Run<<","<<EvtInfo->RunNo<<"   "<<Df_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<" | "<<Df_HiTree_Evt<<","<<EvtInfo->EvtNo<<"   "<<Df_HiTree_Run<<","<<EvtInfo->RunNo<<"   "<<Df_HiTree_Lumi<<","<<EvtInfo->LumiNo<<endl;
-	      continue;
-	    }
-	}
-
+      if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
+      if(checkMatching)
+        {
+          if((Int_t)Bf_HLT_Event!=EvtInfo_EvtNo||Bf_HLT_Run!=EvtInfo_RunNo||Bf_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&(Bf_HiTree_Evt!=EvtInfo_EvtNo||Bf_HiTree_Run!=EvtInfo_RunNo||Bf_HiTree_Lumi!=EvtInfo_LumiNo)))
+            {
+              cout<<"Error: not matched "<<i<<" | ";
+              cout<<"EvtNo("<<Bf_HLT_Event<<","<<EvtInfo_EvtNo<<") RunNo("<<Bf_HLT_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Bf_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<") | EvtNo("<<Bf_HiTree_Evt<<","<<EvtInfo_EvtNo<<") RunNo("<<Bf_HiTree_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Bf_HiTree_Lumi<<","<<EvtInfo_LumiNo<<")"<<endl;
+              continue;
+            }
+        }
       ntHlt->Fill();
-	  ntSkim->Fill();
+      ntSkim->Fill();
       if(isPbPb) ntHi->Fill();
 
       Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3);
