@@ -130,7 +130,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 			0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
 			0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 			0,#RECONSTRUCTION: J/psi + phi
-			0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+			1,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 		),
         detailMode = cms.bool(True),
         dropUnusedTracks = cms.bool(True),
@@ -147,7 +147,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    PVLabel = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.0),#before fit
 	    tkEtaCut = cms.double(999.0),#before fit
-	    jpsiPtCut = cms.double(3.0),#before fit
+	    jpsiPtCut = cms.double(0.0),#before fit
 	    bPtCut = cms.double(5.0),#before fit
 	    bEtaCut = cms.double(2.4),#before fit, not used currently
 		VtxChiProbCut = cms.double(0.01),

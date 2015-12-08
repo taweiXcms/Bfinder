@@ -1321,7 +1321,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         ifchannel[5] = 1; //jpsi+phi(K+,K-)
         ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
         bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-        Bntuple->makeNtuple(ifchannel, REAL, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+        Bntuple->makeNtuple(ifchannel, REAL, doBntupleSkim_, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
         if(!REAL) Bntuple->fillGenTree(ntGen, &GenInfo);
     }
 }
