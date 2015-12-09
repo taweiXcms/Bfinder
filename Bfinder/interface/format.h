@@ -68,6 +68,7 @@
 #define DZERO_PDGID 421
 #define DPLUS_PDGID 411
 #define DSUBS_PDGID 431
+#define DSTAR_PDGID 413
 
 class EvtInfoBranches{ //{{{
 	public:
