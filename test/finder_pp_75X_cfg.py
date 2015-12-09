@@ -4,7 +4,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
 
 #ivars.inputFiles='file:/data/twang/MC_samples/MinBias_TuneCUETP8M1_5p02TeV-pythia8/MinBias_TuneCUETP8M1_5p02TeV_pythia8_pp502Fall15_MCRUN2_71_V1_v1_AOD_CMSSW_7_5_4_20151113/step3_RAW2DIGI_L1Reco_RECO_993_1_q1f.root'
-ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/AOD/PromptReco-v1/000/262/235/00000/0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
+#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/AOD/PromptReco-v1/000/262/235/00000/0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/RECO/PromptReco-v1/000/262/163/00000/14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/HeavyFlavor/AOD/PromptReco-v1/000/262/273/00000/06090E4E-0C97-E511-856C-02163E0142D2.root'#AOD HeavyFlavor
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/MinimumBias1/AOD/PromptReco-v1/000/262/274/00000/0E443E25-3C9A-E511-9263-02163E013626.root'#AOD MB1

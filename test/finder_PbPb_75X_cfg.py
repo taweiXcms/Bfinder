@@ -12,8 +12,9 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BsToJpsiPhi_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BsToJpsiPhi_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_PU_20151105/step3_RAW2DIGI_L1Reco_RECO_721_1_JPr.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_623_1_QKI.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpipipi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_614_1_jV8.root'
-#ivars.inputFiles='/data/twang/Data_samples/HIRun2015/HIOniaL1DoubleMu0/AOD/PromptReco-v1/000/262/735/00000/B0EC6FA1-4E99-E511-B663-02163E013910.root'#HIOniaL1DoubleMu0
-#ivars.inputFiles='/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/DA35B5E5-4C99-E511-8015-02163E0137D4.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIOniaL1DoubleMu0/AOD/PromptReco-v1/000/262/735/00000/B0EC6FA1-4E99-E511-B663-02163E013910.root'#HIOniaL1DoubleMu0
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/DA35B5E5-4C99-E511-8015-02163E0137D4.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias1/AOD/PromptReco-v1/000/262/726/00000/EE7F4A63-4599-E511-9CE5-02163E013850.root'#HIMinimumBias1
 
 ivars.outputFile='finder_PbPb.root'
 ivars.parseArguments()# get and parse the command line arguments
