@@ -425,8 +425,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi-
                     //////////////////////////////////////////////////////////////////////////
-                    //float mass_window[2] = {1.7,2.1};
-                    float mass_window[2] = {D0_MASS-0.2,D0_MASS+0.2};
+                    float d0_mass_window[2] = {D0_MASS-0.2,D0_MASS+0.2};
                     
                     if(Dchannel_[0] == 1){
                         std::vector< std::vector< std::pair<float, int> > > PermuVec;
@@ -438,9 +437,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 1);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 1);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, -1, -1, false, false, 1);
+                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi+
@@ -455,13 +454,14 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 2);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 2);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, -1, -1, false, false, 2);
+                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 2);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi+pi+
                     //////////////////////////////////////////////////////////////////////////
+					float dplus_mass_window[2] = {DPLUS_MASS-0.2,DPLUS_MASS+0.2};
                     if(Dchannel_[2] == 1){
                         std::vector< std::vector< std::pair<float, int> > > PermuVec;
                         std::vector< std::pair<float, int> > InVec;
@@ -474,9 +474,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 3);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, PermuVec[i], -1, -1, false, false, 3);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, -1, -1, false, false, 3);
+                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, InVec, -1, -1, false, false, 3);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi-pi-
@@ -493,9 +493,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 4);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, PermuVec[i], -1, -1, false, false, 4);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, -1, -1, false, false, 4);
+                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, InVec, -1, -1, false, false, 4);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi-pi+pi+
@@ -514,9 +514,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 5);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 5);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, -1, -1, false, false, 5);
+                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 5);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi+pi-pi-
@@ -535,13 +535,14 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], -1, -1, false, false, 6);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 6);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, -1, -1, false, false, 6);
+                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 6);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+K-(Phi)pi+
                     //////////////////////////////////////////////////////////////////////////
+					float dsubs_mass_window[2] = {DSUBS_MASS-0.2,DSUBS_MASS+0.2};
                     if(Dchannel_[6] == 1){
                         std::vector< std::vector< std::pair<float, int> > > PermuVec;
                         std::vector< std::pair<float, int> > InVec;
@@ -554,9 +555,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 7);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 7);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, PHI_MASS, 0.1, false, false, 7);
+                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, InVec, PHI_MASS, 0.1, false, false, 7);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+K-(Phi)pi-
@@ -573,9 +574,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 8);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 8);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, mass_window, InVec, PHI_MASS, 0.1, false, false, 8);
+                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, InVec, PHI_MASS, 0.1, false, false, 8);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: D0(K-pi+)pi+
