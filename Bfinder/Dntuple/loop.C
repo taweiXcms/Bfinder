@@ -1,16 +1,24 @@
-#include "format.h"
-#include "../interface/Dntuple.h"
-#include "loop.h"
+using namespace std;
 
-Bool_t iseos = true;
-int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+#include "loop.h"
+#include "../interface/format.h"
+#include "../interface/Dntuple.h"
+
+Bool_t iseos = false;
+Bool_t istest = false;
+int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_20151209_dPt5tkPt1_D0DsDstar3p5p/finder_pp_194_1_nRh.root",
+         TString outfile="/data/wangj/Data2015/Dntuple/example/test", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
-  
-  infile="/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151202/CMSSW_7_5_5_patch4/src/test3/finder_PbPb.root";
-  outfile="test";
-  REAL=false;
-  iseos=false;
+  if(istest)
+    {
+      //this testing sample doesn't have skimtree and hitree
+      infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb_253.root";
+      outfile="test";
+      REAL=false;
+      isPbPb=false;
+      iseos=false;
+      checkMatching=true;
+    }
 
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
@@ -46,21 +54,33 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
-  TFile *outf = new TFile(Form("%s_Evtfrom%dto%d.root", outfile.Data(), startEntries, endEntries),"recreate");
+  TString ofname;
+  if(endEntries==nentries&&startEntries==0) ofname = Form("%s_Evt_All.root", outfile.Data());
+  else ofname = Form("%s_Evt_%.0d_to_%.0d.root", outfile.Data(), startEntries, endEntries);
+  TFile *outf = new TFile(ofname,"recreate");
 
-  int isDchannel[6];
+  int isDchannel[12];
   isDchannel[0] = 1; //k+pi-
   isDchannel[1] = 1; //k-pi+
-  isDchannel[2] = 0; //k-pi+pi+
-  isDchannel[3] = 0; //k+pi-pi-
-  isDchannel[4] = 0; //k-pi-pi+pi+
-  isDchannel[5] = 0; //k+pi+pi-pi-
+  isDchannel[2] = 1; //k-pi+pi+
+  isDchannel[3] = 1; //k+pi-pi-
+  isDchannel[4] = 1; //k-pi-pi+pi+
+  isDchannel[5] = 1; //k+pi+pi-pi-
+  isDchannel[6] = 1; 
+  isDchannel[7] = 1; 
+  isDchannel[8] = 1; 
+  isDchannel[9] = 1; 
+  isDchannel[10] = 1; 
+  isDchannel[11] = 1;
 
   cout<<"--- Building trees"<<endl;
-  TTree* ntD1 = new TTree("ntDkpi","");       Dntuple->buildDBranch(ntD1);
-  TTree* ntD2 = new TTree("ntDkpipi","");     Dntuple->buildDBranch(ntD2);
-  TTree* ntD3 = new TTree("ntDkpipipi","");   Dntuple->buildDBranch(ntD3);
-  TTree* ntGen = new TTree("ntGen","");       Dntuple->buildGenBranch(ntGen);
+  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1);
+  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2);
+  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3);
+  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4);
+  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
+  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
+  TTree* ntGen = new TTree("ntGen","");           Dntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
   TTree* ntSkim = skimroot->CloneTree(0);
@@ -69,7 +89,6 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
   ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
-  int flagEvt=0, offsetHltTree=0;
   cout<<"--- Check the number of events for three trees"<<endl;
   cout<<root->GetEntries()<<" "<<hltroot->GetEntries();
   if(isPbPb) cout<<" "<<hiroot->GetEntries();
@@ -81,26 +100,33 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
       hltroot->GetEntry(i);
       skimroot->GetEntry(i);
       if(isPbPb) hiroot->GetEntry(i);
-      if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
+      if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
         {
-          if(((int)Df_HLT_Event!=EvtInfo->EvtNo||(int)Df_HLT_Run!=EvtInfo->RunNo||(int)Df_HLT_LumiBlock!=EvtInfo->LumiNo) || (isPbPb&&((int)Df_HiTree_Evt!=EvtInfo->EvtNo||(int)Df_HiTree_Run!=EvtInfo->RunNo||(int)Df_HiTree_Lumi!=EvtInfo->LumiNo)))
+          if(((int)Df_HLT_Event!=EvtInfo->EvtNo||(int)Df_HLT_Run!=EvtInfo->RunNo||(int)Df_HLT_LumiBlock!=EvtInfo->LumiNo) || 
+             (isPbPb&&((int)Df_HiTree_Evt!=EvtInfo->EvtNo||(int)Df_HiTree_Run!=EvtInfo->RunNo||(int)Df_HiTree_Lumi!=EvtInfo->LumiNo)))
             {
-              cout<<"Error: not matched "<<i<<" | ";
-              cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo->EvtNo<<") RunNo("<<Df_HLT_Run<<","<<EvtInfo->RunNo<<") LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<") | EvtNo("<<Df_HiTree_Evt<<","<<EvtInfo->EvtNo<<") RunNo("<<Df_HiTree_Run<<","<<EvtInfo->RunNo<<") LumiNo("<<Df_HiTree_Lumi<<","<<EvtInfo->LumiNo<<")"<<endl;
+              cout<<"Error: not matched "<<i<<" | (Hlt,Dfr,Hi) | ";
+              cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo->EvtNo<<","<<Df_HiTree_Evt<<") ";
+              cout<<"RunNo("<<Df_HLT_Run<<","<<EvtInfo->RunNo<<","<<Df_HiTree_Run<<") ";
+              cout<<"LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<","<<Df_HiTree_Lumi<<")"<<endl;
               continue;
             }
         }
       ntHlt->Fill();
       ntSkim->Fill();
       if(isPbPb) ntHi->Fill();
-
-      Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3);
+      Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
       if(!REAL) Dntuple->fillDGenTree(ntGen, GenInfo, gskim);
     }
   outf->Write();
   cout<<"--- Writing finished"<<endl;
   outf->Close();
+
+  cout<<"--- In/Output files"<<endl;
+  cout<<ifname<<endl;
+  cout<<ofname<<endl;
+  cout<<endl;
 
   return 1;
 }

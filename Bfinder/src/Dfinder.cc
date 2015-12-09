@@ -11,21 +11,21 @@
 
 class Dfinder : public edm::EDAnalyzer
 {//{{{
-    public:
+public:
         explicit Dfinder(const edm::ParameterSet&);
         ~Dfinder();
         static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
- 
-    private:
+  
+private:
         virtual void beginJob() ;
         virtual void analyze(const edm::Event&, const edm::EventSetup&);
         virtual void endJob() ;
- 
+  
         virtual void beginRun(edm::Run const&, edm::EventSetup const&);
         virtual void endRun(edm::Run const&, edm::EventSetup const&);
         virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
         virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-        
+  
         virtual std::vector< std::vector< std::pair<float, int> > > GetPermu(std::vector< std::pair<float, int> > InVec);
         virtual std::vector< std::vector< std::pair<float, int> > > DelDuplicate(std::vector< std::vector< std::pair<float, int> > > InVec);
         virtual void BranchOutNTk(
@@ -96,6 +96,9 @@ class Dfinder : public edm::EDAnalyzer
         TTree* ntD1; 
         TTree* ntD2;
         TTree* ntD3; 
+        TTree* ntD4; 
+        TTree* ntD5; 
+        TTree* ntD6; 
         TTree* ntGen;
 
         //histograms
@@ -109,10 +112,13 @@ class Dfinder : public edm::EDAnalyzer
 void Dfinder::beginJob()
 {//{{{
     root = fs->make<TTree>("root","root");
-    ntD1  = fs->make<TTree>("ntDkpi","");       Dntuple->buildDBranch(ntD1);
-    ntD2  = fs->make<TTree>("ntDkpipi","");     Dntuple->buildDBranch(ntD2);
-    ntD3  = fs->make<TTree>("ntDkpipipi","");   Dntuple->buildDBranch(ntD3);
-    ntGen = fs->make<TTree>("ntGen","");        Dntuple->buildGenBranch(ntGen);
+    ntD1 = fs->make<TTree>("ntDkpi","");           Dntuple->buildDBranch(ntD1);
+    ntD2 = fs->make<TTree>("ntDkpipi","");         Dntuple->buildDBranch(ntD2);
+    ntD3 = fs->make<TTree>("ntDkpipipi","");       Dntuple->buildDBranch(ntD3);
+    ntD4 = fs->make<TTree>("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4);
+    ntD5 = fs->make<TTree>("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
+    ntD6 = fs->make<TTree>("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
+    ntGen = fs->make<TTree>("ntGen","");           Dntuple->buildGenBranch(ntGen);
     EvtInfo.regTree(root);
     VtxInfo.regTree(root);
     TrackInfo.regTree(root, detailMode_);
@@ -999,15 +1005,21 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
  
     //Made a Dntuple on the fly   
     if(makeDntuple_){
-        int isDchannel[6];
+        int isDchannel[12];
         isDchannel[0] = 1; //k+pi-
         isDchannel[1] = 1; //k-pi+
-        isDchannel[2] = 0; //k-pi+pi+
-        isDchannel[3] = 0; //k+pi-pi-
-        isDchannel[4] = 0; //k-pi-pi+pi+
-        isDchannel[5] = 0; //k+pi+pi-pi-
+        isDchannel[2] = 1; //k-pi+pi+
+        isDchannel[3] = 1; //k+pi-pi-
+        isDchannel[4] = 1; //k-pi-pi+pi+
+        isDchannel[5] = 1; //k+pi+pi-pi-
+        isDchannel[6] = 1; 
+        isDchannel[7] = 1; 
+        isDchannel[8] = 1; 
+        isDchannel[9] = 1; 
+        isDchannel[10] = 1; 
+        isDchannel[11] = 1;
         bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-        Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3);
+        Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
         if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
     }
 }
