@@ -53,6 +53,8 @@
 #define PROTON_MASS 0.9383
 #define D0_MASS 1.8648
 #define DSTAR_MASS 2.01028
+#define DPLUS_MASS 1.8696
+#define DSUBS_MASS 1.9683
 
 #define MUON_PDGID 13
 #define PION_PDGID 211
