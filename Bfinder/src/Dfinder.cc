@@ -86,6 +86,7 @@ class Dfinder : public edm::EDAnalyzer
         std::vector<double> dEtaCut_;
         std::vector<double> VtxChiProbCut_;
         std::vector<double> tktkRes_svpvDistanceCut_;
+		std::vector<double> tktkRes_alphaCut_;
         std::vector<double> svpvDistanceCut_;
         std::vector<double> MaxDocaCut_;
         std::vector<double> alphaCut_;
@@ -158,6 +159,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("VtxChiProbCut");
     svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut");
     tktkRes_svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut");
+	tktkRes_alphaCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_alphaCut");
     MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
     alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
@@ -187,7 +189,7 @@ Dfinder::~Dfinder()
 void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    //checking input parameter size
-    if( (Dchannel_.size() != dPtCut_.size()) || (dPtCut_.size() != dEtaCut_.size()) || (dEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != tktkRes_svpvDistanceCut_.size()) || (tktkRes_svpvDistanceCut_.size() != svpvDistanceCut_.size()) || (svpvDistanceCut_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size())){
+    if( (Dchannel_.size() != dPtCut_.size()) || (dPtCut_.size() != dEtaCut_.size()) || (dEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != tktkRes_svpvDistanceCut_.size()) || (tktkRes_svpvDistanceCut_.size() != svpvDistanceCut_.size()) || (svpvDistanceCut_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size()) || (alphaCut_.size() != tktkRes_alphaCut_.size())){
         std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
         return;
     }
@@ -1656,6 +1658,13 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_vtxZYErr[DInfo.size]        = tktkRes_VFPvtx->error().czy();
             DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
             DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
+        
+            TVector3 Res_svpvVec;
+            Res_svpvVec.SetXYZ(DInfo.tktkRes_vtxX[DInfo.size]-EvtInfo.PVx, DInfo.tktkRes_vtxY[DInfo.size]-EvtInfo.PVy, DInfo.tktkRes_vtxZ[DInfo.size]-EvtInfo.PVz);
+            TVector3 Res_dVec;
+            Res_dVec.SetPtEtaPhi(DInfo.tktkRes_pt[DInfo.size], DInfo.tktkRes_eta[DInfo.size], DInfo.tktkRes_phi[DInfo.size]);
+            DInfo.tktkRes_alpha[DInfo.size] = Res_svpvVec.Angle(Res_dVec);
+            if( DInfo.tktkRes_alpha[DInfo.size] > tktkRes_alphaCut_[Dchannel_number-1]) continue;
 
             VertexDistance3D Res_a3d;
             DInfo.tktkRes_svpvDistance[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).value();
