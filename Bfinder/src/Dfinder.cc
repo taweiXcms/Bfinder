@@ -11,24 +11,25 @@
 
 class Dfinder : public edm::EDAnalyzer
 {//{{{
-public:
+    public:
         explicit Dfinder(const edm::ParameterSet&);
         ~Dfinder();
         static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-  
-private:
+ 
+    private:
         virtual void beginJob() ;
         virtual void analyze(const edm::Event&, const edm::EventSetup&);
         virtual void endJob() ;
-  
+ 
         virtual void beginRun(edm::Run const&, edm::EventSetup const&);
         virtual void endRun(edm::Run const&, edm::EventSetup const&);
         virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
         virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-  
+        
         virtual std::vector< std::vector< std::pair<float, int> > > GetPermu(std::vector< std::pair<float, int> > InVec);
         virtual std::vector< std::vector< std::pair<float, int> > > DelDuplicate(std::vector< std::vector< std::pair<float, int> > > InVec);
-        virtual void BranchOutNTk(
+        
+		virtual void BranchOutNTk(
             DInfoBranches &DInfo, 
             std::vector<pat::GenericParticle> input_tracks, 
             reco::Vertex thePrimaryV,
@@ -40,23 +41,32 @@ private:
             double tktkRes_mass_window,
             bool doConstrainFit,
             bool SequentialFit,
-            int Dchannel_number
+            int Dchannel_number,
+			int TkCombinationMethod = -1
         );
-        virtual void BranchOutNTkResFast(
-            DInfoBranches &DInfo, 
+
+        virtual void TkCombinationPermutation(
             std::vector<pat::GenericParticle> input_tracks, 
-            reco::Vertex thePrimaryV,
             std::vector<int> isNeededTrackIdx,
-            std::vector<int> &D_counter,
             float *mass_window,
             std::vector< std::pair<float, int> > TkMassCharge,
             double tktkRes_mass,
             double tktkRes_mass_window,
-            bool doConstrainFit,
-            bool SequentialFit,
-            int Dchannel_number
+        	std::vector< std::vector<double> > &selectedTkhidxSet,
+			int Dchannel_number
         );
- 
+
+        virtual void TkCombinationResFast(
+            std::vector<pat::GenericParticle> input_tracks, 
+            std::vector<int> isNeededTrackIdx,
+            float *mass_window,
+            std::vector< std::pair<float, int> > TkMassCharge,
+            double tktkRes_mass,
+            double tktkRes_mass_window,
+        	std::vector< std::vector<double> > &selectedTkhidxSet,
+			int Dchannel_number
+        );
+
         // ----------member data ---------------------------
         edm::ESHandle<MagneticField> bField;
         edm::ParameterSet theConfig;
@@ -443,9 +453,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 1);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 1, 0);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 1);
+                        //Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 1, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi+
@@ -460,9 +470,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 2);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 2, 0);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 2);
+                        //Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 2, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi+pi+
@@ -480,9 +490,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, PermuVec[i], -1, -1, false, false, 3);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, PermuVec[i], -1, -1, false, false, 3, 0);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, InVec, -1, -1, false, false, 3);
+                        //Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, InVec, -1, -1, false, false, 3, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi-pi-
@@ -499,9 +509,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, PermuVec[i], -1, -1, false, false, 4);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, PermuVec[i], -1, -1, false, false, 4, 0);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, InVec, -1, -1, false, false, 4);
+                        //Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dplus_mass_window, InVec, -1, -1, false, false, 4, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K-pi-pi+pi+
@@ -520,9 +530,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 5);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 5, 0);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 5);
+                        //Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 5, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+pi+pi-pi-
@@ -541,9 +551,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         for(unsigned int i = 0; i < PermuVec.size(); i++){
-                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 6);
+                            Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, PermuVec[i], -1, -1, false, false, 6, 0);
                         }
-                        //Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 6);
+                        //Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, d0_mass_window, InVec, -1, -1, false, false, 6, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+K-(Phi)pi+
@@ -561,9 +571,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 7);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 7, 0);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, InVec, PHI_MASS, 0.1, false, false, 7);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, InVec, PHI_MASS, 0.1, false, false, 7, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: K+K-(Phi)pi-
@@ -580,9 +590,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 8);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, PermuVec[i], PHI_MASS, 0.1, false, false, 8, 0);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, InVec, PHI_MASS, 0.1, false, false, 8);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dsubs_mass_window, InVec, PHI_MASS, 0.1, false, false, 8, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: D0(K-pi+)pi+
@@ -600,9 +610,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 9);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 9, 0);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 9);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 9, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: D0bar(K+pi-)pi-
@@ -619,9 +629,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 10);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 10, 0);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 10);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 10, 1);
                     }
 
                     //////////////////////////////////////////////////////////////////////////
@@ -643,9 +653,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 11);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 11, 0);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 11);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 11, 1);
                     }
 
                     //////////////////////////////////////////////////////////////////////////
@@ -667,9 +677,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
-                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 12);
+                        //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 12, 0);
                         //}
-                        Dfinder::BranchOutNTkResFast( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 12);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 12, 1);
                     }
 
                     printf("D_counter: ");
@@ -1022,6 +1032,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
         if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
     }
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------{{{
@@ -1117,26 +1128,371 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     double tktkRes_mass_window,
     bool doConstrainFit,
     bool SequentialFit,
-    int Dchannel_number
+    int Dchannel_number,
+	int TkCombinationMethod
 ){
     if(Dchannel_number > (int)Dchannel_.size()){ printf("Exceeding defined # of channel, exit"); return;}
-    float chi = 0.;
-    float ndf = 0.;
+
+	std::vector< std::vector<double> > selectedTkhidxSet;
+	if( TkCombinationMethod == 0 ) 
+        TkCombinationPermutation( input_tracks, isNeededTrackIdx, mass_window, TkMassCharge, tktkRes_mass, tktkRes_mass_window, selectedTkhidxSet, Dchannel_number);
+    else if( TkCombinationMethod == 1 )
+        TkCombinationResFast( input_tracks, isNeededTrackIdx, mass_window, TkMassCharge, tktkRes_mass, tktkRes_mass_window, selectedTkhidxSet, Dchannel_number);
+    else
+		{ printf("unknown method of track combination, exit"); return;}
+//    std::cout<<"selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
+	
+	float chi = 0.;
+	float ndf = 0.;
+
+    //particle factory: produce transient tracks
+    KinematicParticleFactoryFromTransientTrack pFactory;
+    VirtualKinematicParticleFactory vFactory;
+    //fitter for D
+    KinematicParticleVertexFitter   tktk_fitter;
+    RefCountedKinematicTree         tktk_VFT;
+    RefCountedKinematicParticle     tktk_VFP;
+    RefCountedKinematicVertex       tktk_VFPvtx;
+    //constrain fit fitter
+    KinematicConstrainedVertexFitter kcv_tktk_fitter;
+    //fitter for Res
+    KinematicParticleVertexFitter   tktkRes_fitter;
+    RefCountedKinematicTree         tktkRes_VFT;
+    RefCountedKinematicParticle     tktkRes_VFP;
+    RefCountedKinematicVertex       tktkRes_VFPvtx;
+
+    TLorentzVector v4_tk;
+    std::vector<TLorentzVector> tktk_4vecs;//fitted tks
+    TLorentzVector tktk_4vec;//fitted D
+    std::vector<TLorentzVector> tktkRes_4vecs;//fitted Res tks
+    TLorentzVector tktkRes_4vec;//fitted Res
+    std::vector<RefCountedKinematicParticle> tktk_candidate;//input tracks to D fitter
+    std::vector<RefCountedKinematicParticle> tktkRes_candidate;//input tracks to Res fitter
+    std::vector<RefCountedKinematicParticle> tktkCands;//output tracks from D fitter
+    std::vector<RefCountedKinematicParticle> tktkResCands;//output tracks from Res fitter
+
+    for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
+        if (DInfo.size >= MAX_XB) break;
+
+        //clear before using
+        v4_tk.Clear();
+        tktk_4vecs.clear();
+        tktk_4vec.Clear();
+        tktkRes_4vecs.clear();
+        tktkRes_4vec.Clear();
+        tktk_candidate.clear();
+        tktkRes_candidate.clear();
+        tktkCands.clear();
+        tktkResCands.clear();
+
+        //push back the Res tracks as first tracks
+        ParticleMass tk_mass;
+        //keep track of the push_back track index
+        std::vector<int> pushbackTrkIdx;
+        std::vector<int> pushbackResTrkIdx;
+        float tk_sigma;
+        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
+            if(TkMassCharge[p].second==0) continue;
+            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
+            if (!tkTT.isValid()) continue;
+            tk_mass = fabs(TkMassCharge[p].first);
+            tk_sigma = Functs.getParticleSigma(tk_mass);
+            if(!SequentialFit){
+                tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+                pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
+            }
+            if(tktkRes_mass>0){
+                tktkRes_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+                pushbackResTrkIdx.push_back(selectedTkhidxSet[i][p]);
+            }
+        }
+
+        //if there is tktk Res, check its fit validity also
+        if(tktkRes_mass>0){
+            tktkRes_VFT = tktkRes_fitter.fit(tktkRes_candidate);
+            if(!tktkRes_VFT->isValid()) continue;
+            DMassCutLevel[Dchannel_number-1]->Fill(3);
+            tktkRes_VFP   = tktkRes_VFT->currentParticle();
+            tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
+            double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
+
+            if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
+            DMassCutLevel[Dchannel_number-1]->Fill(4);
+
+            if(SequentialFit){
+                float tktkchi = tktkRes_VFPvtx->chiSquared();
+                float tktkndf = tktkRes_VFPvtx->degreesOfFreedom();
+                tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
+                //tktk_candidate.push_back(tktkRes_VFP);
+                pushbackTrkIdx.push_back(-1);//means its a resonance particle
+            }
+        }
+        //push back the other tracks
+        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
+            if(TkMassCharge[p].second==1) continue;
+            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
+            if (!tkTT.isValid()) continue;
+            tk_mass = fabs(TkMassCharge[p].first);
+            tk_sigma = Functs.getParticleSigma(tk_mass);
+            tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
+            pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
+        }
+        DMassCutLevel[Dchannel_number-1]->Fill(5);
+
+        double MaximumDoca = Functs.getMaxDoca(tktk_candidate);
+        if (MaximumDoca > MaxDocaCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(6);
+
+        if(tktkRes_mass>0){
+            if(doConstrainFit){
+                ParticleMass tktkResMass = tktkRes_mass;
+                MultiTrackKinematicConstraint *tktkResConstraint = new TwoTrackMassKinematicConstraint(tktkResMass);
+                tktk_VFT = kcv_tktk_fitter.fit(tktk_candidate, tktkResConstraint);
+            }
+            else tktk_VFT = tktk_fitter.fit(tktk_candidate);
+        }
+        else{
+            tktk_VFT = tktk_fitter.fit(tktk_candidate);
+        }
+
+        if(!tktk_VFT->isValid()) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(7);
+
+        tktk_VFT->movePointerToTheTop();
+        tktk_VFP   = tktk_VFT->currentParticle();
+        tktk_VFPvtx = tktk_VFT->currentDecayVertex();
+        if (!tktk_VFPvtx->vertexIsValid()) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(8);
+
+        double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
+        if(chi2_prob_tktk < VtxChiProbCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(9);
+
+        tktkCands  = tktk_VFT->finalStateParticles();
+
+        //cut mass window after fit
+        //if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(10);
+
+        for(unsigned int k = 0; k < tktkCands.size(); k++){
+            v4_tk.SetPxPyPzE(tktkCands[k]->currentState().kinematicParameters().momentum().x(),
+                                     tktkCands[k]->currentState().kinematicParameters().momentum().y(),
+                                     tktkCands[k]->currentState().kinematicParameters().momentum().z(),
+                                     tktkCands[k]->currentState().kinematicParameters().energy());
+            tktk_4vecs.push_back(v4_tk);
+            v4_tk.Clear();
+        }
+
+        tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
+                tktk_VFP->currentState().kinematicParameters().momentum().y(),
+                tktk_VFP->currentState().kinematicParameters().momentum().z(),
+                tktk_VFP->currentState().kinematicParameters().energy());
+
+        //tktkRes fit info
+        if(tktkRes_mass>0){
+            tktkResCands = tktkRes_VFT->finalStateParticles();
+
+            for(unsigned int k = 0; k < tktkResCands.size(); k++){
+                v4_tk.SetPxPyPzE(tktkResCands[k]->currentState().kinematicParameters().momentum().x(),
+                                        tktkResCands[k]->currentState().kinematicParameters().momentum().y(),
+                                        tktkResCands[k]->currentState().kinematicParameters().momentum().z(),
+                                        tktkResCands[k]->currentState().kinematicParameters().energy());
+                tktkRes_4vecs.push_back(v4_tk);
+                v4_tk.Clear();
+            }
+
+            tktkRes_4vec.SetPxPyPzE(tktkRes_VFP->currentState().kinematicParameters().momentum().x(),
+                    tktkRes_VFP->currentState().kinematicParameters().momentum().y(),
+                    tktkRes_VFP->currentState().kinematicParameters().momentum().z(),
+                    tktkRes_VFP->currentState().kinematicParameters().energy());
+
+            DInfo.tktkRes_mass[DInfo.size]            = tktkRes_4vec.Mag();
+            DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
+            DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
+            DInfo.tktkRes_phi[DInfo.size]             = tktkRes_4vec.Phi();
+            DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
+            DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
+            DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
+            DInfo.tktkRes_vtxXErr[DInfo.size]         = tktkRes_VFPvtx->error().cxx();
+            DInfo.tktkRes_vtxYErr[DInfo.size]         = tktkRes_VFPvtx->error().cyy();
+            DInfo.tktkRes_vtxZErr[DInfo.size]         = tktkRes_VFPvtx->error().czz();
+            DInfo.tktkRes_vtxYXErr[DInfo.size]        = tktkRes_VFPvtx->error().cyx();
+            DInfo.tktkRes_vtxZXErr[DInfo.size]        = tktkRes_VFPvtx->error().czx();
+            DInfo.tktkRes_vtxZYErr[DInfo.size]        = tktkRes_VFPvtx->error().czy();
+            DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
+            DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
+
+            //index initialization to -2
+            DInfo.tktkRes_rftk1_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk2_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk3_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk4_index[DInfo.size]     = -2;
+
+            DInfo.tktkRes_rftk1_mass[DInfo.size]      = tktkRes_4vecs[0].Mag();
+            DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_4vecs[0].Pt();
+            DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_4vecs[0].Eta();
+            DInfo.tktkRes_rftk1_phi[DInfo.size]       = tktkRes_4vecs[0].Phi();
+            DInfo.tktkRes_rftk1_index[DInfo.size]     = pushbackResTrkIdx[0];
+            DInfo.tktkRes_rftk2_mass[DInfo.size]      = tktkRes_4vecs[1].Mag();
+            DInfo.tktkRes_rftk2_pt[DInfo.size]        = tktkRes_4vecs[1].Pt();
+            DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_4vecs[1].Eta();
+            DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_4vecs[1].Phi();
+            DInfo.tktkRes_rftk2_index[DInfo.size]     = pushbackResTrkIdx[1];
+            if(tktkResCands.size()>2){
+                DInfo.tktkRes_rftk3_mass[DInfo.size]      = tktkRes_4vecs[2].Mag();
+                DInfo.tktkRes_rftk3_pt[DInfo.size]        = tktkRes_4vecs[2].Pt();
+                DInfo.tktkRes_rftk3_eta[DInfo.size]       = tktkRes_4vecs[2].Eta();
+                DInfo.tktkRes_rftk3_phi[DInfo.size]       = tktkRes_4vecs[2].Phi();
+                DInfo.tktkRes_rftk3_index[DInfo.size]     = pushbackResTrkIdx[2];
+            }
+            if(tktkResCands.size()>3){
+                DInfo.tktkRes_rftk4_mass[DInfo.size]      = tktkRes_4vecs[3].Mag();
+                DInfo.tktkRes_rftk4_pt[DInfo.size]        = tktkRes_4vecs[3].Pt();
+                DInfo.tktkRes_rftk4_eta[DInfo.size]       = tktkRes_4vecs[3].Eta();
+                DInfo.tktkRes_rftk4_phi[DInfo.size]       = tktkRes_4vecs[3].Phi();
+                DInfo.tktkRes_rftk4_index[DInfo.size]     = pushbackResTrkIdx[3];
+            }
+        }
+
+        //fit info
+        DInfo.index[DInfo.size]           = DInfo.size;
+        DInfo.mass[DInfo.size]            = tktk_4vec.Mag();
+        DInfo.pt[DInfo.size]              = tktk_4vec.Pt();
+        DInfo.eta[DInfo.size]             = tktk_4vec.Eta();
+        DInfo.phi[DInfo.size]             = tktk_4vec.Phi();
+        DInfo.px[DInfo.size]              = tktk_4vec.Px();
+        DInfo.py[DInfo.size]              = tktk_4vec.Py();
+        DInfo.pz[DInfo.size]              = tktk_4vec.Pz();
+        DInfo.MaxDoca[DInfo.size]         = MaximumDoca;
+
+        VertexDistance3D a3d;
+        //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
+        DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
+        DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
+        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(11);
+
+        reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
+        reco::Vertex::Point vp2(tktk_VFPvtx->vertexState().position().x(), tktk_VFPvtx->vertexState().position().y(), 0.);
+        ROOT::Math::SVector<double, 6> sv1(thePrimaryV.covariance(0,0), thePrimaryV.covariance(0,1), thePrimaryV.covariance(1,1), 0., 0., 0.);
+        ROOT::Math::SVector<double, 6> sv2(tktk_VFPvtx->vertexState().error().cxx(), tktk_VFPvtx->vertexState().error().cyx(), tktk_VFPvtx->vertexState().error().cyy(), 0., 0., 0.);
+        reco::Vertex::Error ve1(sv1);
+        reco::Vertex::Error ve2(sv2);
+        reco::Vertex v1(vp1, ve1);
+        reco::Vertex v2(vp2, ve2);
+        DInfo.svpvDistance_2D[DInfo.size] = a3d.distance(v1, v2).value();
+        DInfo.svpvDisErr_2D[DInfo.size] = a3d.distance(v1, v2).error();
+
+        DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
+        DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
+        DInfo.vtxZ[DInfo.size]            = tktk_VFPvtx->position().z();
+        DInfo.vtxXErr[DInfo.size]         = tktk_VFPvtx->error().cxx();
+        DInfo.vtxYErr[DInfo.size]         = tktk_VFPvtx->error().cyy();
+        DInfo.vtxZErr[DInfo.size]         = tktk_VFPvtx->error().czz();
+        DInfo.vtxYXErr[DInfo.size]        = tktk_VFPvtx->error().cyx();
+        DInfo.vtxZXErr[DInfo.size]        = tktk_VFPvtx->error().czx();
+        DInfo.vtxZYErr[DInfo.size]        = tktk_VFPvtx->error().czy();
+        DInfo.vtxdof[DInfo.size]          = tktk_VFPvtx->degreesOfFreedom();
+        DInfo.vtxchi2[DInfo.size]         = tktk_VFPvtx->chiSquared();
+        
+        TVector3 svpvVec;
+        svpvVec.SetXYZ(DInfo.vtxX[DInfo.size]-EvtInfo.PVx, DInfo.vtxY[DInfo.size]-EvtInfo.PVy, DInfo.vtxZ[DInfo.size]-EvtInfo.PVz);
+        TVector3 dVec;
+        dVec.SetXYZ(DInfo.px[DInfo.size], DInfo.py[DInfo.size], DInfo.pz[DInfo.size]);
+        DInfo.alpha[DInfo.size] = svpvVec.Angle(dVec);
+        if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
+        DMassCutLevel[Dchannel_number-1]->Fill(12);
+
+        DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
+        DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
+        DInfo.rftk1_eta[DInfo.size]       = tktk_4vecs[0].Eta();
+        DInfo.rftk1_phi[DInfo.size]       = tktk_4vecs[0].Phi();
+        DInfo.rftk2_mass[DInfo.size]      = tktk_4vecs[1].Mag();
+        DInfo.rftk2_pt[DInfo.size]        = tktk_4vecs[1].Pt();
+        DInfo.rftk2_eta[DInfo.size]       = tktk_4vecs[1].Eta();
+        DInfo.rftk2_phi[DInfo.size]       = tktk_4vecs[1].Phi();
+
+        //Index initialize to -2
+        DInfo.rftk1_index[DInfo.size] = -2;
+        DInfo.rftk2_index[DInfo.size] = -2;
+        DInfo.rftk3_index[DInfo.size] = -2;
+        DInfo.rftk4_index[DInfo.size] = -2;
+        DInfo.rftk5_index[DInfo.size] = -2;
+
+        DInfo.rftk1_index[DInfo.size]     = pushbackTrkIdx[0];
+        DInfo.rftk2_index[DInfo.size]     = pushbackTrkIdx[1];
+
+        //document the mass hypothesis
+        if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
+        else DInfo.rftk1_MassHypo[DInfo.size] = 321;
+        //If its a Res particle, save it as D0
+        if( DInfo.rftk1_index[DInfo.size] == -1) DInfo.rftk1_MassHypo[DInfo.size] = 421;
+
+        if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
+        else DInfo.rftk2_MassHypo[DInfo.size] = 321;
+
+        if(tktkCands.size()>2){
+            DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
+            DInfo.rftk3_pt[DInfo.size]    = tktk_4vecs[2].Pt();
+            DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
+            DInfo.rftk3_phi[DInfo.size]   = tktk_4vecs[2].Phi();
+            DInfo.rftk3_index[DInfo.size] = pushbackTrkIdx[2];
+            if( fabs(tktk_4vecs[2].Mag()-PION_MASS) < fabs(tktk_4vecs[2].Mag()-KAON_MASS) ) DInfo.rftk3_MassHypo[DInfo.size] = 211;
+            else DInfo.rftk3_MassHypo[DInfo.size] = 321;
+        }
+        if(tktkCands.size()>3){
+            DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
+            DInfo.rftk4_pt[DInfo.size]    = tktk_4vecs[3].Pt();
+            DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
+            DInfo.rftk4_phi[DInfo.size]   = tktk_4vecs[3].Phi();
+            DInfo.rftk4_index[DInfo.size] = pushbackTrkIdx[3];
+            if( fabs(tktk_4vecs[3].Mag()-PION_MASS) < fabs(tktk_4vecs[3].Mag()-KAON_MASS) ) DInfo.rftk4_MassHypo[DInfo.size] = 211;
+            else DInfo.rftk4_MassHypo[DInfo.size] = 321;
+        }
+        if(tktkCands.size()>4){
+            DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
+            DInfo.rftk5_pt[DInfo.size]    = tktk_4vecs[4].Pt();
+            DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();
+            DInfo.rftk5_phi[DInfo.size]   = tktk_4vecs[4].Phi();
+            DInfo.rftk5_index[DInfo.size] = pushbackTrkIdx[4];
+            if( fabs(tktk_4vecs[4].Mag()-PION_MASS) < fabs(tktk_4vecs[4].Mag()-KAON_MASS) ) DInfo.rftk5_MassHypo[DInfo.size] = 211;
+            else DInfo.rftk5_MassHypo[DInfo.size] = 321;
+        }
+
+        DInfo.type[DInfo.size] = Dchannel_number;
+        D_counter[Dchannel_number-1]++;
+
+        tktk_candidate.clear();
+        tktkCands.clear();
+        DInfo.size++;
+    }
+}
+//}}}
+
+void Dfinder::TkCombinationPermutation(
+    std::vector<pat::GenericParticle> input_tracks, 
+    std::vector<int> isNeededTrackIdx,
+    float *mass_window,
+    std::vector< std::pair<float, int> > TkMassCharge,
+    double tktkRes_mass,
+    double tktkRes_mass_window,
+	std::vector< std::vector<double> > &selectedTkhidxSet,
+	int Dchannel_number
+){
     int tk1_hindex = -1;
     int tk2_hindex = -1;
     int tk3_hindex = -1;
     int tk4_hindex = -1;
     int tk5_hindex = -1;
-    std::vector< std::vector<double> > selectedTkhidxSet;
 
     TLorentzVector v4_D, v4_Res;//unfitted D and Res
     TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;
     TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;
+    std::vector<double> selectedTkhidx;
     //for(std::vector<pat::GenericParticle>::const_iterator tk_it1=input_tracks.begin();
     //        tk_it1 != input_tracks.end() ; tk_it1++){
     for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
         v4_D.Clear(); v4_Res.Clear();
-        std::vector<double> selectedTkhidx;
         //tk1_hindex = int(tk_it1 - input_tracks.begin());
         //if(tk1_hindex>=int(isNeededTrack.size())) break;
         //if(!isNeededTrack[tk1_hindex]) continue;
@@ -1283,364 +1639,34 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             }
         }
     }
+//    std::cout<<"TkCombinationPermutation, selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
 
-    //std::cout<<"selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
-
-    //particle factory: produce transient tracks
-    KinematicParticleFactoryFromTransientTrack pFactory;
-    VirtualKinematicParticleFactory vFactory;
-    //fitter for D
-    KinematicParticleVertexFitter   tktk_fitter;
-    RefCountedKinematicTree         tktk_VFT;
-    RefCountedKinematicParticle     tktk_VFP;
-    RefCountedKinematicVertex       tktk_VFPvtx;
-    //constrain fit fitter
-    KinematicConstrainedVertexFitter kcv_tktk_fitter;
-    //fitter for Res
-    KinematicParticleVertexFitter   tktkRes_fitter;
-    RefCountedKinematicTree         tktkRes_VFT;
-    RefCountedKinematicParticle     tktkRes_VFP;
-    RefCountedKinematicVertex       tktkRes_VFPvtx;
-
-    TLorentzVector v4_tk;
-    std::vector<TLorentzVector> tktk_4vecs;//fitted tks
-    TLorentzVector tktk_4vec;//fitted D
-    std::vector<TLorentzVector> tktkRes_4vecs;//fitted Res tks
-    TLorentzVector tktkRes_4vec;//fitted Res
-    std::vector<RefCountedKinematicParticle> tktk_candidate;//input tracks to D fitter
-    std::vector<RefCountedKinematicParticle> tktkRes_candidate;//input tracks to Res fitter
-    std::vector<RefCountedKinematicParticle> tktkCands;//output tracks from D fitter
-    std::vector<RefCountedKinematicParticle> tktkResCands;//output tracks from Res fitter
-
-    for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
-        if (DInfo.size >= MAX_XB) break;
-
-        //clear before using
-        v4_tk.Clear();
-        tktk_4vecs.clear();
-        tktk_4vec.Clear();
-        tktkRes_4vecs.clear();
-        tktkRes_4vec.Clear();
-        tktk_candidate.clear();
-        tktkRes_candidate.clear();
-        tktkCands.clear();
-        tktkResCands.clear();
-
-        //push back the Res tracks as first tracks
-        ParticleMass tk_mass;
-        //keep track of the push_back track index
-        std::vector<int> pushbackTrkIdx;
-        std::vector<int> pushbackResTrkIdx;
-        float tk_sigma;
-        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
-            if(TkMassCharge[p].second==0) continue;
-            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
-            if (!tkTT.isValid()) continue;
-            tk_mass = fabs(TkMassCharge[p].first);
-            tk_sigma = Functs.getParticleSigma(tk_mass);
-            if(!SequentialFit){
-                tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
-                pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
-            }
-            if(tktkRes_mass>0){
-                tktkRes_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
-                pushbackResTrkIdx.push_back(selectedTkhidxSet[i][p]);
-            }
-        }
-
-        //if there is tktk Res, check its fit validity also
-        if(tktkRes_mass>0){
-            tktkRes_VFT = tktkRes_fitter.fit(tktkRes_candidate);
-            if(!tktkRes_VFT->isValid()) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(3);
-            tktkRes_VFP   = tktkRes_VFT->currentParticle();
-            tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
-            double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
-
-            if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(4);
-
-            if(SequentialFit){
-                float tktkchi = tktkRes_VFPvtx->chiSquared();
-                float tktkndf = tktkRes_VFPvtx->degreesOfFreedom();
-                tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
-                //tktk_candidate.push_back(tktkRes_VFP);
-                pushbackTrkIdx.push_back(-1);//means its a resonance particle
-            }
-        }
-        //push back the other tracks
-        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
-            if(TkMassCharge[p].second==1) continue;
-            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
-            if (!tkTT.isValid()) continue;
-            tk_mass = fabs(TkMassCharge[p].first);
-            tk_sigma = Functs.getParticleSigma(tk_mass);
-            tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
-            pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
-        }
-        DMassCutLevel[Dchannel_number-1]->Fill(5);
-
-        double MaximumDoca = Functs.getMaxDoca(tktk_candidate);
-        if (MaximumDoca > MaxDocaCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(6);
-
-        if(tktkRes_mass>0){
-            if(doConstrainFit){
-                ParticleMass tktkResMass = tktkRes_mass;
-                MultiTrackKinematicConstraint *tktkResConstraint = new TwoTrackMassKinematicConstraint(tktkResMass);
-                tktk_VFT = kcv_tktk_fitter.fit(tktk_candidate, tktkResConstraint);
-            }
-            else tktk_VFT = tktk_fitter.fit(tktk_candidate);
-        }
-        else{
-            tktk_VFT = tktk_fitter.fit(tktk_candidate);
-        }
-
-        if(!tktk_VFT->isValid()) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(7);
-
-        tktk_VFT->movePointerToTheTop();
-        tktk_VFP   = tktk_VFT->currentParticle();
-        tktk_VFPvtx = tktk_VFT->currentDecayVertex();
-        if (!tktk_VFPvtx->vertexIsValid()) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(8);
-
-        double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-        if(chi2_prob_tktk < VtxChiProbCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(9);
-
-        tktkCands  = tktk_VFT->finalStateParticles();
-
-        //cut mass window after fit
-        //if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(10);
-
-        for(unsigned int k = 0; k < tktkCands.size(); k++){
-            v4_tk.SetPxPyPzE(tktkCands[k]->currentState().kinematicParameters().momentum().x(),
-                                     tktkCands[k]->currentState().kinematicParameters().momentum().y(),
-                                     tktkCands[k]->currentState().kinematicParameters().momentum().z(),
-                                     tktkCands[k]->currentState().kinematicParameters().energy());
-            tktk_4vecs.push_back(v4_tk);
-            v4_tk.Clear();
-        }
-
-        tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
-                tktk_VFP->currentState().kinematicParameters().momentum().y(),
-                tktk_VFP->currentState().kinematicParameters().momentum().z(),
-                tktk_VFP->currentState().kinematicParameters().energy());
-
-        //tktkRes fit info
-        if(tktkRes_mass>0){
-            tktkResCands = tktkRes_VFT->finalStateParticles();
-
-            for(unsigned int k = 0; k < tktkResCands.size(); k++){
-                v4_tk.SetPxPyPzE(tktkResCands[k]->currentState().kinematicParameters().momentum().x(),
-                                        tktkResCands[k]->currentState().kinematicParameters().momentum().y(),
-                                        tktkResCands[k]->currentState().kinematicParameters().momentum().z(),
-                                        tktkResCands[k]->currentState().kinematicParameters().energy());
-                tktkRes_4vecs.push_back(v4_tk);
-                v4_tk.Clear();
-            }
-
-            tktkRes_4vec.SetPxPyPzE(tktkRes_VFP->currentState().kinematicParameters().momentum().x(),
-                    tktkRes_VFP->currentState().kinematicParameters().momentum().y(),
-                    tktkRes_VFP->currentState().kinematicParameters().momentum().z(),
-                    tktkRes_VFP->currentState().kinematicParameters().energy());
-
-            DInfo.tktkRes_mass[DInfo.size]            = tktkRes_4vec.Mag();
-            DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
-            DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
-            DInfo.tktkRes_phi[DInfo.size]             = tktkRes_4vec.Phi();
-            DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
-            DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
-            DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
-            DInfo.tktkRes_vtxXErr[DInfo.size]         = tktkRes_VFPvtx->error().cxx();
-            DInfo.tktkRes_vtxYErr[DInfo.size]         = tktkRes_VFPvtx->error().cyy();
-            DInfo.tktkRes_vtxZErr[DInfo.size]         = tktkRes_VFPvtx->error().czz();
-            DInfo.tktkRes_vtxYXErr[DInfo.size]        = tktkRes_VFPvtx->error().cyx();
-            DInfo.tktkRes_vtxZXErr[DInfo.size]        = tktkRes_VFPvtx->error().czx();
-            DInfo.tktkRes_vtxZYErr[DInfo.size]        = tktkRes_VFPvtx->error().czy();
-            DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
-            DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
-
-            //index initialization to -2
-            DInfo.tktkRes_rftk1_index[DInfo.size]     = -2;
-            DInfo.tktkRes_rftk2_index[DInfo.size]     = -2;
-            DInfo.tktkRes_rftk3_index[DInfo.size]     = -2;
-            DInfo.tktkRes_rftk4_index[DInfo.size]     = -2;
-
-            DInfo.tktkRes_rftk1_mass[DInfo.size]      = tktkRes_4vecs[0].Mag();
-            DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_4vecs[0].Pt();
-            DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_4vecs[0].Eta();
-            DInfo.tktkRes_rftk1_phi[DInfo.size]       = tktkRes_4vecs[0].Phi();
-            DInfo.tktkRes_rftk1_index[DInfo.size]     = pushbackResTrkIdx[0];
-            DInfo.tktkRes_rftk2_mass[DInfo.size]      = tktkRes_4vecs[1].Mag();
-            DInfo.tktkRes_rftk2_pt[DInfo.size]        = tktkRes_4vecs[1].Pt();
-            DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_4vecs[1].Eta();
-            DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_4vecs[1].Phi();
-            DInfo.tktkRes_rftk2_index[DInfo.size]     = pushbackResTrkIdx[1];
-            if(tktkResCands.size()>2){
-                DInfo.tktkRes_rftk3_mass[DInfo.size]      = tktkRes_4vecs[2].Mag();
-                DInfo.tktkRes_rftk3_pt[DInfo.size]        = tktkRes_4vecs[2].Pt();
-                DInfo.tktkRes_rftk3_eta[DInfo.size]       = tktkRes_4vecs[2].Eta();
-                DInfo.tktkRes_rftk3_phi[DInfo.size]       = tktkRes_4vecs[2].Phi();
-                DInfo.tktkRes_rftk3_index[DInfo.size]     = pushbackResTrkIdx[2];
-            }
-            if(tktkResCands.size()>3){
-                DInfo.tktkRes_rftk4_mass[DInfo.size]      = tktkRes_4vecs[3].Mag();
-                DInfo.tktkRes_rftk4_pt[DInfo.size]        = tktkRes_4vecs[3].Pt();
-                DInfo.tktkRes_rftk4_eta[DInfo.size]       = tktkRes_4vecs[3].Eta();
-                DInfo.tktkRes_rftk4_phi[DInfo.size]       = tktkRes_4vecs[3].Phi();
-                DInfo.tktkRes_rftk4_index[DInfo.size]     = pushbackResTrkIdx[3];
-            }
-        }
-
-        //fit info
-        DInfo.index[DInfo.size]           = DInfo.size;
-        DInfo.mass[DInfo.size]            = tktk_4vec.Mag();
-        DInfo.pt[DInfo.size]              = tktk_4vec.Pt();
-        DInfo.eta[DInfo.size]             = tktk_4vec.Eta();
-        DInfo.phi[DInfo.size]             = tktk_4vec.Phi();
-        DInfo.px[DInfo.size]              = tktk_4vec.Px();
-        DInfo.py[DInfo.size]              = tktk_4vec.Py();
-        DInfo.pz[DInfo.size]              = tktk_4vec.Pz();
-        DInfo.MaxDoca[DInfo.size]         = MaximumDoca;
-
-        VertexDistance3D a3d;
-        //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
-        DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
-        DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
-        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(11);
-
-        reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
-        reco::Vertex::Point vp2(tktk_VFPvtx->vertexState().position().x(), tktk_VFPvtx->vertexState().position().y(), 0.);
-        ROOT::Math::SVector<double, 6> sv1(thePrimaryV.covariance(0,0), thePrimaryV.covariance(0,1), thePrimaryV.covariance(1,1), 0., 0., 0.);
-        ROOT::Math::SVector<double, 6> sv2(tktk_VFPvtx->vertexState().error().cxx(), tktk_VFPvtx->vertexState().error().cyx(), tktk_VFPvtx->vertexState().error().cyy(), 0., 0., 0.);
-        reco::Vertex::Error ve1(sv1);
-        reco::Vertex::Error ve2(sv2);
-        reco::Vertex v1(vp1, ve1);
-        reco::Vertex v2(vp2, ve2);
-        DInfo.svpvDistance_2D[DInfo.size] = a3d.distance(v1, v2).value();
-        DInfo.svpvDisErr_2D[DInfo.size] = a3d.distance(v1, v2).error();
-
-        DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
-        DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
-        DInfo.vtxZ[DInfo.size]            = tktk_VFPvtx->position().z();
-        DInfo.vtxXErr[DInfo.size]         = tktk_VFPvtx->error().cxx();
-        DInfo.vtxYErr[DInfo.size]         = tktk_VFPvtx->error().cyy();
-        DInfo.vtxZErr[DInfo.size]         = tktk_VFPvtx->error().czz();
-        DInfo.vtxYXErr[DInfo.size]        = tktk_VFPvtx->error().cyx();
-        DInfo.vtxZXErr[DInfo.size]        = tktk_VFPvtx->error().czx();
-        DInfo.vtxZYErr[DInfo.size]        = tktk_VFPvtx->error().czy();
-        DInfo.vtxdof[DInfo.size]          = tktk_VFPvtx->degreesOfFreedom();
-        DInfo.vtxchi2[DInfo.size]         = tktk_VFPvtx->chiSquared();
-        
-        TVector3 svpvVec;
-        svpvVec.SetXYZ(DInfo.vtxX[DInfo.size]-EvtInfo.PVx, DInfo.vtxY[DInfo.size]-EvtInfo.PVy, DInfo.vtxZ[DInfo.size]-EvtInfo.PVz);
-        TVector3 dVec;
-        dVec.SetXYZ(DInfo.px[DInfo.size], DInfo.py[DInfo.size], DInfo.pz[DInfo.size]);
-        DInfo.alpha[DInfo.size] = svpvVec.Angle(dVec);
-        if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(12);
-
-        DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
-        DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
-        DInfo.rftk1_eta[DInfo.size]       = tktk_4vecs[0].Eta();
-        DInfo.rftk1_phi[DInfo.size]       = tktk_4vecs[0].Phi();
-        DInfo.rftk2_mass[DInfo.size]      = tktk_4vecs[1].Mag();
-        DInfo.rftk2_pt[DInfo.size]        = tktk_4vecs[1].Pt();
-        DInfo.rftk2_eta[DInfo.size]       = tktk_4vecs[1].Eta();
-        DInfo.rftk2_phi[DInfo.size]       = tktk_4vecs[1].Phi();
-
-        //Index initialize to -2
-        DInfo.rftk1_index[DInfo.size] = -2;
-        DInfo.rftk2_index[DInfo.size] = -2;
-        DInfo.rftk3_index[DInfo.size] = -2;
-        DInfo.rftk4_index[DInfo.size] = -2;
-        DInfo.rftk5_index[DInfo.size] = -2;
-
-        DInfo.rftk1_index[DInfo.size]     = pushbackTrkIdx[0];
-        DInfo.rftk2_index[DInfo.size]     = pushbackTrkIdx[1];
-
-        //document the mass hypothesis
-        if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
-        else DInfo.rftk1_MassHypo[DInfo.size] = 321;
-        //If its a Res particle, save it as D0
-        if( DInfo.rftk1_index[DInfo.size] == -1) DInfo.rftk1_MassHypo[DInfo.size] = 421;
-
-        if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
-        else DInfo.rftk2_MassHypo[DInfo.size] = 321;
-
-        if(tktkCands.size()>2){
-            DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
-            DInfo.rftk3_pt[DInfo.size]    = tktk_4vecs[2].Pt();
-            DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
-            DInfo.rftk3_phi[DInfo.size]   = tktk_4vecs[2].Phi();
-            DInfo.rftk3_index[DInfo.size] = pushbackTrkIdx[2];
-            if( fabs(tktk_4vecs[2].Mag()-PION_MASS) < fabs(tktk_4vecs[2].Mag()-KAON_MASS) ) DInfo.rftk3_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk3_MassHypo[DInfo.size] = 321;
-        }
-        if(tktkCands.size()>3){
-            DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
-            DInfo.rftk4_pt[DInfo.size]    = tktk_4vecs[3].Pt();
-            DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
-            DInfo.rftk4_phi[DInfo.size]   = tktk_4vecs[3].Phi();
-            DInfo.rftk4_index[DInfo.size] = pushbackTrkIdx[3];
-            if( fabs(tktk_4vecs[3].Mag()-PION_MASS) < fabs(tktk_4vecs[3].Mag()-KAON_MASS) ) DInfo.rftk4_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk4_MassHypo[DInfo.size] = 321;
-        }
-        if(tktkCands.size()>4){
-            DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
-            DInfo.rftk5_pt[DInfo.size]    = tktk_4vecs[4].Pt();
-            DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();
-            DInfo.rftk5_phi[DInfo.size]   = tktk_4vecs[4].Phi();
-            DInfo.rftk5_index[DInfo.size] = pushbackTrkIdx[4];
-            if( fabs(tktk_4vecs[4].Mag()-PION_MASS) < fabs(tktk_4vecs[4].Mag()-KAON_MASS) ) DInfo.rftk5_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk5_MassHypo[DInfo.size] = 321;
-        }
-
-        DInfo.type[DInfo.size] = Dchannel_number;
-        D_counter[Dchannel_number-1]++;
-
-        tktk_candidate.clear();
-        tktkCands.clear();
-        DInfo.size++;
-    }
+	return;
 }
-//}}}
 
-//BranchOutNTkResFast{{{
-void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
-    DInfoBranches &DInfo, 
+void Dfinder::TkCombinationResFast(
     std::vector<pat::GenericParticle> input_tracks, 
-    reco::Vertex thePrimaryV,
     std::vector<int> isNeededTrackIdx,
-    std::vector<int> &D_counter,
     float *mass_window,
     std::vector< std::pair<float, int> > TkMassCharge,
     double tktkRes_mass,
     double tktkRes_mass_window,
-    bool doConstrainFit,
-    bool SequentialFit,
-    int Dchannel_number
+	std::vector< std::vector<double> > &selectedTkhidxSet,
+	int Dchannel_number
 ){
-    if(Dchannel_number > (int)Dchannel_.size()){ printf("Exceeding defined # of channel, exit"); return;}
-    float chi = 0.;
-    float ndf = 0.;
     int tk1_hindex = -1;
     int tk2_hindex = -1;
     int tk3_hindex = -1;
     int tk4_hindex = -1;
     int tk5_hindex = -1;
-    std::vector< std::vector<double> > selectedTkhidxSet;
 
     TLorentzVector v4_D, v4_Res;//unfitted D and Res
     TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;
     TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;
-    for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
+    std::vector<double> selectedTkhidx;
+    
+	for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
         v4_D.Clear(); v4_Res.Clear();
-        std::vector<double> selectedTkhidx;
         tk1_hindex = isNeededTrackIdx[tk1idx];
         if(input_tracks[tk1_hindex].charge()*TkMassCharge[0].first<0) continue;
         v4_tk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
@@ -1768,332 +1794,11 @@ void Dfinder::BranchOutNTkResFast(//input 2~4 tracks
             }
         }
     }
+//    std::cout<<"TkCombinationResFast, selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
 
-    //std::cout<<"selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
+	return;
 
-    //particle factory: produce transient tracks
-    KinematicParticleFactoryFromTransientTrack pFactory;
-    VirtualKinematicParticleFactory vFactory;
-    //fitter for D
-    KinematicParticleVertexFitter   tktk_fitter;
-    RefCountedKinematicTree         tktk_VFT;
-    RefCountedKinematicParticle     tktk_VFP;
-    RefCountedKinematicVertex       tktk_VFPvtx;
-    //constrain fit fitter
-    KinematicConstrainedVertexFitter kcv_tktk_fitter;
-    //fitter for Res
-    KinematicParticleVertexFitter   tktkRes_fitter;
-    RefCountedKinematicTree         tktkRes_VFT;
-    RefCountedKinematicParticle     tktkRes_VFP;
-    RefCountedKinematicVertex       tktkRes_VFPvtx;
-
-    TLorentzVector v4_tk;
-    std::vector<TLorentzVector> tktk_4vecs;//fitted tks
-    TLorentzVector tktk_4vec;//fitted D
-    std::vector<TLorentzVector> tktkRes_4vecs;//fitted Res tks
-    TLorentzVector tktkRes_4vec;//fitted Res
-    std::vector<RefCountedKinematicParticle> tktk_candidate;//input tracks to D fitter
-    std::vector<RefCountedKinematicParticle> tktkRes_candidate;//input tracks to Res fitter
-    std::vector<RefCountedKinematicParticle> tktkCands;//output tracks from D fitter
-    std::vector<RefCountedKinematicParticle> tktkResCands;//output tracks from Res fitter
-
-    for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
-        if (DInfo.size >= MAX_XB) break;
-
-        //clear before using
-        v4_tk.Clear();
-        tktk_4vecs.clear();
-        tktk_4vec.Clear();
-        tktkRes_4vecs.clear();
-        tktkRes_4vec.Clear();
-        tktk_candidate.clear();
-        tktkRes_candidate.clear();
-        tktkCands.clear();
-        tktkResCands.clear();
-
-        //push back the Res tracks as first tracks
-        ParticleMass tk_mass;
-        //keep track of the push_back track index
-        std::vector<int> pushbackTrkIdx;
-        std::vector<int> pushbackResTrkIdx;
-        float tk_sigma;
-        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
-            if(TkMassCharge[p].second==0) continue;
-            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
-            if (!tkTT.isValid()) continue;
-            tk_mass = fabs(TkMassCharge[p].first);
-            tk_sigma = Functs.getParticleSigma(tk_mass);
-            if(!SequentialFit){
-                tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
-                pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
-            }
-            if(tktkRes_mass>0){
-                tktkRes_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
-                pushbackResTrkIdx.push_back(selectedTkhidxSet[i][p]);
-            }
-        }
-
-        //if there is tktk Res, check its fit validity also
-        if(tktkRes_mass>0){
-            tktkRes_VFT = tktkRes_fitter.fit(tktkRes_candidate);
-            if(!tktkRes_VFT->isValid()) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(3);
-            tktkRes_VFP   = tktkRes_VFT->currentParticle();
-            tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
-            double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
-
-            if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
-            DMassCutLevel[Dchannel_number-1]->Fill(4);
-
-            if(SequentialFit){
-                float tktkchi = tktkRes_VFPvtx->chiSquared();
-                float tktkndf = tktkRes_VFPvtx->degreesOfFreedom();
-                tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
-                //tktk_candidate.push_back(tktkRes_VFP);
-                pushbackTrkIdx.push_back(-1);//means its a resonance particle
-            }
-        }
-        //push back the other tracks
-        for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
-            if(TkMassCharge[p].second==1) continue;
-            reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
-            if (!tkTT.isValid()) continue;
-            tk_mass = fabs(TkMassCharge[p].first);
-            tk_sigma = Functs.getParticleSigma(tk_mass);
-            tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
-            pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
-        }
-        DMassCutLevel[Dchannel_number-1]->Fill(5);
-
-        double MaximumDoca = Functs.getMaxDoca(tktk_candidate);
-        if (MaximumDoca > MaxDocaCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(6);
-
-        if(tktkRes_mass>0){
-            if(doConstrainFit){
-                ParticleMass tktkResMass = tktkRes_mass;
-                MultiTrackKinematicConstraint *tktkResConstraint = new TwoTrackMassKinematicConstraint(tktkResMass);
-                tktk_VFT = kcv_tktk_fitter.fit(tktk_candidate, tktkResConstraint);
-            }
-            else tktk_VFT = tktk_fitter.fit(tktk_candidate);
-        }
-        else{
-            tktk_VFT = tktk_fitter.fit(tktk_candidate);
-        }
-
-        if(!tktk_VFT->isValid()) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(7);
-
-        tktk_VFT->movePointerToTheTop();
-        tktk_VFP   = tktk_VFT->currentParticle();
-        tktk_VFPvtx = tktk_VFT->currentDecayVertex();
-        if (!tktk_VFPvtx->vertexIsValid()) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(8);
-
-        double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-        if(chi2_prob_tktk < VtxChiProbCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(9);
-
-        tktkCands  = tktk_VFT->finalStateParticles();
-
-        //cut mass window after fit
-        //if (tktk_VFP->currentState().mass()<mass_window[0] || tktk_VFP->currentState().mass()>mass_window[1]) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(10);
-
-        for(unsigned int k = 0; k < tktkCands.size(); k++){
-            v4_tk.SetPxPyPzE(tktkCands[k]->currentState().kinematicParameters().momentum().x(),
-                                     tktkCands[k]->currentState().kinematicParameters().momentum().y(),
-                                     tktkCands[k]->currentState().kinematicParameters().momentum().z(),
-                                     tktkCands[k]->currentState().kinematicParameters().energy());
-            tktk_4vecs.push_back(v4_tk);
-            v4_tk.Clear();
-        }
-
-        tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),
-                tktk_VFP->currentState().kinematicParameters().momentum().y(),
-                tktk_VFP->currentState().kinematicParameters().momentum().z(),
-                tktk_VFP->currentState().kinematicParameters().energy());
-
-        //tktkRes fit info
-        if(tktkRes_mass>0){
-            tktkResCands = tktkRes_VFT->finalStateParticles();
-
-            for(unsigned int k = 0; k < tktkResCands.size(); k++){
-                v4_tk.SetPxPyPzE(tktkResCands[k]->currentState().kinematicParameters().momentum().x(),
-                                        tktkResCands[k]->currentState().kinematicParameters().momentum().y(),
-                                        tktkResCands[k]->currentState().kinematicParameters().momentum().z(),
-                                        tktkResCands[k]->currentState().kinematicParameters().energy());
-                tktkRes_4vecs.push_back(v4_tk);
-                v4_tk.Clear();
-            }
-
-            tktkRes_4vec.SetPxPyPzE(tktkRes_VFP->currentState().kinematicParameters().momentum().x(),
-                    tktkRes_VFP->currentState().kinematicParameters().momentum().y(),
-                    tktkRes_VFP->currentState().kinematicParameters().momentum().z(),
-                    tktkRes_VFP->currentState().kinematicParameters().energy());
-
-            DInfo.tktkRes_mass[DInfo.size]            = tktkRes_4vec.Mag();
-            DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
-            DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
-            DInfo.tktkRes_phi[DInfo.size]             = tktkRes_4vec.Phi();
-            DInfo.tktkRes_vtxX[DInfo.size]            = tktkRes_VFPvtx->position().x();
-            DInfo.tktkRes_vtxY[DInfo.size]            = tktkRes_VFPvtx->position().y();
-            DInfo.tktkRes_vtxZ[DInfo.size]            = tktkRes_VFPvtx->position().z();
-            DInfo.tktkRes_vtxXErr[DInfo.size]         = tktkRes_VFPvtx->error().cxx();
-            DInfo.tktkRes_vtxYErr[DInfo.size]         = tktkRes_VFPvtx->error().cyy();
-            DInfo.tktkRes_vtxZErr[DInfo.size]         = tktkRes_VFPvtx->error().czz();
-            DInfo.tktkRes_vtxYXErr[DInfo.size]        = tktkRes_VFPvtx->error().cyx();
-            DInfo.tktkRes_vtxZXErr[DInfo.size]        = tktkRes_VFPvtx->error().czx();
-            DInfo.tktkRes_vtxZYErr[DInfo.size]        = tktkRes_VFPvtx->error().czy();
-            DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
-            DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
-
-            //index initialization to -2
-            DInfo.tktkRes_rftk1_index[DInfo.size]     = -2;
-            DInfo.tktkRes_rftk2_index[DInfo.size]     = -2;
-            DInfo.tktkRes_rftk3_index[DInfo.size]     = -2;
-            DInfo.tktkRes_rftk4_index[DInfo.size]     = -2;
-
-            DInfo.tktkRes_rftk1_mass[DInfo.size]      = tktkRes_4vecs[0].Mag();
-            DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_4vecs[0].Pt();
-            DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_4vecs[0].Eta();
-            DInfo.tktkRes_rftk1_phi[DInfo.size]       = tktkRes_4vecs[0].Phi();
-            DInfo.tktkRes_rftk1_index[DInfo.size]     = pushbackResTrkIdx[0];
-            DInfo.tktkRes_rftk2_mass[DInfo.size]      = tktkRes_4vecs[1].Mag();
-            DInfo.tktkRes_rftk2_pt[DInfo.size]        = tktkRes_4vecs[1].Pt();
-            DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_4vecs[1].Eta();
-            DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_4vecs[1].Phi();
-            DInfo.tktkRes_rftk2_index[DInfo.size]     = pushbackResTrkIdx[1];
-            if(tktkResCands.size()>2){
-                DInfo.tktkRes_rftk3_mass[DInfo.size]      = tktkRes_4vecs[2].Mag();
-                DInfo.tktkRes_rftk3_pt[DInfo.size]        = tktkRes_4vecs[2].Pt();
-                DInfo.tktkRes_rftk3_eta[DInfo.size]       = tktkRes_4vecs[2].Eta();
-                DInfo.tktkRes_rftk3_phi[DInfo.size]       = tktkRes_4vecs[2].Phi();
-                DInfo.tktkRes_rftk3_index[DInfo.size]     = pushbackResTrkIdx[2];
-            }
-            if(tktkResCands.size()>3){
-                DInfo.tktkRes_rftk4_mass[DInfo.size]      = tktkRes_4vecs[3].Mag();
-                DInfo.tktkRes_rftk4_pt[DInfo.size]        = tktkRes_4vecs[3].Pt();
-                DInfo.tktkRes_rftk4_eta[DInfo.size]       = tktkRes_4vecs[3].Eta();
-                DInfo.tktkRes_rftk4_phi[DInfo.size]       = tktkRes_4vecs[3].Phi();
-                DInfo.tktkRes_rftk4_index[DInfo.size]     = pushbackResTrkIdx[3];
-            }
-        }
-
-        //fit info
-        DInfo.index[DInfo.size]           = DInfo.size;
-        DInfo.mass[DInfo.size]            = tktk_4vec.Mag();
-        DInfo.pt[DInfo.size]              = tktk_4vec.Pt();
-        DInfo.eta[DInfo.size]             = tktk_4vec.Eta();
-        DInfo.phi[DInfo.size]             = tktk_4vec.Phi();
-        DInfo.px[DInfo.size]              = tktk_4vec.Px();
-        DInfo.py[DInfo.size]              = tktk_4vec.Py();
-        DInfo.pz[DInfo.size]              = tktk_4vec.Pz();
-        DInfo.MaxDoca[DInfo.size]         = MaximumDoca;
-
-        VertexDistance3D a3d;
-        //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
-        DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
-        DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
-        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(11);
-
-        reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
-        reco::Vertex::Point vp2(tktk_VFPvtx->vertexState().position().x(), tktk_VFPvtx->vertexState().position().y(), 0.);
-        ROOT::Math::SVector<double, 6> sv1(thePrimaryV.covariance(0,0), thePrimaryV.covariance(0,1), thePrimaryV.covariance(1,1), 0., 0., 0.);
-        ROOT::Math::SVector<double, 6> sv2(tktk_VFPvtx->vertexState().error().cxx(), tktk_VFPvtx->vertexState().error().cyx(), tktk_VFPvtx->vertexState().error().cyy(), 0., 0., 0.);
-        reco::Vertex::Error ve1(sv1);
-        reco::Vertex::Error ve2(sv2);
-        reco::Vertex v1(vp1, ve1);
-        reco::Vertex v2(vp2, ve2);
-        DInfo.svpvDistance_2D[DInfo.size] = a3d.distance(v1, v2).value();
-        DInfo.svpvDisErr_2D[DInfo.size] = a3d.distance(v1, v2).error();
-
-        DInfo.vtxX[DInfo.size]            = tktk_VFPvtx->position().x();
-        DInfo.vtxY[DInfo.size]            = tktk_VFPvtx->position().y();
-        DInfo.vtxZ[DInfo.size]            = tktk_VFPvtx->position().z();
-        DInfo.vtxXErr[DInfo.size]         = tktk_VFPvtx->error().cxx();
-        DInfo.vtxYErr[DInfo.size]         = tktk_VFPvtx->error().cyy();
-        DInfo.vtxZErr[DInfo.size]         = tktk_VFPvtx->error().czz();
-        DInfo.vtxYXErr[DInfo.size]        = tktk_VFPvtx->error().cyx();
-        DInfo.vtxZXErr[DInfo.size]        = tktk_VFPvtx->error().czx();
-        DInfo.vtxZYErr[DInfo.size]        = tktk_VFPvtx->error().czy();
-        DInfo.vtxdof[DInfo.size]          = tktk_VFPvtx->degreesOfFreedom();
-        DInfo.vtxchi2[DInfo.size]         = tktk_VFPvtx->chiSquared();
-        
-        TVector3 svpvVec;
-        svpvVec.SetXYZ(DInfo.vtxX[DInfo.size]-EvtInfo.PVx, DInfo.vtxY[DInfo.size]-EvtInfo.PVy, DInfo.vtxZ[DInfo.size]-EvtInfo.PVz);
-        TVector3 dVec;
-        dVec.SetXYZ(DInfo.px[DInfo.size], DInfo.py[DInfo.size], DInfo.pz[DInfo.size]);
-        DInfo.alpha[DInfo.size] = svpvVec.Angle(dVec);
-        if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(12);
-
-        DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
-        DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
-        DInfo.rftk1_eta[DInfo.size]       = tktk_4vecs[0].Eta();
-        DInfo.rftk1_phi[DInfo.size]       = tktk_4vecs[0].Phi();
-        DInfo.rftk2_mass[DInfo.size]      = tktk_4vecs[1].Mag();
-        DInfo.rftk2_pt[DInfo.size]        = tktk_4vecs[1].Pt();
-        DInfo.rftk2_eta[DInfo.size]       = tktk_4vecs[1].Eta();
-        DInfo.rftk2_phi[DInfo.size]       = tktk_4vecs[1].Phi();
-
-        //Index initialize to -2
-        DInfo.rftk1_index[DInfo.size] = -2;
-        DInfo.rftk2_index[DInfo.size] = -2;
-        DInfo.rftk3_index[DInfo.size] = -2;
-        DInfo.rftk4_index[DInfo.size] = -2;
-        DInfo.rftk5_index[DInfo.size] = -2;
-
-        DInfo.rftk1_index[DInfo.size]     = pushbackTrkIdx[0];
-        DInfo.rftk2_index[DInfo.size]     = pushbackTrkIdx[1];
-
-        //document the mass hypothesis
-        if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
-        else DInfo.rftk1_MassHypo[DInfo.size] = 321;
-        //If its a Res particle, save it as D0
-        if( DInfo.rftk1_index[DInfo.size] == -1) DInfo.rftk1_MassHypo[DInfo.size] = 421;
-
-        if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
-        else DInfo.rftk2_MassHypo[DInfo.size] = 321;
-
-        if(tktkCands.size()>2){
-            DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
-            DInfo.rftk3_pt[DInfo.size]    = tktk_4vecs[2].Pt();
-            DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
-            DInfo.rftk3_phi[DInfo.size]   = tktk_4vecs[2].Phi();
-            DInfo.rftk3_index[DInfo.size] = pushbackTrkIdx[2];
-            if( fabs(tktk_4vecs[2].Mag()-PION_MASS) < fabs(tktk_4vecs[2].Mag()-KAON_MASS) ) DInfo.rftk3_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk3_MassHypo[DInfo.size] = 321;
-        }
-        if(tktkCands.size()>3){
-            DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
-            DInfo.rftk4_pt[DInfo.size]    = tktk_4vecs[3].Pt();
-            DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
-            DInfo.rftk4_phi[DInfo.size]   = tktk_4vecs[3].Phi();
-            DInfo.rftk4_index[DInfo.size] = pushbackTrkIdx[3];
-            if( fabs(tktk_4vecs[3].Mag()-PION_MASS) < fabs(tktk_4vecs[3].Mag()-KAON_MASS) ) DInfo.rftk4_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk4_MassHypo[DInfo.size] = 321;
-        }
-        if(tktkCands.size()>4){
-            DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
-            DInfo.rftk5_pt[DInfo.size]    = tktk_4vecs[4].Pt();
-            DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();
-            DInfo.rftk5_phi[DInfo.size]   = tktk_4vecs[4].Phi();
-            DInfo.rftk5_index[DInfo.size] = pushbackTrkIdx[4];
-            if( fabs(tktk_4vecs[4].Mag()-PION_MASS) < fabs(tktk_4vecs[4].Mag()-KAON_MASS) ) DInfo.rftk5_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk5_MassHypo[DInfo.size] = 321;
-        }
-
-        DInfo.type[DInfo.size] = Dchannel_number;
-        D_counter[Dchannel_number-1]++;
-
-        tktk_candidate.clear();
-        tktkCands.clear();
-        DInfo.size++;
-    }
 }
-//}}}
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(Dfinder);
