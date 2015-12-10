@@ -52,7 +52,7 @@ class Dfinder : public edm::EDAnalyzer
             std::vector< std::pair<float, int> > TkMassCharge,
             double tktkRes_mass,
             double tktkRes_mass_window,
-        	std::vector< std::vector<double> > &selectedTkhidxSet,
+        	std::vector< std::vector<int> > &selectedTkhidxSet,
 			int Dchannel_number
         );
 
@@ -63,7 +63,7 @@ class Dfinder : public edm::EDAnalyzer
             std::vector< std::pair<float, int> > TkMassCharge,
             double tktkRes_mass,
             double tktkRes_mass_window,
-        	std::vector< std::vector<double> > &selectedTkhidxSet,
+        	std::vector< std::vector<int> > &selectedTkhidxSet,
 			int Dchannel_number
         );
 
@@ -1113,6 +1113,333 @@ std::vector< std::vector< std::pair<float, int> > > Dfinder::DelDuplicate(std::v
     }
     return CleanedVec;
 }
+
+void Dfinder::TkCombinationPermutation(
+    std::vector<pat::GenericParticle> input_tracks, 
+    std::vector<int> isNeededTrackIdx,
+    float *mass_window,
+    std::vector< std::pair<float, int> > TkMassCharge,
+    double tktkRes_mass,
+    double tktkRes_mass_window,
+	std::vector< std::vector<int> > &selectedTkhidxSet,
+	int Dchannel_number
+){
+    int tk1_hindex = -1;
+    int tk2_hindex = -1;
+    int tk3_hindex = -1;
+    int tk4_hindex = -1;
+    int tk5_hindex = -1;
+
+    std::vector<int> selectedTkhidx;
+    TLorentzVector v4_D, v4_Res;//unfitted D and Res
+    TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;
+    TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;
+    //for(std::vector<pat::GenericParticle>::const_iterator tk_it1=input_tracks.begin();
+    //        tk_it1 != input_tracks.end() ; tk_it1++){
+    for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
+        v4_D.Clear(); v4_Res.Clear();
+        //tk1_hindex = int(tk_it1 - input_tracks.begin());
+        //if(tk1_hindex>=int(isNeededTrack.size())) break;
+        //if(!isNeededTrack[tk1_hindex]) continue;
+        //if(tk_it1->charge()*TkMassCharge[0].first<0) continue;
+        tk1_hindex = isNeededTrackIdx[tk1idx];
+        if(input_tracks[tk1_hindex].charge()*TkMassCharge[0].first<0) continue;
+        v4_tk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
+        v4_D = v4_tk1;
+        if(TkMassCharge[0].second==1) v4_Restk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
+        else v4_Restk1.SetPtEtaPhiM(0,0,0,0);
+        v4_Res = v4_Restk1;
+
+        //for(std::vector<pat::GenericParticle>::const_iterator tk_it2=tk_it1+1;
+        //        tk_it2 != input_tracks.end() ; tk_it2++){
+        for(int tk2idx = tk1idx+1; tk2idx < (int)isNeededTrackIdx.size(); tk2idx++){
+            //tk2_hindex = int(tk_it2 - input_tracks.begin());
+            //if(tk2_hindex>=int(isNeededTrack.size())) break;
+            //if(!isNeededTrack[tk2_hindex]) continue;
+            //if(tk_it2->charge()*TkMassCharge[1].first<0) continue;
+            tk2_hindex = isNeededTrackIdx[tk2idx];
+            if(input_tracks[tk2_hindex].charge()*TkMassCharge[1].first<0) continue;
+            if(tk2_hindex==tk1_hindex) continue;
+            v4_tk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
+            v4_D = v4_tk1 + v4_tk2;
+            if(TkMassCharge[1].second==1) v4_Restk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
+            else v4_Restk2.SetPtEtaPhiM(0,0,0,0);
+            v4_Res = v4_Restk1 + v4_Restk2;
+            if(TkMassCharge.size()==2){
+                //cut mass window before fit
+                if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                DMassCutLevel[Dchannel_number-1]->Fill(0);
+                if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                if(v4_D.Pt() < dPtCut_)continue;
+                DMassCutLevel[Dchannel_number-1]->Fill(1);
+                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                DMassCutLevel[Dchannel_number-1]->Fill(2);
+                selectedTkhidx.push_back(tk1_hindex);
+                selectedTkhidx.push_back(tk2_hindex);
+                selectedTkhidxSet.push_back(selectedTkhidx);
+                selectedTkhidx.clear();
+                continue;
+            }
+            //for(std::vector<pat::GenericParticle>::const_iterator tk_it3=tk_it2+1;
+            //        tk_it3 != input_tracks.end() ; tk_it3++){
+            for(int tk3idx = tk2idx+1; tk3idx < (int)isNeededTrackIdx.size(); tk3idx++){
+                //tk3_hindex = int(tk_it3 - input_tracks.begin());
+                //if(tk3_hindex>=int(isNeededTrack.size())) break;
+                //if(!isNeededTrack[tk3_hindex]) continue;
+                //if(tk_it3->charge()*TkMassCharge[2].first<0) continue;
+                tk3_hindex = isNeededTrackIdx[tk3idx];
+                if(input_tracks[tk3_hindex].charge()*TkMassCharge[2].first<0) continue;
+                if(tk3_hindex==tk1_hindex) continue;
+                if(tk3_hindex==tk2_hindex) continue;
+                v4_tk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
+                v4_D = v4_tk1 + v4_tk2 + v4_tk3;
+                if(TkMassCharge[2].second==1) v4_Restk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
+                else v4_Restk3.SetPtEtaPhiM(0,0,0,0);
+                v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
+                if(TkMassCharge.size()==3){
+                    if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                    DMassCutLevel[Dchannel_number-1]->Fill(0);
+                    if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                    if(v4_D.Pt() < dPtCut_)continue;
+                    DMassCutLevel[Dchannel_number-1]->Fill(1);
+                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                    DMassCutLevel[Dchannel_number-1]->Fill(2);
+                    selectedTkhidx.push_back(tk1_hindex);
+                    selectedTkhidx.push_back(tk2_hindex);
+                    selectedTkhidx.push_back(tk3_hindex);
+                    selectedTkhidxSet.push_back(selectedTkhidx);
+                    selectedTkhidx.clear();
+                    continue;
+                }
+                //for(std::vector<pat::GenericParticle>::const_iterator tk_it4=tk_it3+1;
+                //        tk_it4 != input_tracks.end() ; tk_it4++){
+                for(int tk4idx = tk3idx+1; tk4idx < (int)isNeededTrackIdx.size(); tk4idx++){
+                    //tk4_hindex = int(tk_it4 - input_tracks.begin());
+                    //if(tk4_hindex>=int(isNeededTrack.size())) break;
+                    //if(!isNeededTrack[tk4_hindex]) continue;
+                    //if(tk_it4->charge()*TkMassCharge[3].first<0) continue;
+                    tk4_hindex = isNeededTrackIdx[tk4idx];
+                    if(input_tracks[tk4_hindex].charge()*TkMassCharge[3].first<0) continue;
+                    if(tk4_hindex==tk1_hindex) continue;
+                    if(tk4_hindex==tk2_hindex) continue;
+                    if(tk4_hindex==tk3_hindex) continue;
+                    v4_tk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
+                    v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4;
+                    if(TkMassCharge[3].second==1) v4_Restk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
+                    else v4_Restk4.SetPtEtaPhiM(0,0,0,0);
+                    v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
+                    if(TkMassCharge.size()==4){
+                        if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                        DMassCutLevel[Dchannel_number-1]->Fill(0);
+                        if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                        if(v4_D.Pt() < dPtCut_)continue;
+                        DMassCutLevel[Dchannel_number-1]->Fill(1);
+                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                        DMassCutLevel[Dchannel_number-1]->Fill(2);
+                        selectedTkhidx.push_back(tk1_hindex);
+                        selectedTkhidx.push_back(tk2_hindex);
+                        selectedTkhidx.push_back(tk3_hindex);
+                        selectedTkhidx.push_back(tk4_hindex);
+                        selectedTkhidxSet.push_back(selectedTkhidx);
+                        selectedTkhidx.clear();
+                        continue;
+                    }
+                    //for(std::vector<pat::GenericParticle>::const_iterator tk_it5=tk_it4+1;
+                    //        tk_it5 != input_tracks.end() ; tk_it5++){
+                    for(int tk5idx = tk4idx+1; tk5idx < (int)isNeededTrackIdx.size(); tk5idx++){
+                        //tk5_hindex = int(tk_it5 - input_tracks.begin());
+                        //if(tk5_hindex>=int(isNeededTrack.size())) break;
+                        //if(!isNeededTrack[tk5_hindex]) continue;
+                        //if(tk_it5->charge()*TkMassCharge[4].first<0) continue;
+                        tk5_hindex = isNeededTrackIdx[tk5idx];
+                        if(input_tracks[tk5_hindex].charge()*TkMassCharge[4].first<0) continue;
+                        if(tk5_hindex==tk1_hindex) continue;
+                        if(tk5_hindex==tk2_hindex) continue;
+                        if(tk5_hindex==tk3_hindex) continue;
+                        if(tk5_hindex==tk4_hindex) continue;
+                        v4_tk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
+                        v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4 + v4_tk5;
+                        if(TkMassCharge[4].second==1) v4_Restk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
+                        else v4_Restk5.SetPtEtaPhiM(0,0,0,0);
+                        v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
+                        if(TkMassCharge.size()==5){
+                            if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                            DMassCutLevel[Dchannel_number-1]->Fill(0);
+                            if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                            if(v4_D.Pt() < dPtCut_)continue;
+                            DMassCutLevel[Dchannel_number-1]->Fill(1);
+                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                            DMassCutLevel[Dchannel_number-1]->Fill(2);
+                            selectedTkhidx.push_back(tk1_hindex);
+                            selectedTkhidx.push_back(tk2_hindex);
+                            selectedTkhidx.push_back(tk3_hindex);
+                            selectedTkhidx.push_back(tk4_hindex);
+                            selectedTkhidx.push_back(tk5_hindex);
+                            selectedTkhidxSet.push_back(selectedTkhidx);
+                            selectedTkhidx.clear();
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //std::cout<<"TkCombinationPermutation, selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
+	return;
+}
+
+void Dfinder::TkCombinationResFast(
+    std::vector<pat::GenericParticle> input_tracks, 
+    std::vector<int> isNeededTrackIdx,
+    float *mass_window,
+    std::vector< std::pair<float, int> > TkMassCharge,
+    double tktkRes_mass,
+    double tktkRes_mass_window,
+	std::vector< std::vector<int> > &selectedTkhidxSet,
+	int Dchannel_number
+){
+    int tk1_hindex = -1;
+    int tk2_hindex = -1;
+    int tk3_hindex = -1;
+    int tk4_hindex = -1;
+    int tk5_hindex = -1;
+
+    std::vector<int> selectedTkhidx;
+    TLorentzVector v4_D, v4_Res;//unfitted D and Res
+    TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;
+    TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;
+	for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
+        v4_D.Clear(); v4_Res.Clear();
+        tk1_hindex = isNeededTrackIdx[tk1idx];
+        if(input_tracks[tk1_hindex].charge()*TkMassCharge[0].first<0) continue;
+        v4_tk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
+        v4_D = v4_tk1;
+        if(TkMassCharge[0].second==1) v4_Restk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
+        else v4_Restk1.SetPtEtaPhiM(0,0,0,0);
+        v4_Res = v4_Restk1;
+
+        for(int tk2idx = ((TkMassCharge[1]==TkMassCharge[0]) ? tk1idx+1:0); tk2idx < (int)isNeededTrackIdx.size(); tk2idx++){
+            tk2_hindex = isNeededTrackIdx[tk2idx];
+            if(input_tracks[tk2_hindex].charge()*TkMassCharge[1].first<0) continue;
+            if(tk2_hindex==tk1_hindex) continue;
+            v4_tk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
+            v4_D = v4_tk1 + v4_tk2;
+            if(TkMassCharge[1].second==1) v4_Restk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
+            else v4_Restk2.SetPtEtaPhiM(0,0,0,0);
+            v4_Res = v4_Restk1 + v4_Restk2;
+            if(TkMassCharge.size()>2)
+            if(TkMassCharge[1].second == 1 && TkMassCharge[2].second == 0 ){
+                if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                DMassCutLevel[Dchannel_number-1]->Fill(0);
+            }
+            if(TkMassCharge.size()==2){
+                //cut mass window before fit
+                if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                if(v4_D.Pt() < dPtCut_)continue;
+                DMassCutLevel[Dchannel_number-1]->Fill(1);
+                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                DMassCutLevel[Dchannel_number-1]->Fill(2);
+                selectedTkhidx.push_back(tk1_hindex);
+                selectedTkhidx.push_back(tk2_hindex);
+                selectedTkhidxSet.push_back(selectedTkhidx);
+                selectedTkhidx.clear();
+                continue;
+            }
+            for(int tk3idx = ((TkMassCharge[2]==TkMassCharge[1]) ? tk2idx+1:0); tk3idx < (int)isNeededTrackIdx.size(); tk3idx++){
+                tk3_hindex = isNeededTrackIdx[tk3idx];
+                if(input_tracks[tk3_hindex].charge()*TkMassCharge[2].first<0) continue;
+                if(tk3_hindex==tk1_hindex) continue;
+                if(tk3_hindex==tk2_hindex) continue;
+                v4_tk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
+                v4_D = v4_tk1 + v4_tk2 + v4_tk3;
+                if(TkMassCharge[2].second==1) v4_Restk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
+                else v4_Restk3.SetPtEtaPhiM(0,0,0,0);
+                v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
+                if(TkMassCharge.size()>3)
+                if(TkMassCharge[2].second == 1 && TkMassCharge[3].second == 0 ){
+                    if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                    DMassCutLevel[Dchannel_number-1]->Fill(0);
+                }
+                if(TkMassCharge.size()==3){
+                    if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                    if(v4_D.Pt() < dPtCut_)continue;
+                    DMassCutLevel[Dchannel_number-1]->Fill(1);
+                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                    DMassCutLevel[Dchannel_number-1]->Fill(2);
+                    selectedTkhidx.push_back(tk1_hindex);
+                    selectedTkhidx.push_back(tk2_hindex);
+                    selectedTkhidx.push_back(tk3_hindex);
+                    selectedTkhidxSet.push_back(selectedTkhidx);
+                    selectedTkhidx.clear();
+                    continue;
+                }
+                for(int tk4idx = ((TkMassCharge[3]==TkMassCharge[2]) ? tk3idx+1:0); tk4idx < (int)isNeededTrackIdx.size(); tk4idx++){
+                    tk4_hindex = isNeededTrackIdx[tk4idx];
+                    if(input_tracks[tk4_hindex].charge()*TkMassCharge[3].first<0) continue;
+                    if(tk4_hindex==tk1_hindex) continue;
+                    if(tk4_hindex==tk2_hindex) continue;
+                    if(tk4_hindex==tk3_hindex) continue;
+                    v4_tk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
+                    v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4;
+                    if(TkMassCharge[3].second==1) v4_Restk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
+                    else v4_Restk4.SetPtEtaPhiM(0,0,0,0);
+                    v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
+                    if(TkMassCharge.size()>4)
+                    if(TkMassCharge[3].second == 1 && TkMassCharge[4].second == 0 ){
+                        if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                        DMassCutLevel[Dchannel_number-1]->Fill(0);
+                    }
+                    if(TkMassCharge.size()==4){
+                        if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                        if(v4_D.Pt() < dPtCut_)continue;
+                        DMassCutLevel[Dchannel_number-1]->Fill(1);
+                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                        DMassCutLevel[Dchannel_number-1]->Fill(2);
+                        selectedTkhidx.push_back(tk1_hindex);
+                        selectedTkhidx.push_back(tk2_hindex);
+                        selectedTkhidx.push_back(tk3_hindex);
+                        selectedTkhidx.push_back(tk4_hindex);
+                        selectedTkhidxSet.push_back(selectedTkhidx);
+                        selectedTkhidx.clear();
+                        continue;
+                    }
+                    for(int tk5idx = ((TkMassCharge[4]==TkMassCharge[3]) ? tk4idx+1:0); tk5idx < (int)isNeededTrackIdx.size(); tk5idx++){
+                        tk5_hindex = isNeededTrackIdx[tk5idx];
+                        if(input_tracks[tk5_hindex].charge()*TkMassCharge[4].first<0) continue;
+                        if(tk5_hindex==tk1_hindex) continue;
+                        if(tk5_hindex==tk2_hindex) continue;
+                        if(tk5_hindex==tk3_hindex) continue;
+                        if(tk5_hindex==tk4_hindex) continue;
+                        v4_tk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
+                        v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4 + v4_tk5;
+                        if(TkMassCharge[4].second==1) v4_Restk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
+                        else v4_Restk5.SetPtEtaPhiM(0,0,0,0);
+                        v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
+                        if(TkMassCharge.size()==5){
+                            if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                            DMassCutLevel[Dchannel_number-1]->Fill(0);
+                            if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
+                            if(v4_D.Pt() < dPtCut_)continue;
+                            DMassCutLevel[Dchannel_number-1]->Fill(1);
+                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                            DMassCutLevel[Dchannel_number-1]->Fill(2);
+                            selectedTkhidx.push_back(tk1_hindex);
+                            selectedTkhidx.push_back(tk2_hindex);
+                            selectedTkhidx.push_back(tk3_hindex);
+                            selectedTkhidx.push_back(tk4_hindex);
+                            selectedTkhidx.push_back(tk5_hindex);
+                            selectedTkhidxSet.push_back(selectedTkhidx);
+                            selectedTkhidx.clear();
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //std::cout<<"TkCombinationResFast, selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
+	return;
+}
 //}}}
 
 //BranchOutNTk{{{
@@ -1133,7 +1460,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 ){
     if(Dchannel_number > (int)Dchannel_.size()){ printf("Exceeding defined # of channel, exit"); return;}
 
-	std::vector< std::vector<double> > selectedTkhidxSet;
+	std::vector< std::vector<int> > selectedTkhidxSet;
 	if( TkCombinationMethod == 0 ) 
         TkCombinationPermutation( input_tracks, isNeededTrackIdx, mass_window, TkMassCharge, tktkRes_mass, tktkRes_mass_window, selectedTkhidxSet, Dchannel_number);
     else if( TkCombinationMethod == 1 )
@@ -1469,336 +1796,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 }
 //}}}
 
-void Dfinder::TkCombinationPermutation(
-    std::vector<pat::GenericParticle> input_tracks, 
-    std::vector<int> isNeededTrackIdx,
-    float *mass_window,
-    std::vector< std::pair<float, int> > TkMassCharge,
-    double tktkRes_mass,
-    double tktkRes_mass_window,
-	std::vector< std::vector<double> > &selectedTkhidxSet,
-	int Dchannel_number
-){
-    int tk1_hindex = -1;
-    int tk2_hindex = -1;
-    int tk3_hindex = -1;
-    int tk4_hindex = -1;
-    int tk5_hindex = -1;
-
-    TLorentzVector v4_D, v4_Res;//unfitted D and Res
-    TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;
-    TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;
-    std::vector<double> selectedTkhidx;
-    //for(std::vector<pat::GenericParticle>::const_iterator tk_it1=input_tracks.begin();
-    //        tk_it1 != input_tracks.end() ; tk_it1++){
-    for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
-        v4_D.Clear(); v4_Res.Clear();
-        //tk1_hindex = int(tk_it1 - input_tracks.begin());
-        //if(tk1_hindex>=int(isNeededTrack.size())) break;
-        //if(!isNeededTrack[tk1_hindex]) continue;
-        //if(tk_it1->charge()*TkMassCharge[0].first<0) continue;
-        tk1_hindex = isNeededTrackIdx[tk1idx];
-        if(input_tracks[tk1_hindex].charge()*TkMassCharge[0].first<0) continue;
-        v4_tk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
-        v4_D = v4_tk1;
-        if(TkMassCharge[0].second==1) v4_Restk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
-        else v4_Restk1.SetPtEtaPhiM(0,0,0,0);
-        v4_Res = v4_Restk1;
-
-        //for(std::vector<pat::GenericParticle>::const_iterator tk_it2=tk_it1+1;
-        //        tk_it2 != input_tracks.end() ; tk_it2++){
-        for(int tk2idx = tk1idx+1; tk2idx < (int)isNeededTrackIdx.size(); tk2idx++){
-            //tk2_hindex = int(tk_it2 - input_tracks.begin());
-            //if(tk2_hindex>=int(isNeededTrack.size())) break;
-            //if(!isNeededTrack[tk2_hindex]) continue;
-            //if(tk_it2->charge()*TkMassCharge[1].first<0) continue;
-            tk2_hindex = isNeededTrackIdx[tk2idx];
-            if(input_tracks[tk2_hindex].charge()*TkMassCharge[1].first<0) continue;
-            if(tk2_hindex==tk1_hindex) continue;
-            v4_tk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
-            v4_D = v4_tk1 + v4_tk2;
-            if(TkMassCharge[1].second==1) v4_Restk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
-            else v4_Restk2.SetPtEtaPhiM(0,0,0,0);
-            v4_Res = v4_Restk1 + v4_Restk2;
-            if(TkMassCharge.size()==2){
-                //cut mass window before fit
-                if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                DMassCutLevel[Dchannel_number-1]->Fill(0);
-                if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                if(v4_D.Pt() < dPtCut_)continue;
-                DMassCutLevel[Dchannel_number-1]->Fill(1);
-                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                DMassCutLevel[Dchannel_number-1]->Fill(2);
-                selectedTkhidx.push_back(tk1_hindex);
-                selectedTkhidx.push_back(tk2_hindex);
-                selectedTkhidxSet.push_back(selectedTkhidx);
-                selectedTkhidx.clear();
-                continue;
-            }
-            //for(std::vector<pat::GenericParticle>::const_iterator tk_it3=tk_it2+1;
-            //        tk_it3 != input_tracks.end() ; tk_it3++){
-            for(int tk3idx = tk2idx+1; tk3idx < (int)isNeededTrackIdx.size(); tk3idx++){
-                //tk3_hindex = int(tk_it3 - input_tracks.begin());
-                //if(tk3_hindex>=int(isNeededTrack.size())) break;
-                //if(!isNeededTrack[tk3_hindex]) continue;
-                //if(tk_it3->charge()*TkMassCharge[2].first<0) continue;
-                tk3_hindex = isNeededTrackIdx[tk3idx];
-                if(input_tracks[tk3_hindex].charge()*TkMassCharge[2].first<0) continue;
-                if(tk3_hindex==tk1_hindex) continue;
-                if(tk3_hindex==tk2_hindex) continue;
-                v4_tk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
-                v4_D = v4_tk1 + v4_tk2 + v4_tk3;
-                if(TkMassCharge[2].second==1) v4_Restk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
-                else v4_Restk3.SetPtEtaPhiM(0,0,0,0);
-                v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
-                if(TkMassCharge.size()==3){
-                    if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                    DMassCutLevel[Dchannel_number-1]->Fill(0);
-                    if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                    if(v4_D.Pt() < dPtCut_)continue;
-                    DMassCutLevel[Dchannel_number-1]->Fill(1);
-                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                    DMassCutLevel[Dchannel_number-1]->Fill(2);
-                    selectedTkhidx.push_back(tk1_hindex);
-                    selectedTkhidx.push_back(tk2_hindex);
-                    selectedTkhidx.push_back(tk3_hindex);
-                    selectedTkhidxSet.push_back(selectedTkhidx);
-                    selectedTkhidx.clear();
-                    continue;
-                }
-                //for(std::vector<pat::GenericParticle>::const_iterator tk_it4=tk_it3+1;
-                //        tk_it4 != input_tracks.end() ; tk_it4++){
-                for(int tk4idx = tk3idx+1; tk4idx < (int)isNeededTrackIdx.size(); tk4idx++){
-                    //tk4_hindex = int(tk_it4 - input_tracks.begin());
-                    //if(tk4_hindex>=int(isNeededTrack.size())) break;
-                    //if(!isNeededTrack[tk4_hindex]) continue;
-                    //if(tk_it4->charge()*TkMassCharge[3].first<0) continue;
-                    tk4_hindex = isNeededTrackIdx[tk4idx];
-                    if(input_tracks[tk4_hindex].charge()*TkMassCharge[3].first<0) continue;
-                    if(tk4_hindex==tk1_hindex) continue;
-                    if(tk4_hindex==tk2_hindex) continue;
-                    if(tk4_hindex==tk3_hindex) continue;
-                    v4_tk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
-                    v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4;
-                    if(TkMassCharge[3].second==1) v4_Restk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
-                    else v4_Restk4.SetPtEtaPhiM(0,0,0,0);
-                    v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
-                    if(TkMassCharge.size()==4){
-                        if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                        DMassCutLevel[Dchannel_number-1]->Fill(0);
-                        if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                        if(v4_D.Pt() < dPtCut_)continue;
-                        DMassCutLevel[Dchannel_number-1]->Fill(1);
-                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                        DMassCutLevel[Dchannel_number-1]->Fill(2);
-                        selectedTkhidx.push_back(tk1_hindex);
-                        selectedTkhidx.push_back(tk2_hindex);
-                        selectedTkhidx.push_back(tk3_hindex);
-                        selectedTkhidx.push_back(tk4_hindex);
-                        selectedTkhidxSet.push_back(selectedTkhidx);
-                        selectedTkhidx.clear();
-                        continue;
-                    }
-                    //for(std::vector<pat::GenericParticle>::const_iterator tk_it5=tk_it4+1;
-                    //        tk_it5 != input_tracks.end() ; tk_it5++){
-                    for(int tk5idx = tk4idx+1; tk5idx < (int)isNeededTrackIdx.size(); tk5idx++){
-                        //tk5_hindex = int(tk_it5 - input_tracks.begin());
-                        //if(tk5_hindex>=int(isNeededTrack.size())) break;
-                        //if(!isNeededTrack[tk5_hindex]) continue;
-                        //if(tk_it5->charge()*TkMassCharge[4].first<0) continue;
-                        tk5_hindex = isNeededTrackIdx[tk5idx];
-                        if(input_tracks[tk5_hindex].charge()*TkMassCharge[4].first<0) continue;
-                        if(tk5_hindex==tk1_hindex) continue;
-                        if(tk5_hindex==tk2_hindex) continue;
-                        if(tk5_hindex==tk3_hindex) continue;
-                        if(tk5_hindex==tk4_hindex) continue;
-                        v4_tk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
-                        v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4 + v4_tk5;
-                        if(TkMassCharge[4].second==1) v4_Restk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
-                        else v4_Restk5.SetPtEtaPhiM(0,0,0,0);
-                        v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
-                        if(TkMassCharge.size()==5){
-                            if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                            DMassCutLevel[Dchannel_number-1]->Fill(0);
-                            if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                            if(v4_D.Pt() < dPtCut_)continue;
-                            DMassCutLevel[Dchannel_number-1]->Fill(1);
-                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                            DMassCutLevel[Dchannel_number-1]->Fill(2);
-                            selectedTkhidx.push_back(tk1_hindex);
-                            selectedTkhidx.push_back(tk2_hindex);
-                            selectedTkhidx.push_back(tk3_hindex);
-                            selectedTkhidx.push_back(tk4_hindex);
-                            selectedTkhidx.push_back(tk5_hindex);
-                            selectedTkhidxSet.push_back(selectedTkhidx);
-                            selectedTkhidx.clear();
-                            continue;
-                        }
-                    }
-                }
-            }
-        }
-    }
-//    std::cout<<"TkCombinationPermutation, selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
-
-	return;
-}
-
-void Dfinder::TkCombinationResFast(
-    std::vector<pat::GenericParticle> input_tracks, 
-    std::vector<int> isNeededTrackIdx,
-    float *mass_window,
-    std::vector< std::pair<float, int> > TkMassCharge,
-    double tktkRes_mass,
-    double tktkRes_mass_window,
-	std::vector< std::vector<double> > &selectedTkhidxSet,
-	int Dchannel_number
-){
-    int tk1_hindex = -1;
-    int tk2_hindex = -1;
-    int tk3_hindex = -1;
-    int tk4_hindex = -1;
-    int tk5_hindex = -1;
-
-    TLorentzVector v4_D, v4_Res;//unfitted D and Res
-    TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;
-    TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;
-    std::vector<double> selectedTkhidx;
-    
-	for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
-        v4_D.Clear(); v4_Res.Clear();
-        tk1_hindex = isNeededTrackIdx[tk1idx];
-        if(input_tracks[tk1_hindex].charge()*TkMassCharge[0].first<0) continue;
-        v4_tk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
-        v4_D = v4_tk1;
-        if(TkMassCharge[0].second==1) v4_Restk1.SetPtEtaPhiM(input_tracks[tk1_hindex].pt(),input_tracks[tk1_hindex].eta(),input_tracks[tk1_hindex].phi(),fabs(TkMassCharge[0].first));
-        else v4_Restk1.SetPtEtaPhiM(0,0,0,0);
-        v4_Res = v4_Restk1;
-
-        for(int tk2idx = ((TkMassCharge[1]==TkMassCharge[0]) ? tk1idx+1:0); tk2idx < (int)isNeededTrackIdx.size(); tk2idx++){
-            tk2_hindex = isNeededTrackIdx[tk2idx];
-            if(input_tracks[tk2_hindex].charge()*TkMassCharge[1].first<0) continue;
-            if(tk2_hindex==tk1_hindex) continue;
-            v4_tk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
-            v4_D = v4_tk1 + v4_tk2;
-            if(TkMassCharge[1].second==1) v4_Restk2.SetPtEtaPhiM(input_tracks[tk2_hindex].pt(),input_tracks[tk2_hindex].eta(),input_tracks[tk2_hindex].phi(),fabs(TkMassCharge[1].first));
-            else v4_Restk2.SetPtEtaPhiM(0,0,0,0);
-            v4_Res = v4_Restk1 + v4_Restk2;
-            if(TkMassCharge.size()>2)
-            if(TkMassCharge[1].second == 1 && TkMassCharge[2].second == 0 ){
-                if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                DMassCutLevel[Dchannel_number-1]->Fill(0);
-            }
-            if(TkMassCharge.size()==2){
-                //cut mass window before fit
-                if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                if(v4_D.Pt() < dPtCut_)continue;
-                DMassCutLevel[Dchannel_number-1]->Fill(1);
-                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                DMassCutLevel[Dchannel_number-1]->Fill(2);
-                selectedTkhidx.push_back(tk1_hindex);
-                selectedTkhidx.push_back(tk2_hindex);
-                selectedTkhidxSet.push_back(selectedTkhidx);
-                selectedTkhidx.clear();
-                continue;
-            }
-            for(int tk3idx = ((TkMassCharge[2]==TkMassCharge[1]) ? tk2idx+1:0); tk3idx < (int)isNeededTrackIdx.size(); tk3idx++){
-                tk3_hindex = isNeededTrackIdx[tk3idx];
-                if(input_tracks[tk3_hindex].charge()*TkMassCharge[2].first<0) continue;
-                if(tk3_hindex==tk1_hindex) continue;
-                if(tk3_hindex==tk2_hindex) continue;
-                v4_tk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
-                v4_D = v4_tk1 + v4_tk2 + v4_tk3;
-                if(TkMassCharge[2].second==1) v4_Restk3.SetPtEtaPhiM(input_tracks[tk3_hindex].pt(),input_tracks[tk3_hindex].eta(),input_tracks[tk3_hindex].phi(),fabs(TkMassCharge[2].first));
-                else v4_Restk3.SetPtEtaPhiM(0,0,0,0);
-                v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
-                if(TkMassCharge.size()>3)
-                if(TkMassCharge[2].second == 1 && TkMassCharge[3].second == 0 ){
-                    if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                    DMassCutLevel[Dchannel_number-1]->Fill(0);
-                }
-                if(TkMassCharge.size()==3){
-                    if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                    if(v4_D.Pt() < dPtCut_)continue;
-                    DMassCutLevel[Dchannel_number-1]->Fill(1);
-                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                    DMassCutLevel[Dchannel_number-1]->Fill(2);
-                    selectedTkhidx.push_back(tk1_hindex);
-                    selectedTkhidx.push_back(tk2_hindex);
-                    selectedTkhidx.push_back(tk3_hindex);
-                    selectedTkhidxSet.push_back(selectedTkhidx);
-                    selectedTkhidx.clear();
-                    continue;
-                }
-                for(int tk4idx = ((TkMassCharge[3]==TkMassCharge[2]) ? tk3idx+1:0); tk4idx < (int)isNeededTrackIdx.size(); tk4idx++){
-                    tk4_hindex = isNeededTrackIdx[tk4idx];
-                    if(input_tracks[tk4_hindex].charge()*TkMassCharge[3].first<0) continue;
-                    if(tk4_hindex==tk1_hindex) continue;
-                    if(tk4_hindex==tk2_hindex) continue;
-                    if(tk4_hindex==tk3_hindex) continue;
-                    v4_tk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
-                    v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4;
-                    if(TkMassCharge[3].second==1) v4_Restk4.SetPtEtaPhiM(input_tracks[tk4_hindex].pt(),input_tracks[tk4_hindex].eta(),input_tracks[tk4_hindex].phi(),fabs(TkMassCharge[3].first));
-                    else v4_Restk4.SetPtEtaPhiM(0,0,0,0);
-                    v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
-                    if(TkMassCharge.size()>4)
-                    if(TkMassCharge[3].second == 1 && TkMassCharge[4].second == 0 ){
-                        if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                        DMassCutLevel[Dchannel_number-1]->Fill(0);
-                    }
-                    if(TkMassCharge.size()==4){
-                        if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                        if(v4_D.Pt() < dPtCut_)continue;
-                        DMassCutLevel[Dchannel_number-1]->Fill(1);
-                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                        DMassCutLevel[Dchannel_number-1]->Fill(2);
-                        selectedTkhidx.push_back(tk1_hindex);
-                        selectedTkhidx.push_back(tk2_hindex);
-                        selectedTkhidx.push_back(tk3_hindex);
-                        selectedTkhidx.push_back(tk4_hindex);
-                        selectedTkhidxSet.push_back(selectedTkhidx);
-                        selectedTkhidx.clear();
-                        continue;
-                    }
-                    for(int tk5idx = ((TkMassCharge[4]==TkMassCharge[3]) ? tk4idx+1:0); tk5idx < (int)isNeededTrackIdx.size(); tk5idx++){
-                        tk5_hindex = isNeededTrackIdx[tk5idx];
-                        if(input_tracks[tk5_hindex].charge()*TkMassCharge[4].first<0) continue;
-                        if(tk5_hindex==tk1_hindex) continue;
-                        if(tk5_hindex==tk2_hindex) continue;
-                        if(tk5_hindex==tk3_hindex) continue;
-                        if(tk5_hindex==tk4_hindex) continue;
-                        v4_tk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
-                        v4_D = v4_tk1 + v4_tk2 + v4_tk3 + v4_tk4 + v4_tk5;
-                        if(TkMassCharge[4].second==1) v4_Restk5.SetPtEtaPhiM(input_tracks[tk5_hindex].pt(),input_tracks[tk5_hindex].eta(),input_tracks[tk5_hindex].phi(),fabs(TkMassCharge[4].first));
-                        else v4_Restk5.SetPtEtaPhiM(0,0,0,0);
-                        v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
-                        if(TkMassCharge.size()==5){
-                            if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
-                            DMassCutLevel[Dchannel_number-1]->Fill(0);
-                            if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                            if(v4_D.Pt() < dPtCut_)continue;
-                            DMassCutLevel[Dchannel_number-1]->Fill(1);
-                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
-                            DMassCutLevel[Dchannel_number-1]->Fill(2);
-                            selectedTkhidx.push_back(tk1_hindex);
-                            selectedTkhidx.push_back(tk2_hindex);
-                            selectedTkhidx.push_back(tk3_hindex);
-                            selectedTkhidx.push_back(tk4_hindex);
-                            selectedTkhidx.push_back(tk5_hindex);
-                            selectedTkhidxSet.push_back(selectedTkhidx);
-                            selectedTkhidx.clear();
-                            continue;
-                        }
-                    }
-                }
-            }
-        }
-    }
-//    std::cout<<"TkCombinationResFast, selectedTkhidxSet.size: "<<selectedTkhidxSet.size()<<std::endl;
-
-	return;
-
-}
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(Dfinder);
