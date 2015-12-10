@@ -80,15 +80,15 @@ class Dfinder : public edm::EDAnalyzer
         edm::InputTag puInfoLabel_;
         edm::InputTag bsLabel_;
         edm::InputTag pvLabel_;
-        double tkPtCut_;
-        double tkEtaCut_;
-        double dPtCut_;
-        double dEtaCut_;
-        double VtxChiProbCut_;
-        double tktkRes_svpvDistanceCut_;
-        double svpvDistanceCut_;
-        double MaxDocaCut_;
-        double alphaCut_;
+        float tkPtCut_;
+        float tkEtaCut_;
+        std::vector<double> dPtCut_;
+        std::vector<double> dEtaCut_;
+        std::vector<double> VtxChiProbCut_;
+        std::vector<double> tktkRes_svpvDistanceCut_;
+        std::vector<double> svpvDistanceCut_;
+        std::vector<double> MaxDocaCut_;
+        std::vector<double> alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
         bool makeDntuple_;
@@ -143,7 +143,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     detailMode_ = iConfig.getParameter<bool>("detailMode");
     dropUnusedTracks_ = iConfig.getParameter<bool>("dropUnusedTracks");
 
-    Dchannel_= iConfig.getParameter<std::vector<int> >("Dchannel");
+    Dchannel_ = iConfig.getParameter<std::vector<int> >("Dchannel");
     genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
     trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
     //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
@@ -153,13 +153,13 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
-    dPtCut_ = iConfig.getParameter<double>("dPtCut");
-    dEtaCut_ = iConfig.getParameter<double>("dEtaCut");
-    VtxChiProbCut_ = iConfig.getParameter<double>("VtxChiProbCut");
-    svpvDistanceCut_ = iConfig.getParameter<double>("svpvDistanceCut");
-    tktkRes_svpvDistanceCut_ = iConfig.getParameter<double>("tktkRes_svpvDistanceCut");
-    MaxDocaCut_ = iConfig.getParameter<double>("MaxDocaCut");
-    alphaCut_ = iConfig.getParameter<double>("alphaCut");
+    dPtCut_ = iConfig.getParameter<std::vector<double> >("dPtCut");
+    dEtaCut_ = iConfig.getParameter<std::vector<double> >("dEtaCut");
+    VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("VtxChiProbCut");
+    svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut");
+    tktkRes_svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut");
+    MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
+    alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
@@ -186,6 +186,12 @@ Dfinder::~Dfinder()
 // ------------ method called for each event  ------------
 void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+   //checking input parameter size
+    if( (Dchannel_.size() != dPtCut_.size()) || (dPtCut_.size() != dEtaCut_.size()) || (dEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != tktkRes_svpvDistanceCut_.size()) || (tktkRes_svpvDistanceCut_.size() != svpvDistanceCut_.size()) || (svpvDistanceCut_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size())){
+        std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
+        return;
+    }
+
     //std::cout << "*************************\nReconstructing event number: " << iEvent.id() << "\n";
     using namespace edm;
     using namespace reco;
@@ -1172,9 +1178,9 @@ void Dfinder::TkCombinationPermutation(
                 if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
                 DMassCutLevel[Dchannel_number-1]->Fill(0);
                 if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                if(v4_D.Pt() < dPtCut_)continue;
+                if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                 DMassCutLevel[Dchannel_number-1]->Fill(1);
-                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                 DMassCutLevel[Dchannel_number-1]->Fill(2);
                 selectedTkhidx.push_back(tk1_hindex);
                 selectedTkhidx.push_back(tk2_hindex);
@@ -1202,9 +1208,9 @@ void Dfinder::TkCombinationPermutation(
                     if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
                     DMassCutLevel[Dchannel_number-1]->Fill(0);
                     if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                    if(v4_D.Pt() < dPtCut_)continue;
+                    if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                     DMassCutLevel[Dchannel_number-1]->Fill(1);
-                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                    //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                     DMassCutLevel[Dchannel_number-1]->Fill(2);
                     selectedTkhidx.push_back(tk1_hindex);
                     selectedTkhidx.push_back(tk2_hindex);
@@ -1234,9 +1240,9 @@ void Dfinder::TkCombinationPermutation(
                         if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
                         DMassCutLevel[Dchannel_number-1]->Fill(0);
                         if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                        if(v4_D.Pt() < dPtCut_)continue;
+                        if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                         DMassCutLevel[Dchannel_number-1]->Fill(1);
-                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                        //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                         DMassCutLevel[Dchannel_number-1]->Fill(2);
                         selectedTkhidx.push_back(tk1_hindex);
                         selectedTkhidx.push_back(tk2_hindex);
@@ -1268,9 +1274,9 @@ void Dfinder::TkCombinationPermutation(
                             if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
                             DMassCutLevel[Dchannel_number-1]->Fill(0);
                             if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                            if(v4_D.Pt() < dPtCut_)continue;
+                            if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                             DMassCutLevel[Dchannel_number-1]->Fill(1);
-                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                            //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                             DMassCutLevel[Dchannel_number-1]->Fill(2);
                             selectedTkhidx.push_back(tk1_hindex);
                             selectedTkhidx.push_back(tk2_hindex);
@@ -1337,9 +1343,9 @@ void Dfinder::TkCombinationResFast(
             if(TkMassCharge.size()==2){
                 //cut mass window before fit
                 if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                if(v4_D.Pt() < dPtCut_)continue;
+                if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                 DMassCutLevel[Dchannel_number-1]->Fill(1);
-                //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                 DMassCutLevel[Dchannel_number-1]->Fill(2);
                 selectedTkhidx.push_back(tk1_hindex);
                 selectedTkhidx.push_back(tk2_hindex);
@@ -1364,9 +1370,9 @@ void Dfinder::TkCombinationResFast(
                 }
                 if(TkMassCharge.size()==3){
                     if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                    if(v4_D.Pt() < dPtCut_)continue;
+                    if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                     DMassCutLevel[Dchannel_number-1]->Fill(1);
-                    //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                    //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                     DMassCutLevel[Dchannel_number-1]->Fill(2);
                     selectedTkhidx.push_back(tk1_hindex);
                     selectedTkhidx.push_back(tk2_hindex);
@@ -1393,9 +1399,9 @@ void Dfinder::TkCombinationResFast(
                     }
                     if(TkMassCharge.size()==4){
                         if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                        if(v4_D.Pt() < dPtCut_)continue;
+                        if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                         DMassCutLevel[Dchannel_number-1]->Fill(1);
-                        //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                        //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                         DMassCutLevel[Dchannel_number-1]->Fill(2);
                         selectedTkhidx.push_back(tk1_hindex);
                         selectedTkhidx.push_back(tk2_hindex);
@@ -1421,9 +1427,9 @@ void Dfinder::TkCombinationResFast(
                             if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
                             DMassCutLevel[Dchannel_number-1]->Fill(0);
                             if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
-                            if(v4_D.Pt() < dPtCut_)continue;
+                            if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
                             DMassCutLevel[Dchannel_number-1]->Fill(1);
-                            //if(fabs(v4_D.Eta()) > dEtaCut_)continue;
+                            //if(fabs(v4_D.Eta()) > dEtaCut_[Dchannel_number-1])continue;
                             DMassCutLevel[Dchannel_number-1]->Fill(2);
                             selectedTkhidx.push_back(tk1_hindex);
                             selectedTkhidx.push_back(tk2_hindex);
@@ -1545,7 +1551,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
             double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
 
-            if(chi2_prob_tktkRes < VtxChiProbCut_) continue;
+            if(chi2_prob_tktkRes < VtxChiProbCut_[Dchannel_number-1]) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(4);
 
             if(SequentialFit){
@@ -1569,7 +1575,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DMassCutLevel[Dchannel_number-1]->Fill(5);
 
         double MaximumDoca = Functs.getMaxDoca(tktk_candidate);
-        if (MaximumDoca > MaxDocaCut_) continue;
+        if (MaximumDoca > MaxDocaCut_[Dchannel_number-1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(6);
 
         if(tktkRes_mass>0){
@@ -1594,7 +1600,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DMassCutLevel[Dchannel_number-1]->Fill(8);
 
         double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-        if(chi2_prob_tktk < VtxChiProbCut_) continue;
+        if(chi2_prob_tktk < VtxChiProbCut_[Dchannel_number-1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(9);
 
         tktkCands  = tktk_VFT->finalStateParticles();
@@ -1654,7 +1660,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             VertexDistance3D Res_a3d;
             DInfo.tktkRes_svpvDistance[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).value();
             DInfo.tktkRes_svpvDisErr[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).error();
-            if( (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_) continue;
+            if( (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_[Dchannel_number-1]) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(11);
 
             //index initialization to -2
@@ -1704,7 +1710,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
         DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
         DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
-        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
+        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_[Dchannel_number-1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(12);
 
         reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
@@ -1735,7 +1741,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         TVector3 dVec;
         dVec.SetXYZ(DInfo.px[DInfo.size], DInfo.py[DInfo.size], DInfo.pz[DInfo.size]);
         DInfo.alpha[DInfo.size] = svpvVec.Angle(dVec);
-        if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
+        if( DInfo.alpha[DInfo.size] > alphaCut_[Dchannel_number-1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(13);
 
         DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();

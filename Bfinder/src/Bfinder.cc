@@ -80,12 +80,13 @@ class Bfinder : public edm::EDAnalyzer
         double tkPtCut_;
         double tkEtaCut_;
         double jpsiPtCut_;
-        double bPtCut_;
-        double bEtaCut_;
-        double VtxChiProbCut_;
-        double svpvDistanceCut_;
-        double MaxDocaCut_;
-        double alphaCut_;
+        double uj_VtxChiProbCut_;
+        std::vector<double> bPtCut_;
+        std::vector<double> bEtaCut_;
+        std::vector<double> VtxChiProbCut_;
+        std::vector<double> svpvDistanceCut_;
+        std::vector<double> MaxDocaCut_;
+        std::vector<double> alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
         bool doMuPreCut_;
@@ -159,12 +160,13 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
     jpsiPtCut_ = iConfig.getParameter<double>("jpsiPtCut");
-    bPtCut_ = iConfig.getParameter<double>("bPtCut");
-    bEtaCut_ = iConfig.getParameter<double>("bEtaCut");
-    VtxChiProbCut_ = iConfig.getParameter<double>("VtxChiProbCut");
-    svpvDistanceCut_ = iConfig.getParameter<double>("svpvDistanceCut");
-    MaxDocaCut_ = iConfig.getParameter<double>("MaxDocaCut");
-    alphaCut_ = iConfig.getParameter<double>("alphaCut");
+    uj_VtxChiProbCut_ = iConfig.getParameter<double>("uj_VtxChiProbCut");
+    bPtCut_ = iConfig.getParameter<std::vector<double> >("bPtCut");
+    bEtaCut_ = iConfig.getParameter<std::vector<double> >("bEtaCut");
+    VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("VtxChiProbCut");
+    svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut");
+    MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
+    alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     doMuPreCut_ = iConfig.getParameter<bool>("doMuPreCut");
@@ -194,6 +196,12 @@ Bfinder::~Bfinder()
 // ------------ method called for each event  ------------
 void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+    //checking input parameter size
+    if( (Bchannel_.size() != bPtCut_.size()) || (bPtCut_.size() != bEtaCut_.size()) || (bEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != svpvDistanceCut_.size()) || (svpvDistanceCut_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size())){
+        std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
+        return;
+    }
+
     //std::cout << "*************************\nReconstructing event number: " << iEvent.id() << "\n";
     using namespace edm;
     using namespace reco;
@@ -776,7 +784,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             ujVFT->movePointerToTheNextChild();
                             KinematicParameters         ujmu2KP     = ujVFT->currentParticle()->currentState().kinematicParameters();
                             double chi2_prob_uj = TMath::Prob(ujVFPvtx->chiSquared(), ujVFPvtx->degreesOfFreedom());
-                            if(chi2_prob_uj < VtxChiProbCut_) continue;
+                            if(chi2_prob_uj < uj_VtxChiProbCut_) continue;
                             XbujCutLevel->Fill(4);
 
                             if (fabs(ujVFP->currentState().mass()-JPSI_MASS)>0.3) continue;
@@ -1103,15 +1111,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             iEvent.getByLabel(genLabel_, gens);
 
             std::vector<const reco::Candidate *> sel_cands;
-            //deprecated
-            /*
-            std::vector<const reco::Candidate *> cands;
-            for(std::vector<reco::GenParticle>::const_iterator it_gen = gens->begin();
-                it_gen != gens->end(); it_gen++ ){
-                cands.push_back(&*it_gen);
-            }
-            */
-
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
                 if (it_gen->status() > 2 && it_gen->status() != 8) continue;//only status 1, 2, 8(simulated)
@@ -1119,15 +1118,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     fprintf(stderr,"ERROR: number of gens exceeds the size of array.\n");
                     break;;
                 }
-
-                /*
-                if (
-                    //(abs(it_gen->pdgId()) == 111 && it_gen->status() == 2) ||//pi 0
-                    (abs(it_gen->pdgId()) == 211 && it_gen->status() == 2) ||//pi +-
-                    //(abs(it_gen->pdgId()) == 311 && it_gen->status() == 2) ||//K0
-                    (abs(it_gen->pdgId()) == 321 && it_gen->status() == 2) //K+-
-                ) continue;//only status=1 pi+- and K+-
-                */
 
                 bool isGenSignal = false;
                 //save target intermediat state particle
@@ -1164,30 +1154,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 }//all pi and K from b or c meson
                 if (!isGenSignal) continue;
 
-                /*deprecated
-                int iMo1 = -1,  iMo2 = -1,  iDa1 = -1,  iDa2 = -1;
-                for(std::vector<const reco::Candidate *>::iterator iCands = cands.begin();
-                    iCands != cands.end(); iCands++){
-                    if (it_gen->numberOfMothers() >= 2){
-                        if (it_gen->mother(0) == *iCands)
-                            iMo1 = iCands - cands.begin();
-                        if (it_gen->mother(1) == *iCands)
-                            iMo2 = iCands - cands.begin();
-                    }else if(it_gen->numberOfMothers() == 1){
-                        if (it_gen->mother(0) == *iCands)
-                            iMo1 = iCands - cands.begin();
-                    }
-                    if (it_gen->numberOfDaughters() >= 2){
-                        if (it_gen->daughter(0) == *iCands)
-                            iDa1 = iCands - cands.begin();
-                        else if (it_gen->daughter(1) == *iCands)
-                            iDa2 = iCands - cands.begin();
-                    }else if(it_gen->numberOfDaughters() == 1){
-                        if (it_gen->daughter(0) == *iCands)
-                            iDa1 = iCands - cands.begin();
-                    }
-                }
-                */
                 //Find all other particle in TrackInfo
                 //printf("-----*****DEBUG:Start of matching.\n");
                 //if (abs(it_gen->pdgId()) == 13){
@@ -1225,10 +1191,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.status[GenInfo.size]        = it_gen->status();
                 GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
                 GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
-                //GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
-                //GenInfo.mo2[GenInfo.size]           = iMo2;
-                //GenInfo.da1[GenInfo.size]           = iDa1;
-                //GenInfo.da2[GenInfo.size]           = iDa2;
                 GenInfo.mo1[GenInfo.size]           = -1;//To be matched later.
                 GenInfo.mo2[GenInfo.size]           = -1;
                 GenInfo.da1[GenInfo.size]           = -1;
@@ -1267,37 +1229,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     }
                 }
             }
-            /*deprecated
-            //Pass handle_index to igen
-            for(int igen = 0; igen < GenInfo.size; igen++){
-                int iMo1 = GenInfo.mo1[igen];
-                int iMo2 = GenInfo.mo2[igen];
-                int iDa1 = GenInfo.da1[igen];
-                int iDa2 = GenInfo.da2[igen];
-                for(int k = 0; k < GenInfo.size; k++){
-                    if (iMo1 == GenInfo.handle_index[k])
-                        GenInfo.mo1[igen] = k;
-                    else if (iMo2 == GenInfo.handle_index[k])
-                        GenInfo.mo2[igen] = k;
-                    else if (iDa1 == GenInfo.handle_index[k])
-                        GenInfo.da1[igen] = k;
-                    else if (iDa2 == GenInfo.handle_index[k])
-                        GenInfo.da2[igen] = k;
-                }
-                //In case that GEN particles are omitted from GenInfo
-                //handle_index couldn't be the same as igen
-                //since the very first proton pair has status 3.
-                if (iMo1 == GenInfo.mo1[igen])
-                    GenInfo.mo1[igen] = -1;
-                if (iMo2 == GenInfo.mo2[igen])
-                    GenInfo.mo2[igen] = -1;
-                if (iDa1 == GenInfo.da1[igen])
-                    GenInfo.da1[igen] = -1;
-                if (iDa2 == GenInfo.da2[igen])
-                   GenInfo.da2[igen] = -1;
-            }
-            //printf("-----*****DEBUG:End of IndexToIgen\n");
-            */
         }//isRealData}}}
         //printf("-----*****DEBUG:End of GenInfo.\n");
         //std::cout<<"Start to fill!\n";
@@ -1400,7 +1331,7 @@ void Bfinder::BranchOut2MuTk(
       //if ((v4_mu1+v4_mu2+v4_tk1).Mag()<mass_window[0]-0.2 || (v4_mu1+v4_mu2+v4_tk1).Mag()>mass_window[1]+0.2) continue;
       if ((v4_mu1+v4_mu2+v4_tk1).Mag()<mass_window[0] || (v4_mu1+v4_mu2+v4_tk1).Mag()>mass_window[1]) continue;
       XbMassCutLevel[channel_number-1]->Fill(0);
-      if((v4_mu1+v4_mu2+v4_tk1).Pt()<bPtCut_)continue;
+      if((v4_mu1+v4_mu2+v4_tk1).Pt()<bPtCut_[channel_number-1])continue;
       XbMassCutLevel[channel_number-1]->Fill(1);
       
       reco::TransientTrack kaonTT(tk_it1->track(), &(*bField) );
@@ -1417,7 +1348,7 @@ void Bfinder::BranchOut2MuTk(
       RefCountedKinematicTree xbVFT;
 
       double MaximumDoca = Functs.getMaxDoca(Xb_candidate);
-      if (MaximumDoca > MaxDocaCut_) continue;
+      if (MaximumDoca > MaxDocaCut_[channel_number-1]) continue;
       XbMassCutLevel[channel_number-1]->Fill(3);
       
       ParticleMass uj_mass = MuMu_MASS;
@@ -1436,7 +1367,7 @@ void Bfinder::BranchOut2MuTk(
       std::vector<RefCountedKinematicParticle> xCands  = xbVFT->finalStateParticles();
       
       double chi2_prob = TMath::Prob(xbVFPvtx->chiSquared(),xbVFPvtx->degreesOfFreedom());
-      if (chi2_prob < VtxChiProbCut_) continue;
+      if (chi2_prob < VtxChiProbCut_[channel_number-1]) continue;
       XbMassCutLevel[channel_number-1]->Fill(6);
       
       //if (xbVFP->currentState().mass()<mass_window[0] || xbVFP->currentState().mass()>mass_window[1]) continue;
@@ -1476,7 +1407,7 @@ void Bfinder::BranchOut2MuTk(
       //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
       BInfo.svpvDistance[BInfo.size] = a3d.distance(thePrimaryV,xbVFPvtx->vertexState()).value();
       BInfo.svpvDisErr[BInfo.size] = a3d.distance(thePrimaryV,xbVFPvtx->vertexState()).error();
-      if( (BInfo.svpvDistance[BInfo.size]/BInfo.svpvDisErr[BInfo.size]) < svpvDistanceCut_) continue;
+      if( (BInfo.svpvDistance[BInfo.size]/BInfo.svpvDisErr[BInfo.size]) < svpvDistanceCut_[channel_number-1]) continue;
       XbMassCutLevel[channel_number-1]->Fill(7);
 
       reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
@@ -1507,7 +1438,7 @@ void Bfinder::BranchOut2MuTk(
       TVector3 dVec;
       dVec.SetXYZ(BInfo.px[BInfo.size], BInfo.py[BInfo.size], BInfo.pz[BInfo.size]);
       BInfo.alpha[BInfo.size] = svpvVec.Angle(dVec);
-      if( BInfo.alpha[BInfo.size] > alphaCut_) continue;
+      if( BInfo.alpha[BInfo.size] > alphaCut_[channel_number-1]) continue;
       XbMassCutLevel[channel_number-1]->Fill(8);
       
       BInfo.rftk1_index[BInfo.size] = -2;
@@ -1593,7 +1524,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             //if ((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()<mass_window[0]-0.2 || (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()>mass_window[1]+0.2) continue;
             if ((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()<mass_window[0] || (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag()>mass_window[1]) continue;
             XbMassCutLevel[channel_number-1]->Fill(1);
-            if((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Pt()<bPtCut_)continue;
+            if((v4_mu1+v4_mu2+v4_tk1+v4_tk2).Pt()<bPtCut_[channel_number-1])continue;
             XbMassCutLevel[channel_number-1]->Fill(2);
             
             reco::TransientTrack tk1PTT(tk_it1->track(), &(*bField) );
@@ -1625,7 +1556,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
                 if (tktk_VFPvtx->vertexIsValid()){
                     XbMassCutLevel[channel_number-1]->Fill(5);
                     double chi2_prob_tktk = TMath::Prob(tktk_VFPvtx->chiSquared(),tktk_VFPvtx->degreesOfFreedom());
-                    if (chi2_prob_tktk >= VtxChiProbCut_){
+                    if (chi2_prob_tktk >= VtxChiProbCut_[channel_number-1]){
                         XbMassCutLevel[channel_number-1]->Fill(6);
                     }
                     else if (TkTk_MASS > 0) continue;
@@ -1658,7 +1589,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             RefCountedKinematicVertex       xbVFPvtx;
 
             double MaximumDoca = Functs.getMaxDoca(Xb_candidate);
-            if (MaximumDoca > MaxDocaCut_) continue;
+            if (MaximumDoca > MaxDocaCut_[channel_number-1]) continue;
             XbMassCutLevel[channel_number-1]->Fill(7);
             
             ParticleMass uj_mass = MuMu_MASS;
@@ -1674,7 +1605,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             XbMassCutLevel[channel_number-1]->Fill(9);
             
             double chi2_prob = TMath::Prob(xbVFPvtx->chiSquared(),xbVFPvtx->degreesOfFreedom());
-            if (chi2_prob < VtxChiProbCut_) continue;
+            if (chi2_prob < VtxChiProbCut_[channel_number-1]) continue;
             XbMassCutLevel[channel_number-1]->Fill(10);
             
             //Cut out a mass window
@@ -1731,7 +1662,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
             BInfo.svpvDistance[BInfo.size] = a3d.distance(thePrimaryV,xbVFPvtx->vertexState()).value();
             BInfo.svpvDisErr[BInfo.size] = a3d.distance(thePrimaryV,xbVFPvtx->vertexState()).error();
-            if( (BInfo.svpvDistance[BInfo.size]/BInfo.svpvDisErr[BInfo.size]) < svpvDistanceCut_) continue;
+            if( (BInfo.svpvDistance[BInfo.size]/BInfo.svpvDisErr[BInfo.size]) < svpvDistanceCut_[channel_number-1]) continue;
             XbMassCutLevel[channel_number-1]->Fill(11);
            
             reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
@@ -1762,7 +1693,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             TVector3 dVec;
             dVec.SetXYZ(BInfo.px[BInfo.size], BInfo.py[BInfo.size], BInfo.pz[BInfo.size]);
             BInfo.alpha[BInfo.size] = svpvVec.Angle(dVec);
-            if( BInfo.alpha[BInfo.size] > alphaCut_) continue;
+            if( BInfo.alpha[BInfo.size] > alphaCut_[channel_number-1]) continue;
             XbMassCutLevel[channel_number-1]->Fill(12);
             
             BInfo.rftk1_index[BInfo.size] = -2;
