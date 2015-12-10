@@ -913,6 +913,7 @@ public:
     float	tktkRes_vtxchi2[MAX_XB];
     float  tktkRes_svpvDistance[MAX_XB];
     float  tktkRes_svpvDisErr[MAX_XB];
+	float  tktkRes_alpha[MAX_XB];
     float  tktkRes_rftk1_mass[MAX_XB];
     float  tktkRes_rftk1_pt[MAX_XB];
     float  tktkRes_rftk1_eta[MAX_XB];
@@ -1011,6 +1012,7 @@ public:
         root->Branch("DInfo.tktkRes_vtxchi2"       , tktkRes_vtxchi2           , "DInfo.tktkRes_vtxchi2[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_svpvDistance"  , tktkRes_svpvDistance      , "DInfo.tktkRes_svpvDistance[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_svpvDisErr"    , tktkRes_svpvDisErr        , "DInfo.tktkRes_svpvDisErr[DInfo.size]/F"	);
+		root->Branch("DInfo.tktkRes_alpha"         , tktkRes_alpha             , "DInfo.tktkRes_alpha[DInfo.size]/F" );
 
         root->Branch("DInfo.tktkRes_rftk1_index"   , tktkRes_rftk1_index       , "DInfo.tktkRes_rftk1_index[DInfo.size]/I");
         root->Branch("DInfo.tktkRes_rftk2_index"   , tktkRes_rftk2_index       , "DInfo.tktkRes_rftk2_index[DInfo.size]/I");
@@ -1117,6 +1119,7 @@ public:
         root->SetBranchAddress("DInfo.tktkRes_vtxZYErr"        ,tktkRes_vtxZYErr   );
         root->SetBranchAddress("DInfo.tktkRes_svpvDistance"    ,tktkRes_svpvDistance   	);
         root->SetBranchAddress("DInfo.tktkRes_svpvDisErr"      ,tktkRes_svpvDisErr   	);
+		root->SetBranchAddress("DInfo.tktkRes_alpha"           ,tktkRes_alpha    );
 
         root->SetBranchAddress("DInfo.tktkRes_rftk1_index"     ,tktkRes_rftk1_index   	);
         root->SetBranchAddress("DInfo.tktkRes_rftk2_index"     ,tktkRes_rftk2_index   	);
