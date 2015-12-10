@@ -190,6 +190,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    dPtCut = cms.double(8.0),#before fit
 	    dEtaCut = cms.double(1.5),#before fit, not used currently
 		VtxChiProbCut = cms.double(0.05),
+	    tktkRes_svpvDistanceCut = cms.double(0.0),
 	    svpvDistanceCut = cms.double(0.0),
 	    MaxDocaCut = cms.double(999.),
 	    alphaCut = cms.double(999.),

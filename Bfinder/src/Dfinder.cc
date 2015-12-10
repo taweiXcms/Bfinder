@@ -85,6 +85,7 @@ class Dfinder : public edm::EDAnalyzer
         double dPtCut_;
         double dEtaCut_;
         double VtxChiProbCut_;
+        double tktkRes_svpvDistanceCut_;
         double svpvDistanceCut_;
         double MaxDocaCut_;
         double alphaCut_;
@@ -156,6 +157,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     dEtaCut_ = iConfig.getParameter<double>("dEtaCut");
     VtxChiProbCut_ = iConfig.getParameter<double>("VtxChiProbCut");
     svpvDistanceCut_ = iConfig.getParameter<double>("svpvDistanceCut");
+    tktkRes_svpvDistanceCut_ = iConfig.getParameter<double>("tktkRes_svpvDistanceCut");
     MaxDocaCut_ = iConfig.getParameter<double>("MaxDocaCut");
     alphaCut_ = iConfig.getParameter<double>("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
@@ -1649,6 +1651,12 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_vtxdof[DInfo.size]          = tktkRes_VFPvtx->degreesOfFreedom();
             DInfo.tktkRes_vtxchi2[DInfo.size]         = tktkRes_VFPvtx->chiSquared();
 
+            VertexDistance3D Res_a3d;
+            DInfo.tktkRes_svpvDistance[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).value();
+            DInfo.tktkRes_svpvDisErr[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).error();
+            if( (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_) continue;
+            DMassCutLevel[Dchannel_number-1]->Fill(11);
+
             //index initialization to -2
             DInfo.tktkRes_rftk1_index[DInfo.size]     = -2;
             DInfo.tktkRes_rftk2_index[DInfo.size]     = -2;
@@ -1697,7 +1705,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
         DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
         if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(11);
+        DMassCutLevel[Dchannel_number-1]->Fill(12);
 
         reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
         reco::Vertex::Point vp2(tktk_VFPvtx->vertexState().position().x(), tktk_VFPvtx->vertexState().position().y(), 0.);
@@ -1728,7 +1736,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         dVec.SetXYZ(DInfo.px[DInfo.size], DInfo.py[DInfo.size], DInfo.pz[DInfo.size]);
         DInfo.alpha[DInfo.size] = svpvVec.Angle(dVec);
         if( DInfo.alpha[DInfo.size] > alphaCut_) continue;
-        DMassCutLevel[Dchannel_number-1]->Fill(12);
+        DMassCutLevel[Dchannel_number-1]->Fill(13);
 
         DInfo.rftk1_mass[DInfo.size]      = tktk_4vecs[0].Mag();
         DInfo.rftk1_pt[DInfo.size]        = tktk_4vecs[0].Pt();
@@ -1795,7 +1803,6 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     }
 }
 //}}}
-
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(Dfinder);
