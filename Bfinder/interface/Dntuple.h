@@ -58,6 +58,8 @@ class DntupleBranches
   float   DsvpvDisErr[MAX_XB];
   float   DsvpvDistance_2D[MAX_XB];
   float   DsvpvDisErr_2D[MAX_XB];
+  float   DtktkRes_chi2ndf[MAX_XB];
+  float   DtktkRes_chi2cl[MAX_XB];
   float   DtktkRes_alpha[MAX_XB];
   float   DtktkRes_svpvDistance[MAX_XB];
   float   DtktkRes_svpvDisErr[MAX_XB];
@@ -238,9 +240,11 @@ class DntupleBranches
     dnt->Branch("DsvpvDisErr",DsvpvDisErr,"DsvpvDisErr[Dsize]/F");
     dnt->Branch("DsvpvDistance_2D",DsvpvDistance_2D,"DsvpvDistance_2D[Dsize]/F");
     dnt->Branch("DsvpvDisErr_2D",DsvpvDisErr_2D,"DsvpvDisErr_2D[Dsize]/F");
-    dnt->Branch("DtktkRes_alpha",DtktkRes_alpha,"DtktkRes_alpha/F");
-    dnt->Branch("DtktkRes_svpvDistance",DtktkRes_svpvDistance,"DtktkRes_svpvDistance/F");
-    dnt->Branch("DtktkRes_svpvDisErr",DtktkRes_svpvDisErr,"DtktkRes_svpvDisErr/F");
+    dnt->Branch("DtktkRes_chi2ndf",DtktkRes_chi2ndf,"DtktkRes_chi2ndf[Dsize]/F");
+    dnt->Branch("DtktkRes_chi2cl",DtktkRes_chi2cl,"DtktkRes_chi2cl[Dsize]/F");
+    dnt->Branch("DtktkRes_alpha",DtktkRes_alpha,"DtktkRes_alpha[Dsize]/F");
+    dnt->Branch("DtktkRes_svpvDistance",DtktkRes_svpvDistance,"DtktkRes_svpvDistance[Dsize]/F");
+    dnt->Branch("DtktkRes_svpvDisErr",DtktkRes_svpvDisErr,"DtktkRes_svpvDisErr[Dsize]/F");
     dnt->Branch("DlxyBS",DlxyBS,"DlxyBS[Dsize]/F");
     dnt->Branch("DlxyBSErr",DlxyBSErr,"DlxyBSErr[Dsize]/F");
     dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/F");
@@ -587,6 +591,8 @@ class DntupleBranches
     DsvpvDisErr[typesize] = DInfo->svpvDisErr[j];
     DsvpvDistance_2D[typesize] = DInfo->svpvDistance_2D[j];
     DsvpvDisErr_2D[typesize] = DInfo->svpvDisErr_2D[j];
+    DtktkRes_chi2ndf[typesize] = DInfo->tktkRes_vtxchi2[j]/DInfo->tktkRes_vtxchi2[j];
+    DtktkRes_chi2cl[typesize] = TMath::Prob(DInfo->tktkRes_vtxchi2[j], DInfo->tktkRes_vtxchi2[j]);
     DtktkRes_alpha[typesize] = DInfo->tktkRes_alpha[j];
     DtktkRes_svpvDistance[typesize] = DInfo->tktkRes_svpvDistance[j];
     DtktkRes_svpvDisErr[typesize] = DInfo->tktkRes_svpvDisErr[j];
