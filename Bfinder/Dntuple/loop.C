@@ -6,14 +6,14 @@ using namespace std;
 
 Bool_t iseos = false;
 Bool_t istest = false;
-int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_20151209_dPt5tkPt1_D0DsDstar3p5p/finder_pp_194_1_nRh.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/test", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisun/PbPb2015_HeavyFlavor/PbPb_2015_HIHardProbes_AOD_tkpt0p8_D0pt0p8_D3d2_Prob0p05_alpha0p3_Dstarpt6_1210/finder_962.root",
+         TString outfile="test.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   if(istest)
     {
       //this testing sample doesn't have skimtree and hitree
       infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb_253.root";
-      outfile="test";
+      outfile="test.root";
       REAL=false;
       isPbPb=false;
       iseos=false;
@@ -54,10 +54,7 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
-  TString ofname;
-  if(endEntries==nentries&&startEntries==0) ofname = Form("%s_Evt_All.root", outfile.Data());
-  else ofname = Form("%s_Evt_%.0d_to_%.0d.root", outfile.Data(), startEntries, endEntries);
-  TFile *outf = new TFile(ofname,"recreate");
+  TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[12];
   isDchannel[0] = 1; //k+pi-
@@ -125,7 +122,7 @@ int loop(TString infile="/data/twang/DfinderRun2/HeavyFlavor/DfinderData_pp_2015
 
   cout<<"--- In/Output files"<<endl;
   cout<<ifname<<endl;
-  cout<<ofname<<endl;
+  cout<<outfile<<endl;
   cout<<endl;
 
   return 1;
