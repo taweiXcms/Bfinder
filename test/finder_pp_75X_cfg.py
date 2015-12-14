@@ -2,23 +2,29 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process('HiForest')
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
-
 #ivars.inputFiles='file:/data/twang/MC_samples/MinBias_TuneCUETP8M1_5p02TeV-pythia8/MinBias_TuneCUETP8M1_5p02TeV_pythia8_pp502Fall15_MCRUN2_71_V1_v1_AOD_CMSSW_7_5_4_20151113/step3_RAW2DIGI_L1Reco_RECO_993_1_q1f.root'
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/AOD/PromptReco-v1/000/262/235/00000/0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/RECO/PromptReco-v1/000/262/163/00000/14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/HeavyFlavor/AOD/PromptReco-v1/000/262/273/00000/06090E4E-0C97-E511-856C-02163E0142D2.root'#AOD HeavyFlavor
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/MinimumBias1/AOD/PromptReco-v1/000/262/274/00000/0E443E25-3C9A-E511-9263-02163E013626.root'#AOD MB1
-
 ivars.outputFile='finder_pp.root'
 ivars.parseArguments()# get and parse the command line arguments
 
 ### Custom options
+########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
+### pp B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
+ppBdefault = True
+ppDHFdefault = False
+ppDMBdefault = False
+
 ### Run on MC?
 runOnMC = False
 
 ### Use AOD event filter
 RunOnAOD = True
+########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
 
+### More custom options
 ### Add Calo muons
 AddCaloMuon = False
 
@@ -206,6 +212,29 @@ process.Dfinder.Dchannel = cms.vint32(
     0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
     0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
+## pp Bfinder setting on DoubleMu 
+if ppBdefault and not ppDMBdefault and not ppDHFdefault:
+    process.Bfinder.tkPtCut = cms.double(0.5)#before fit
+    process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
+    process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
+    process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
+    process.p = cms.Path(process.BfinderSequence)
+## pp Dfinder setting on HeavyFlavor
+if ppDHFdefault and not ppDMBdefault and not ppBdefault:
+    process.Dfinder.tkPtCut = cms.double(3.0)#before fit
+    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
+    process.Dfinder.tktkRes_svpvDistanceCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 2.5, 2.5, 2.5, 2.5)
+    process.Dfinder.svpvDistanceCut = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
+    process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
+    process.p = cms.Path(process.DfinderSequence)
+##pp Dfinder setting on MB
+if ppDMBdefault and not ppDHFdefault and not ppBdefault:
+    process.Dfinder.tkPtCut = cms.double(0.5)#before fit
+    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
+    process.Dfinder.tktkRes_svpvDistanceCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 2.5, 2.5, 2.5, 2.5)
+    process.Dfinder.svpvDistanceCut = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
+    process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0)
+    process.p = cms.Path(process.DfinderSequence)
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
 process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
