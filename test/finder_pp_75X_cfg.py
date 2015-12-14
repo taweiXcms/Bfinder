@@ -221,7 +221,7 @@ if ppBdefault and not ppDMBdefault and not ppDHFdefault:
     process.p = cms.Path(process.BfinderSequence)
 ## pp Dfinder setting on HeavyFlavor
 if ppDHFdefault and not ppDMBdefault and not ppBdefault:
-    process.Dfinder.tkPtCut = cms.double(3.0)#before fit
+    process.Dfinder.tkPtCut = cms.double(1.)#before fit
     process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Dfinder.tktkRes_svpvDistanceCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 2.5, 2.5, 2.5, 2.5)
     process.Dfinder.svpvDistanceCut = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
