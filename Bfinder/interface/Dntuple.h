@@ -591,8 +591,8 @@ class DntupleBranches
     DsvpvDisErr[typesize] = DInfo->svpvDisErr[j];
     DsvpvDistance_2D[typesize] = DInfo->svpvDistance_2D[j];
     DsvpvDisErr_2D[typesize] = DInfo->svpvDisErr_2D[j];
-    DtktkRes_chi2ndf[typesize] = DInfo->tktkRes_vtxchi2[j]/DInfo->tktkRes_vtxchi2[j];
-    DtktkRes_chi2cl[typesize] = TMath::Prob(DInfo->tktkRes_vtxchi2[j], DInfo->tktkRes_vtxchi2[j]);
+    DtktkRes_chi2ndf[typesize] = DInfo->tktkRes_vtxchi2[j]/DInfo->tktkRes_vtxdof[j];
+    DtktkRes_chi2cl[typesize] = TMath::Prob(DInfo->tktkRes_vtxchi2[j], DInfo->tktkRes_vtxdof[j]);
     DtktkRes_alpha[typesize] = DInfo->tktkRes_alpha[j];
     DtktkRes_svpvDistance[typesize] = DInfo->tktkRes_svpvDistance[j];
     DtktkRes_svpvDisErr[typesize] = DInfo->tktkRes_svpvDisErr[j];
