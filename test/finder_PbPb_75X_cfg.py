@@ -13,7 +13,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_623_1_QKI.root'
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpipipi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_614_1_jV8.root'
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIOniaL1DoubleMu0/AOD/PromptReco-v1/000/262/735/00000/B0EC6FA1-4E99-E511-B663-02163E013910.root'#HIOniaL1DoubleMu0
-#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/DA35B5E5-4C99-E511-8015-02163E0137D4.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/FC577170-6C99-E511-9848-02163E014120.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/6E423E98-5C99-E511-B72B-02163E0138EE.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/E67242E4-5E99-E511-947B-02163E0127B4.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias1/AOD/PromptReco-v1/000/262/726/00000/EE7F4A63-4599-E511-9CE5-02163E013850.root'#HIMinimumBias1
@@ -211,7 +211,7 @@ process.Dfinder.Dchannel = cms.vint32(
 )
 ## PbPb Bfinder setting on DoubleMu
 if PbPbBdefault and not PbPbDMBdefault and not PbPbDHPdefault:
-    process.Bfinder.tkPtCut = cms.double(1.0)#before fit
+    process.Bfinder.tkPtCut = cms.double(0.8)#before fit
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
     process.Bfinder.bPtCut = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
     process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
