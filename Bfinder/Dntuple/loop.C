@@ -1,8 +1,8 @@
 using namespace std;
 
 #include "loop.h"
-#include "../interface/format.h"
-#include "../interface/Dntuple.h"
+#include "format.h"
+#include "Dntuple.h"
 
 Bool_t iseos = false;
 Bool_t istest = false;
