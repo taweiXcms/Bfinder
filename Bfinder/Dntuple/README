@@ -1,0 +1,4 @@
+1, setup the input file list like test.lis
+2, change the file list, output directory in submit_batchjob_filelist.sh
+3, set the MC or data flag in exec_filebase.sh (first true or false)
+4, ./submit_batchjob_filelist.sh
