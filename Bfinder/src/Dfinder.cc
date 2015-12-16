@@ -80,14 +80,17 @@ class Dfinder : public edm::EDAnalyzer
         edm::InputTag puInfoLabel_;
         edm::InputTag bsLabel_;
         edm::InputTag pvLabel_;
-        float tkPtCut_;
-        float tkEtaCut_;
+        std::vector<double> tkPtCut_;
+        std::vector<double> tkEtaCut_;
         std::vector<double> dPtCut_;
         std::vector<double> dEtaCut_;
         std::vector<double> VtxChiProbCut_;
-        std::vector<double> tktkRes_svpvDistanceCut_;
+        std::vector<double> dCutSeparating_PtVal_;
+        std::vector<double> tktkRes_svpvDistanceCut_lowptD_;
+        std::vector<double> tktkRes_svpvDistanceCut_highptD_;
 		std::vector<double> tktkRes_alphaCut_;
-        std::vector<double> svpvDistanceCut_;
+        std::vector<double> svpvDistanceCut_lowptD_;
+        std::vector<double> svpvDistanceCut_highptD_;
         std::vector<double> MaxDocaCut_;
         std::vector<double> alphaCut_;
         bool RunOnMC_;
@@ -152,14 +155,17 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
 
-    tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
-    tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
+    tkPtCut_ = iConfig.getParameter<std::vector<double> >("tkPtCut");
+    tkEtaCut_ = iConfig.getParameter<std::vector<double> >("tkEtaCut");
     dPtCut_ = iConfig.getParameter<std::vector<double> >("dPtCut");
     dEtaCut_ = iConfig.getParameter<std::vector<double> >("dEtaCut");
     VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("VtxChiProbCut");
-    svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut");
-    tktkRes_svpvDistanceCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut");
+    dCutSeparating_PtVal_ = iConfig.getParameter<std::vector<double> >("dCutSeparating_PtVal");
+    tktkRes_svpvDistanceCut_lowptD_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut_lowptD");
+    tktkRes_svpvDistanceCut_highptD_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut_highptD");
 	tktkRes_alphaCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_alphaCut");
+    svpvDistanceCut_lowptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_lowptD");
+    svpvDistanceCut_highptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_highptD");
     MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
     alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
@@ -189,7 +195,7 @@ Dfinder::~Dfinder()
 void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    //checking input parameter size
-    if( (Dchannel_.size() != dPtCut_.size()) || (dPtCut_.size() != dEtaCut_.size()) || (dEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != tktkRes_svpvDistanceCut_.size()) || (tktkRes_svpvDistanceCut_.size() != svpvDistanceCut_.size()) || (svpvDistanceCut_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size()) || (alphaCut_.size() != tktkRes_alphaCut_.size())){
+    if( (Dchannel_.size() != dPtCut_.size()) || (dPtCut_.size() != dEtaCut_.size()) || (dEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != tktkRes_svpvDistanceCut_lowptD_.size()) || (tktkRes_svpvDistanceCut_lowptD_.size() != tktkRes_svpvDistanceCut_highptD_.size()) || (tktkRes_svpvDistanceCut_highptD_.size() != svpvDistanceCut_lowptD_.size()) || (svpvDistanceCut_lowptD_.size() != svpvDistanceCut_highptD_.size()) || (svpvDistanceCut_highptD_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size()) || (alphaCut_.size() != tktkRes_alphaCut_.size())){
         std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
         return;
     }
@@ -1669,7 +1675,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             VertexDistance3D Res_a3d;
             DInfo.tktkRes_svpvDistance[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).value();
             DInfo.tktkRes_svpvDisErr[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).error();
-            if( (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_[Dchannel_number-1]) continue;
+            if(DInfo.tktkRes_pt[DInfo.size] <= dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_lowptD_[Dchannel_number-1]) continue;
+            else if( DInfo.tktkRes_pt[DInfo.size] > dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_highptD_[Dchannel_number-1]) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(11);
 
             //index initialization to -2
@@ -1719,7 +1726,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_0/RecoVertex/VertexTools/src/VertexDistance3D.cc
         DInfo.svpvDistance[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).value();
         DInfo.svpvDisErr[DInfo.size] = a3d.distance(thePrimaryV,tktk_VFPvtx->vertexState()).error();
-        if( (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_[Dchannel_number-1]) continue;
+        if( DInfo.pt[DInfo.size] <= dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_lowptD_[Dchannel_number-1]) continue;
+        else if( DInfo.pt[DInfo.size] > dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.svpvDistance[DInfo.size]/DInfo.svpvDisErr[DInfo.size]) < svpvDistanceCut_highptD_[Dchannel_number-1]) continue;
         DMassCutLevel[Dchannel_number-1]->Fill(12);
 
         reco::Vertex::Point vp1(thePrimaryV.position().x(), thePrimaryV.position().y(), 0.);
