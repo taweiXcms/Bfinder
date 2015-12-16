@@ -16,10 +16,10 @@ sys	0m6.093s
 
 pp D MB
 evt: 20000/98927
-size: 24MB
-real    4m21.706s
-user    4m4.386s
-sys 0m6.963s
+size: 7.8MB expected total output = 975G for 2500000000 events
+real	2m33.399s
+user	1m46.599s
+sys	0m4.106s
 
 PbPb B Double Mu
 evt: 500/2164
@@ -37,10 +37,10 @@ sys	1m6.064s
 
 PbPb D MB
 evt: 10000/35087
-size: 144MB
-real	39m23.023s
-user	38m54.900s
-sys	0m13.838s
+size: 40MB, expected total output = 800G for 200000000 events
+real    41m21.648s
+user    41m5.765s
+sys     0m10.680s
 
 PbPb B MC
 evt: 360
