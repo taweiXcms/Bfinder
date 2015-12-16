@@ -80,8 +80,8 @@ class Dfinder : public edm::EDAnalyzer
         edm::InputTag puInfoLabel_;
         edm::InputTag bsLabel_;
         edm::InputTag pvLabel_;
-        std::vector<double> tkPtCut_;
-        std::vector<double> tkEtaCut_;
+        double tkPtCut_;
+        double tkEtaCut_;
         std::vector<double> dPtCut_;
         std::vector<double> dEtaCut_;
         std::vector<double> VtxChiProbCut_;
@@ -155,8 +155,8 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
     pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
 
-    tkPtCut_ = iConfig.getParameter<std::vector<double> >("tkPtCut");
-    tkEtaCut_ = iConfig.getParameter<std::vector<double> >("tkEtaCut");
+    tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
+    tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
     dPtCut_ = iConfig.getParameter<std::vector<double> >("dPtCut");
     dEtaCut_ = iConfig.getParameter<std::vector<double> >("dEtaCut");
     VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("VtxChiProbCut");
