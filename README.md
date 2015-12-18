@@ -1,4 +1,4 @@
-CMSSW7 (CMSSW_7_5_5_patch4)
+CMSSW7 (CMSSW_7_5_8)
 
 check forest setup version in: https://github.com/CmsHI/cmssw/tree/forest_CMSSW_7_5_5_patch4/HeavyIonsAnalysis
 
