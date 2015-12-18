@@ -7,7 +7,7 @@ using namespace std;
 Bool_t iseos = false;
 Bool_t istest = false;
 int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisun/PbPb2015_HeavyFlavor/PbPb_2015_HIHardProbes_AOD_tkpt0p8_D0pt0p8_D3d2_Prob0p05_alpha0p3_Dstarpt6_1210/finder_962.root",
-         TString outfile="test.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+         TString outfile="test.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   if(istest)
     {
@@ -127,3 +127,19 @@ int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisu
 
   return 1;
 }
+
+int main(int argc, char *argv[])
+{
+  if((argc != 3) && (argc != 4))
+  {
+    std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
+    return 1;
+  }
+  
+  if(argc == 3)
+    loop(argv[1], argv[2]);
+  //else if (argc == 4)
+  //  loop(argv[1], argv[2], argv[3]);
+  return 0;
+}
+

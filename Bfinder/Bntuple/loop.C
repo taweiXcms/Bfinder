@@ -1,3 +1,5 @@
+using namespace std;
+
 #include "format.h"
 #include "../interface/Bntuple.h"
 #include "loop.h"
@@ -5,12 +7,6 @@
 Bool_t iseos = false;
 int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", TString outfile="/data/wangj/Data2015/Bntuple/ntB_DoubleMu_pp_20151130.root", bool REAL=true, bool isPbPb=false, int startEntries=0, int endEntries=-1,  bool skim=false, bool gskim=true, bool testMatching=true)
 {
-  infile = "/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_99_1_07c.root";
-  //infile = "/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb_oldSize.root";
-  //infile = "/afs/cern.ch/user/t/twang/work/MITHIG/HeavyFlavor/Bfinder/DfinderDev_20150813/Dev_20151130/CMSSW_7_5_5_patch4/src/test2/finder_PbPb.root";
-  outfile = "test.root";
-  REAL = true;
-  iseos = false;
 
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
@@ -96,3 +92,20 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   outf->Close();
   return 1;
 }
+
+int main(int argc, char *argv[])
+{
+  if((argc != 3) && (argc != 4))
+  {
+    std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
+    return 1;
+  }
+  
+  if(argc == 3)
+    loop(argv[1], argv[2]);
+  //else if (argc == 4)
+  //  loop(argv[1], argv[2], argv[3]);
+  return 0;
+}
+
+
