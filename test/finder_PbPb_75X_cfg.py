@@ -172,7 +172,8 @@ if RunOnAOD:
 
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
-process.hltanalysis.dummyBranches = cms.untracked.vstring()
+from HeavyIonsAnalysis.EventAnalysis.dummybranches_cff import addHLTdummybranches
+addHLTdummybranches(process)
 process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
 #if HIFormat:
     #process.hltanalysis.mctruth = cms.InputTag("hiGenParticles")# Will cause segmentation violation
