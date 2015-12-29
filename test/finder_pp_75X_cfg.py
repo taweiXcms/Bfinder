@@ -143,7 +143,7 @@ if RunOnAOD:
 	process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
-	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
+	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
 ### Set basic filter
 process.PAprimaryVertexFilter = cms.EDFilter("VertexSelector",

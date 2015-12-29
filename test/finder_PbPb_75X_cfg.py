@@ -131,25 +131,10 @@ process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
 
 #### SetUp Evt Info (centrality)
 process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
-process.centralityBin.Centrality = cms.InputTag("hiCentrality")
-process.centralityBin.centralityVariable = cms.string("HFtowers")
-
-# redo centrality
-process.load('RecoHI.HiCentralityAlgos.HiCentrality_cfi')
-process.newHiCentrality = process.hiCentrality.clone()
-process.newHiCentrality.produceHFhits = cms.bool(False)
-process.newHiCentrality.produceHFtowers = cms.bool(False)
-process.newHiCentrality.produceEcalhits = cms.bool(False)
-process.newHiCentrality.produceZDChits = cms.bool(True)
-process.newHiCentrality.produceETmidRapidity = cms.bool(False)
-process.newHiCentrality.producePixelhits = cms.bool(False)
-process.newHiCentrality.produceTracks = cms.bool(False)
-process.newHiCentrality.producePixelTracks = cms.bool(False)
-process.newHiCentrality.reUseCentrality = cms.bool(True)
-process.newHiCentrality.srcReUse = cms.InputTag("hiCentrality")
-
-#process.centrality_path = cms.Path(process.centralityBin)
-process.centrality_path = cms.Path(process.newHiCentrality*process.centralityBin)
+if not runOnMC:
+	process.centralityBin.Centrality = cms.InputTag("hiCentrality")
+	process.centralityBin.centralityVariable = cms.string("HFtowers")
+process.centrality_path = cms.Path(process.centralityBin)
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
@@ -157,8 +142,8 @@ process.evtAna = cms.Path(process.hiEvtAnalyzer)
 
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
-	process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
-process.hiEvtAnalyzer.CentralitySrc = cms.InputTag("newHiCentrality")
+	process.hiEvtAnalyzer.doHiMC = cms.bool(True)
+	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
 ### Set basic filter
 # Common offline event selection
