@@ -189,7 +189,7 @@ class DntupleBranches
   float   Dgenphi[MAX_XB];
   float   Dgeny[MAX_XB];
   
-  void buildDBranch(TTree* dnt)
+  void buildDBranch(TTree* dnt, bool D0kpimode = false, bool detailMode = true)
   {
     //EvtInfo
     dnt->Branch("RunNo",&RunNo);
@@ -199,24 +199,27 @@ class DntupleBranches
     dnt->Branch("PVx",&PVx);
     dnt->Branch("PVy",&PVy);
     dnt->Branch("PVz",&PVz);
-    dnt->Branch("PVxE",&PVxE);
-    dnt->Branch("PVyE",&PVyE);
-    dnt->Branch("PVzE",&PVzE);
     dnt->Branch("PVnchi2",&PVnchi2);
     dnt->Branch("BSx",&BSx);
     dnt->Branch("BSy",&BSy);
     dnt->Branch("BSz",&BSz);
-    dnt->Branch("BSxErr",&BSxErr);
-    dnt->Branch("BSyErr",&BSyErr);
-    dnt->Branch("BSzErr",&BSzErr);
-    dnt->Branch("BSdxdz",&BSdxdz);
-    dnt->Branch("BSdydz",&BSdydz);
-    dnt->Branch("BSdxdzErr",&BSdxdzErr);
-    dnt->Branch("BSdydzErr",&BSdydzErr);
-    dnt->Branch("BSWidthX",&BSWidthX);
-    dnt->Branch("BSWidthXErr",&BSWidthXErr);
-    dnt->Branch("BSWidthY",&BSWidthY);
-    dnt->Branch("BSWidthYErr",&BSWidthYErr);
+	if( detailMode )
+	{
+		dnt->Branch("PVxE",&PVxE);
+        dnt->Branch("PVyE",&PVyE);
+        dnt->Branch("PVzE",&PVzE);
+        dnt->Branch("BSxErr",&BSxErr);
+        dnt->Branch("BSyErr",&BSyErr);
+        dnt->Branch("BSzErr",&BSzErr);
+        dnt->Branch("BSdxdz",&BSdxdz);
+        dnt->Branch("BSdydz",&BSdydz);
+        dnt->Branch("BSdxdzErr",&BSdxdzErr);
+        dnt->Branch("BSdydzErr",&BSdydzErr);
+        dnt->Branch("BSWidthX",&BSWidthX);
+        dnt->Branch("BSWidthXErr",&BSWidthXErr);
+        dnt->Branch("BSWidthY",&BSWidthY);
+        dnt->Branch("BSWidthYErr",&BSWidthYErr);
+	}
     //DInfo
     dnt->Branch("Dindex",Dindex,"Dindex[Dsize]/I");
     dnt->Branch("Dtype",Dtype,"Dtype[Dsize]/I");
@@ -253,115 +256,130 @@ class DntupleBranches
     dnt->Branch("DmaxptMatched",DmaxptMatched,"DmaxptMatched[Dsize]/O");
     dnt->Branch("DmaxprobMatched",DmaxprobMatched,"DmaxprobMatched[Dsize]/O");
     //DInfo.trkInfo
-    dnt->Branch("Dtrk1Idx",Dtrk1Idx,"Dtrk1Idx[Dsize]/I");
-    dnt->Branch("Dtrk2Idx",Dtrk2Idx,"Dtrk2Idx[Dsize]/I");
-    dnt->Branch("Dtrk3Idx",Dtrk3Idx,"Dtrk3Idx[Dsize]/I");
-    dnt->Branch("Dtrk4Idx",Dtrk4Idx,"Dtrk4Idx[Dsize]/I");
     dnt->Branch("Dtrk1Pt",Dtrk1Pt,"Dtrk1Pt[Dsize]/F");
     dnt->Branch("Dtrk2Pt",Dtrk2Pt,"Dtrk2Pt[Dsize]/F");
-    dnt->Branch("Dtrk3Pt",Dtrk3Pt,"Dtrk3Pt[Dsize]/F");
-    dnt->Branch("Dtrk4Pt",Dtrk4Pt,"Dtrk4Pt[Dsize]/F");
     dnt->Branch("Dtrk1Eta",Dtrk1Eta,"Dtrk1Eta[Dsize]/F");
     dnt->Branch("Dtrk2Eta",Dtrk2Eta,"Dtrk2Eta[Dsize]/F");
-    dnt->Branch("Dtrk3Eta",Dtrk3Eta,"Dtrk3Eta[Dsize]/F");
-    dnt->Branch("Dtrk4Eta",Dtrk4Eta,"Dtrk4Eta[Dsize]/F");
     dnt->Branch("Dtrk1Phi",Dtrk1Phi,"Dtrk1Phi[Dsize]/F");
     dnt->Branch("Dtrk2Phi",Dtrk2Phi,"Dtrk2Phi[Dsize]/F");
-    dnt->Branch("Dtrk3Phi",Dtrk3Phi,"Dtrk3Phi[Dsize]/F");
-    dnt->Branch("Dtrk4Phi",Dtrk4Phi,"Dtrk4Phi[Dsize]/F");
     dnt->Branch("Dtrk1PtErr",Dtrk1PtErr,"Dtrk1PtErr[Dsize]/F");
     dnt->Branch("Dtrk2PtErr",Dtrk2PtErr,"Dtrk2PtErr[Dsize]/F");
-    dnt->Branch("Dtrk3PtErr",Dtrk3PtErr,"Dtrk3PtErr[Dsize]/F");
-    dnt->Branch("Dtrk4PtErr",Dtrk4PtErr,"Dtrk4PtErr[Dsize]/F");
-    dnt->Branch("Dtrk1EtaErr",Dtrk1EtaErr,"Dtrk1EtaErr[Dsize]/F");
-    dnt->Branch("Dtrk2EtaErr",Dtrk2EtaErr,"Dtrk2EtaErr[Dsize]/F");
-    dnt->Branch("Dtrk3EtaErr",Dtrk3EtaErr,"Dtrk3EtaErr[Dsize]/F");
-    dnt->Branch("Dtrk4EtaErr",Dtrk4EtaErr,"Dtrk4EtaErr[Dsize]/F");
-    dnt->Branch("Dtrk1PhiErr",Dtrk1PhiErr,"Dtrk1PhiErr[Dsize]/F");
-    dnt->Branch("Dtrk2PhiErr",Dtrk2PhiErr,"Dtrk2PhiErr[Dsize]/F");
-    dnt->Branch("Dtrk3PhiErr",Dtrk3PhiErr,"Dtrk3PhiErr[Dsize]/F");
-    dnt->Branch("Dtrk4PhiErr",Dtrk4PhiErr,"Dtrk4PhiErr[Dsize]/F");
-    dnt->Branch("Dtrk1Y",Dtrk1Y,"Dtrk1Y[Dsize]/F");
-    dnt->Branch("Dtrk2Y",Dtrk2Y,"Dtrk2Y[Dsize]/F");
-    dnt->Branch("Dtrk3Y",Dtrk3Y,"Dtrk3Y[Dsize]/F");
-    dnt->Branch("Dtrk4Y",Dtrk4Y,"Dtrk4Y[Dsize]/F");
     dnt->Branch("Dtrk1Dxy",Dtrk1Dxy,"Dtrk1Dxy[Dsize]/F");
     dnt->Branch("Dtrk2Dxy",Dtrk2Dxy,"Dtrk2Dxy[Dsize]/F");
-    dnt->Branch("Dtrk3Dxy",Dtrk3Dxy,"Dtrk3Dxy[Dsize]/F");
-    dnt->Branch("Dtrk4Dxy",Dtrk4Dxy,"Dtrk4Dxy[Dsize]/F");
-    dnt->Branch("Dtrk1D0Err",Dtrk1D0Err,"Dtrk1D0Err[Dsize]/F");
-    dnt->Branch("Dtrk2D0Err",Dtrk2D0Err,"Dtrk2D0Err[Dsize]/F");
-    dnt->Branch("Dtrk3D0Err",Dtrk3D0Err,"Dtrk3D0Err[Dsize]/F");
-    dnt->Branch("Dtrk4D0Err",Dtrk4D0Err,"Dtrk4D0Err[Dsize]/F");
     dnt->Branch("Dtrk1PixelHit",Dtrk1PixelHit,"Dtrk1PixelHit[Dsize]/F");
     dnt->Branch("Dtrk2PixelHit",Dtrk2PixelHit,"Dtrk2PixelHit[Dsize]/F");
-    dnt->Branch("Dtrk3PixelHit",Dtrk3PixelHit,"Dtrk3PixelHit[Dsize]/F");
-    dnt->Branch("Dtrk4PixelHit",Dtrk4PixelHit,"Dtrk4PixelHit[Dsize]/F");
     dnt->Branch("Dtrk1StripHit",Dtrk1StripHit,"Dtrk1StripHit[Dsize]/F");
     dnt->Branch("Dtrk2StripHit",Dtrk2StripHit,"Dtrk2StripHit[Dsize]/F");
-    dnt->Branch("Dtrk3StripHit",Dtrk3StripHit,"Dtrk3StripHit[Dsize]/F");
-    dnt->Branch("Dtrk4StripHit",Dtrk4StripHit,"Dtrk4StripHit[Dsize]/F");
-    dnt->Branch("Dtrk1nStripLayer",Dtrk1nStripLayer,"Dtrk1nStripLayer[Dsize]/F");
-    dnt->Branch("Dtrk2nStripLayer",Dtrk2nStripLayer,"Dtrk2nStripLayer[Dsize]/F");
-    dnt->Branch("Dtrk3nStripLayer",Dtrk3nStripLayer,"Dtrk3nStripLayer[Dsize]/F");
-    dnt->Branch("Dtrk4nStripLayer",Dtrk4nStripLayer,"Dtrk4nStripLayer[Dsize]/F");
-    dnt->Branch("Dtrk1nPixelLayer",Dtrk1nPixelLayer,"Dtrk1nPixelLayer[Dsize]/F");
-    dnt->Branch("Dtrk2nPixelLayer",Dtrk2nPixelLayer,"Dtrk2nPixelLayer[Dsize]/F");
-    dnt->Branch("Dtrk3nPixelLayer",Dtrk3nPixelLayer,"Dtrk3nPixelLayer[Dsize]/F");
-    dnt->Branch("Dtrk4nPixelLayer",Dtrk4nPixelLayer,"Dtrk4nPixelLayer[Dsize]/F");
     dnt->Branch("Dtrk1Chi2ndf",Dtrk1Chi2ndf,"Dtrk1Chi2ndf[Dsize]/F");
     dnt->Branch("Dtrk2Chi2ndf",Dtrk2Chi2ndf,"Dtrk2Chi2ndf[Dsize]/F");
-    dnt->Branch("Dtrk3Chi2ndf",Dtrk3Chi2ndf,"Dtrk3Chi2ndf[Dsize]/F");
-    dnt->Branch("Dtrk4Chi2ndf",Dtrk4Chi2ndf,"Dtrk4Chi2ndf[Dsize]/F");
     dnt->Branch("Dtrk1MassHypo",Dtrk1MassHypo,"Dtrk1MassHypo[Dsize]/F");
     dnt->Branch("Dtrk2MassHypo",Dtrk2MassHypo,"Dtrk2MassHypo[Dsize]/F");
-    dnt->Branch("Dtrk3MassHypo",Dtrk3MassHypo,"Dtrk3MassHypo[Dsize]/F");
-    dnt->Branch("Dtrk4MassHypo",Dtrk4MassHypo,"Dtrk4MassHypo[Dsize]/F");
-    dnt->Branch("Dtrk1MVAVal",Dtrk1MVAVal,"Dtrk1MVAVal[Dsize]/F");
-    dnt->Branch("Dtrk2MVAVal",Dtrk2MVAVal,"Dtrk2MVAVal[Dsize]/F");
-    dnt->Branch("Dtrk3MVAVal",Dtrk3MVAVal,"Dtrk3MVAVal[Dsize]/F");
-    dnt->Branch("Dtrk4MVAVal",Dtrk4MVAVal,"Dtrk4MVAVal[Dsize]/F");
     dnt->Branch("Dtrk1Algo",Dtrk1Algo,"Dtrk1Algo[Dsize]/I");
     dnt->Branch("Dtrk2Algo",Dtrk2Algo,"Dtrk2Algo[Dsize]/I");
-    dnt->Branch("Dtrk3Algo",Dtrk3Algo,"Dtrk3Algo[Dsize]/I");
-    dnt->Branch("Dtrk4Algo",Dtrk4Algo,"Dtrk4Algo[Dsize]/I");
     dnt->Branch("Dtrk1highPurity",Dtrk1highPurity,"Dtrk1highPurity[Dsize]/O");
     dnt->Branch("Dtrk2highPurity",Dtrk2highPurity,"Dtrk2highPurity[Dsize]/O");
-    dnt->Branch("Dtrk3highPurity",Dtrk3highPurity,"Dtrk3highPurity[Dsize]/O");
-    dnt->Branch("Dtrk4highPurity",Dtrk4highPurity,"Dtrk4highPurity[Dsize]/O");
-    dnt->Branch("Dtrk1Quality",Dtrk1Quality,"Dtrk1Quality[Dsize]/I");
-    dnt->Branch("Dtrk2Quality",Dtrk2Quality,"Dtrk2Quality[Dsize]/I");
-    dnt->Branch("Dtrk3Quality",Dtrk3Quality,"Dtrk3Quality[Dsize]/I");
-    dnt->Branch("Dtrk4Quality",Dtrk4Quality,"Dtrk4Quality[Dsize]/I");
+
+	if( !D0kpimode )
+	{
+		dnt->Branch("Dtrk3Pt",Dtrk3Pt,"Dtrk3Pt[Dsize]/F");
+        dnt->Branch("Dtrk4Pt",Dtrk4Pt,"Dtrk4Pt[Dsize]/F");
+        dnt->Branch("Dtrk3Eta",Dtrk3Eta,"Dtrk3Eta[Dsize]/F");
+        dnt->Branch("Dtrk4Eta",Dtrk4Eta,"Dtrk4Eta[Dsize]/F");
+        dnt->Branch("Dtrk3Phi",Dtrk3Phi,"Dtrk3Phi[Dsize]/F");
+        dnt->Branch("Dtrk4Phi",Dtrk4Phi,"Dtrk4Phi[Dsize]/F");
+        dnt->Branch("Dtrk3PtErr",Dtrk3PtErr,"Dtrk3PtErr[Dsize]/F");
+        dnt->Branch("Dtrk4PtErr",Dtrk4PtErr,"Dtrk4PtErr[Dsize]/F");
+        dnt->Branch("Dtrk3Dxy",Dtrk3Dxy,"Dtrk3Dxy[Dsize]/F");
+        dnt->Branch("Dtrk4Dxy",Dtrk4Dxy,"Dtrk4Dxy[Dsize]/F");
+        dnt->Branch("Dtrk3PixelHit",Dtrk3PixelHit,"Dtrk3PixelHit[Dsize]/F");
+        dnt->Branch("Dtrk4PixelHit",Dtrk4PixelHit,"Dtrk4PixelHit[Dsize]/F");
+        dnt->Branch("Dtrk3StripHit",Dtrk3StripHit,"Dtrk3StripHit[Dsize]/F");
+        dnt->Branch("Dtrk4StripHit",Dtrk4StripHit,"Dtrk4StripHit[Dsize]/F");
+        dnt->Branch("Dtrk3Chi2ndf",Dtrk3Chi2ndf,"Dtrk3Chi2ndf[Dsize]/F");
+        dnt->Branch("Dtrk4Chi2ndf",Dtrk4Chi2ndf,"Dtrk4Chi2ndf[Dsize]/F");
+        dnt->Branch("Dtrk3MassHypo",Dtrk3MassHypo,"Dtrk3MassHypo[Dsize]/F");
+        dnt->Branch("Dtrk4MassHypo",Dtrk4MassHypo,"Dtrk4MassHypo[Dsize]/F");
+        dnt->Branch("Dtrk3Algo",Dtrk3Algo,"Dtrk3Algo[Dsize]/I");
+        dnt->Branch("Dtrk4Algo",Dtrk4Algo,"Dtrk4Algo[Dsize]/I");
+        dnt->Branch("Dtrk3highPurity",Dtrk3highPurity,"Dtrk3highPurity[Dsize]/O");
+        dnt->Branch("Dtrk4highPurity",Dtrk4highPurity,"Dtrk4highPurity[Dsize]/O");
+	}
+	
+	if( detailMode )
+	{
+        dnt->Branch("Dtrk1Idx",Dtrk1Idx,"Dtrk1Idx[Dsize]/I");
+        dnt->Branch("Dtrk2Idx",Dtrk2Idx,"Dtrk2Idx[Dsize]/I");
+        dnt->Branch("Dtrk1EtaErr",Dtrk1EtaErr,"Dtrk1EtaErr[Dsize]/F");
+        dnt->Branch("Dtrk2EtaErr",Dtrk2EtaErr,"Dtrk2EtaErr[Dsize]/F");
+        dnt->Branch("Dtrk1PhiErr",Dtrk1PhiErr,"Dtrk1PhiErr[Dsize]/F");
+        dnt->Branch("Dtrk2PhiErr",Dtrk2PhiErr,"Dtrk2PhiErr[Dsize]/F");
+        dnt->Branch("Dtrk1Y",Dtrk1Y,"Dtrk1Y[Dsize]/F");
+        dnt->Branch("Dtrk2Y",Dtrk2Y,"Dtrk2Y[Dsize]/F");
+        dnt->Branch("Dtrk1D0Err",Dtrk1D0Err,"Dtrk1D0Err[Dsize]/F");
+        dnt->Branch("Dtrk2D0Err",Dtrk2D0Err,"Dtrk2D0Err[Dsize]/F");
+        dnt->Branch("Dtrk1MVAVal",Dtrk1MVAVal,"Dtrk1MVAVal[Dsize]/F");
+        dnt->Branch("Dtrk1nStripLayer",Dtrk1nStripLayer,"Dtrk1nStripLayer[Dsize]/F");
+        dnt->Branch("Dtrk2nStripLayer",Dtrk2nStripLayer,"Dtrk2nStripLayer[Dsize]/F");
+        dnt->Branch("Dtrk1nPixelLayer",Dtrk1nPixelLayer,"Dtrk1nPixelLayer[Dsize]/F");
+        dnt->Branch("Dtrk2nPixelLayer",Dtrk2nPixelLayer,"Dtrk2nPixelLayer[Dsize]/F");
+        dnt->Branch("Dtrk2MVAVal",Dtrk2MVAVal,"Dtrk2MVAVal[Dsize]/F");
+        dnt->Branch("Dtrk1Quality",Dtrk1Quality,"Dtrk1Quality[Dsize]/I");
+        dnt->Branch("Dtrk2Quality",Dtrk2Quality,"Dtrk2Quality[Dsize]/I");
+
+		if( !D0kpimode )
+		{
+			dnt->Branch("Dtrk3Idx",Dtrk3Idx,"Dtrk3Idx[Dsize]/I");
+            dnt->Branch("Dtrk4Idx",Dtrk4Idx,"Dtrk4Idx[Dsize]/I");
+            dnt->Branch("Dtrk3EtaErr",Dtrk3EtaErr,"Dtrk3EtaErr[Dsize]/F");
+            dnt->Branch("Dtrk4EtaErr",Dtrk4EtaErr,"Dtrk4EtaErr[Dsize]/F");
+            dnt->Branch("Dtrk3PhiErr",Dtrk3PhiErr,"Dtrk3PhiErr[Dsize]/F");
+            dnt->Branch("Dtrk4PhiErr",Dtrk4PhiErr,"Dtrk4PhiErr[Dsize]/F");
+            dnt->Branch("Dtrk3Y",Dtrk3Y,"Dtrk3Y[Dsize]/F");
+            dnt->Branch("Dtrk4Y",Dtrk4Y,"Dtrk4Y[Dsize]/F");
+            dnt->Branch("Dtrk3D0Err",Dtrk3D0Err,"Dtrk3D0Err[Dsize]/F");
+            dnt->Branch("Dtrk4D0Err",Dtrk4D0Err,"Dtrk4D0Err[Dsize]/F");
+            dnt->Branch("Dtrk3nStripLayer",Dtrk3nStripLayer,"Dtrk3nStripLayer[Dsize]/F");
+            dnt->Branch("Dtrk4nStripLayer",Dtrk4nStripLayer,"Dtrk4nStripLayer[Dsize]/F");
+            dnt->Branch("Dtrk3nPixelLayer",Dtrk3nPixelLayer,"Dtrk3nPixelLayer[Dsize]/F");
+            dnt->Branch("Dtrk4nPixelLayer",Dtrk4nPixelLayer,"Dtrk4nPixelLayer[Dsize]/F");
+            dnt->Branch("Dtrk3MVAVal",Dtrk3MVAVal,"Dtrk3MVAVal[Dsize]/F");
+            dnt->Branch("Dtrk4MVAVal",Dtrk4MVAVal,"Dtrk4MVAVal[Dsize]/F");
+            dnt->Branch("Dtrk3Quality",Dtrk3Quality,"Dtrk3Quality[Dsize]/I");
+            dnt->Branch("Dtrk4Quality",Dtrk4Quality,"Dtrk4Quality[Dsize]/I");
+		}
+	}
     //DInfo.tktkResInfo
-    dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/F");
-    dnt->Branch("DtktkRespt",DtktkRespt,"DtktkRespt[Dsize]/F");
-    dnt->Branch("DtktkReseta",DtktkReseta,"DtktkReseta[Dsize]/F");
-    dnt->Branch("DtktkResphi",DtktkResphi,"DtktkResphi[Dsize]/F");
-    dnt->Branch("DRestrk1Pt",DRestrk1Pt,"DRestrk1Pt[Dsize]/F");
-    dnt->Branch("DRestrk1Eta",DRestrk1Eta,"DRestrk1Eta[Dsize]/F");
-    dnt->Branch("DRestrk1Phi",DRestrk1Phi,"DRestrk1Phi[Dsize]/F");
-    dnt->Branch("DRestrk1Y",DRestrk1Y,"DRestrk1Y[Dsize]/F");
-    dnt->Branch("DRestrk1Dxy",DRestrk1Dxy,"DRestrk1Dxy[Dsize]/F");
-    dnt->Branch("DRestrk1D0Err",DRestrk1D0Err,"DRestrk1D0Err[Dsize]/F");
-    dnt->Branch("DRestrk2Pt",DRestrk2Pt,"DRestrk2Pt[Dsize]/F");
-    dnt->Branch("DRestrk2Eta",DRestrk2Eta,"DRestrk2Eta[Dsize]/F");
-    dnt->Branch("DRestrk2Phi",DRestrk2Phi,"DRestrk2Phi[Dsize]/F");
-    dnt->Branch("DRestrk2Y",DRestrk2Y,"DRestrk2Y[Dsize]/F");
-    dnt->Branch("DRestrk2Dxy",DRestrk2Dxy,"DRestrk2Dxy[Dsize]/F");
-    dnt->Branch("DRestrk2D0Err",DRestrk2D0Err,"DRestrk2D0Err[Dsize]/F");
-    dnt->Branch("DRestrk3Pt",DRestrk3Pt,"DRestrk3Pt[Dsize]/F");
-    dnt->Branch("DRestrk3Eta",DRestrk3Eta,"DRestrk3Eta[Dsize]/F");
-    dnt->Branch("DRestrk3Phi",DRestrk3Phi,"DRestrk3Phi[Dsize]/F");
-    dnt->Branch("DRestrk3Y",DRestrk3Y,"DRestrk3Y[Dsize]/F");
-    dnt->Branch("DRestrk3Dxy",DRestrk3Dxy,"DRestrk3Dxy[Dsize]/F");
-    dnt->Branch("DRestrk3D0Err",DRestrk3D0Err,"DRestrk3D0Err[Dsize]/F");
-    dnt->Branch("DRestrk4Pt",DRestrk4Pt,"DRestrk4Pt[Dsize]/F");
-    dnt->Branch("DRestrk4Eta",DRestrk4Eta,"DRestrk4Eta[Dsize]/F");
-    dnt->Branch("DRestrk4Phi",DRestrk4Phi,"DRestrk4Phi[Dsize]/F");
-    dnt->Branch("DRestrk4Y",DRestrk4Y,"DRestrk4Y[Dsize]/F");
-    dnt->Branch("DRestrk4Dxy",DRestrk4Dxy,"DRestrk4Dxy[Dsize]/F");
-    dnt->Branch("DRestrk4D0Err",DRestrk4D0Err,"DRestrk4D0Err[Dsize]/F");
+	if( !D0kpimode )
+	{
+		dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/F");
+        dnt->Branch("DtktkRespt",DtktkRespt,"DtktkRespt[Dsize]/F");
+        dnt->Branch("DtktkReseta",DtktkReseta,"DtktkReseta[Dsize]/F");
+        dnt->Branch("DtktkResphi",DtktkResphi,"DtktkResphi[Dsize]/F");
+        dnt->Branch("DRestrk1Pt",DRestrk1Pt,"DRestrk1Pt[Dsize]/F");
+        dnt->Branch("DRestrk1Eta",DRestrk1Eta,"DRestrk1Eta[Dsize]/F");
+        dnt->Branch("DRestrk1Phi",DRestrk1Phi,"DRestrk1Phi[Dsize]/F");
+        dnt->Branch("DRestrk1Y",DRestrk1Y,"DRestrk1Y[Dsize]/F");
+        dnt->Branch("DRestrk1Dxy",DRestrk1Dxy,"DRestrk1Dxy[Dsize]/F");
+        dnt->Branch("DRestrk1D0Err",DRestrk1D0Err,"DRestrk1D0Err[Dsize]/F");
+        dnt->Branch("DRestrk2Pt",DRestrk2Pt,"DRestrk2Pt[Dsize]/F");
+        dnt->Branch("DRestrk2Eta",DRestrk2Eta,"DRestrk2Eta[Dsize]/F");
+        dnt->Branch("DRestrk2Phi",DRestrk2Phi,"DRestrk2Phi[Dsize]/F");
+        dnt->Branch("DRestrk2Y",DRestrk2Y,"DRestrk2Y[Dsize]/F");
+        dnt->Branch("DRestrk2Dxy",DRestrk2Dxy,"DRestrk2Dxy[Dsize]/F");
+        dnt->Branch("DRestrk2D0Err",DRestrk2D0Err,"DRestrk2D0Err[Dsize]/F");
+        dnt->Branch("DRestrk3Pt",DRestrk3Pt,"DRestrk3Pt[Dsize]/F");
+        dnt->Branch("DRestrk3Eta",DRestrk3Eta,"DRestrk3Eta[Dsize]/F");
+        dnt->Branch("DRestrk3Phi",DRestrk3Phi,"DRestrk3Phi[Dsize]/F");
+        dnt->Branch("DRestrk3Y",DRestrk3Y,"DRestrk3Y[Dsize]/F");
+        dnt->Branch("DRestrk3Dxy",DRestrk3Dxy,"DRestrk3Dxy[Dsize]/F");
+        dnt->Branch("DRestrk3D0Err",DRestrk3D0Err,"DRestrk3D0Err[Dsize]/F");
+        dnt->Branch("DRestrk4Pt",DRestrk4Pt,"DRestrk4Pt[Dsize]/F");
+        dnt->Branch("DRestrk4Eta",DRestrk4Eta,"DRestrk4Eta[Dsize]/F");
+        dnt->Branch("DRestrk4Phi",DRestrk4Phi,"DRestrk4Phi[Dsize]/F");
+        dnt->Branch("DRestrk4Y",DRestrk4Y,"DRestrk4Y[Dsize]/F");
+        dnt->Branch("DRestrk4Dxy",DRestrk4Dxy,"DRestrk4Dxy[Dsize]/F");
+        dnt->Branch("DRestrk4D0Err",DRestrk4D0Err,"DRestrk4D0Err[Dsize]/F");
+	}
     //DInfo.genInfo
     dnt->Branch("Dgen",Dgen,"Dgen[Dsize]/F");
     dnt->Branch("DgenIndex",DgenIndex,"DgenIndex[Dsize]/I");

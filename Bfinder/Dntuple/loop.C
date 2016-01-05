@@ -71,12 +71,15 @@ int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisu
   isDchannel[11] = 1;
 
   cout<<"--- Building trees"<<endl;
-  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1);
-  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2);
-  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3);
-  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4);
-  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
-  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
+  bool D0kpimode = true;
+  bool detailMode = true;
+  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1, D0kpimode, detailMode);
+  D0kpimode = false;
+  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2, D0kpimode, detailMode);
+  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3, D0kpimode, detailMode);
+  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4, D0kpimode, detailMode);
+  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5, D0kpimode, detailMode);
+  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6, D0kpimode, detailMode);
   TTree* ntGen = new TTree("ntGen","");           Dntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
