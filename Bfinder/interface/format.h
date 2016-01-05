@@ -5,7 +5,7 @@
 //Note, when the array size gett too large, SetBranchAddress will fail, root will abort w/o error msg
 #define MAX_XB       20000
 #define MAX_MUON     10000
-#define MAX_TRACK    4000
+#define MAX_TRACK    6000
 #define MAX_GEN      6000
 #define MAX_BX       150
 #define MAX_Vertices 4000
