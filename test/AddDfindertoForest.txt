@@ -58,7 +58,11 @@ process.Dfinder = cms.EDAnalyzer("Dfinder",
 )
 #################################################################################################
 
-# B: Then add process.DfinderSequence to ana_step
+# B: for PbPb Minbias (only for Minbias !!), need to change the track pt cut, add:
+
+process.Dfinder.tkPtCut = cms.double(0.9)
+
+# C: Then add process.DfinderSequence to ana_step
 
 process.ana_step = cms.Path(process.hltanalysis *
                             process.hltobject *
