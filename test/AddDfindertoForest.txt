@@ -1,0 +1,77 @@
+1, Forest setup for CMSSW_7_5_8 from https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiForestSetup
+
+cmsrel CMSSW_7_5_8
+cd CMSSW_7_5_8/src
+cmsenv
+git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
+scram build -j4
+
+2, Add D meson package
+
+git clone -b Dfinder https://github.com/taweiXcms/Bfinder.git
+
+3, For PbPb data (Jet triggers and D triggers)
+
+# A: add the following to the forest cfg (runForestAOD_PbPb_DATA_75X.py):
+
+#####################################################################################
+######################### D finder ##################################################
+#####################################################################################
+runOnMC = False
+RunOnAOD = True
+AddCaloMuon = False
+HIFormat = False
+UseGenPlusSim = False
+VtxLabel = "hiSelectedVertex"
+from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
+finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
+
+#default for D0 and Jet triggers, tk pt cut 8.0 GeV
+process.Dfinder = cms.EDAnalyzer("Dfinder",
+    BSLabel = cms.InputTag("offlineBeamSpot"),
+    Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    GenLabel = cms.InputTag("genParticles"),
+    HLTLabel = cms.InputTag("TriggerResults","","HLT"),
+    MVAMapLabel = cms.string('hiGeneralTracks'),
+    MaxDocaCut = cms.vdouble(999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0),
+    PUInfoLabel = cms.InputTag("addPileupInfo"),
+    PVLabel = cms.InputTag("hiSelectedVertex"),
+    RunOnMC = cms.bool(False),
+    TrackLabel = cms.InputTag("patTrackCands"),
+    dCutSeparating_PtVal = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0),
+    dEtaCut = cms.vdouble(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+    dPtCut = cms.vdouble(0.5, 0.5, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 9.0, 9.0),
+    detailMode = cms.bool(False),
+    doDntupleSkim = cms.bool(False),
+    doTkPreCut = cms.bool(True),
+    dropUnusedTracks = cms.bool(False),
+    makeDntuple = cms.bool(False),
+    VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0), #this cut not good for decay with resonance now
+    alphaCut = cms.vdouble(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 999.0, 999.0, 999.0, 999.0),
+    svpvDistanceCut_highptD = cms.vdouble(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0),
+    svpvDistanceCut_lowptD = cms.vdouble(4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 0.0, 0.0, 0.0, 0.0),
+    tkEtaCut = cms.double(2.0),
+    tkPtCut = cms.double(6.0),
+    tktkRes_alphaCut = cms.vdouble(999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 0.2, 0.2, 0.2, 0.2),
+    tktkRes_svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0),
+    tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 4.0, 4.0, 4.0)
+)
+#################################################################################################
+
+# B: Then add process.DfinderSequence to ana_step
+
+process.ana_step = cms.Path(process.hltanalysis *
+                            process.hltobject *
+                            process.centralityBin *
+                            process.hiEvtAnalyzer*
+                            process.jetSequences +
+                            process.ggHiNtuplizer +
+                            process.ggHiNtuplizerGED +
+                            process.pfcandAnalyzer +
+                            process.HiForest +
+                            process.DfinderSequence +
+                            process.trackSequencesPbPb +
+                            process.hcalNoise #+
+                            #process.tupelPatSequence
+                            )
+
