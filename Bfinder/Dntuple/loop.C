@@ -5,21 +5,9 @@ using namespace std;
 #include "Dntuple.h"
 
 Bool_t iseos = false;
-Bool_t istest = false;
-int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisun/PbPb2015_HeavyFlavor/PbPb_2015_HIHardProbes_AOD_tkpt0p8_D0pt0p8_D3d2_Prob0p05_alpha0p3_Dstarpt6_1210/finder_962.root",
+int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/jisun/ForestRun2015/pptrig/ppFullforest_D0_tkpt1p5_Dstar3and5prong_01212016/HeavyFlavor/crab_pp_HeavyFlavor_AOD_Fullforest_D0_tkpt1p5_Dstar3and5prong_01212016/160122_023510/0006/HiForestAOD_6156.root",
          TString outfile="test.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
-  if(istest)
-    {
-      //this testing sample doesn't have skimtree and hitree
-      infile="/data/twang/DfinderRun2/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/crab_DfinderMC_Dstar5p_tkPt2_20151126/151127_005816/0000/finder_PbPb_253.root";
-      outfile="test.root";
-      REAL=false;
-      isPbPb=false;
-      iseos=false;
-      checkMatching=true;
-    }
-
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
   else cout<<"--- Processing - MC";
@@ -44,7 +32,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisu
   GenInfoBranches     *GenInfo = new GenInfoBranches;
 
   setHltTreeBranch(hltroot);
-  if(isPbPb) setHiTreeBranch(hiroot);
+  setHiTreeBranch(hiroot);
 
   EvtInfo->setbranchadd(root);
   VtxInfo->setbranchadd(root);
@@ -91,7 +79,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisu
 
   cout<<"--- Check the number of events for three trees"<<endl;
   cout<<root->GetEntries()<<" "<<hltroot->GetEntries();
-  if(isPbPb) cout<<" "<<hiroot->GetEntries();
+  cout<<" "<<hiroot->GetEntries();
   cout<<endl;
   cout<<"--- Processing events"<<endl;
   for(int i=startEntries;i<endEntries;i++)
@@ -99,7 +87,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisu
       root->GetEntry(i);
       hltroot->GetEntry(i);
       skimroot->GetEntry(i);
-      if(isPbPb) hiroot->GetEntry(i);
+      hiroot->GetEntry(i);
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
         {
@@ -115,7 +103,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/group/phys_heavyions/jisu
         }
       ntHlt->Fill();
       ntSkim->Fill();
-      if(isPbPb) ntHi->Fill();
+      ntHi->Fill();
       Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
       if(!REAL) Dntuple->fillDGenTree(ntGen, GenInfo, gskim);
     }
