@@ -4,9 +4,8 @@ using namespace std;
 #include "format.h"
 #include "Dntuple.h"
 
-Bool_t iseos = false;
-int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/jisun/ForestRun2015/pptrig/ppFullforest_D0_tkpt1p5_Dstar3and5prong_01212016/HeavyFlavor/crab_pp_HeavyFlavor_AOD_Fullforest_D0_tkpt1p5_Dstar3and5prong_01212016/160122_023510/0006/HiForestAOD_6156.root",
-         TString outfile="test.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
+int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
+         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
@@ -19,7 +18,7 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/jisun
   if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
   else ifname = infile;
   TFile* f = TFile::Open(ifname);
-  TTree* root = (TTree*)f->Get("Dfinder/root");
+  TTree* root = (TTree*)f->Get("Dfinder/root");  
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
   TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
   TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
@@ -59,15 +58,15 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/jisun
   isDchannel[11] = 1;
 
   cout<<"--- Building trees"<<endl;
-  bool D0kpimode = true;
   bool detailMode = true;
-  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1, D0kpimode, detailMode);
+  bool D0kpimode = true;
+  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1,D0kpimode,detailMode);
   D0kpimode = false;
-  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2, D0kpimode, detailMode);
-  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3, D0kpimode, detailMode);
-  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4, D0kpimode, detailMode);
-  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5, D0kpimode, detailMode);
-  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6, D0kpimode, detailMode);
+  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2,D0kpimode,detailMode);
+  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3,D0kpimode,detailMode);
+  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4,D0kpimode,detailMode);
+  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5,D0kpimode,detailMode);
+  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6,D0kpimode,detailMode);
   TTree* ntGen = new TTree("ntGen","");           Dntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
@@ -78,8 +77,8 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/jisun
   cout<<"--- Building trees finished"<<endl;
 
   cout<<"--- Check the number of events for three trees"<<endl;
-  cout<<root->GetEntries()<<" "<<hltroot->GetEntries();
-  cout<<" "<<hiroot->GetEntries();
+  cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries();
+  cout<<" "<<skimroot->GetEntries()<<endl;
   cout<<endl;
   cout<<"--- Processing events"<<endl;
   for(int i=startEntries;i<endEntries;i++)
@@ -92,7 +91,7 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/jisun
       if(checkMatching)
         {
           if(((int)Df_HLT_Event!=EvtInfo->EvtNo||(int)Df_HLT_Run!=EvtInfo->RunNo||(int)Df_HLT_LumiBlock!=EvtInfo->LumiNo) || 
-             (isPbPb&&((int)Df_HiTree_Evt!=EvtInfo->EvtNo||(int)Df_HiTree_Run!=EvtInfo->RunNo||(int)Df_HiTree_Lumi!=EvtInfo->LumiNo)))
+             ((int)Df_HiTree_Evt!=EvtInfo->EvtNo||(int)Df_HiTree_Run!=EvtInfo->RunNo||(int)Df_HiTree_Lumi!=EvtInfo->LumiNo))
             {
               cout<<"Error: not matched "<<i<<" | (Hlt,Dfr,Hi) | ";
               cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo->EvtNo<<","<<Df_HiTree_Evt<<") ";
@@ -129,8 +128,6 @@ int main(int argc, char *argv[])
   
   if(argc == 3)
     loop(argv[1], argv[2]);
-  //else if (argc == 4)
-  //  loop(argv[1], argv[2], argv[3]);
   return 0;
 }
 
