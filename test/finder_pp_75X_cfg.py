@@ -16,6 +16,7 @@ ivars.parseArguments()# get and parse the command line arguments
 ppBdefault = True
 ppDHFdefault = False
 ppDMBdefault = False
+ppD0DstarV2 = False
 
 ### Run on MC?
 runOnMC = False
@@ -213,15 +214,15 @@ process.Dfinder.Dchannel = cms.vint32(
     0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
     0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
-## pp Bfinder setting on DoubleMu 
-if ppBdefault and not ppDMBdefault and not ppDHFdefault:
+## pp Bfinder setting on DoubleMu
+if ppBdefault and not ppDMBdefault and not ppDHFdefault and not ppD0DstarV2:
     process.Bfinder.tkPtCut = cms.double(0.5)#before fit
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
     process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.BfinderSequence)
 ## pp Dfinder setting on HeavyFlavor
-if ppDHFdefault and not ppDMBdefault and not ppBdefault:
+if ppDHFdefault and not ppDMBdefault and not ppBdefault and not ppD0DstarV2:
     process.Dfinder.tkPtCut = cms.double(1.)#before fit
     process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Dfinder.dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.)
@@ -232,7 +233,7 @@ if ppDHFdefault and not ppDMBdefault and not ppBdefault:
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.DfinderSequence)
 ##pp Dfinder setting on MB
-if ppDMBdefault and not ppDHFdefault and not ppBdefault:
+if ppDMBdefault and not ppDHFdefault and not ppBdefault and not ppD0DstarV2:
     process.Dfinder.tkPtCut = cms.double(1.)#before fit
     process.Dfinder.dPtCut = cms.vdouble(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)#before fit
     process.Dfinder.dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.)
@@ -241,6 +242,17 @@ if ppDMBdefault and not ppDHFdefault and not ppBdefault:
     process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(4.0, 4.0, 2.5, 2.5, 2.5, 2.5, 4.0, 4.0, 0., 0., 0., 0.)
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0)
+    process.p = cms.Path(process.DfinderSequence)
+## default cut version 2
+if ppD0DstarV2 and not ppDHFdefault and not ppDMBdefault and not ppBdefault:
+    process.Dfinder.tkPtCut = cms.double(0.5)#before fit
+    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
+    process.Dfinder.dCutSeparating_PtVal = cms.vdouble(8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8.)
+    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 1.5, 1.5, 1.5, 1.5)
+    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 3.0, 3.0, 3.0, 3.0 )
+    process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
+    process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(3.0, 3.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
+    process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.DfinderSequence)
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
