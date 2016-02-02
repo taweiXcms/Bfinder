@@ -4,13 +4,15 @@ cmsrel CMSSW_7_5_8
 cd CMSSW_7_5_8/src
 cmsenv
 git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
-scram build -j4
 
 2, Add D meson package
 
 git clone -b Dfinder https://github.com/taweiXcms/Bfinder.git
+scram build -j4
 
-3, For PbPb data (Jet triggers and D triggers)
+3, For PbPb data follow step 4 and for pp data follow step 5
+
+4, For PbPb data (Jet triggers and D triggers)
 
 # A: add the following to the forest cfg (runForestAOD_PbPb_DATA_75X.py):
 
@@ -60,7 +62,7 @@ process.Dfinder = cms.EDAnalyzer("Dfinder",
 
 # B: for PbPb Minbias (only for Minbias !!), need to change the track pt cut, add:
 
-process.Dfinder.tkPtCut = cms.double(0.9)
+process.Dfinder.tkPtCut = cms.double(0.7)
 
 # C: Then add process.DfinderSequence to ana_step
 
@@ -79,3 +81,73 @@ process.ana_step = cms.Path(process.hltanalysis *
                             #process.tupelPatSequence
                             )
 
+5, for pp data, add the following to pp cfg (HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pp_DATA_75X.py) just before process.ana_step
+
+#####################################################################################
+#Dfinder
+#####################################################################################
+AddCaloMuon = False
+runOnMC = False
+HIFormat = False
+UseGenPlusSim = False
+VtxLabel = "offlinePrimaryVerticesWithBS"
+TrkLabel = "generalTracks"
+from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
+finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
+
+##pp MB PD
+process.Dfinder = cms.EDAnalyzer("Dfinder",
+    BSLabel = cms.InputTag("offlineBeamSpot"),
+    Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0), # only D0 and Ds are on 
+    GenLabel = cms.InputTag("genParticles"),
+    HLTLabel = cms.InputTag("TriggerResults","","HLT"),
+    MVAMapLabel = cms.string('generalTracks'),
+    MaxDocaCut = cms.vdouble(999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0),
+    PUInfoLabel = cms.InputTag("addPileupInfo"),
+    PVLabel = cms.InputTag("offlinePrimaryVerticesWithBS"),
+    RunOnMC = cms.bool(False),
+    TrackLabel = cms.InputTag("patTrackCands"),
+    VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),#this cut not good for decay with resonance now
+    alphaCut = cms.vdouble(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 999.0, 999.0, 999.0, 999.0),
+    dCutSeparating_PtVal = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0),
+    dEtaCut = cms.vdouble(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+    dPtCut = cms.vdouble(0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 4.0),  #Dstar 3 prong dpt cut 1 GeV and 5 prong dpt cut 4 GeV
+    detailMode = cms.bool(False),
+    doDntupleSkim = cms.bool(False),
+    doTkPreCut = cms.bool(True),
+    dropUnusedTracks = cms.bool(True),
+    makeDntuple = cms.bool(False),
+    svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+    svpvDistanceCut_lowptD = cms.vdouble(2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0),
+    tkEtaCut = cms.double(2.0),
+    tkPtCut = cms.double(0.5),
+    tktkRes_alphaCut = cms.vdouble(999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 0.2, 0.2, 0.2, 0.2),
+    tktkRes_svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.5, 1.5, 1.5, 1.5),
+    tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 3.0, 4.0, 4.0)
+)
+
+A: if just to process Dstar 3 prong and 5 prong add:
+
+process.Dfinder.Dchannel = cms.vint32(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
+
+B: Then add process.DfinderSequence to ana_step
+
+process.ana_step = cms.Path(process.hltanalysis *
+                            process.hltobject *
+                            process.hiEvtAnalyzer *
+                            #process.jetSequences +
+                            #process.egmGsfElectronIDSequence +
+                            #process.ggHiNtuplizer +
+                            #process.ggHiNtuplizerGED +
+                            #process.pfcandAnalyzer +
+                            process.HiForest +
+                            #process.trackSequencesPP +
+                            process.DfinderSequence #+
+                            ##process.tupelPatSequence 
+                            )
+
+6, dEtaCut is off now, if want to turn on it add
+
+if(fabs(tktk_4vec.Eta()) > dEtaCut_[Dchannel_number-1])  continue;
+
+Here: https://github.com/taweiXcms/Bfinder/blob/Dfinder/Bfinder/src/Dfinder.cc#L1713
