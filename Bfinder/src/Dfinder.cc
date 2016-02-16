@@ -783,6 +783,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
+                        TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
 
                         if(tk_it->track().isNonnull()){
                             for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){

@@ -503,8 +503,9 @@ class TrackInfoBranches{//{{{
         int     geninfo_index[ MAX_TRACK];
         int     trackQuality [ MAX_TRACK];
         bool    highPurity   [ MAX_TRACK];
-        float  trkMVAVal    [ MAX_TRACK];
+        float   trkMVAVal    [ MAX_TRACK];
         int     trkAlgo      [ MAX_TRACK];
+        int   originalTrkAlgo[ MAX_TRACK];
 
         void regTree(TTree *root, bool detailMode = false){//{{{
             root->Branch("TrackInfo.size"           ,&size		    ,"TrackInfo.size/I"			);
@@ -534,6 +535,7 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/O");
             root->Branch("TrackInfo.trkMVAVal"      ,trkMVAVal      ,"TrackInfo.trkMVAVal[TrackInfo.size]/F");
             root->Branch("TrackInfo.trkAlgo"        ,trkAlgo        ,"TrackInfo.trkAlgo[TrackInfo.size]/I");
+            root->Branch("TrackInfo.originalTrkAlgo",originalTrkAlgo,"TrackInfo.originalTrkAlgo[TrackInfo.size]/I");
 
             if(detailMode){
             }
@@ -567,6 +569,7 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.highPurity"    , highPurity  );
             root->SetBranchAddress("TrackInfo.trkMVAVal"     , trkMVAVal  );
             root->SetBranchAddress("TrackInfo.trkAlgo"       , trkAlgo  );
+            root->SetBranchAddress("TrackInfo.originalTrkAlgo", originalTrkAlgo);
 
             if(detailMode){
             }

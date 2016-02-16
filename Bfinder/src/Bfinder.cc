@@ -1076,6 +1076,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
+                        TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
 
 
                         //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_5_patch1/DataFormats/TrackReco/interface/TrackBase.h#L149
