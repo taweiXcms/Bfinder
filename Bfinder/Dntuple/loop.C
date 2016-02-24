@@ -5,7 +5,7 @@ using namespace std;
 #include "Dntuple.h"
 
 int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
+         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=false)
 {
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
@@ -30,6 +30,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   DInfoBranches       *DInfo = new DInfoBranches;
   GenInfoBranches     *GenInfo = new GenInfoBranches;
 
+  if(SkimHLTtree) SetHlttreestatus(hltroot, isPbPb);
   setHltTreeBranch(hltroot);
   setHiTreeBranch(hiroot);
 
