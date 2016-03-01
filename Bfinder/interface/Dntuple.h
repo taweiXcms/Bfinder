@@ -143,6 +143,10 @@ class DntupleBranches
   int     Dtrk2Algo[MAX_XB];
   int     Dtrk3Algo[MAX_XB];
   int     Dtrk4Algo[MAX_XB];
+  int     Dtrk1originalAlgo[MAX_XB];
+  int     Dtrk2originalAlgo[MAX_XB];
+  int     Dtrk3originalAlgo[MAX_XB];
+  int     Dtrk4originalAlgo[MAX_XB];
   bool    Dtrk1highPurity[MAX_XB];
   bool    Dtrk2highPurity[MAX_XB];
   bool    Dtrk3highPurity[MAX_XB];
@@ -280,6 +284,8 @@ class DntupleBranches
     dnt->Branch("Dtrk2MassHypo",Dtrk2MassHypo,"Dtrk2MassHypo[Dsize]/F");
     dnt->Branch("Dtrk1Algo",Dtrk1Algo,"Dtrk1Algo[Dsize]/I");
     dnt->Branch("Dtrk2Algo",Dtrk2Algo,"Dtrk2Algo[Dsize]/I");
+    dnt->Branch("Dtrk1originalAlgo",Dtrk1originalAlgo,"Dtrk1originalAlgo[Dsize]/I");
+    dnt->Branch("Dtrk2originalAlgo",Dtrk2originalAlgo,"Dtrk2originalAlgo[Dsize]/I");
     dnt->Branch("Dtrk1highPurity",Dtrk1highPurity,"Dtrk1highPurity[Dsize]/O");
     dnt->Branch("Dtrk2highPurity",Dtrk2highPurity,"Dtrk2highPurity[Dsize]/O");
     if(!D0kpimode)
@@ -308,6 +314,8 @@ class DntupleBranches
         dnt->Branch("Dtrk4MassHypo",Dtrk4MassHypo,"Dtrk4MassHypo[Dsize]/F");
         dnt->Branch("Dtrk3Algo",Dtrk3Algo,"Dtrk3Algo[Dsize]/I");
         dnt->Branch("Dtrk4Algo",Dtrk4Algo,"Dtrk4Algo[Dsize]/I");
+        dnt->Branch("Dtrk3originalAlgo",Dtrk3originalAlgo,"Dtrk3originalAlgo[Dsize]/I");
+        dnt->Branch("Dtrk4originalAlgo",Dtrk4originalAlgo,"Dtrk4originalAlgo[Dsize]/I");
         dnt->Branch("Dtrk3highPurity",Dtrk3highPurity,"Dtrk3highPurity[Dsize]/O");
         dnt->Branch("Dtrk4highPurity",Dtrk4highPurity,"Dtrk4highPurity[Dsize]/O");
       }
@@ -803,6 +811,7 @@ class DntupleBranches
         Dtrk1Chi2ndf[typesize] = TrackInfo->chi2[DInfo->rftk1_index[j]]/TrackInfo->ndf[DInfo->rftk1_index[j]];
         Dtrk1MVAVal[typesize] = TrackInfo->trkMVAVal[DInfo->rftk1_index[j]];
         Dtrk1Algo[typesize] = TrackInfo->trkAlgo[DInfo->rftk1_index[j]];
+        Dtrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk1_index[j]];
         Dtrk1highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk1_index[j]];
         Dtrk1Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk1_index[j]];
 
@@ -826,6 +835,7 @@ class DntupleBranches
         Dtrk2MassHypo[typesize] = DInfo->rftk2_MassHypo[j]*TrackInfo->charge[DInfo->rftk2_index[j]];
         Dtrk2MVAVal[typesize] = TrackInfo->trkMVAVal[DInfo->rftk2_index[j]];
         Dtrk2Algo[typesize] = TrackInfo->trkAlgo[DInfo->rftk2_index[j]];
+        Dtrk2originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk2_index[j]];
         Dtrk2highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk2_index[j]];
         Dtrk2Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk2_index[j]];
 
@@ -849,6 +859,7 @@ class DntupleBranches
             Dtrk3MassHypo[typesize] = 0;
             Dtrk3MVAVal[typesize] = -100;
             Dtrk3Algo[typesize] = 0;
+            Dtrk3originalAlgo[typesize] = 0;
             Dtrk3Quality[typesize] = 0;
             Dtrk3highPurity[typesize] = false;
             Dtrk4Idx[typesize] = -1;
@@ -869,6 +880,7 @@ class DntupleBranches
             Dtrk4MassHypo[typesize] = 0;
             Dtrk4MVAVal[typesize] = -100;
             Dtrk4Algo[typesize] = 0;
+            Dtrk4originalAlgo[typesize] = 0;
             Dtrk4Quality[typesize] = 0;
             Dtrk4highPurity[typesize] = false;
           
@@ -924,6 +936,7 @@ class DntupleBranches
             Dtrk3MassHypo[typesize] = DInfo->rftk3_MassHypo[j]*TrackInfo->charge[DInfo->rftk3_index[j]];
             Dtrk3MVAVal[typesize] = TrackInfo->trkMVAVal[DInfo->rftk3_index[j]];
             Dtrk3Algo[typesize] = TrackInfo->trkAlgo[DInfo->rftk3_index[j]];
+            Dtrk3originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk3_index[j]];
             Dtrk3highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk3_index[j]];
             Dtrk3Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk3_index[j]];
             Dtrk4Idx[typesize] = -1;
@@ -944,6 +957,7 @@ class DntupleBranches
             Dtrk4MassHypo[typesize] = 0;
             Dtrk4MVAVal[typesize] = -100;
             Dtrk4Algo[typesize] = 0;
+            Dtrk4originalAlgo[typesize] = 0;
             Dtrk4Quality[typesize] = 0;
             Dtrk4highPurity[typesize] = false;
 
@@ -1019,6 +1033,8 @@ class DntupleBranches
             Dtrk4MVAVal[typesize] = TrackInfo->trkMVAVal[DInfo->rftk4_index[j]];
             Dtrk3Algo[typesize] = TrackInfo->trkAlgo[DInfo->rftk3_index[j]];
             Dtrk4Algo[typesize] = TrackInfo->trkAlgo[DInfo->rftk4_index[j]];
+            Dtrk3originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk3_index[j]];
+            Dtrk4originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk4_index[j]];
             Dtrk3highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk3_index[j]];
             Dtrk4highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk4_index[j]];
             Dtrk3Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk3_index[j]];
@@ -1076,6 +1092,7 @@ class DntupleBranches
         Dtrk1MassHypo[typesize] = DInfo->rftk2_MassHypo[j]*TrackInfo->charge[DInfo->rftk2_index[j]];
         Dtrk1MVAVal[typesize] = TrackInfo->trkMVAVal[DInfo->rftk2_index[j]];
         Dtrk1Algo[typesize] = TrackInfo->trkAlgo[DInfo->rftk2_index[j]];
+        Dtrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk2_index[j]];
         Dtrk1highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk2_index[j]];
         Dtrk1Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk2_index[j]];
 
@@ -1097,6 +1114,7 @@ class DntupleBranches
         Dtrk2MassHypo[typesize] = 0;
         Dtrk2MVAVal[typesize] = -100;
         Dtrk2Algo[typesize] = 0;
+        Dtrk2originalAlgo[typesize] = 0;
         Dtrk2Quality[typesize] = 0;
         Dtrk2highPurity[typesize] = false;
         Dtrk3Idx[typesize] = -1;
@@ -1117,6 +1135,7 @@ class DntupleBranches
         Dtrk3MassHypo[typesize] = 0;
         Dtrk3MVAVal[typesize] = -100;
         Dtrk3Algo[typesize] = 0;
+        Dtrk3originalAlgo[typesize] = 0;
         Dtrk3Quality[typesize] = 0;
         Dtrk3highPurity[typesize] = false;
         Dtrk4Idx[typesize] = -1;
@@ -1137,6 +1156,7 @@ class DntupleBranches
         Dtrk4MassHypo[typesize] = 0;
         Dtrk4MVAVal[typesize] = -100;
         Dtrk4Algo[typesize] = 0;
+        Dtrk4originalAlgo[typesize] = 0;
         Dtrk4Quality[typesize] = 0;
         Dtrk4highPurity[typesize] = false;
 
