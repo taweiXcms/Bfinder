@@ -99,7 +99,9 @@ if runOnMC:
     #globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
     #globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
     #globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
-    globalTag = 'auto:run2_mc'
+    #globalTag = 'auto:run2_mc'
+    globalTag = '75X_mcRun2_asymptotic_ppAt5TeV_v3'
+	
 #Data
 else:
     #globalTag = 'FT_53_V6_AN2::All'#for 2012AB
@@ -146,34 +148,6 @@ if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
 	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
-### Set basic filter
-process.PAprimaryVertexFilter = cms.EDFilter("VertexSelector",
-    src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string("!isFake && abs(z) <= 25 && position.Rho <= 2 && tracksSize >= 2"),
-    filter = cms.bool(True), # otherwise it won't filter the events
-)
-process.pPAprimaryVertexFilter = cms.Path(process.PAprimaryVertexFilter)
-
-process.NoScraping = cms.EDFilter("FilterOutScraping",
- applyfilter = cms.untracked.bool(True),
- debugOn = cms.untracked.bool(False),
- numtrack = cms.untracked.uint32(10),
- thresh = cms.untracked.double(0.25)
-)
-process.pBeamScrapingFilter=cms.Path(process.NoScraping)
-
-# Common offline event selection
-process.load('HeavyIonsAnalysis.Configuration.hfCoincFilter_cff')
-
-process.PAcollisionEventSelection = cms.Sequence(process.hfCoincFilter *
-                                         process.PAprimaryVertexFilter *
-                                         process.NoScraping 
-                                         )
-if not RunOnAOD:
-	process.phfCoincFilter = cms.Path(process.hfCoincFilter )
-	process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3 )
-	process.PAcollisionEventSelection = cms.Path(process.PAcollisionEventSelection)
-
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 from HeavyIonsAnalysis.EventAnalysis.dummybranches_cff import addHLTdummybranchesForPP
@@ -185,6 +159,42 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
     #process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
     #process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
 process.hltAna = cms.Path(process.hltanalysis)
+
+### Set basic filter
+process.load('HeavyIonsAnalysis.JetAnalysis.EventSelection_cff')
+process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
+process.HBHENoiseFilterResult = cms.Path(process.fHBHENoiseFilterResult)
+process.HBHENoiseFilterResultRun1 = cms.Path(process.fHBHENoiseFilterResultRun1)
+process.HBHENoiseFilterResultRun2Loose = cms.Path(process.fHBHENoiseFilterResultRun2Loose)
+process.HBHENoiseFilterResultRun2Tight = cms.Path(process.fHBHENoiseFilterResultRun2Tight)
+process.HBHEIsoNoiseFilterResult = cms.Path(process.fHBHEIsoNoiseFilterResult)
+
+process.PAprimaryVertexFilter = cms.EDFilter("VertexSelector",
+    src = cms.InputTag("offlinePrimaryVertices"),
+    cut = cms.string("!isFake && abs(z) <= 25 && position.Rho <= 2 && tracksSize >= 2"),
+    filter = cms.bool(True), # otherwise it won't filter the events
+)
+
+process.NoScraping = cms.EDFilter("FilterOutScraping",
+ applyfilter = cms.untracked.bool(True),
+ debugOn = cms.untracked.bool(False),
+ numtrack = cms.untracked.uint32(10),
+ thresh = cms.untracked.double(0.25)
+)
+
+process.pPAprimaryVertexFilter = cms.Path(process.PAprimaryVertexFilter)
+process.pBeamScrapingFilter=cms.Path(process.NoScraping)
+
+process.load("HeavyIonsAnalysis.VertexAnalysis.PAPileUpVertexFilter_cff")
+
+process.pVertexFilterCutG = cms.Path(process.pileupVertexFilterCutG)
+process.pVertexFilterCutGloose = cms.Path(process.pileupVertexFilterCutGloose)
+process.pVertexFilterCutGtight = cms.Path(process.pileupVertexFilterCutGtight)
+process.pVertexFilterCutGplus = cms.Path(process.pileupVertexFilterCutGplus)
+process.pVertexFilterCutE = cms.Path(process.pileupVertexFilterCutE)
+process.pVertexFilterCutEandG = cms.Path(process.pileupVertexFilterCutEandG)
+
+process.pAna = cms.EndPath(process.skimanalysis)
 
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
@@ -254,11 +264,6 @@ if ppD0DstarV2 and not ppDHFdefault and not ppDMBdefault and not ppBdefault:
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.DfinderSequence)
-
-process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
-process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
-
-process.pAna = cms.EndPath(process.skimanalysis)
 
 ### Add centrality filter
 if CentralityFilter:

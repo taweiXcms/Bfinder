@@ -107,7 +107,8 @@ if runOnMC:
 	#globalTag = 'MCHI1_74_V6::All'##PbPb for 7_4_2
 	#globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
 	#globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
-	globalTag = 'auto:run2_mc_HIon'
+	#globalTag = 'auto:run2_mc_HIon'
+    globalTag = '75X_mcRun2_HeavyIon_v13'
 #Data
 else:
 	#globalTag = 'FT_53_V6_AN2::All'#for 2012AB
@@ -145,16 +146,6 @@ if runOnMC:
 	process.hiEvtAnalyzer.doHiMC = cms.bool(True)
 	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
-### Set basic filter
-# Common offline event selection
-process.load("HeavyIonsAnalysis.Configuration.collisionEventSelection_cff")
-process.pprimaryVertexFilter = cms.Path(process.primaryVertexFilter)
-process.phfCoincFilter = cms.Path(process.hfCoincFilter )
-process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3 )
-process.pcollisionEventSelection = cms.Path(process.collisionEventSelection)
-if RunOnAOD:
-	process.pcollisionEventSelection = cms.Path(process.collisionEventSelectionAOD)
-
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 from HeavyIonsAnalysis.EventAnalysis.dummybranches_cff import addHLTdummybranches
@@ -166,6 +157,29 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
     #process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
     #process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
 process.hltAna = cms.Path(process.hltanalysis)
+
+### Set basic filter
+# Common offline event selection
+process.load('HeavyIonsAnalysis.JetAnalysis.EventSelection_cff')
+process.pcollisionEventSelection = cms.Path(process.collisionEventSelectionAOD)
+process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
+process.HBHENoiseFilterResult = cms.Path(process.fHBHENoiseFilterResult)
+process.HBHENoiseFilterResultRun1 = cms.Path(process.fHBHENoiseFilterResultRun1)
+process.HBHENoiseFilterResultRun2Loose = cms.Path(process.fHBHENoiseFilterResultRun2Loose)
+process.HBHENoiseFilterResultRun2Tight = cms.Path(process.fHBHENoiseFilterResultRun2Tight)
+process.HBHEIsoNoiseFilterResult = cms.Path(process.fHBHEIsoNoiseFilterResult)
+process.pprimaryVertexFilter = cms.Path(process.primaryVertexFilter )
+
+process.load('HeavyIonsAnalysis.Configuration.hfCoincFilter_cff')
+process.phfCoincFilter1 = cms.Path(process.hfCoincFilter)
+process.phfCoincFilter2 = cms.Path(process.hfCoincFilter2)
+process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3)
+process.phfCoincFilter4 = cms.Path(process.hfCoincFilter4)
+process.phfCoincFilter5 = cms.Path(process.hfCoincFilter5)
+
+process.pclusterCompatibilityFilter = cms.Path(process.clusterCompatibilityFilter)
+
+process.pAna = cms.EndPath(process.skimanalysis)
 
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
@@ -224,11 +238,6 @@ if PbPbDMBdefault and not PbPbDHPdefault and not PbPbBdefault:
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0)
     process.p = cms.Path(process.DfinderSequence)
-
-process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
-process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
-
-process.pAna = cms.EndPath(process.skimanalysis)
 
 ### Add centrality filter
 if CentralityFilter:
