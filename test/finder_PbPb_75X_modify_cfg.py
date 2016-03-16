@@ -2,21 +2,30 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process('HiForest')
 import FWCore.ParameterSet.VarParsing as VarParsing
 ivars = VarParsing.VarParsing('analysis')
-#ivars.inputFiles='file:/data/twang/MC_samples/MinBias_TuneCUETP8M1_5p02TeV-pythia8/MinBias_TuneCUETP8M1_5p02TeV_pythia8_pp502Fall15_MCRUN2_71_V1_v1_AOD_CMSSW_7_5_4_20151113/step3_RAW2DIGI_L1Reco_RECO_993_1_q1f.root'
-#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/AOD/PromptReco-v1/000/262/235/00000/0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
-#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/RECO/PromptReco-v1/000/262/163/00000/14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
-#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/HeavyFlavor/AOD/PromptReco-v1/000/262/273/00000/06090E4E-0C97-E511-856C-02163E0142D2.root'#AOD HeavyFlavor
-#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/MinimumBias1/AOD/PromptReco-v1/000/262/274/00000/0E443E25-3C9A-E511-9263-02163E013626.root'#AOD MB1
-ivars.outputFile='finder_pp.root'
+
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/HIDiMuon/RECO_HIDiMuon_L2DoubleMu3Skim_v10_JpsiFilter_v1_CMSSW740pre8_20150428/3c3450dda05abb66de621932774972fa/hiRecoData_RAW2DIGI_L1Reco_RECO_filter_975_1_PTa.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/twang/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_GEN_SIM_PU_BuKp_20150526_100kevt/Pyquen_CMSSW742_Unquenched_PbPb_2760GeV_step3_BuKp_20150526_100kevt/27ff3fcdfd0b68d12bfbb80768287940/step3_RAW2DIGI_L1Reco_RECO_PU_90_1_Ole.root'
+#ivars.inputFiles='file:/mnt/hadoop/cms/store/user/richard/MBHydjet5020/Hydjet_Quenched_MinBias_5020GeV/HydjetMB5020_750_75X_mcRun2_HeavyIon_v1_RealisticHICollisions2011_STARTHI50_mc_RECOSIM_v3/150729_144407/0000/step3_98.root'
+#ivars.inputFiles='file:/data/twang/MC_samples/Hydjet_Quenched_MinBias_5020GeV_750/Hydjet_Quenched_MinBias_5020GeV_750_HiFall15_step3_20151110/step3_RAW2DIGI_L1Reco_RECO_2054_1_2fm.root'
+#ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BuToJpsiK_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BuToJpsiK_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_20151105/step3_RAW2DIGI_L1Reco_RECO_756_1_ecf.root'
+#ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BdToJpsiKstar_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BdToJpsiKstar_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_20151105/step3_RAW2DIGI_L1Reco_RECO_698_2_gsq.root'
+#ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_BsToJpsiPhi_TuneCUEP8M1_5020GeV_BPHMod_filter_GEN_SIM_PU_20151105/Pythia8_BsToJpsiPhi_TuneCUEP8M1_5020GeV_BPHMod_filter_step3_PU_20151105/step3_RAW2DIGI_L1Reco_RECO_721_1_JPr.root'
+#ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_623_1_QKI.root'
+#ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpipipi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_614_1_jV8.root'
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIOniaL1DoubleMu0/AOD/PromptReco-v1/000/262/735/00000/B0EC6FA1-4E99-E511-B663-02163E013910.root'#HIOniaL1DoubleMu0
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/FC577170-6C99-E511-9848-02163E014120.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/6E423E98-5C99-E511-B72B-02163E0138EE.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/E67242E4-5E99-E511-947B-02163E0127B4.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias1/AOD/PromptReco-v1/000/262/726/00000/EE7F4A63-4599-E511-9CE5-02163E013850.root'#HIMinimumBias1
+ivars.outputFile='finder_PbPb.root'
 ivars.parseArguments()# get and parse the command line arguments
 
 ### Custom options
 ########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
-### pp B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
-ppBdefault = True
-ppDHFdefault = False
-ppDMBdefault = False
-ppD0DstarV2 = False
+### PbPb B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
+PbPbBdefault = True
+PbPbDHPdefault = False
+PbPbDMBdefault = False
 
 ### Run on MC?
 runOnMC = False
@@ -38,9 +47,9 @@ UseGenPlusSim = False
 ### Add centrality filter
 CentralityFilter = False
 
-### Vertex/Track label 
-VtxLabel = "offlinePrimaryVerticesWithBS"
-TrkLabel = "generalTracks"
+### Vertex/Track label
+VtxLabel = "hiSelectedVertex"
+#TrkLabel = "hiGeneralTracks"
 
 ### Set maxEvents
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(100))
@@ -87,34 +96,33 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 globalTag = ""
 #MC
 if runOnMC:
-    #globalTag = 'START53_V7F::All'#Summer12_DR53X
-    #globalTag = 'STARTHI53_V26::All'
-    #globalTag = 'START52_V5::All'
-    #globalTag = 'START52_V7::All'
-    #globalTag = 'START53_V17::All'
-    #globalTag = 'STARTHI53_LV1::All'##PbPb
-    #globalTag = 'START53_V27::All'##pPb
-    #globalTag = 'MCHI1_74_V4::All'##PbPb for 7_4_0_pre8
-    #globalTag = 'MCHI1_74_V6::All'##PbPb for 7_4_2
-    #globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
-    #globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
-    #globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
-    globalTag = 'auto:run2_mc'
+	#globalTag = 'START53_V7F::All'#Summer12_DR53X
+	#globalTag = 'STARTHI53_V26::All'
+	#globalTag = 'START52_V5::All'
+	#globalTag = 'START52_V7::All'
+	#globalTag = 'START53_V17::All'
+	#globalTag = 'STARTHI53_LV1::All'##PbPb
+	#globalTag = 'START53_V27::All'##pPb
+	#globalTag = 'MCHI1_74_V4::All'##PbPb for 7_4_0_pre8
+	#globalTag = 'MCHI1_74_V6::All'##PbPb for 7_4_2
+	#globalTag = '75X_mcRun2_HeavyIon_v1'##PbPb for 7_5_0
+	#globalTag = '75X_mcRun2_HeavyIon_v4'##PbPb for 7_5_3_patch1
+	#globalTag = 'auto:run2_mc_HIon'
+    globalTag = '75X_mcRun2_HeavyIon_v13'
 #Data
 else:
-    #globalTag = 'FT_53_V6_AN2::All'#for 2012AB
-    #globalTag = 'FT_53_V10_AN2::All'#for 2012C
-    #globalTag = 'FT_P_V42_AN2::All'#for 2012D
-    #globalTag = 'GR_R_53_LV6::All'##PbPb
-    #globalTag = 'GR_P_V43D::All'##pp
-    #globalTag = 'GR_P_V43F::All'##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
-    #globalTag = 'GR_P_V43D::All'##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
-    #globalTag = 'GR_R_74_V8A::All'##CMSSW_7_4_0_pre8 PbPb
-    #globalTag = 'GR_R_74_V12A::All'##CMSSW_7_4_2 PbPb
-    #globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
-    globalTag = 'auto:run2_data'
+	#globalTag = 'FT_53_V6_AN2::All'#for 2012AB
+	#globalTag = 'FT_53_V10_AN2::All'#for 2012C
+	#globalTag = 'FT_P_V42_AN2::All'#for 2012D
+	#globalTag = 'GR_R_53_LV6::All'##PbPb
+	#globalTag = 'GR_P_V43D::All'##pp
+	#globalTag = 'GR_P_V43F::All'##pPb: /PAMuon/HIRun2013-28Sep2013-v1/RECO
+	#globalTag = 'GR_P_V43D::All'##pPb: /PAMuon/HIRun2013-PromptReco-v1/RECO
+	#globalTag = 'GR_R_74_V8A::All'##CMSSW_7_4_0_pre8 PbPb
+	#globalTag = 'GR_R_74_V12A::All'##CMSSW_7_4_2 PbPb
+	#globalTag = '75X_dataRun2_v2'##CMSSW_7_5_0 PbPb
+	globalTag = 'auto:run2_data'
 
-process.GlobalTag.globaltag = cms.string(globalTag)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, globalTag, '')
 
@@ -123,61 +131,48 @@ from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
 process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
 
 #### SetUp Evt Info (centrality)
-#for pp data create centrality object and bin
-process.load("RecoHI.HiCentralityAlgos.pACentrality_cfi")
-process.pACentrality.producePixelTracks = cms.bool(False)
 process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
-process.centralityBin.Centrality = cms.InputTag("pACentrality")
-process.centralityBin.centralityVariable = cms.string("HFtowers")
-if not RunOnAOD:
-	process.centrality_path = cms.Path(process.siPixelRecHits*process.pACentrality*process.centralityBin)
+if not runOnMC:
+	process.centralityBin.Centrality = cms.InputTag("hiCentrality")
+	process.centralityBin.centralityVariable = cms.string("HFtowers")
+process.centrality_path = cms.Path(process.centralityBin)
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
-### pp centrality
-process.hiEvtAnalyzer.CentralitySrc = cms.InputTag("pACentrality")
-process.hiEvtAnalyzer.Vertex = cms.InputTag("offlinePrimaryVertices")
-process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
-process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
-if RunOnAOD:
-	process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
+
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
+	process.hiEvtAnalyzer.doHiMC = cms.bool(True)
 	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
 
 ### Set basic filter
-process.PAprimaryVertexFilter = cms.EDFilter("VertexSelector",
-    src = cms.InputTag("offlinePrimaryVertices"),
-    cut = cms.string("!isFake && abs(z) <= 25 && position.Rho <= 2 && tracksSize >= 2"),
-    filter = cms.bool(True), # otherwise it won't filter the events
-)
-process.pPAprimaryVertexFilter = cms.Path(process.PAprimaryVertexFilter)
-
-process.NoScraping = cms.EDFilter("FilterOutScraping",
- applyfilter = cms.untracked.bool(True),
- debugOn = cms.untracked.bool(False),
- numtrack = cms.untracked.uint32(10),
- thresh = cms.untracked.double(0.25)
-)
-process.pBeamScrapingFilter=cms.Path(process.NoScraping)
-
 # Common offline event selection
-process.load('HeavyIonsAnalysis.Configuration.hfCoincFilter_cff')
+process.load('HeavyIonsAnalysis.JetAnalysis.EventSelection_cff')
+process.pcollisionEventSelection = cms.Path(process.collisionEventSelectionAOD)
+process.pHBHENoiseFilterResultProducer = cms.Path( process.HBHENoiseFilterResultProducer )
+process.HBHENoiseFilterResult = cms.Path(process.fHBHENoiseFilterResult)
+process.HBHENoiseFilterResultRun1 = cms.Path(process.fHBHENoiseFilterResultRun1)
+process.HBHENoiseFilterResultRun2Loose = cms.Path(process.fHBHENoiseFilterResultRun2Loose)
+process.HBHENoiseFilterResultRun2Tight = cms.Path(process.fHBHENoiseFilterResultRun2Tight)
+process.HBHEIsoNoiseFilterResult = cms.Path(process.fHBHEIsoNoiseFilterResult)
+process.pprimaryVertexFilter = cms.Path(process.primaryVertexFilter )
 
-process.PAcollisionEventSelection = cms.Sequence(process.hfCoincFilter *
-                                         process.PAprimaryVertexFilter *
-                                         process.NoScraping 
-                                         )
-if not RunOnAOD:
-	process.phfCoincFilter = cms.Path(process.hfCoincFilter )
-	process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3 )
-	process.PAcollisionEventSelection = cms.Path(process.PAcollisionEventSelection)
+process.load('HeavyIonsAnalysis.Configuration.hfCoincFilter_cff')
+process.phfCoincFilter1 = cms.Path(process.hfCoincFilter)
+process.phfCoincFilter2 = cms.Path(process.hfCoincFilter2)
+process.phfCoincFilter3 = cms.Path(process.hfCoincFilter3)
+process.phfCoincFilter4 = cms.Path(process.hfCoincFilter4)
+process.phfCoincFilter5 = cms.Path(process.hfCoincFilter5)
+
+process.pclusterCompatibilityFilter = cms.Path(process.clusterCompatibilityFilter)
+
+process.pAna = cms.EndPath(process.skimanalysis)
 
 ### Run HLT info sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
-from HeavyIonsAnalysis.EventAnalysis.dummybranches_cff import addHLTdummybranchesForPP
-addHLTdummybranchesForPP(process)
+from HeavyIonsAnalysis.EventAnalysis.dummybranches_cff import addHLTdummybranches
+addHLTdummybranches(process)
 process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
 #if HIFormat:
     #process.hltanalysis.mctruth = cms.InputTag("hiGenParticles")# Will cause segmentation violation
@@ -188,7 +183,7 @@ process.hltAna = cms.Path(process.hltanalysis)
 
 ### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
+finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
 process.p = cms.Path(process.finderSequence)
 
 process.Bfinder.Bchannel = cms.vint32(
@@ -214,16 +209,16 @@ process.Dfinder.Dchannel = cms.vint32(
     0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
     0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
-## pp Bfinder setting on DoubleMu
-if ppBdefault and not ppDMBdefault and not ppDHFdefault and not ppD0DstarV2:
-    process.Bfinder.tkPtCut = cms.double(0.5)#before fit
+## PbPb Bfinder setting on DoubleMu
+if PbPbBdefault and not PbPbDMBdefault and not PbPbDHPdefault:
+    process.Bfinder.tkPtCut = cms.double(0.8)#before fit
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
-    process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
+    process.Bfinder.bPtCut = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
     process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.BfinderSequence)
-## pp Dfinder setting on HeavyFlavor
-if ppDHFdefault and not ppDMBdefault and not ppBdefault and not ppD0DstarV2:
-    process.Dfinder.tkPtCut = cms.double(1.)#before fit
+## PbPb Dfinder setting on HardProbe
+if PbPbDHPdefault and not PbPbDMBdefault and not PbPbBdefault:
+    process.Dfinder.tkPtCut = cms.double(2.5)#before fit
     process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Dfinder.dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.)
     process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 2.5, 2.5, 2.5, 2.5)
@@ -232,9 +227,9 @@ if ppDHFdefault and not ppDMBdefault and not ppBdefault and not ppD0DstarV2:
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.DfinderSequence)
-##pp Dfinder setting on MB
-if ppDMBdefault and not ppDHFdefault and not ppBdefault and not ppD0DstarV2:
-    process.Dfinder.tkPtCut = cms.double(1.)#before fit
+## PbPb Dfinder setting on MB
+if PbPbDMBdefault and not PbPbDHPdefault and not PbPbBdefault:
+    process.Dfinder.tkPtCut = cms.double(0.7)#before fit
     process.Dfinder.dPtCut = cms.vdouble(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)#before fit
     process.Dfinder.dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.)
     process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 2.5, 2.5, 2.5, 2.5)
@@ -242,17 +237,6 @@ if ppDMBdefault and not ppDHFdefault and not ppBdefault and not ppD0DstarV2:
     process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(4.0, 4.0, 2.5, 2.5, 2.5, 2.5, 4.0, 4.0, 0., 0., 0., 0.)
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0)
-    process.p = cms.Path(process.DfinderSequence)
-## default cut version 2
-if ppD0DstarV2 and not ppDHFdefault and not ppDMBdefault and not ppBdefault:
-    process.Dfinder.tkPtCut = cms.double(0.5)#before fit
-    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
-    process.Dfinder.dCutSeparating_PtVal = cms.vdouble(8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8.)
-    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 3.0, 3.0, 3.0, 3.0 )
-    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 1.5, 1.5, 1.5, 1.5)
-    process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(3.0, 3.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
-    process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0.)
-    process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1)
     process.p = cms.Path(process.DfinderSequence)
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
