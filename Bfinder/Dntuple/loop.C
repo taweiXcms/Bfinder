@@ -17,6 +17,7 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   TString ifname;
   if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
   else ifname = infile;
+  if (!TFile::Open(ifname))   { cout << " fail to open file" << endl; return 0;}
   TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");  
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
