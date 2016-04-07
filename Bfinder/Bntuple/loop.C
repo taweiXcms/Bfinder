@@ -1,16 +1,31 @@
 using namespace std;
 
 #include "format.h"
-#include "../interface/Bntuple.h"
+#include "Bntuple.h"
 #include "loop.h"
 
-Bool_t iseos = false;
-int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", TString outfile="/data/wangj/Data2015/Bntuple/ntB_DoubleMu_pp_20151130.root", bool REAL=true, bool isPbPb=false, int startEntries=0, int endEntries=-1,  bool skim=false, bool gskim=true, bool testMatching=true)
+Bool_t istest = false;
+int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", 
+         TString outfile="test.root", 
+         Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1,  Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
+  if(istest)
+    {
+      infile="/store/user/twang/HI_Bfinder/Data/HIOniaL1DoubleMu0/BfinderData_PbPb_20160406_bPt5jpsiPt0tkPt0p8_BpB0BsX_sub1/finder_PbPb_77_1_vc0.root";
+      outfile="test.root";
+      REAL=true;
+      isPbPb=true;
+      skim=false;
+      checkMatching=true;
+      iseos=true;
+    }
 
   cout<<endl;
-  if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
-  else cout<<"--- Processing - MC"<<endl;
+  if(REAL) cout<<"--- Processing - REAL DATA";
+  else cout<<"--- Processing - MC";
+  if(isPbPb) cout<<" - PbPb";
+  else cout<<" - pp";
+  cout<<endl;
 
   TString ifname;
   if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
@@ -18,10 +33,8 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Bfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
-  TTree* hiroot  = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
-
-  setHltBranch(hltroot);
-  if(isPbPb) setHiTreeBranch(hiroot);
+  TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
+  TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
 
   BntupleBranches     *Bntuple = new BntupleBranches;
   EvtInfoBranches     *EvtInfo = new EvtInfoBranches;
@@ -30,6 +43,10 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   TrackInfoBranches   *TrackInfo = new TrackInfoBranches;
   BInfoBranches       *BInfo = new BInfoBranches;
   GenInfoBranches     *GenInfo = new GenInfoBranches;
+
+  setHltBranch(hltroot);
+  setHiTreeBranch(hiroot);
+
   EvtInfo->setbranchadd(root);
   VtxInfo->setbranchadd(root);
   MuonInfo->setbranchadd(root);
@@ -39,9 +56,9 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
-  TFile *outf = new TFile(Form("%s_Evtfrom%dto%d.root", outfile.Data(), startEntries, endEntries),"recreate");
+  TFile *outf = TFile::Open(Form("%s", outfile.Data()),"recreate");
 
-  int ifchannel[7];
+  Int_t ifchannel[7];
   ifchannel[0] = 1; //jpsi+Kp
   ifchannel[1] = 1; //jpsi+pi
   ifchannel[2] = 1; //jpsi+Ks(pi+,pi-)
@@ -59,53 +76,69 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   TTree* nt6 = new TTree("ntmix","");    Bntuple->buildBranch(nt6);
   TTree* ntGen = new TTree("ntGen","");  Bntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
+  ntHlt->SetName("ntHlt");
+  TTree* ntSkim = skimroot->CloneTree(0);
+  ntSkim->SetName("ntSkim");
   TTree* ntHi = hiroot->CloneTree(0);
+  ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
-  cout<<"--- Check the number of events for two trees"<<endl;
-  cout<<root->GetEntries()<<" "<<hltroot->GetEntries();
-  if(isPbPb) cout<<" "<<hiroot->GetEntries();
+  cout<<"--- Check the number of events for four trees"<<endl;
+  cout<<root->GetEntries()<<" "<<hltroot->GetEntries()<<" "<<hiroot->GetEntries();
+  cout<<" "<<skimroot->GetEntries()<<endl;
   cout<<endl;
-  cout<<"--- Processing events"<<endl;
 
-  for(int i=startEntries;i<endEntries;i++)
-  {
-    root->GetEntry(i);
-    hltroot->GetEntry(i);
-    if(isPbPb) hiroot->GetEntry(i);
-    if(i%100000==0) cout<<setw(8)<<i<<" / "<<(endEntries-startEntries)<<endl;
-    if(testMatching)
+  cout<<"--- Processing events"<<endl;
+  for(Int_t i=startEntries;i<endEntries;i++)
+    {
+      root->GetEntry(i);
+      hltroot->GetEntry(i);
+      skimroot->GetEntry(i);
+      hiroot->GetEntry(i);
+      
+      if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
+      if(checkMatching)
 	{
-	  if(((int)Bf_HLT_Event!=EvtInfo->EvtNo||(int)Bf_HLT_Run!=EvtInfo->RunNo||(int)Bf_HLT_LumiBlock!=EvtInfo->LumiNo) || (isPbPb&&((int)Bf_HiTree_Evt!=EvtInfo->EvtNo||(int)Bf_HiTree_Run!=EvtInfo->RunNo||(int)Bf_HiTree_Lumi!=EvtInfo->LumiNo)))
-	  {
-	    cout<<"Error: not matched "<<i<<" | ";
-	    cout<<"EvtNo("<<Bf_HLT_Event<<","<<EvtInfo->EvtNo<<") RunNo("<<Bf_HLT_Run<<","<<EvtInfo->RunNo<<") LumiNo("<<Bf_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<") | EvtNo("<<Bf_HiTree_Evt<<","<<EvtInfo->EvtNo<<") RunNo("<<Bf_HiTree_Run<<","<<EvtInfo->RunNo<<") LumiNo("<<Bf_HiTree_Lumi<<","<<EvtInfo->LumiNo<<")"<<endl;
-	    continue;
-	  }
+          if(((int)Bf_HLT_Event!=EvtInfo->EvtNo||(int)Bf_HLT_Run!=EvtInfo->RunNo||(int)Bf_HLT_LumiBlock!=EvtInfo->LumiNo) || 
+             ((int)Bf_HiTree_Evt!=EvtInfo->EvtNo||(int)Bf_HiTree_Run!=EvtInfo->RunNo||(int)Bf_HiTree_Lumi!=EvtInfo->LumiNo))
+            {
+              cout<<"Error: not matched "<<i<<" | (Hlt,Bfr,Hi) | ";
+              cout<<"EvtNo("<<Bf_HLT_Event<<","<<EvtInfo->EvtNo<<","<<Bf_HiTree_Evt<<") ";
+              cout<<"RunNo("<<Bf_HLT_Run<<","<<EvtInfo->RunNo<<","<<Bf_HiTree_Run<<") ";
+              cout<<"LumiNo("<<Bf_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<","<<Bf_HiTree_Lumi<<")"<<endl;
+              continue;
+            }
 	}
-    ntHlt->Fill();
-    if(isPbPb) ntHi->Fill();
-    Bntuple->makeNtuple(ifchannel, REAL, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
-    if(!REAL) Bntuple->fillGenTree(ntGen, GenInfo, gskim);
-  }//entries loop
+      ntHlt->Fill();
+      ntSkim->Fill();
+      ntHi->Fill();
+      Bntuple->makeNtuple(ifchannel, REAL, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+      if(!REAL) Bntuple->fillGenTree(ntGen, GenInfo, gskim);
+    }
   outf->Write();
+  cout<<"--- Writing finished"<<endl;
   outf->Close();
+
+  cout<<"--- In/Output files"<<endl;
+  cout<<ifname<<endl;
+  cout<<outfile<<endl;
+  cout<<endl;
+
   return 1;
 }
 
 int main(int argc, char *argv[])
 {
-  if((argc != 3) && (argc != 4))
-  {
-    std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
-    return 1;
-  }
-  
-  if(argc == 3)
-    loop(argv[1], argv[2]);
-  //else if (argc == 4)
-  //  loop(argv[1], argv[2], argv[3]);
-  return 0;
+  if(argc==3)
+    {
+      loop(argv[1], argv[2]);
+    }
+  else
+    {
+      std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
+      return 0;
+    }
+  return 1;
 }
 
 

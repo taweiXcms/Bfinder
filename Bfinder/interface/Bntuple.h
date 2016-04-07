@@ -6,150 +6,150 @@
 class BntupleBranches
 {//{{{
  public:
-  double tk1mass[7] = {KAON_MASS, PION_MASS, PION_MASS,   KAON_MASS,  KAON_MASS,  KAON_MASS, PION_MASS};
-  double tk2mass[7] = {0,         0,         PION_MASS,   PION_MASS,  PION_MASS,  KAON_MASS, PION_MASS};
-  double midmass[7] = {0,         0,         KSHORT_MASS, KSTAR_MASS, KSTAR_MASS, PHI_MASS,  0};
+  float tk1mass[7] = {KAON_MASS, PION_MASS, PION_MASS,   KAON_MASS,  KAON_MASS,  KAON_MASS, PION_MASS};
+  float tk2mass[7] = {0,         0,         PION_MASS,   PION_MASS,  PION_MASS,  KAON_MASS, PION_MASS};
+  float midmass[7] = {0,         0,         KSHORT_MASS, KSTAR_MASS, KSTAR_MASS, PHI_MASS,  0};
 
   //EvtInfo
   int      RunNo;
   int      EvtNo;
   int      LumiNo;
   int      Bsize;
-  double   PVx;
-  double   PVy;
-  double   PVz;
-  double   PVxE;
-  double   PVyE;
-  double   PVzE;
-  double   PVnchi2;
-  double   PVchi2;
-  double   BSx;
-  double   BSy;
-  double   BSz;
-  double   BSxErr;
-  double   BSyErr;
-  double   BSzErr;
-  double   BSdxdz;
-  double   BSdydz;
-  double   BSdxdzErr;
-  double   BSdydzErr;
-  double   BSWidthX;
-  double   BSWidthXErr;
-  double   BSWidthY;
-  double   BSWidthYErr;
+  float   PVx;
+  float   PVy;
+  float   PVz;
+  float   PVxE;
+  float   PVyE;
+  float   PVzE;
+  float   PVnchi2;
+  float   PVchi2;
+  float   BSx;
+  float   BSy;
+  float   BSz;
+  float   BSxErr;
+  float   BSyErr;
+  float   BSzErr;
+  float   BSdxdz;
+  float   BSdydz;
+  float   BSdxdzErr;
+  float   BSdydzErr;
+  float   BSWidthX;
+  float   BSWidthXErr;
+  float   BSWidthY;
+  float   BSWidthYErr;
   
   //DInfo
   int      Bindex[MAX_XB];
   int      Btype[MAX_XB];
-  double   Bmass[MAX_XB];
-  double   Bpt[MAX_XB];
-  double   Beta[MAX_XB];
-  double   Bphi[MAX_XB];
-  double   By[MAX_XB];
-  double   BvtxX[MAX_XB];
-  double   BvtxY[MAX_XB];
-  double   Bd0[MAX_XB];
-  double   Bd0Err[MAX_XB];
-  double   Bdxyz[MAX_XB];
-  double   BdxyzErr[MAX_XB];
-  double   Bchi2ndf[MAX_XB];
-  double   Bchi2cl[MAX_XB];
-  double   Bdtheta[MAX_XB];
-  double   Blxy[MAX_XB];
-  double   BlxyBS[MAX_XB];
-  double   BlxyBSErr[MAX_XB];
-  bool     Bmaxpt[MAX_XB];
-  bool     Bmaxprob[MAX_XB];
-  bool     Bbesttktkmass[MAX_XB];
-  bool     BmaxptMatched[MAX_XB];
-  bool     BmaxprobMatched[MAX_XB];
-  bool     BbesttktkmassMatched[MAX_XB];
+  float   Bmass[MAX_XB];
+  float   Bpt[MAX_XB];
+  float   Beta[MAX_XB];
+  float   Bphi[MAX_XB];
+  float   By[MAX_XB];
+  float   BvtxX[MAX_XB];
+  float   BvtxY[MAX_XB];
+  float   Bd0[MAX_XB];
+  float   Bd0Err[MAX_XB];
+  float   Bdxyz[MAX_XB];
+  float   BdxyzErr[MAX_XB];
+  float   Bchi2ndf[MAX_XB];
+  float   Bchi2cl[MAX_XB];
+  float   Bdtheta[MAX_XB];
+  float   Blxy[MAX_XB];
+  float   BlxyBS[MAX_XB];
+  float   BlxyBSErr[MAX_XB];
+  float   BMaxDoca[MAX_XB];
+  float   Balpha[MAX_XB];
+  float   BsvpvDistance[MAX_XB];
+  float   BsvpvDisErr[MAX_XB];
+  float   BsvpvDistance_2D[MAX_XB];
+  float   BsvpvDisErr_2D[MAX_XB];
   
   //BInfo.muonInfo
-  double   Bmu1pt[MAX_XB];
-  double   Bmu2pt[MAX_XB];
-  double   Bmu1p[MAX_XB];
-  double   Bmu2p[MAX_XB];
-  double   Bmu1eta[MAX_XB];
-  double   Bmu2eta[MAX_XB];
-  double   Bmu1phi[MAX_XB];
-  double   Bmu2phi[MAX_XB];
-  double   Bmu1y[MAX_XB];
-  double   Bmu2y[MAX_XB];
-  double   Bmu1dzPV[MAX_XB];
-  double   Bmu2dzPV[MAX_XB];
-  double   Bmu1dxyPV[MAX_XB];
-  double   Bmu2dxyPV[MAX_XB];
-  double   Bmu1normchi2[MAX_XB];
-  double   Bmu2normchi2[MAX_XB];
-  double   Bmu1Chi2ndf[MAX_XB];
-  double   Bmu2Chi2ndf[MAX_XB];
-  int      Bmu1muqual[MAX_XB];
-  int      Bmu2muqual[MAX_XB];
-  bool     Bmu1TrackerMuArbitrated[MAX_XB];
-  bool     Bmu2TrackerMuArbitrated[MAX_XB];
-  bool     Bmu1isTrackerMuon[MAX_XB];
-  bool     Bmu2isTrackerMuon[MAX_XB];
-  bool     Bmu1isGlobalMuon[MAX_XB];
-  bool     Bmu2isGlobalMuon[MAX_XB];
-  bool     Bmu1TMOneStationTight[MAX_XB];
-  bool     Bmu2TMOneStationTight[MAX_XB];
-  int      Bmu1InPixelLayer[MAX_XB];
-  int      Bmu2InPixelLayer[MAX_XB];
-  int      Bmu1InStripLayer[MAX_XB];
-  int      Bmu2InStripLayer[MAX_XB];
-  int      Bmu1InTrackerLayer[MAX_XB];
-  int      Bmu2InTrackerLayer[MAX_XB];
+  float   Bmu1pt[MAX_XB];
+  float   Bmu2pt[MAX_XB];
+  float   Bmu1p[MAX_XB];
+  float   Bmu2p[MAX_XB];
+  float   Bmu1eta[MAX_XB];
+  float   Bmu2eta[MAX_XB];
+  float   Bmu1phi[MAX_XB];
+  float   Bmu2phi[MAX_XB];
+  float   Bmu1y[MAX_XB];
+  float   Bmu2y[MAX_XB];
+  float   Bmu1dzPV[MAX_XB];
+  float   Bmu2dzPV[MAX_XB];
+  float   Bmu1dxyPV[MAX_XB];
+  float   Bmu2dxyPV[MAX_XB];
+  float   Bmu1normchi2[MAX_XB];
+  float   Bmu2normchi2[MAX_XB];
+  float   Bmu1Chi2ndf[MAX_XB];
+  float   Bmu2Chi2ndf[MAX_XB];
+  int     Bmu1muqual[MAX_XB];
+  int     Bmu2muqual[MAX_XB];
+  bool    Bmu1TrackerMuArbitrated[MAX_XB];
+  bool    Bmu2TrackerMuArbitrated[MAX_XB];
+  bool    Bmu1isTrackerMuon[MAX_XB];
+  bool    Bmu2isTrackerMuon[MAX_XB];
+  bool    Bmu1isGlobalMuon[MAX_XB];
+  bool    Bmu2isGlobalMuon[MAX_XB];
+  bool    Bmu1TMOneStationTight[MAX_XB];
+  bool    Bmu2TMOneStationTight[MAX_XB];
+  int     Bmu1InPixelLayer[MAX_XB];
+  int     Bmu2InPixelLayer[MAX_XB];
+  int     Bmu1InStripLayer[MAX_XB];
+  int     Bmu2InStripLayer[MAX_XB];
+  int     Bmu1InTrackerLayer[MAX_XB];
+  int     Bmu2InTrackerLayer[MAX_XB];
   
   //BInfo.mumuInfo
-  double   Bmumumass[MAX_XB];
-  double   Bmumueta[MAX_XB];
-  double   Bmumuphi[MAX_XB];
-  double   Bmumuy[MAX_XB];
-  double   Bmumupt[MAX_XB];
+  float   Bmumumass[MAX_XB];
+  float   Bmumueta[MAX_XB];
+  float   Bmumuphi[MAX_XB];
+  float   Bmumuy[MAX_XB];
+  float   Bmumupt[MAX_XB];
   
   //BInfo.ujInfo
-  double   Bujmass[MAX_XB];
-  double   BujvProb[MAX_XB];
-  double   Bujpt[MAX_XB];
-  double   Bujeta[MAX_XB];
-  double   Bujphi[MAX_XB];
-  double   Bujy[MAX_XB];
-  double   Bujlxy[MAX_XB];
+  float   Bujmass[MAX_XB];
+  float   BujvProb[MAX_XB];
+  float   Bujpt[MAX_XB];
+  float   Bujeta[MAX_XB];
+  float   Bujphi[MAX_XB];
+  float   Bujy[MAX_XB];
+  float   Bujlxy[MAX_XB];
   
   //BInfo.trkInfo
   int      Btrk1Idx[MAX_XB];
   int      Btrk2Idx[MAX_XB];
-  double   Btrk1Pt[MAX_XB];
-  double   Btrk2Pt[MAX_XB];
-  double   Btrk1Eta[MAX_XB];
-  double   Btrk2Eta[MAX_XB];
-  double   Btrk1Phi[MAX_XB];
-  double   Btrk2Phi[MAX_XB];
-  double   Btrk1PtErr[MAX_XB];
-  double   Btrk2PtErr[MAX_XB];
-  double   Btrk1EtaErr[MAX_XB];
-  double   Btrk2EtaErr[MAX_XB];
-  double   Btrk1PhiErr[MAX_XB];
-  double   Btrk2PhiErr[MAX_XB];
-  double   Btrk1Y[MAX_XB];
-  double   Btrk2Y[MAX_XB];
-  double   Btrk1Dxy[MAX_XB];
-  double   Btrk2Dxy[MAX_XB];
-  double   Btrk1D0Err[MAX_XB];
-  double   Btrk2D0Err[MAX_XB];
-  double   Btrk1PixelHit[MAX_XB];
-  double   Btrk2PixelHit[MAX_XB];
-  double   Btrk1StripHit[MAX_XB];
-  double   Btrk2StripHit[MAX_XB];
-  double   Btrk1nPixelLayer[MAX_XB];
-  double   Btrk2nPixelLayer[MAX_XB];
-  double   Btrk1nStripLayer[MAX_XB];
-  double   Btrk2nStripLayer[MAX_XB];
-  double   Btrk1Chi2ndf[MAX_XB];
-  double   Btrk2Chi2ndf[MAX_XB];
-  double   Btrk1MVAVal[MAX_XB];
-  double   Btrk2MVAVal[MAX_XB];
+  float   Btrk1Pt[MAX_XB];
+  float   Btrk2Pt[MAX_XB];
+  float   Btrk1Eta[MAX_XB];
+  float   Btrk2Eta[MAX_XB];
+  float   Btrk1Phi[MAX_XB];
+  float   Btrk2Phi[MAX_XB];
+  float   Btrk1PtErr[MAX_XB];
+  float   Btrk2PtErr[MAX_XB];
+  float   Btrk1EtaErr[MAX_XB];
+  float   Btrk2EtaErr[MAX_XB];
+  float   Btrk1PhiErr[MAX_XB];
+  float   Btrk2PhiErr[MAX_XB];
+  float   Btrk1Y[MAX_XB];
+  float   Btrk2Y[MAX_XB];
+  float   Btrk1Dxy[MAX_XB];
+  float   Btrk2Dxy[MAX_XB];
+  float   Btrk1D0Err[MAX_XB];
+  float   Btrk2D0Err[MAX_XB];
+  float   Btrk1PixelHit[MAX_XB];
+  float   Btrk2PixelHit[MAX_XB];
+  float   Btrk1StripHit[MAX_XB];
+  float   Btrk2StripHit[MAX_XB];
+  float   Btrk1nPixelLayer[MAX_XB];
+  float   Btrk2nPixelLayer[MAX_XB];
+  float   Btrk1nStripLayer[MAX_XB];
+  float   Btrk2nStripLayer[MAX_XB];
+  float   Btrk1Chi2ndf[MAX_XB];
+  float   Btrk2Chi2ndf[MAX_XB];
+  float   Btrk1MVAVal[MAX_XB];
+  float   Btrk2MVAVal[MAX_XB];
   int      Btrk1Algo[MAX_XB];
   int      Btrk2Algo[MAX_XB];
   bool     Btrk1highPurity[MAX_XB];
@@ -157,39 +157,33 @@ class BntupleBranches
   int      Btrk1Quality[MAX_XB];
   int      Btrk2Quality[MAX_XB];
   //BInfo.tktkInfo
-  double   Btktkmass[MAX_XB];
-  double   BtktkmassKK[MAX_XB];
-  double   BtktkvProb[MAX_XB];
-  double   Btktkpt[MAX_XB];
-  double   Btktketa[MAX_XB];
-  double   Btktkphi[MAX_XB];
-  double   Btktky[MAX_XB];
-  double   Bdoubletmass[MAX_XB];
-  double   Bdoubletpt[MAX_XB];
-  double   Bdoubleteta[MAX_XB];
-  double   Bdoubletphi[MAX_XB];
-  double   Bdoublety[MAX_XB];
+  float   Btktkmass[MAX_XB];
+  float   BtktkmassKK[MAX_XB];
+  float   BtktkvProb[MAX_XB];
+  float   Btktkpt[MAX_XB];
+  float   Btktketa[MAX_XB];
+  float   Btktkphi[MAX_XB];
+  float   Btktky[MAX_XB];
+  float   Bdoubletmass[MAX_XB];
+  float   Bdoubletpt[MAX_XB];
+  float   Bdoubleteta[MAX_XB];
+  float   Bdoubletphi[MAX_XB];
+  float   Bdoublety[MAX_XB];
   
   //BInfo.genInfo
-  double   Bgen[MAX_XB];
+  float   Bgen[MAX_XB];
   int      BgenIndex[MAX_XB];
-  double   Bgenpt[MAX_XB];
-  double   Bgeneta[MAX_XB];
-  double   Bgenphi[MAX_XB];
-  double   Bgeny[MAX_XB];
+  float   Bgenpt[MAX_XB];
+  float   Bgeneta[MAX_XB];
+  float   Bgenphi[MAX_XB];
+  float   Bgeny[MAX_XB];
   
   /*
-    double   BMaxDoca[MAX_XB];
-    double   Balpha[MAX_XB];
-    double   BsvpvDistance[MAX_XB];
-    double   BsvpvDisErr[MAX_XB];
-    double   BsvpvDistance_2D[MAX_XB];
-    double   BsvpvDisErr_2D[MAX_XB];
     int      kstar[MAX_XB]; 
-    double   Btrk1MassHypo[MAX_XB];
-    double   Btrk2MassHypo[MAX_XB];
-    double   Btrkminpt[MAX_XB];
-    double   Btrkmaxpt[MAX_XB];
+    float   Btrk1MassHypo[MAX_XB];
+    float   Btrk2MassHypo[MAX_XB];
+    float   Btrkminpt[MAX_XB];
+    float   Btrkmaxpt[MAX_XB];
     int      Btrkminptindex[MAX_XB];
     int      Btrkmaxptindex[MAX_XB];
   */
@@ -227,63 +221,63 @@ class BntupleBranches
     //BInfo
     nt->Branch("Bindex",Bindex,"Bindex[Bsize]/I");
     nt->Branch("Btype",Btype,"Btype[Bsize]/I");
-    nt->Branch("Bmass",Bmass,"Bmass[Bsize]/D");
-    nt->Branch("Bpt",Bpt,"Bpt[Bsize]/D");
-    nt->Branch("Beta",Beta,"Beta[Bsize]/D");
-    nt->Branch("Bphi",Bphi,"Bphi[Bsize]/D");
-    nt->Branch("By",By,"By[Bsize]/D");
-    nt->Branch("BvtxX",BvtxX,"BvtxX[Bsize]/D");
-    nt->Branch("BvtxY",BvtxY,"BvtxY[Bsize]/D");
-    nt->Branch("Bd0",Bd0,"Bd0[Bsize]/D");
-    nt->Branch("Bd0Err",Bd0Err,"Bd0Err[Bsize]/D");
-    nt->Branch("Bdxyz",Bdxyz,"Bdxyz[Bsize]/D");
-    nt->Branch("BdxyzErr",BdxyzErr,"BdxyzErr[Bsize]/D");
-    nt->Branch("Bchi2ndf",Bchi2ndf,"Bchi2ndf[Bsize]/D");
-    nt->Branch("Bchi2cl",Bchi2cl,"Bchi2cl[Bsize]/D");
-    nt->Branch("Bdtheta",Bdtheta,"Bdtheta[Bsize]/D");
-    nt->Branch("Blxy",Blxy,"Blxy[Bsize]/D");
-    nt->Branch("BlxyBS",BlxyBS,"BlxyBS[Bsize]/D");
-    nt->Branch("BlxyBSErr",BlxyBSErr,"BlxyBSErr[Bsize]/D");
-    nt->Branch("Bmaxpt",Bmaxpt,"Bmaxpt[Bsize]/O");
-    nt->Branch("Bmaxprob",Bmaxprob,"Bmaxprob[Bsize]/O");
-    nt->Branch("Bbesttktkmass",Bbesttktkmass,"Bbesttktkmass[Bsize]/O");
-    nt->Branch("BmaxptMatched",BmaxptMatched,"BmaxptMatched[Bsize]/O");
-    nt->Branch("BmaxprobMatched",BmaxprobMatched,"BmaxprobMatched[Bsize]/O");
-    nt->Branch("BbesttktkmassMatched",BbesttktkmassMatched,"BbesttktkmassMatched[Bsize]/O");
+    nt->Branch("Bmass",Bmass,"Bmass[Bsize]/F");
+    nt->Branch("Bpt",Bpt,"Bpt[Bsize]/F");
+    nt->Branch("Beta",Beta,"Beta[Bsize]/F");
+    nt->Branch("Bphi",Bphi,"Bphi[Bsize]/F");
+    nt->Branch("By",By,"By[Bsize]/F");
+    nt->Branch("BvtxX",BvtxX,"BvtxX[Bsize]/F");
+    nt->Branch("BvtxY",BvtxY,"BvtxY[Bsize]/F");
+    nt->Branch("Bd0",Bd0,"Bd0[Bsize]/F");
+    nt->Branch("Bd0Err",Bd0Err,"Bd0Err[Bsize]/F");
+    nt->Branch("Bdxyz",Bdxyz,"Bdxyz[Bsize]/F");
+    nt->Branch("BdxyzErr",BdxyzErr,"BdxyzErr[Bsize]/F");
+    nt->Branch("Bchi2ndf",Bchi2ndf,"Bchi2ndf[Bsize]/F");
+    nt->Branch("Bchi2cl",Bchi2cl,"Bchi2cl[Bsize]/F");
+    nt->Branch("Bdtheta",Bdtheta,"Bdtheta[Bsize]/F");
+    nt->Branch("Blxy",Blxy,"Blxy[Bsize]/F");
+    nt->Branch("BlxyBS",BlxyBS,"BlxyBS[Bsize]/F");
+    nt->Branch("BlxyBSErr",BlxyBSErr,"BlxyBSErr[Bsize]/F");
+    nt->Branch("Balpha",Balpha,"Balpha[Bsize]/F");
+    nt->Branch("BsvpvDistance",BsvpvDistance,"BsvpvDistance[Bsize]/F");
+    nt->Branch("BsvpvDisErr",BsvpvDisErr,"BsvpvDisErr[Bsize]/F");
+    nt->Branch("BsvpvDistance_2D",BsvpvDistance_2D,"BsvpvDistance_2D[Bsize]/F");
+    nt->Branch("BsvpvDisErr_2D",BsvpvDisErr_2D,"BsvpvDisErr_2D[Bsize]/F");
+    nt->Branch("BMaxDoca",BMaxDoca,"BMaxDoca[Bsize]/F");
     
     //BInfo.trkInfo
     nt->Branch("Btrk1Idx",Btrk1Idx,"Btrk1Idx[Bsize]/I");
     nt->Branch("Btrk2Idx",Btrk2Idx,"Btrk2Idx[Bsize]/I");
-    nt->Branch("Btrk1Pt",Btrk1Pt,"Btrk1Pt[Bsize]/D");
-    nt->Branch("Btrk2Pt",Btrk2Pt,"Btrk2Pt[Bsize]/D");
-    nt->Branch("Btrk1Eta",Btrk1Eta,"Btrk1Eta[Bsize]/D");  
-    nt->Branch("Btrk2Eta",Btrk2Eta,"Btrk2Eta[Bsize]/D");  
-    nt->Branch("Btrk1Phi",Btrk1Phi,"Btrk1Phi[Bsize]/D");  
-    nt->Branch("Btrk2Phi",Btrk2Phi,"Btrk2Phi[Bsize]/D");  
-    nt->Branch("Btrk1PtErr",Btrk1PtErr,"Btrk1PtErr[Bsize]/D");  
-    nt->Branch("Btrk2PtErr",Btrk2PtErr,"Btrk2PtErr[Bsize]/D");
-    nt->Branch("Btrk1EtaErr",Btrk1EtaErr,"Btrk1EtaErr[Bsize]/D");
-    nt->Branch("Btrk2EtaErr",Btrk2EtaErr,"Btrk2EtaErr[Bsize]/D");
-    nt->Branch("Btrk1PhiErr",Btrk1PhiErr,"Btrk1PhiErr[Bsize]/D");
-    nt->Branch("Btrk2PhiErr",Btrk2PhiErr,"Btrk2PhiErr[Bsize]/D");
-    nt->Branch("Btrk1Y",Btrk1Y,"Btrk1Y[Bsize]/D");  
-    nt->Branch("Btrk2Y",Btrk2Y,"Btrk2Y[Bsize]/D");  
-    nt->Branch("Btrk1Dxy",Btrk1Dxy,"Btrk1Dxy[Bsize]/D");
-    nt->Branch("Btrk2Dxy",Btrk2Dxy,"Btrk2Dxy[Bsize]/D");
-    nt->Branch("Btrk1D0Err",Btrk1D0Err,"Btrk1D0Err[Bsize]/D");
-    nt->Branch("Btrk2D0Err",Btrk2D0Err,"Btrk2D0Err[Bsize]/D");
-    nt->Branch("Btrk1PixelHit",Btrk1PixelHit,"Btrk1PixelHit[Bsize]/D");
-    nt->Branch("Btrk2PixelHit",Btrk2PixelHit,"Btrk2PixelHit[Bsize]/D");
-    nt->Branch("Btrk1StripHit",Btrk1StripHit,"Btrk1StripHit[Bsize]/D");
-    nt->Branch("Btrk2StripHit",Btrk2StripHit,"Btrk2StripHit[Bsize]/D");
-    nt->Branch("Btrk1nPixelLayer",Btrk1nPixelLayer,"Btrk1nPixelLayer[Bsize]/D");
-    nt->Branch("Btrk2nPixelLayer",Btrk2nPixelLayer,"Btrk2nPixelLayer[Bsize]/D");
-    nt->Branch("Btrk1nStripLayer",Btrk1nStripLayer,"Btrk1nStripLayer[Bsize]/D");
-    nt->Branch("Btrk2nStripLayer",Btrk2nStripLayer,"Btrk2nStripLayer[Bsize]/D");
-    nt->Branch("Btrk1Chi2ndf",Btrk1Chi2ndf,"Btrk1Chi2ndf[Bsize]/D");
-    nt->Branch("Btrk2Chi2ndf",Btrk2Chi2ndf,"Btrk2Chi2ndf[Bsize]/D");
-    nt->Branch("Btrk1MVAVal",Btrk1MVAVal,"Btrk1MVAVal[Bsize]/D");
-    nt->Branch("Btrk2MVAVal",Btrk2MVAVal,"Btrk2MVAVal[Bsize]/D");
+    nt->Branch("Btrk1Pt",Btrk1Pt,"Btrk1Pt[Bsize]/F");
+    nt->Branch("Btrk2Pt",Btrk2Pt,"Btrk2Pt[Bsize]/F");
+    nt->Branch("Btrk1Eta",Btrk1Eta,"Btrk1Eta[Bsize]/F");  
+    nt->Branch("Btrk2Eta",Btrk2Eta,"Btrk2Eta[Bsize]/F");  
+    nt->Branch("Btrk1Phi",Btrk1Phi,"Btrk1Phi[Bsize]/F");  
+    nt->Branch("Btrk2Phi",Btrk2Phi,"Btrk2Phi[Bsize]/F");  
+    nt->Branch("Btrk1PtErr",Btrk1PtErr,"Btrk1PtErr[Bsize]/F");  
+    nt->Branch("Btrk2PtErr",Btrk2PtErr,"Btrk2PtErr[Bsize]/F");
+    nt->Branch("Btrk1EtaErr",Btrk1EtaErr,"Btrk1EtaErr[Bsize]/F");
+    nt->Branch("Btrk2EtaErr",Btrk2EtaErr,"Btrk2EtaErr[Bsize]/F");
+    nt->Branch("Btrk1PhiErr",Btrk1PhiErr,"Btrk1PhiErr[Bsize]/F");
+    nt->Branch("Btrk2PhiErr",Btrk2PhiErr,"Btrk2PhiErr[Bsize]/F");
+    nt->Branch("Btrk1Y",Btrk1Y,"Btrk1Y[Bsize]/F");  
+    nt->Branch("Btrk2Y",Btrk2Y,"Btrk2Y[Bsize]/F");  
+    nt->Branch("Btrk1Dxy",Btrk1Dxy,"Btrk1Dxy[Bsize]/F");
+    nt->Branch("Btrk2Dxy",Btrk2Dxy,"Btrk2Dxy[Bsize]/F");
+    nt->Branch("Btrk1D0Err",Btrk1D0Err,"Btrk1D0Err[Bsize]/F");
+    nt->Branch("Btrk2D0Err",Btrk2D0Err,"Btrk2D0Err[Bsize]/F");
+    nt->Branch("Btrk1PixelHit",Btrk1PixelHit,"Btrk1PixelHit[Bsize]/F");
+    nt->Branch("Btrk2PixelHit",Btrk2PixelHit,"Btrk2PixelHit[Bsize]/F");
+    nt->Branch("Btrk1StripHit",Btrk1StripHit,"Btrk1StripHit[Bsize]/F");
+    nt->Branch("Btrk2StripHit",Btrk2StripHit,"Btrk2StripHit[Bsize]/F");
+    nt->Branch("Btrk1nPixelLayer",Btrk1nPixelLayer,"Btrk1nPixelLayer[Bsize]/F");
+    nt->Branch("Btrk2nPixelLayer",Btrk2nPixelLayer,"Btrk2nPixelLayer[Bsize]/F");
+    nt->Branch("Btrk1nStripLayer",Btrk1nStripLayer,"Btrk1nStripLayer[Bsize]/F");
+    nt->Branch("Btrk2nStripLayer",Btrk2nStripLayer,"Btrk2nStripLayer[Bsize]/F");
+    nt->Branch("Btrk1Chi2ndf",Btrk1Chi2ndf,"Btrk1Chi2ndf[Bsize]/F");
+    nt->Branch("Btrk2Chi2ndf",Btrk2Chi2ndf,"Btrk2Chi2ndf[Bsize]/F");
+    nt->Branch("Btrk1MVAVal",Btrk1MVAVal,"Btrk1MVAVal[Bsize]/F");
+    nt->Branch("Btrk2MVAVal",Btrk2MVAVal,"Btrk2MVAVal[Bsize]/F");
     nt->Branch("Btrk1Algo",Btrk1Algo,"Btrk1Algo[Bsize]/I");
     nt->Branch("Btrk2Algo",Btrk2Algo,"Btrk2Algo[Bsize]/I");
     nt->Branch("Btrk1highPurity",Btrk1highPurity,"Btrk1highPurity[Bsize]/O");
@@ -292,38 +286,38 @@ class BntupleBranches
     nt->Branch("Btrk2Quality",Btrk2Quality,"Btrk2Quality[Bsize]/I");
     
     //BInfo.tktkInfo
-    nt->Branch("Btktkmass",Btktkmass,"Btktkmass[Bsize]/D");
-    nt->Branch("BtktkmassKK",BtktkmassKK,"BtktkmassKK[Bsize]/D");
-    nt->Branch("BtktkvProb",BtktkvProb,"BtktkvProb[Bsize]/D");
-    nt->Branch("Btktkpt",Btktkpt,"Btktkpt[Bsize]/D");
-    nt->Branch("Btktketa",Btktketa,"Btktketa[Bsize]/D");
-    nt->Branch("Btktkphi",Btktkphi,"Btktkphi[Bsize]/D");
-    nt->Branch("Btktky",Btktky,"Btktky[Bsize]/D");
-    nt->Branch("Bdoubletmass",Bdoubletmass,"Bdoubletmass[Bsize]/D");
-    nt->Branch("Bdoubletpt",Bdoubletpt,"Bdoubletpt[Bsize]/D");
-    nt->Branch("Bdoubleteta",Bdoubleteta,"Bdoubleteta[Bsize]/D");  
-    nt->Branch("Bdoubletphi",Bdoubletphi,"Bdoubletphi[Bsize]/D");  
-    nt->Branch("Bdoublety",Bdoublety,"Bdoublety[Bsize]/D");
+    nt->Branch("Btktkmass",Btktkmass,"Btktkmass[Bsize]/F");
+    nt->Branch("BtktkmassKK",BtktkmassKK,"BtktkmassKK[Bsize]/F");
+    nt->Branch("BtktkvProb",BtktkvProb,"BtktkvProb[Bsize]/F");
+    nt->Branch("Btktkpt",Btktkpt,"Btktkpt[Bsize]/F");
+    nt->Branch("Btktketa",Btktketa,"Btktketa[Bsize]/F");
+    nt->Branch("Btktkphi",Btktkphi,"Btktkphi[Bsize]/F");
+    nt->Branch("Btktky",Btktky,"Btktky[Bsize]/F");
+    nt->Branch("Bdoubletmass",Bdoubletmass,"Bdoubletmass[Bsize]/F");
+    nt->Branch("Bdoubletpt",Bdoubletpt,"Bdoubletpt[Bsize]/F");
+    nt->Branch("Bdoubleteta",Bdoubleteta,"Bdoubleteta[Bsize]/F");  
+    nt->Branch("Bdoubletphi",Bdoubletphi,"Bdoubletphi[Bsize]/F");  
+    nt->Branch("Bdoublety",Bdoublety,"Bdoublety[Bsize]/F");
     
     //BInfo.muonInfo
-    nt->Branch("Bmu1pt",Bmu1pt,"Bmu1pt[Bsize]/D");
-    nt->Branch("Bmu2pt",Bmu2pt,"Bmu2pt[Bsize]/D");
-    nt->Branch("Bmu1p",Bmu1p,"Bmu1p[Bsize]/D");
-    nt->Branch("Bmu2p",Bmu2p,"Bmu2p[Bsize]/D");
-    nt->Branch("Bmu1eta",Bmu1eta,"Bmu1eta[Bsize]/D");
-    nt->Branch("Bmu2eta",Bmu2eta,"Bmu2eta[Bsize]/D");
-    nt->Branch("Bmu1phi",Bmu1phi,"Bmu1phi[Bsize]/D");
-    nt->Branch("Bmu2phi",Bmu2phi,"Bmu2phi[Bsize]/D");
-    nt->Branch("Bmu1y",Bmu1y,"Bmu1y[Bsize]/D");
-    nt->Branch("Bmu2y",Bmu2y,"Bmu2y[Bsize]/D");
-    nt->Branch("Bmu1dzPV",Bmu1dzPV,"Bmu1dzPV[Bsize]/D");
-    nt->Branch("Bmu2dzPV",Bmu2dzPV,"Bmu2dzPV[Bsize]/D");
-    nt->Branch("Bmu1dxyPV",Bmu1dxyPV,"Bmu1dxyPV[Bsize]/D");
-    nt->Branch("Bmu2dxyPV",Bmu2dxyPV,"Bmu2dxyPV[Bsize]/D");
-    nt->Branch("Bmu1normchi2",Bmu1normchi2,"Bmu1normchi2[Bsize]/D");
-    nt->Branch("Bmu2normchi2",Bmu2normchi2,"Bmu2normchi2[Bsize]/D");
-    nt->Branch("Bmu1Chi2ndf",Bmu1Chi2ndf,"Bmu1Chi2ndf[Bsize]/D");
-    nt->Branch("Bmu2Chi2ndf",Bmu2Chi2ndf,"Bmu2Chi2ndf[Bsize]/D");
+    nt->Branch("Bmu1pt",Bmu1pt,"Bmu1pt[Bsize]/F");
+    nt->Branch("Bmu2pt",Bmu2pt,"Bmu2pt[Bsize]/F");
+    nt->Branch("Bmu1p",Bmu1p,"Bmu1p[Bsize]/F");
+    nt->Branch("Bmu2p",Bmu2p,"Bmu2p[Bsize]/F");
+    nt->Branch("Bmu1eta",Bmu1eta,"Bmu1eta[Bsize]/F");
+    nt->Branch("Bmu2eta",Bmu2eta,"Bmu2eta[Bsize]/F");
+    nt->Branch("Bmu1phi",Bmu1phi,"Bmu1phi[Bsize]/F");
+    nt->Branch("Bmu2phi",Bmu2phi,"Bmu2phi[Bsize]/F");
+    nt->Branch("Bmu1y",Bmu1y,"Bmu1y[Bsize]/F");
+    nt->Branch("Bmu2y",Bmu2y,"Bmu2y[Bsize]/F");
+    nt->Branch("Bmu1dzPV",Bmu1dzPV,"Bmu1dzPV[Bsize]/F");
+    nt->Branch("Bmu2dzPV",Bmu2dzPV,"Bmu2dzPV[Bsize]/F");
+    nt->Branch("Bmu1dxyPV",Bmu1dxyPV,"Bmu1dxyPV[Bsize]/F");
+    nt->Branch("Bmu2dxyPV",Bmu2dxyPV,"Bmu2dxyPV[Bsize]/F");
+    nt->Branch("Bmu1normchi2",Bmu1normchi2,"Bmu1normchi2[Bsize]/F");
+    nt->Branch("Bmu2normchi2",Bmu2normchi2,"Bmu2normchi2[Bsize]/F");
+    nt->Branch("Bmu1Chi2ndf",Bmu1Chi2ndf,"Bmu1Chi2ndf[Bsize]/F");
+    nt->Branch("Bmu2Chi2ndf",Bmu2Chi2ndf,"Bmu2Chi2ndf[Bsize]/F");
     nt->Branch("Bmu1muqual",Bmu1muqual,"Bmu1muqual[Bsize]/I");
     nt->Branch("Bmu1muqual",Bmu1muqual,"Bmu1muqual[Bsize]/I");
     nt->Branch("Bmu1TrackerMuArbitrated",Bmu1TrackerMuArbitrated,"Bmu1TrackerMuArbitrated[Bsize]/O");
@@ -340,88 +334,82 @@ class BntupleBranches
     nt->Branch("Bmu2InStripLayer",Bmu2InStripLayer,"Bmu2InStripLayer[Bsize]/I");
     nt->Branch("Bmu1InTrackerLayer",Bmu1InTrackerLayer,"Bmu1InTrackerLayer[Bsize]/I");
     nt->Branch("Bmu2InTrackerLayer",Bmu2InTrackerLayer,"Bmu2InTrackerLayer[Bsize]/I");
-    nt->Branch("Bmumumass",Bmumumass,"Bmumumass[Bsize]/D");
-    nt->Branch("Bmumueta",Bmumueta,"Bmumueta[Bsize]/D");
-    nt->Branch("Bmumuphi",Bmumuphi,"Bmumuphi[Bsize]/D");
-    nt->Branch("Bmumuy",Bmumuy,"Bmumuy[Bsize]/D");
-    nt->Branch("Bmumupt",Bmumupt,"Bmumupt[Bsize]/D");
-    nt->Branch("Bujmass",Bujmass,"Bujmass[Bsize]/D");
-    nt->Branch("BujvProb",BujvProb,"BujvProb[Bsize]/D");
-    nt->Branch("Bujpt",Bujpt,"Bujpt[Bsize]/D");
-    nt->Branch("Bujeta",Bujeta,"Bujeta[Bsize]/D");
-    nt->Branch("Bujphi",Bujphi,"Bujphi[Bsize]/D");
-    nt->Branch("Bujy",Bujy,"Bujy[Bsize]/D");
-    nt->Branch("Bujlxy",Bujlxy,"Bujlxy[Bsize]/D");
+    nt->Branch("Bmumumass",Bmumumass,"Bmumumass[Bsize]/F");
+    nt->Branch("Bmumueta",Bmumueta,"Bmumueta[Bsize]/F");
+    nt->Branch("Bmumuphi",Bmumuphi,"Bmumuphi[Bsize]/F");
+    nt->Branch("Bmumuy",Bmumuy,"Bmumuy[Bsize]/F");
+    nt->Branch("Bmumupt",Bmumupt,"Bmumupt[Bsize]/F");
+    nt->Branch("Bujmass",Bujmass,"Bujmass[Bsize]/F");
+    nt->Branch("BujvProb",BujvProb,"BujvProb[Bsize]/F");
+    nt->Branch("Bujpt",Bujpt,"Bujpt[Bsize]/F");
+    nt->Branch("Bujeta",Bujeta,"Bujeta[Bsize]/F");
+    nt->Branch("Bujphi",Bujphi,"Bujphi[Bsize]/F");
+    nt->Branch("Bujy",Bujy,"Bujy[Bsize]/F");
+    nt->Branch("Bujlxy",Bujlxy,"Bujlxy[Bsize]/F");
     
     //BInfo.genInfo
-    nt->Branch("Bgen",Bgen,"Bgen[Bsize]/D");
+    nt->Branch("Bgen",Bgen,"Bgen[Bsize]/F");
     nt->Branch("BgenIndex",BgenIndex,"BgenIndex[Bsize]/I");
-    nt->Branch("Bgenpt",Bgenpt,"Bgenpt[Bsize]/D");
-    nt->Branch("Bgeny",Bgeny,"Bgeny[Bsize]/D");
-    nt->Branch("Bgeneta",Bgeneta,"Bgeneta[Bsize]/D");
-    nt->Branch("Bgenphi",Bgenphi,"Bgenphi[Bsize]/D");
+    nt->Branch("Bgenpt",Bgenpt,"Bgenpt[Bsize]/F");
+    nt->Branch("Bgeny",Bgeny,"Bgeny[Bsize]/F");
+    nt->Branch("Bgeneta",Bgeneta,"Bgeneta[Bsize]/F");
+    nt->Branch("Bgenphi",Bgenphi,"Bgenphi[Bsize]/F");
     
     /*
-      nt->Branch("Balpha",Balpha,"Balpha[Bsize]/D");
-      nt->Branch("BsvpvDistance",BsvpvDistance,"BsvpvDistance[Bsize]/D");
-      nt->Branch("BsvpvDisErr",BsvpvDisErr,"BsvpvDisErr[Bsize]/D");
-      nt->Branch("BsvpvDistance_2D",BsvpvDistance_2D,"BsvpvDistance_2D[Bsize]/D");
-      nt->Branch("BsvpvDisErr_2D",BsvpvDisErr_2D,"BsvpvDisErr_2D[Bsize]/D");
-      nt->Branch("BMaxDoca",BMaxDoca,"BMaxDoca[Bsize]/D");
-      nt->Branch("Btrk1MassHypo",Btrk1MassHypo,"Btrk1MassHypo[Bsize]/D");
-      nt->Branch("Btrk2MassHypo",Btrk2MassHypo,"Btrk2MassHypo[Bsize]/D");
-      nt->Branch("Btrkminpt",Btrkminpt,"Btrkminpt[Bsize]/D");
-      nt->Branch("Btrkmaxpt",Btrkmaxpt,"Btrkmaxpt[Bsize]/D");
+      nt->Branch("Btrk1MassHypo",Btrk1MassHypo,"Btrk1MassHypo[Bsize]/F");
+      nt->Branch("Btrk2MassHypo",Btrk2MassHypo,"Btrk2MassHypo[Bsize]/F");
+      nt->Branch("Btrkminpt",Btrkminpt,"Btrkminpt[Bsize]/F");
+      nt->Branch("Btrkmaxpt",Btrkmaxpt,"Btrkmaxpt[Bsize]/F");
       nt->Branch("Btrkminptindex",Btrkminptindex,"Btrkminptindex[Bsize]/I");
       nt->Branch("Btrkmaxptindex",Btrkmaxptindex,"Btrkmaxptindex[Bsize]/I");
     */
   }
   
   int      Gsize;
-  double   Gy[MAX_GEN];
-  double   Geta[MAX_GEN];
-  double   Gphi[MAX_GEN];
-  double   Gpt[MAX_GEN];
-  double   GpdgId[MAX_GEN];
-  double   GisSignal[MAX_GEN];
-  double   Gmu1pt[MAX_GEN];
-  double   Gmu2pt[MAX_GEN];
-  double   Gmu1p[MAX_GEN];
-  double   Gmu2p[MAX_GEN];
-  double   Gmu1eta[MAX_GEN];
-  double   Gmu2eta[MAX_GEN];
-  double   Gmu1phi[MAX_GEN];
-  double   Gmu2phi[MAX_GEN];
-  double   Gtk1pt[MAX_GEN];
-  double   Gtk2pt[MAX_GEN];
-  double   Gtk1eta[MAX_GEN];
-  double   Gtk2eta[MAX_GEN];
-  double   Gtk1phi[MAX_GEN];
-  double   Gtk2phi[MAX_GEN];
+  float   Gy[MAX_GEN];
+  float   Geta[MAX_GEN];
+  float   Gphi[MAX_GEN];
+  float   Gpt[MAX_GEN];
+  float   GpdgId[MAX_GEN];
+  float   GisSignal[MAX_GEN];
+  float   Gmu1pt[MAX_GEN];
+  float   Gmu2pt[MAX_GEN];
+  float   Gmu1p[MAX_GEN];
+  float   Gmu2p[MAX_GEN];
+  float   Gmu1eta[MAX_GEN];
+  float   Gmu2eta[MAX_GEN];
+  float   Gmu1phi[MAX_GEN];
+  float   Gmu2phi[MAX_GEN];
+  float   Gtk1pt[MAX_GEN];
+  float   Gtk2pt[MAX_GEN];
+  float   Gtk1eta[MAX_GEN];
+  float   Gtk2eta[MAX_GEN];
+  float   Gtk1phi[MAX_GEN];
+  float   Gtk2phi[MAX_GEN];
   
   void buildGenBranch(TTree* nt)
   {
     nt->Branch("Gsize",&Gsize);
-    nt->Branch("Gy",Gy,"Gy[Gsize]/D");
-    nt->Branch("Geta",Geta,"Geta[Gsize]/D");
-    nt->Branch("Gphi",Gphi,"Gphi[Gsize]/D");
-    nt->Branch("Gpt",Gpt,"Gpt[Gsize]/D");
-    nt->Branch("GpdgId",GpdgId,"GpdgId[Gsize]/D");
-    nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/D");
-    nt->Branch("Gmu1eta",Gmu1eta,"Gmu1eta[Gsize]/D");
-    nt->Branch("Gmu1phi",Gmu1phi,"Gmu1phi[Gsize]/D");
-    nt->Branch("Gmu1pt",Gmu1pt,"Gmu1pt[Gsize]/D");
-    nt->Branch("Gmu1p",Gmu1p,"Gmu1p[Gsize]/D");
-    nt->Branch("Gmu2eta",Gmu2eta,"Gmu2eta[Gsize]/D");
-    nt->Branch("Gmu2phi",Gmu2phi,"Gmu2phi[Gsize]/D");
-    nt->Branch("Gmu2pt",Gmu2pt,"Gmu2pt[Gsize]/D");
-    nt->Branch("Gmu2p",Gmu2p,"Gmu2p[Gsize]/D");
-    nt->Branch("Gtk1pt",Gtk1pt,"Gtk1pt[Gsize]/D");
-    nt->Branch("Gtk1eta",Gtk1eta,"Gtk1eta[Gsize]/D");
-    nt->Branch("Gtk1phi",Gtk1phi,"Gtk1phi[Gsize]/D");
-    nt->Branch("Gtk2pt",Gtk2pt,"Gtk2pt[Gsize]/D");
-    nt->Branch("Gtk2eta",Gtk2eta,"Gtk2eta[Gsize]/D");
-    nt->Branch("Gtk2phi",Gtk2phi,"Gtk2phi[Gsize]/D");
+    nt->Branch("Gy",Gy,"Gy[Gsize]/F");
+    nt->Branch("Geta",Geta,"Geta[Gsize]/F");
+    nt->Branch("Gphi",Gphi,"Gphi[Gsize]/F");
+    nt->Branch("Gpt",Gpt,"Gpt[Gsize]/F");
+    nt->Branch("GpdgId",GpdgId,"GpdgId[Gsize]/F");
+    nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/F");
+    nt->Branch("Gmu1eta",Gmu1eta,"Gmu1eta[Gsize]/F");
+    nt->Branch("Gmu1phi",Gmu1phi,"Gmu1phi[Gsize]/F");
+    nt->Branch("Gmu1pt",Gmu1pt,"Gmu1pt[Gsize]/F");
+    nt->Branch("Gmu1p",Gmu1p,"Gmu1p[Gsize]/F");
+    nt->Branch("Gmu2eta",Gmu2eta,"Gmu2eta[Gsize]/F");
+    nt->Branch("Gmu2phi",Gmu2phi,"Gmu2phi[Gsize]/F");
+    nt->Branch("Gmu2pt",Gmu2pt,"Gmu2pt[Gsize]/F");
+    nt->Branch("Gmu2p",Gmu2p,"Gmu2p[Gsize]/F");
+    nt->Branch("Gtk1pt",Gtk1pt,"Gtk1pt[Gsize]/F");
+    nt->Branch("Gtk1eta",Gtk1eta,"Gtk1eta[Gsize]/F");
+    nt->Branch("Gtk1phi",Gtk1phi,"Gtk1phi[Gsize]/F");
+    nt->Branch("Gtk2pt",Gtk2pt,"Gtk2pt[Gsize]/F");
+    nt->Branch("Gtk2eta",Gtk2eta,"Gtk2eta[Gsize]/F");
+    nt->Branch("Gtk2phi",Gtk2phi,"Gtk2phi[Gsize]/F");
   }
   
   void makeNtuple(int ifchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6)
@@ -429,34 +417,8 @@ class BntupleBranches
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
     TLorentzVector* b4P = new TLorentzVector;
-    RunNo = EvtInfo->RunNo;
-    EvtNo = EvtInfo->EvtNo;
-    LumiNo = EvtInfo->LumiNo;
-    PVx = EvtInfo->PVx;
-    PVy = EvtInfo->PVy;
-    PVz = EvtInfo->PVz;
-    PVxE = EvtInfo->PVxE;
-    PVyE = EvtInfo->PVyE;
-    PVzE = EvtInfo->PVzE;
-    PVnchi2 = EvtInfo->PVnchi2;
-    PVchi2 = EvtInfo->PVchi2;
-    BSx = EvtInfo->BSx;
-    BSy = EvtInfo->BSy;
-    BSz = EvtInfo->BSz;
-    BSxErr = EvtInfo->BSxErr;
-    BSyErr = EvtInfo->BSyErr;
-    BSzErr = EvtInfo->BSzErr;
-    BSdxdz = EvtInfo->BSdxdz;
-    BSdydz = EvtInfo->BSdydz;
-    BSdxdzErr = EvtInfo->BSdxdzErr;
-    BSdydzErr = EvtInfo->BSdydzErr;
-    BSWidthX = EvtInfo->BSWidthX;
-    BSWidthXErr = EvtInfo->BSWidthXErr;
-    BSWidthY = EvtInfo->BSWidthY;
-    BSWidthYErr = EvtInfo->BSWidthYErr;
+    fillTreeEvt(EvtInfo);
     int Btypesize[7]={0,0,0,0,0,0,0};
-    int ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1,tktkflag=-1,tktkMatchedflag=-1;
-    double pttem=0,ptMatchedtem=0,probtem=0,probMatchedtem=0,tktktem=0,tktkMatchedtem=0;
     for(int t=0;t<7;t++)
       {
         int tidx = t-1;
@@ -464,18 +426,6 @@ class BntupleBranches
           {
             tidx = t;
             Bsize = 0;
-            ptflag = -1;
-            pttem = 0;
-            ptMatchedflag = -1;
-            ptMatchedtem = 0;
-            probflag = -1;
-            probtem = 0;
-            probMatchedflag = -1;
-            probMatchedtem = 0;
-            tktkflag = -1;
-            tktktem = 1000000.;
-            tktkMatchedflag = -1;
-            tktkMatchedtem = 1000000.;
           }
         if(ifchannel[t]==1)
           {
@@ -488,56 +438,8 @@ class BntupleBranches
                 if(BInfo->type[j]==(t+1))
                   {
                     fillTree(bP,bVtx,b4P,j,Btypesize[tidx],tk1mass[t],tk2mass[t],REAL, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo);
-                    if(BInfo->pt[j]>pttem)
-                      {
-                        ptflag = Btypesize[tidx];
-                        pttem = BInfo->pt[j];
-                      }
-                    if(TMath::Prob(BInfo->vtxchi2[j],BInfo->vtxdof[j])>probtem)
-                      {
-                        probflag = Btypesize[tidx];
-                        probtem = TMath::Prob(BInfo->vtxchi2[j],BInfo->vtxdof[j]);
-                      }
-                    if(BInfo->type[j]>2&&BInfo->type[j]<7)
-                      {
-                        if(TMath::Abs(BInfo->tktk_mass[j]-midmass[t])<tktktem)
-                          {
-                            tktkflag = Btypesize[tidx];
-                            tktktem = TMath::Abs(BInfo->tktk_mass[j]-midmass[t]);
-                          }
-                      }
-                    if((!REAL&&(Bgen[Btypesize[tidx]]==23333||Bgen[Btypesize[tidx]]==41000))||REAL)//////////////////////////////
-                      {
-                        if(BInfo->pt[j]>ptMatchedtem)
-                          {
-                            ptMatchedflag = Btypesize[tidx];
-                            ptMatchedtem = BInfo->pt[j];
-                          }
-                        if(TMath::Prob(BInfo->vtxchi2[j],BInfo->vtxdof[j])>probMatchedtem)
-                          {
-                            probMatchedflag = Btypesize[tidx];
-                            probMatchedtem = TMath::Prob(BInfo->vtxchi2[j],BInfo->vtxdof[j]);
-                          }
-                        if(BInfo->type[j]>2&&BInfo->type[j]<7)
-                          {
-                            if(TMath::Abs(BInfo->tktk_mass[j]-midmass[t])<tktkMatchedtem)
-                              {
-                                tktkMatchedflag = Btypesize[tidx];
-                                tktkMatchedtem = TMath::Abs(BInfo->tktk_mass[j]-midmass[t]);
-                              }
-                          }
-                      }                   
                     Btypesize[tidx]++;
                   }
-              }
-            if(t!=3)
-              {
-                if(ptflag>=0) Bmaxpt[ptflag] = true;
-                if(probflag>=0) Bmaxprob[probflag] = true;
-                if(tktkflag>=0) Bbesttktkmass[tktkflag] = true;
-                if(ptMatchedflag>=0) BmaxptMatched[ptMatchedflag] = true;
-                if(probMatchedflag>=0) BmaxprobMatched[probMatchedflag] = true;
-                if(tktkMatchedflag>=0) BbesttktkmassMatched[tktkMatchedflag] = true;
               }
             if(t==0)      nt0->Fill();
             else if(t==1) nt1->Fill();
@@ -619,8 +521,38 @@ class BntupleBranches
       }
     ntGen->Fill();
   }//}}}
+
+  void fillTreeEvt(EvtInfoBranches *EvtInfo)
+  {
+    //Event Info
+    RunNo = EvtInfo->RunNo;
+    EvtNo = EvtInfo->EvtNo;
+    LumiNo = EvtInfo->LumiNo;
+    PVx = EvtInfo->PVx;
+    PVy = EvtInfo->PVy;
+    PVz = EvtInfo->PVz;
+    PVxE = EvtInfo->PVxE;
+    PVyE = EvtInfo->PVyE;
+    PVzE = EvtInfo->PVzE;
+    PVnchi2 = EvtInfo->PVnchi2;
+    PVchi2 = EvtInfo->PVchi2;
+    BSx = EvtInfo->BSx;
+    BSy = EvtInfo->BSy;
+    BSz = EvtInfo->BSz;
+    BSxErr = EvtInfo->BSxErr;
+    BSyErr = EvtInfo->BSyErr;
+    BSzErr = EvtInfo->BSzErr;
+    BSdxdz = EvtInfo->BSdxdz;
+    BSdydz = EvtInfo->BSdydz;
+    BSdxdzErr = EvtInfo->BSdxdzErr;
+    BSdydzErr = EvtInfo->BSdydzErr;
+    BSWidthX = EvtInfo->BSWidthX;
+    BSWidthXErr = EvtInfo->BSWidthXErr;
+    BSWidthY = EvtInfo->BSWidthY;
+    BSWidthYErr = EvtInfo->BSWidthYErr;
+  }
   
-  void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, double track_mass1, double track_mass2, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo)
+  void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, float track_mass1, float track_mass2, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo)
   {//{{{
     //Event Info
     Bsize = typesize+1;
@@ -647,19 +579,18 @@ class BntupleBranches
     Bchi2cl[typesize] = TMath::Prob(BInfo->vtxchi2[j],BInfo->vtxdof[j]);
     Bdtheta[typesize] = bP->Angle(*bVtx);
     Blxy[typesize] = ((BInfo->vtxX[j]-EvtInfo->PVx)*b4P->Px() + (BInfo->vtxY[j]-EvtInfo->PVy)*b4P->Py())/BInfo->pt[j];
-    double r2lxyBS = (BInfo->vtxX[j]-EvtInfo->BSx+(BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (BInfo->vtxX[j]-EvtInfo->BSx+(BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
+    float r2lxyBS = (BInfo->vtxX[j]-EvtInfo->BSx+(BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (BInfo->vtxX[j]-EvtInfo->BSx+(BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
       + (BInfo->vtxY[j]-EvtInfo->BSy+(BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (BInfo->vtxY[j]-EvtInfo->BSy+(BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
-    double xlxyBS = BInfo->vtxX[j]-EvtInfo->BSx + (BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
-    double ylxyBS = BInfo->vtxY[j]-EvtInfo->BSy + (BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
+    float xlxyBS = BInfo->vtxX[j]-EvtInfo->BSx + (BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
+    float ylxyBS = BInfo->vtxY[j]-EvtInfo->BSy + (BInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
     BlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
-    //BlxyBSErr[typesize] = 0;
     BlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*BInfo->vtxXErr[j] + (2*xlxyBS*ylxyBS)*BInfo->vtxYXErr[j] + (ylxyBS*ylxyBS)*BInfo->vtxYErr[j]);
-    Bmaxpt[typesize] = false;
-    Bmaxprob[typesize] = false;
-    Bbesttktkmass[typesize] = false;
-    BmaxptMatched[typesize] = false;
-    BmaxprobMatched[typesize] = false;
-    BbesttktkmassMatched[typesize] = false;
+    Balpha[typesize] = BInfo->alpha[j];
+    BsvpvDistance[typesize] = BInfo->svpvDistance[j];
+    BsvpvDisErr[typesize] = BInfo->svpvDisErr[j];
+    BsvpvDistance_2D[typesize] = BInfo->svpvDistance_2D[j];
+    BsvpvDisErr_2D[typesize] = BInfo->svpvDisErr_2D[j];
+    BMaxDoca[typesize] = BInfo->MaxDoca[j];
     
     b4P->SetPtEtaPhiM(MuonInfo->pt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]],MuonInfo->eta[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]],MuonInfo->phi[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]],MUON_MASS);
     Bmu1pt[typesize] = MuonInfo->pt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
@@ -667,7 +598,7 @@ class BntupleBranches
     Bmu1phi[typesize] = MuonInfo->phi[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu1p[typesize] = b4P->P();
     Bmu1y[typesize] = b4P->Rapidity();
-    Double_t mu1px,mu1py,mu1pz,mu1E;
+    Float_t mu1px,mu1py,mu1pz,mu1E;
     mu1px = b4P->Px();
     mu1py = b4P->Py();
     mu1pz = b4P->Pz();
@@ -679,7 +610,7 @@ class BntupleBranches
     Bmu2phi[typesize] = MuonInfo->phi[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     Bmu2p[typesize] = b4P->P();
     Bmu2y[typesize] = b4P->Rapidity();
-    Double_t mu2px,mu2py,mu2pz,mu2E;
+    Float_t mu2px,mu2py,mu2pz,mu2E;
     mu2px = b4P->Px();
     mu2py = b4P->Py();
     mu2pz = b4P->Pz();
@@ -740,8 +671,8 @@ class BntupleBranches
       else mu2TMOneStationTight[typesize] = 0;
     */
     
-    double tk1px,tk1py,tk1pz,tk1E;
-    double tk2px,tk2py,tk2pz,tk2E;
+    float tk1px,tk1py,tk1pz,tk1E;
+    float tk2px,tk2py,tk2pz,tk2E;
     Btrk1Idx[typesize] = BInfo->rftk1_index[j];
     Btrk2Idx[typesize] = BInfo->rftk2_index[j];
     if(BInfo->type[j]==1 || BInfo->type[j]==2)
@@ -863,9 +794,9 @@ class BntupleBranches
         Bdoublety[typesize] = b4P->Rapidity();
         
         b4P->SetPtEtaPhiM(TrackInfo->pt[BInfo->rftk1_index[j]],TrackInfo->eta[BInfo->rftk1_index[j]],TrackInfo->phi[BInfo->rftk1_index[j]],KAON_MASS);
-        double tk1EK = b4P->E();
+        float tk1EK = b4P->E();
         b4P->SetPtEtaPhiM(TrackInfo->pt[BInfo->rftk2_index[j]],TrackInfo->eta[BInfo->rftk2_index[j]],TrackInfo->phi[BInfo->rftk2_index[j]],KAON_MASS);
-        double tk2EK = b4P->E();
+        float tk2EK = b4P->E();
         b4P->SetPxPyPzE(tk1px+tk2px,
                         tk1py+tk2py,
                         tk1pz+tk2pz,
@@ -939,9 +870,9 @@ class BntupleBranches
         Bdoublety[typesize] = b4P->Rapidity();
         
         b4P->SetPtEtaPhiM(TrackInfo->pt[BInfo->rftk1_index[j]],TrackInfo->eta[BInfo->rftk1_index[j]],TrackInfo->phi[BInfo->rftk1_index[j]],KAON_MASS);
-        double tk1EK = b4P->E();
+        float tk1EK = b4P->E();
         b4P->SetPtEtaPhiM(TrackInfo->pt[BInfo->rftk2_index[j]],TrackInfo->eta[BInfo->rftk2_index[j]],TrackInfo->phi[BInfo->rftk2_index[j]],KAON_MASS);
-        double tk2EK = b4P->E();
+        float tk2EK = b4P->E();
         b4P->SetPxPyPzE(tk1px+tk2px,
                         tk1py+tk2py,
                         tk1pz+tk2pz,
@@ -967,7 +898,7 @@ class BntupleBranches
         //int ujGenIdxMu1=-1;
         //int ujGenIdxMu2=-1;
         
-        double BId,MId,tk1Id,tk2Id;
+        float BId,MId,tk1Id,tk2Id;
         //tk1:positive, tk2:negtive
         if(BInfo->type[j]==1)
           {
@@ -1258,7 +1189,7 @@ class BntupleBranches
   
   bool signalGen(int Btype, int j, GenInfoBranches *GenInfo)
   {//{{{
-    double BId,MId,tk1Id,tk2Id;
+    float BId,MId,tk1Id,tk2Id;
     int twoTks;
     //tk1:positive, tk2:negtive
     if(Btype==1)
