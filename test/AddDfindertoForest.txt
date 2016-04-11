@@ -1,7 +1,7 @@
 1, Forest setup for CMSSW_7_5_8 from https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiForestSetup
 
-cmsrel CMSSW_7_5_8
-cd CMSSW_7_5_8/src
+cmsrel CMSSW_7_5_8_patch3
+cd CMSSW_7_5_8_patch3/src
 cmsenv
 git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
 
@@ -31,7 +31,7 @@ finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
 #default for D0 and Jet triggers, tk pt cut 8.0 GeV
 process.Dfinder = cms.EDAnalyzer("Dfinder",
     BSLabel = cms.InputTag("offlineBeamSpot"),
-    Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 
     GenLabel = cms.InputTag("genParticles"),
     HLTLabel = cms.InputTag("TriggerResults","","HLT"),
     MVAMapLabel = cms.string('hiGeneralTracks'),
@@ -42,7 +42,7 @@ process.Dfinder = cms.EDAnalyzer("Dfinder",
     TrackLabel = cms.InputTag("patTrackCands"),
     dCutSeparating_PtVal = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0),
     dEtaCut = cms.vdouble(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
-    dPtCut = cms.vdouble(0.5, 0.5, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 9.0, 9.0),
+    dPtCut = cms.vdouble(0.0, 0.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 9.0, 9.0),
     detailMode = cms.bool(False),
     doDntupleSkim = cms.bool(False),
     doTkPreCut = cms.bool(True),
@@ -52,7 +52,7 @@ process.Dfinder = cms.EDAnalyzer("Dfinder",
     alphaCut = cms.vdouble(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 999.0, 999.0, 999.0, 999.0),
     svpvDistanceCut_highptD = cms.vdouble(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0),
     svpvDistanceCut_lowptD = cms.vdouble(4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 0.0, 0.0, 0.0, 0.0),
-    tkEtaCut = cms.double(2.0),
+    tkEtaCut = cms.double(1.5),
     tkPtCut = cms.double(6.0),
     tktkRes_alphaCut = cms.vdouble(999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 0.2, 0.2, 0.2, 0.2),
     tktkRes_svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0),
@@ -62,7 +62,7 @@ process.Dfinder = cms.EDAnalyzer("Dfinder",
 
 # B: for PbPb Minbias (only for Minbias !!), need to change the track pt cut, add:
 
-process.Dfinder.tkPtCut = cms.double(0.7)
+process.Dfinder.tkPtCut = cms.double(0.7)  #will try track pt cut 0.5 GeV in future
 
 # C: Then add process.DfinderSequence to ana_step
 
@@ -70,13 +70,13 @@ process.ana_step = cms.Path(process.hltanalysis *
                             process.hltobject *
                             process.centralityBin *
                             process.hiEvtAnalyzer*
-                            process.jetSequences +
-                            process.ggHiNtuplizer +
-                            process.ggHiNtuplizerGED +
-                            process.pfcandAnalyzer +
+                            #process.jetSequences +
+                            #process.ggHiNtuplizer +
+                            #process.ggHiNtuplizerGED +
+                            #process.pfcandAnalyzer +
                             process.HiForest +
                             process.DfinderSequence +
-                            process.trackSequencesPbPb +
+                            #process.trackSequencesPbPb +
                             process.hcalNoise #+
                             #process.tupelPatSequence
                             )
@@ -146,8 +146,10 @@ process.ana_step = cms.Path(process.hltanalysis *
                             ##process.tupelPatSequence 
                             )
 
-6, dEtaCut is off now, if want to turn on it add
+6, if want to add rapidity cut on D0 candiates saved in Dfinder. In Bfinder/Bfinder/src/Dfinder.cc, add
+if( fabs( tktk_4vec.Rapidity() )  > 1.1 )   continue;
+just before "DInfo.index[DInfo.size]           = DInfo.size; //around line 1721"
 
-if(fabs(tktk_4vec.Eta()) > dEtaCut_[Dchannel_number-1])  continue;
-
-Here: https://github.com/taweiXcms/Bfinder/blob/Dfinder/Bfinder/src/Dfinder.cc#L1713
+In present pp and PbPb MB samples, there is D eta cut 1.5 (after fit) instead of rapidity cut. For PbPb MB, there is
+a new production with rapidity cut 1.1. But the difference should be small. And in future production, will stick to rapidity
+cut.
