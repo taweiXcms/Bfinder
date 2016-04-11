@@ -52,7 +52,7 @@ process.Dfinder = cms.EDAnalyzer("Dfinder",
     alphaCut = cms.vdouble(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 999.0, 999.0, 999.0, 999.0),
     svpvDistanceCut_highptD = cms.vdouble(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0),
     svpvDistanceCut_lowptD = cms.vdouble(4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 0.0, 0.0, 0.0, 0.0),
-    tkEtaCut = cms.double(1.5),
+    tkEtaCut = cms.double(1.5), #will update after the cut is decided
     tkPtCut = cms.double(6.0),
     tktkRes_alphaCut = cms.vdouble(999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 0.2, 0.2, 0.2, 0.2),
     tktkRes_svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0),
@@ -150,6 +150,7 @@ process.ana_step = cms.Path(process.hltanalysis *
 if( fabs( tktk_4vec.Rapidity() )  > 1.1 )   continue;
 just before "DInfo.index[DInfo.size]           = DInfo.size; //around line 1721"
 
-In present pp and PbPb MB samples, there is D eta cut 1.5 (after fit) instead of rapidity cut. For PbPb MB, there is
-a new production with rapidity cut 1.1. But the difference should be small. And in future production, will stick to rapidity
+In present pp or PbPb MB samples, there is D eta cut 1.5 (after fit) instead of rapidity cut. There is
+a new PbPb MB production with rapidity cut 1.1. But there should be nearly no difference because track eta cut 1.5
+(maybe a few percent difference in pt bin 1 to 2 GeV). And in future production, will stick to rapidity
 cut.
