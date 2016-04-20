@@ -4,9 +4,19 @@ using namespace std;
 #include "format.h"
 #include "Dntuple.h"
 
-int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=false)
+Bool_t istest = false;
+int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=false)
 {
+  if(istest)
+    {
+      infile="/store/group/phys_heavyions/HeavyFlavourRun2/DfinderRun2/MC_revised/Pythia8D0kpi_Dstarpt0p0_Pthat0_TuneCUETP8M1_5020GeV_GEN_SIM_PU_20160229/DfinderMC_PbPb_20160328_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_62_1_9Rs.root";
+      outfile="test.root";
+      REAL=false;
+      isPbPb=true;
+      skim=false;
+      checkMatching=true;
+      iseos=true;
+    }
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
   else cout<<"--- Processing - MC";
@@ -122,14 +132,16 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
 
 int main(int argc, char *argv[])
 {
-  if((argc != 3) && (argc != 4))
-  {
-    std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
-    return 1;
-  }
+  if(argc==3)
+    {
+      loop(argv[1], argv[2]);
+    }
+  else
+    {
+      std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
+      return 1;
+    }
   
-  if(argc == 3)
-    loop(argv[1], argv[2]);
   return 0;
 }
 
