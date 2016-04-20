@@ -4,9 +4,20 @@ using namespace std;
 #include "format.h"
 #include "Dntuple.h"
 
-int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Pythia8D0kpi_Dstarpt10p0_Pthat10_TuneCUETP8M1_5020GeV_GEN_SIM_20151212/DfinderMC_PbPb_20151229_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_40_1_u3j.root",
-         TString outfile="test.root", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=false)
+Bool_t istest = false;
+int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
 {
+  if(istest)
+    {
+      infile="/store/group/phys_heavyions/HeavyFlavourRun2/DfinderRun2/MC_revised/Pythia8D0kpi_Dstarpt0p0_Pthat0_TuneCUETP8M1_5020GeV_GEN_SIM_PU_20160229/DfinderMC_PbPb_20160328_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_62_1_9Rs.root";
+      outfile="test.root";
+      REAL=false;
+      isPbPb=true;
+      skim=false;
+      checkMatching=true;
+      iseos=true;
+    }
+
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
   else cout<<"--- Processing - MC";
@@ -17,7 +28,6 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   TString ifname;
   if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
   else ifname = infile;
-  if (!TFile::Open(ifname))   { cout << " fail to open file" << endl; return 0;}
   TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");  
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
@@ -31,7 +41,6 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   DInfoBranches       *DInfo = new DInfoBranches;
   GenInfoBranches     *GenInfo = new GenInfoBranches;
 
-  if(SkimHLTtree) SetHlttreestatus(hltroot, isPbPb);
   setHltTreeBranch(hltroot);
   setHiTreeBranch(hiroot);
 
@@ -43,15 +52,16 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
-  TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
+  TFile *outf = TFile::Open(Form("%s", outfile.Data()),"recreate");
+  //TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[12];
-  isDchannel[0] = 1; //k+pi-
-  isDchannel[1] = 1; //k-pi+
-  isDchannel[2] = 1; //k-pi+pi+
-  isDchannel[3] = 1; //k+pi-pi-
-  isDchannel[4] = 1; //k-pi-pi+pi+
-  isDchannel[5] = 1; //k+pi+pi-pi-
+  isDchannel[0] = 1;
+  isDchannel[1] = 1;
+  isDchannel[2] = 1;
+  isDchannel[3] = 1;
+  isDchannel[4] = 1;
+  isDchannel[5] = 1;
   isDchannel[6] = 1; 
   isDchannel[7] = 1; 
   isDchannel[8] = 1; 
@@ -60,15 +70,12 @@ int loop(TString infile="root://eoscms//eos/cms//store/user/twang/DfinderRun2/Py
   isDchannel[11] = 1;
 
   cout<<"--- Building trees"<<endl;
-  bool detailMode = true;
-  bool D0kpimode = true;
-  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1,D0kpimode,detailMode);
-  D0kpimode = false;
-  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2,D0kpimode,detailMode);
-  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3,D0kpimode,detailMode);
-  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4,D0kpimode,detailMode);
-  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5,D0kpimode,detailMode);
-  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6,D0kpimode,detailMode);
+  TTree* ntD1 = new TTree("ntDkpi","");           Dntuple->buildDBranch(ntD1);
+  TTree* ntD2 = new TTree("ntDkpipi","");         Dntuple->buildDBranch(ntD2);
+  TTree* ntD3 = new TTree("ntDkpipipi","");       Dntuple->buildDBranch(ntD3);
+  TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4);
+  TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
+  TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
   TTree* ntGen = new TTree("ntGen","");           Dntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
