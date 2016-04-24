@@ -1232,6 +1232,7 @@ class GenInfoBranches{//{{{
         float  mass        [MAX_GEN];
         int     pdgId       [MAX_GEN];
         int     status      [MAX_GEN];
+		int     collisionId [MAX_GEN];//to tell if it is from pythia event or hydjet event
         int     nMo         [MAX_GEN];
         int     nDa         [MAX_GEN];
         int     mo1         [MAX_GEN];
@@ -1251,6 +1252,7 @@ class GenInfoBranches{//{{{
             root->Branch("GenInfo.mass"         ,mass           ,"GenInfo.mass[GenInfo.size]/F");
             root->Branch("GenInfo.pdgId"        ,pdgId          ,"GenInfo.pdgId[GenInfo.size]/I");
             root->Branch("GenInfo.status"       ,status         ,"GenInfo.status[GenInfo.size]/I");
+            root->Branch("GenInfo.collisionId"  ,collisionId    ,"GenInfo.collisionId[GenInfo.size]/I");
             root->Branch("GenInfo.nMo"          ,nMo            ,"GenInfo.nMo[GenInfo.size]/I");
             root->Branch("GenInfo.nDa"          ,nDa            ,"GenInfo.nDa[GenInfo.size]/I");
             root->Branch("GenInfo.mo1"          ,mo1            ,"GenInfo.mo1[GenInfo.size]/I");
@@ -1271,6 +1273,7 @@ class GenInfoBranches{//{{{
             root->SetBranchAddress("GenInfo.mass"         ,mass           );
             root->SetBranchAddress("GenInfo.pdgId"        ,pdgId          );
             root->SetBranchAddress("GenInfo.status"       ,status         );
+            root->SetBranchAddress("GenInfo.collisionId"  ,collisionId    );
             root->SetBranchAddress("GenInfo.nMo"          ,nMo            );
             root->SetBranchAddress("GenInfo.nDa"          ,nDa            );
             root->SetBranchAddress("GenInfo.mo1"          ,mo1            );
