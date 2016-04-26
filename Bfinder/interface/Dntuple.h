@@ -198,6 +198,9 @@ class DntupleBranches
   float   Dgeneta[MAX_XB];
   float   Dgenphi[MAX_XB];
   float   Dgeny[MAX_XB];
+  int     DgencollisionId[MAX_XB];
+  float   DgenBAncestorpt[MAX_XB];
+  int     DgenBAncestorpdgId[MAX_XB];
   
   void buildDBranch(TTree* dnt, bool D0kpimode=false, bool detailMode=true)
   {
@@ -405,6 +408,9 @@ class DntupleBranches
     dnt->Branch("Dgeneta",Dgeneta,"Dgeneta[Dsize]/F");
     dnt->Branch("Dgenphi",Dgenphi,"Dgenphi[Dsize]/F");
     dnt->Branch("Dgeny",Dgeny,"Dgeny[Dsize]/F");
+    dnt->Branch("DgencollisionId",DgencollisionId,"DgencollisionId[Dsize]/I");
+    dnt->Branch("DgenBAncestorpt",DgenBAncestorpt,"DgenBAncestorpt[Dsize]/F");
+    dnt->Branch("DgenBAncestorpdgId",DgenBAncestorpdgId,"DgenBAncestorpdgId[Dsize]/I");
   }
   
   //GenInfo
@@ -413,8 +419,11 @@ class DntupleBranches
   float   Geta[MAX_GEN];
   float   Gphi[MAX_GEN];
   float   Gpt[MAX_GEN];
-  float   GpdgId[MAX_GEN];
+  int     GpdgId[MAX_GEN];
+  int     GcollisionId[MAX_GEN];
   int     GisSignal[MAX_GEN];
+  float   GBAncestorpt[MAX_GEN];
+  int     GBAncestorpdgId[MAX_GEN];
   float   Gtk1pt[MAX_GEN];
   float   Gtk1eta[MAX_GEN];
   float   Gtk1y[MAX_GEN];
@@ -455,8 +464,11 @@ class DntupleBranches
     nt->Branch("Geta",Geta,"Geta[Gsize]/F");
     nt->Branch("Gphi",Gphi,"Gphi[Gsize]/F");
     nt->Branch("Gpt",Gpt,"Gpt[Gsize]/F");
-    nt->Branch("GpdgId",GpdgId,"GpdgId[Gsize]/F");
+    nt->Branch("GpdgId",GpdgId,"GpdgId[Gsize]/I");
+    nt->Branch("GcollisionId",GcollisionId,"GcollisionId[Gsize]/I");
     nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/I");
+	nt->Branch("GBAncestorpt",GBAncestorpt,"GBAncestorpt[Gsize]/F");
+	nt->Branch("GBAncestorpdgId",GBAncestorpdgId,"GBAncestorpdgId[Gsize]/I");
     nt->Branch("Gtk1pt",Gtk1pt,"Gtk1pt[Gsize]/F");
     nt->Branch("Gtk1eta",Gtk1eta,"Gtk1eta[Gsize]/F");
     nt->Branch("Gtk1y",Gtk1y,"Gtk1y[Gsize]/F");
@@ -584,6 +596,7 @@ class DntupleBranches
     TLorentzVector* bGen = new TLorentzVector;
     int gt=0,sigtype=0;
     int gsize=0;
+	int BAncestorindex=-99;
     Gsize = 0;
     for(int j=0;j<GenInfo->size;j++)
       {
@@ -596,6 +609,7 @@ class DntupleBranches
         Geta[gsize] = GenInfo->eta[j];
         Gphi[gsize] = GenInfo->phi[j];
         GpdgId[gsize] = GenInfo->pdgId[j];
+        GcollisionId[gsize] = GenInfo->collisionId[j];
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;
@@ -608,6 +622,14 @@ class DntupleBranches
               }
           }
         GisSignal[gsize] = sigtype;
+		GBAncestorpt[gsize] = -99.;
+		GBAncestorpdgId[gsize] = 0;
+		BAncestorindex = findBAncestor(j, GenInfo);
+		if( BAncestorindex > 0 )
+		{
+			GBAncestorpt[gsize] = GenInfo->pt[BAncestorindex];
+			GBAncestorpdgId[gsize] = GenInfo->pdgId[BAncestorindex];
+		}
         Gtk1pt[gsize] = -1;
         Gtk1eta[gsize] = -20;
         Gtk1phi[gsize] = -20;
@@ -1264,6 +1286,9 @@ class DntupleBranches
     Dgeneta[typesize] = -20;
     Dgenphi[typesize] = -20;
     Dgeny[typesize] = -1;
+	DgenBAncestorpt[typesize] = -99;
+	DgenBAncestorpdgId[typesize] = 0;
+	DgencollisionId[typesize] = -99;
     if(!REAL)
       {
         if(DInfo->type[j]==1||DInfo->type[j]==2)
@@ -1574,15 +1599,45 @@ class DntupleBranches
                 Dgenpt[typesize] = GenInfo->pt[DgenIndex[typesize]];
                 Dgeneta[typesize] = GenInfo->eta[DgenIndex[typesize]];
                 Dgenphi[typesize] = GenInfo->phi[DgenIndex[typesize]];
+				DgencollisionId[typesize] = GenInfo->collisionId[DgenIndex[typesize]];
                 b4P->SetXYZM(GenInfo->pt[DgenIndex[typesize]]*cos(GenInfo->phi[DgenIndex[typesize]]),
                              GenInfo->pt[DgenIndex[typesize]]*sin(GenInfo->phi[DgenIndex[typesize]]),
                              GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
                              GenInfo->mass[DgenIndex[typesize]]);
                 Dgeny[typesize] = b4P->Rapidity();
+				int DgenBAncestorindex = findBAncestor(DgenIndex[typesize], GenInfo);
+				if( DgenBAncestorindex > 0 )
+				{
+					DgenBAncestorpt[typesize] = GenInfo->pt[DgenBAncestorindex];
+					DgenBAncestorpdgId[typesize] = GenInfo->pdgId[DgenBAncestorindex];
+				}
               }
           }
       }//if(!real)
   }//fillDtree
+  
+  int findBAncestor(int j, GenInfoBranches *GenInfo)
+  {
+	  int BAncestorindex = -999;
+	  if( GenInfo->nMo[j] == 0 ) return BAncestorindex;
+
+	  int motherindex = -999;
+	  int daughterindex = j;
+	  int igeneration = 0;//to control how many generations loop up, 50 is big enough. To avoid infinite loop
+	  //just work for 1 mom case yet, but more than 99.9% particle just have one mom
+	  //and in B->D decay chain, all particles should just have one mom (they are not from collision). Should be checked
+	  while( GenInfo->nMo[daughterindex] == 1 && BAncestorindex < 0 && igeneration < 50 )
+	  {
+		  motherindex = GenInfo->mo1[j];
+		  if( ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 500  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 600 ) || 
+              ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 5000  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 6000 ) )
+			  BAncestorindex = motherindex;
+		  igeneration++;
+		  daughterindex = motherindex;
+	  }
+
+	  return BAncestorindex;
+  }
   
   bool isDsignalGen(int dmesontype, int j, GenInfoBranches *GenInfo)
   {

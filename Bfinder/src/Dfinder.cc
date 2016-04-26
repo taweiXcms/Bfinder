@@ -943,6 +943,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.mass[GenInfo.size]          = it_gen->mass();
                 GenInfo.pdgId[GenInfo.size]         = it_gen->pdgId();
                 GenInfo.status[GenInfo.size]        = it_gen->status();
+                GenInfo.collisionId[GenInfo.size]   = it_gen->collisionId();
                 GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
                 GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
                 //GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
