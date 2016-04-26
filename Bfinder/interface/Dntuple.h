@@ -1629,8 +1629,8 @@ class DntupleBranches
 	  while( GenInfo->nMo[daughterindex] == 1 && BAncestorindex < 0 && igeneration < 50 )
 	  {
 		  motherindex = GenInfo->mo1[j];
-		  if( ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 500  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 600 ) || 
-              ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 5000  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 6000 ) )
+		  if( motherindex < 0 ) break;
+		  if( ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 500  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 600 ) || ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 5000  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 6000 ) )
 			  BAncestorindex = motherindex;
 		  igeneration++;
 		  daughterindex = motherindex;
