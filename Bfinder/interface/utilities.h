@@ -77,6 +77,22 @@ class CommonFuncts{//{{{
         }
     }
 
+	bool GetDescendant(const reco::Candidate* p, int PDGprefix)
+	{
+		bool Saveit = false;
+		if( p->numberOfDaughters() == 0 ) return false; //not necessary, keep it to make clear
+		const reco::Candidate * daughterparticle = NULL;
+		for( unsigned int idau = 0; idau < p->numberOfDaughters(); idau++ )
+		{
+			daughterparticle = p->daughter(idau);
+			if( abs( int(daughterparticle->pdgId()/100) % 100 ) == PDGprefix ) return true;
+			if( daughterparticle == p )   continue; //protection
+			Saveit = GetDescendant(daughterparticle, PDGprefix);
+			if( Saveit )  return true;
+		}
+		return Saveit;
+	}
+
     float getParticleSigma(double mass)
     {
         if(mass == ELECTRON_MASS)
