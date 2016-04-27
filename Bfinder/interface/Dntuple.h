@@ -1628,7 +1628,7 @@ class DntupleBranches
 	  //and in B->D decay chain, all particles should just have one mom (they are not from collision). Should be checked
 	  while( GenInfo->nMo[daughterindex] == 1 && BAncestorindex < 0 && igeneration < 50 )
 	  {
-		  motherindex = GenInfo->mo1[j];
+		  motherindex = GenInfo->mo1[daughterindex];
 		  if( motherindex < 0 ) break;
 		  if( ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 500  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 600 ) || ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 5000  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 6000 ) )
 			  BAncestorindex = motherindex;
