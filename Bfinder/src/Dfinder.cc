@@ -897,11 +897,13 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //std::cout<<Myself->pdgId()<<"-----------"<<std::endl;
                     isGenSignal = (Functs.GetAncestor(Myself, 5) | Functs.GetAncestor(Myself, 4));
                 }//all pi and K from b or c meson
+				
 				if( !isGenSignal && abs(it_gen->pdgId()) > 400 ){ //should be OK to require the PID > 400
 					reco::GenParticle _deRef = (*it_gen);
 					reco::Candidate* Myself = dynamic_cast<reco::Candidate*>(&_deRef);
 					isGenSignal = Functs.GetDescendant(Myself, 4);
 				}//other particles (with pid > 400) have D meson in descendant chain
+
                 if (!isGenSignal) continue;
 
                 /*deprecated
