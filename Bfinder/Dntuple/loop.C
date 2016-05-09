@@ -53,7 +53,7 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
 
   Long64_t nentries = root->GetEntries();
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
-  TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
+  TFile* outf = TFile::Open(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[12];
   isDchannel[0] = 1; //k+pi-
