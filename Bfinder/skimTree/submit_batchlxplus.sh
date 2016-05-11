@@ -1,4 +1,5 @@
-DIRECTORYOUTPUT="root://eoscms//eos/cms//store/group/phys_heavyions/wangj/DntupleData/ntD_EvtBase_20160405_HIHardProbes_DfinderData_PbPb_20160402_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_skimhltbranches"
+#DIRECTORYOUTPUT="root://eoscms//eos/cms//store/group/phys_heavyions/wangj/DntupleData/ntD_EvtBase_20160405_HIHardProbes_DfinderData_PbPb_20160402_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_skimhltbranches"
+DIRECTORYOUTPUT="root://eoscms//eos/cms//store/group/phys_heavyions/HeavyFlavourRun2/DntupleData/ntD_EvtBase_20160509_HIHardProbes_DfinderData_PbPb_20160402_dPt0tkPt2p5_D0Dstar3p5p_skimhltbranches"
 NAME="skimTree_Dzero.C"
 isPbPb=1
 

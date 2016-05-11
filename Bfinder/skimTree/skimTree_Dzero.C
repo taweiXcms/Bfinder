@@ -1,9 +1,11 @@
 using namespace std;
 #include "skimTree_Dzero.h"
 
-int skimTree_Dzero(TString ifname="root://eoscms//eos/cms//store/group/phys_heavyions/wangj/DntupleData/ntD_EvtBase_20160425_HighPtJet80_DfinderData_pp_20160329_dPt0tkPt0p5_D0Dstar/ntuple_69.root",
+int skimTree_Dzero(
+//                   TString ifname="root://eoscms//eos/cms//store/group/phys_heavyions/wangj/DntupleData/ntD_EvtBase_20160425_HighPtJet80_DfinderData_pp_20160329_dPt0tkPt0p5_D0Dstar/ntuple_69.root",
+                   TString ifname="root://eoscms//eos/cms//store/group/phys_heavyions/wangj/DntupleData/ntD_EvtBase_20160405_HIHardProbes_DfinderData_PbPb_20160402_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON/ntuple_987.root",
                    TString ofname="test.root",
-                   Int_t isPbPb=0,
+                   Int_t isPbPb=1,
                    Bool_t skimbranch=true,
                    Bool_t skimevents=true)
 {

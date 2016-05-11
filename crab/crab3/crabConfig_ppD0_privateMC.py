@@ -4,7 +4,6 @@ from CRABClient.UserUtilities import config
 config = config()
 config.General.transferOutputs = True
 config.General.requestName = 'DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar'
-
 #config.General.workArea = 'crab_projects_ppD0pt0'
 #config.General.workArea = 'crab_projects_ppD0pt5'
 #config.General.workArea = 'crab_projects_ppD0pt10'
