@@ -19,3 +19,19 @@ void setHiTreeBranch(TTree* hitreeroot)
   hitreeroot->SetBranchAddress("evt",&Bf_HiTree_Evt);
   hitreeroot->SetBranchAddress("lumi",&Bf_HiTree_Lumi);
 }
+void SetHlttreestatus(TTree * hltroot, bool isPbPb)
+{
+    hltroot->SetBranchStatus("*",0);
+    hltroot->SetBranchStatus("Event",1);
+    hltroot->SetBranchStatus("LumiBlock",1);
+    hltroot->SetBranchStatus("Run",1);
+
+    if( isPbPb )
+    {
+        hltroot->SetBranchStatus("*DoubleMu*",1);
+    }
+    else
+    {
+        hltroot->SetBranchStatus("*DoubleMu*",1);
+    }
+}

@@ -7,7 +7,7 @@ using namespace std;
 Bool_t istest = false;
 int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", 
          TString outfile="test.root", 
-         Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1,  Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false)
+         Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1,  Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=true)
 {
   if(istest)
     {
@@ -44,6 +44,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   BInfoBranches       *BInfo = new BInfoBranches;
   GenInfoBranches     *GenInfo = new GenInfoBranches;
 
+  if(SkimHLTtree) SetHlttreestatus(hltroot, isPbPb);
   setHltBranch(hltroot);
   setHiTreeBranch(hiroot);
 
