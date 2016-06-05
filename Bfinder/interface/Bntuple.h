@@ -64,6 +64,7 @@ class BntupleBranches
   float   BsvpvDisErr[MAX_XB];
   float   BsvpvDistance_2D[MAX_XB];
   float   BsvpvDisErr_2D[MAX_XB];
+  int     Bisbestchi2[MAX_XB];
   
   //BInfo.muonInfo
   float   Bmu1pt[MAX_XB];
@@ -94,6 +95,12 @@ class BntupleBranches
   bool    Bmu2isGlobalMuon[MAX_XB];
   bool    Bmu1TMOneStationTight[MAX_XB];
   bool    Bmu2TMOneStationTight[MAX_XB];
+  int     Bmu1striphit[MAX_XB];
+  int     Bmu2striphit[MAX_XB];
+  int     Bmu1pixelhit[MAX_XB];
+  int     Bmu2pixelhit[MAX_XB];
+  int     Bmu1trackerhit[MAX_XB];
+  int     Bmu2trackerhit[MAX_XB];
   int     Bmu1InPixelLayer[MAX_XB];
   int     Bmu2InPixelLayer[MAX_XB];
   int     Bmu1InStripLayer[MAX_XB];
@@ -244,6 +251,7 @@ class BntupleBranches
     nt->Branch("BsvpvDistance_2D",BsvpvDistance_2D,"BsvpvDistance_2D[Bsize]/F");
     nt->Branch("BsvpvDisErr_2D",BsvpvDisErr_2D,"BsvpvDisErr_2D[Bsize]/F");
     nt->Branch("BMaxDoca",BMaxDoca,"BMaxDoca[Bsize]/F");
+    nt->Branch("Bisbestchi2",Bisbestchi2,"Bisbestchi2[Bsize]/I");
     
     //BInfo.trkInfo
     nt->Branch("Btrk1Idx",Btrk1Idx,"Btrk1Idx[Bsize]/I");
@@ -328,6 +336,12 @@ class BntupleBranches
     nt->Branch("Bmu2isGlobalMuon",Bmu2isGlobalMuon,"Bmu2isGlobalMuon[Bsize]/O");
     nt->Branch("Bmu1TMOneStationTight",Bmu1TMOneStationTight,"Bmu1TMOneStationTight[Bsize]/O");
     nt->Branch("Bmu2TMOneStationTight",Bmu2TMOneStationTight,"Bmu2TMOneStationTight[Bsize]/O");
+    nt->Branch("Bmu1striphit",Bmu1striphit,"Bmu1striphit[Bsize]/I");
+    nt->Branch("Bmu2striphit",Bmu2striphit,"Bmu2striphit[Bsize]/I");
+    nt->Branch("Bmu1pixelhit",Bmu1pixelhit,"Bmu1pixelhit[Bsize]/I");
+    nt->Branch("Bmu2pixelhit",Bmu2pixelhit,"Bmu2pixelhit[Bsize]/I");
+    nt->Branch("Bmu1trackerhit",Bmu1trackerhit,"Bmu1trackerhit[Bsize]/I");
+    nt->Branch("Bmu2trackerhit",Bmu2trackerhit,"Bmu2trackerhit[Bsize]/I");
     nt->Branch("Bmu1InPixelLayer",Bmu1InPixelLayer,"Bmu1InPixelLayer[Bsize]/I");
     nt->Branch("Bmu2InPixelLayer",Bmu2InPixelLayer,"Bmu2InPixelLayer[Bsize]/I");
     nt->Branch("Bmu1InStripLayer",Bmu1InStripLayer,"Bmu1InStripLayer[Bsize]/I");
@@ -429,15 +443,17 @@ class BntupleBranches
           }
         if(ifchannel[t]==1)
           {
+            int bestindex=-1;
             for(int j=0;j<BInfo->size;j++)
               {
                 if(skim)
                   {
-                    if(BInfo->pt[j]<3.) continue;
+                    //if(BInfo->pt[j]<3.) continue;
+                    if(BInfo->pt[j]<10.) continue;
                   }
                 if(BInfo->type[j]==(t+1))
                   {
-                    fillTree(bP,bVtx,b4P,j,Btypesize[tidx],tk1mass[t],tk2mass[t],REAL, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo);
+                    fillTree(bP,bVtx,b4P,j,Btypesize[tidx],tk1mass[t],tk2mass[t],REAL, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, bestindex);
                     Btypesize[tidx]++;
                   }
               }
@@ -552,7 +568,7 @@ class BntupleBranches
     BSWidthYErr = EvtInfo->BSWidthYErr;
   }
   
-  void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, float track_mass1, float track_mass2, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo)
+  void fillTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, int j, int typesize, float track_mass1, float track_mass2, bool REAL, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, int &bestindex)
   {//{{{
     //Event Info
     Bsize = typesize+1;
@@ -634,6 +650,12 @@ class BntupleBranches
     Bmu2isGlobalMuon[typesize] = MuonInfo->isGlobalMuon[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     Bmu1TMOneStationTight[typesize] = MuonInfo->TMOneStationTight[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu2TMOneStationTight[typesize] = MuonInfo->TMOneStationTight[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1striphit[typesize] = MuonInfo->i_striphit[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu1pixelhit[typesize] = MuonInfo->i_pixelhit[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu1trackerhit[typesize] = Bmu1striphit[typesize]+Bmu1pixelhit[typesize];
+    Bmu2striphit[typesize] = MuonInfo->i_striphit[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu2pixelhit[typesize] = MuonInfo->i_pixelhit[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu2trackerhit[typesize] = Bmu2striphit[typesize]+Bmu2pixelhit[typesize];
     Bmu1InPixelLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu2InPixelLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     Bmu1InStripLayer[typesize] = MuonInfo->i_nStripLayer[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
@@ -725,6 +747,19 @@ class BntupleBranches
         Bdoubleteta[typesize] = -20;
         Bdoubletphi[typesize] = -20;
         Bdoublety[typesize] = -1;
+        //get best chi2 index
+        Bisbestchi2[typesize] = -1;
+        if(fabs(By[typesize])<2.4){// someselection
+          if(bestindex == -1) {
+            bestindex = typesize;
+            Bisbestchi2[typesize] = 1;
+          }
+          else if(Bchi2cl[typesize] > Bchi2cl[bestindex]){
+            Bisbestchi2[bestindex] = -1;
+            bestindex = typesize;
+            Bisbestchi2[typesize] = 1;
+          }
+        }
       }  
     else if(BInfo->type[j]==5)
       {
