@@ -611,6 +611,7 @@ public:
     int	    size;
     int	    index[MAX_XB];
     float	mass[MAX_XB];
+    float	unfitted_mass[MAX_XB];
     float	pt[MAX_XB];
     float	eta[MAX_XB];
     float	phi[MAX_XB];
@@ -702,6 +703,7 @@ public:
         root->Branch("BInfo.size"             , &size          , "BInfo.size/I"			);
         root->Branch("BInfo.index"            , index          , "BInfo.index[BInfo.size]/I"		);
         root->Branch("BInfo.mass"             , mass           , "BInfo.mass[BInfo.size]/F"		);
+        root->Branch("BInfo.unfitted_mass"    , unfitted_mass  , "BInfo.unfitted_mass[BInfo.size]/F");
         root->Branch("BInfo.pt"               , pt             , "BInfo.pt[BInfo.size]/F"		);
         root->Branch("BInfo.eta"              , eta            , "BInfo.eta[BInfo.size]/F"		);
         root->Branch("BInfo.phi"              , phi            , "BInfo.phi[BInfo.size]/F"		);
@@ -814,6 +816,7 @@ public:
         root->SetBranchAddress("BInfo.size"            ,&size        );
         root->SetBranchAddress("BInfo.index"           ,index       	);
         root->SetBranchAddress("BInfo.mass"		    ,mass		);
+        root->SetBranchAddress("BInfo.unfitted_mass",unfitted_mass		);
         root->SetBranchAddress("BInfo.pt"		    ,pt		);
         root->SetBranchAddress("BInfo.eta"		    ,eta		);
         root->SetBranchAddress("BInfo.phi"		    ,phi		);

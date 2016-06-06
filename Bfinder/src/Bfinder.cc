@@ -839,7 +839,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + K
                             //////////////////////////////////////////////////////////////////////////
                             //float mass_window[2] = {4.3, 6.4};
-                            float mass_window[2] = {5., 6.};
+                            //float mass_window[2] = {5., 6.};
+                            float mass_window[2] = {4.5, 6.5};
                             if(Bchannel_[0] == 1){
                                 BranchOut2MuTk(
                                     BInfo,
@@ -995,8 +996,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             //mass_window[0] = 3;
                             //mass_window[1] = 6.4;
                             //TkTk_window = 1.6;
-                            mass_window[0] = 3.4;
-                            mass_window[1] = 4.2;
+                            //mass_window[0] = 3.4;
+                            //mass_window[1] = 4.2;
+                            mass_window[0] = 2.5;
+                            mass_window[1] = 4.5;
                             TkTk_window = 0;
                             if(Bchannel_[6] == 1){
                                 BranchOut2MuX_XtoTkTk(
@@ -1393,6 +1396,7 @@ void Bfinder::BranchOut2MuTk(
       
       BInfo.index[BInfo.size]   = BInfo.size;
       BInfo.mass[BInfo.size]    = xb_4vec.Mag();
+      BInfo.unfitted_mass[BInfo.size] = (v4_mu1+v4_mu2+v4_tk1).Mag();
       BInfo.pt[BInfo.size]    = xb_4vec.Pt();
       BInfo.eta[BInfo.size]    = xb_4vec.Eta();
       BInfo.phi[BInfo.size]    = xb_4vec.Phi();
@@ -1648,6 +1652,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             
             BInfo.index[BInfo.size]   = BInfo.size;
             BInfo.mass[BInfo.size]    = xb_4vec.Mag();
+            BInfo.unfitted_mass[BInfo.size] = (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag();
             BInfo.pt[BInfo.size]    = xb_4vec.Pt();
             BInfo.eta[BInfo.size]    = xb_4vec.Eta();
             BInfo.phi[BInfo.size]    = xb_4vec.Phi();

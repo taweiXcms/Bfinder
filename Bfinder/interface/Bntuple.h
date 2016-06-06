@@ -107,6 +107,8 @@ class BntupleBranches
   int     Bmu2InStripLayer[MAX_XB];
   int     Bmu1InTrackerLayer[MAX_XB];
   int     Bmu2InTrackerLayer[MAX_XB];
+  int     Bmu1TrkQuality[MAX_XB];
+  int     Bmu2TrkQuality[MAX_XB];
   
   //BInfo.mumuInfo
   float   Bmumumass[MAX_XB];
@@ -141,8 +143,12 @@ class BntupleBranches
   float   Btrk2PhiErr[MAX_XB];
   float   Btrk1Y[MAX_XB];
   float   Btrk2Y[MAX_XB];
+  float   Btrk1Dz[MAX_XB];
+  float   Btrk2Dz[MAX_XB];
   float   Btrk1Dxy[MAX_XB];
   float   Btrk2Dxy[MAX_XB];
+  float   Btrk1D0[MAX_XB];
+  float   Btrk2D0[MAX_XB];
   float   Btrk1D0Err[MAX_XB];
   float   Btrk2D0Err[MAX_XB];
   float   Btrk1PixelHit[MAX_XB];
@@ -270,8 +276,12 @@ class BntupleBranches
     nt->Branch("Btrk2PhiErr",Btrk2PhiErr,"Btrk2PhiErr[Bsize]/F");
     nt->Branch("Btrk1Y",Btrk1Y,"Btrk1Y[Bsize]/F");  
     nt->Branch("Btrk2Y",Btrk2Y,"Btrk2Y[Bsize]/F");  
+    nt->Branch("Btrk1Dz",Btrk1Dz,"Btrk1Dz[Bsize]/F");
+    nt->Branch("Btrk2Dz",Btrk2Dz,"Btrk2Dz[Bsize]/F");
     nt->Branch("Btrk1Dxy",Btrk1Dxy,"Btrk1Dxy[Bsize]/F");
     nt->Branch("Btrk2Dxy",Btrk2Dxy,"Btrk2Dxy[Bsize]/F");
+    nt->Branch("Btrk1D0",Btrk1D0,"Btrk1D0[Bsize]/F");
+    nt->Branch("Btrk2D0",Btrk2D0,"Btrk2D0[Bsize]/F");
     nt->Branch("Btrk1D0Err",Btrk1D0Err,"Btrk1D0Err[Bsize]/F");
     nt->Branch("Btrk2D0Err",Btrk2D0Err,"Btrk2D0Err[Bsize]/F");
     nt->Branch("Btrk1PixelHit",Btrk1PixelHit,"Btrk1PixelHit[Bsize]/F");
@@ -348,6 +358,8 @@ class BntupleBranches
     nt->Branch("Bmu2InStripLayer",Bmu2InStripLayer,"Bmu2InStripLayer[Bsize]/I");
     nt->Branch("Bmu1InTrackerLayer",Bmu1InTrackerLayer,"Bmu1InTrackerLayer[Bsize]/I");
     nt->Branch("Bmu2InTrackerLayer",Bmu2InTrackerLayer,"Bmu2InTrackerLayer[Bsize]/I");
+    nt->Branch("Bmu1TrkQuality",Bmu1TrkQuality,"Bmu1TrkQuality[Bsize]/I");
+    nt->Branch("Bmu2TrkQuality",Bmu2TrkQuality,"Bmu2TrkQuality[Bsize]/I");
     nt->Branch("Bmumumass",Bmumumass,"Bmumumass[Bsize]/F");
     nt->Branch("Bmumueta",Bmumueta,"Bmumueta[Bsize]/F");
     nt->Branch("Bmumuphi",Bmumuphi,"Bmumuphi[Bsize]/F");
@@ -662,6 +674,8 @@ class BntupleBranches
     Bmu2InStripLayer[typesize] = MuonInfo->i_nStripLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     Bmu1InTrackerLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]] + MuonInfo->i_nStripLayer[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu2InTrackerLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]] + MuonInfo->i_nStripLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu2TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     b4P->SetPxPyPzE(mu1px+mu2px,
                     mu1py+mu2py,
                     mu1pz+mu2pz,
@@ -707,7 +721,9 @@ class BntupleBranches
         Btrk1EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk1_index[j]];
         Btrk1PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk1_index[j]];
         Btrk1Y[typesize] = b4P->Rapidity();
+        Btrk1Dz[typesize] = TrackInfo->dzPV[BInfo->rftk1_index[j]];
         Btrk1Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk1_index[j]];
+        Btrk1D0[typesize] = TrackInfo->d0[BInfo->rftk1_index[j]];
         Btrk1D0Err[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
         Btrk1PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk1_index[j]];
         Btrk1StripHit[typesize] = TrackInfo->striphit[BInfo->rftk1_index[j]];
@@ -725,7 +741,9 @@ class BntupleBranches
         Btrk2EtaErr[typesize] = 0;
         Btrk2PhiErr[typesize] = 0;
         Btrk2Y[typesize] = -1;
+        Btrk2Dz[typesize] = -1;
         Btrk2Dxy[typesize] = -1;
+        Btrk2D0[typesize] = -1;
         Btrk2D0Err[typesize] = -1;
         Btrk2PixelHit[typesize] = -1;
         Btrk2StripHit[typesize] = -1;
@@ -771,7 +789,9 @@ class BntupleBranches
         Btrk1EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk2_index[j]];
         Btrk1PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk2_index[j]];
         Btrk1Y[typesize] = b4P->Rapidity();
+        Btrk1Dz[typesize] = TrackInfo->dzPV[BInfo->rftk2_index[j]];
         Btrk1Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk2_index[j]];
+        Btrk1D0[typesize] = TrackInfo->d0[BInfo->rftk2_index[j]];
         Btrk1D0Err[typesize] = TrackInfo->d0error[BInfo->rftk2_index[j]];
         Btrk1PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk2_index[j]];
         Btrk1StripHit[typesize] = TrackInfo->striphit[BInfo->rftk2_index[j]];
@@ -794,8 +814,10 @@ class BntupleBranches
         Btrk2EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk1_index[j]];
         Btrk2PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk1_index[j]];
         Btrk2Y[typesize] = b4P->Rapidity();
+        Btrk2Dz[typesize] = TrackInfo->dzPV[BInfo->rftk1_index[j]];
         Btrk2Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk1_index[j]];
-        Btrk2D0Err[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
+        Btrk2D0[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
+        Btrk2D0Err[typesize] = TrackInfo->d0[BInfo->rftk1_index[j]];
         Btrk2PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk1_index[j]];
         Btrk2StripHit[typesize] = TrackInfo->striphit[BInfo->rftk1_index[j]];
         Btrk2nPixelLayer[typesize] = TrackInfo->nPixelLayer[BInfo->rftk1_index[j]];
@@ -848,7 +870,9 @@ class BntupleBranches
         Btrk1EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk1_index[j]];
         Btrk1PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk1_index[j]];
         Btrk1Y[typesize] = b4P->Rapidity();
+        Btrk1Dz[typesize] = TrackInfo->dzPV[BInfo->rftk1_index[j]];
         Btrk1Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk1_index[j]];
+        Btrk1D0[typesize] = TrackInfo->d0[BInfo->rftk1_index[j]];
         Btrk1D0Err[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
         Btrk1PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk1_index[j]];
         Btrk1StripHit[typesize] = TrackInfo->striphit[BInfo->rftk1_index[j]];
@@ -871,7 +895,9 @@ class BntupleBranches
         Btrk2EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk2_index[j]];
         Btrk2PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk2_index[j]];
         Btrk2Y[typesize] = b4P->Rapidity();
+        Btrk2Dz[typesize] = TrackInfo->dzPV[BInfo->rftk2_index[j]];
         Btrk2Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk2_index[j]];
+        Btrk2D0[typesize] = TrackInfo->d0[BInfo->rftk2_index[j]];
         Btrk2D0Err[typesize] = TrackInfo->d0error[BInfo->rftk2_index[j]];
         Btrk2PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk2_index[j]];
         Btrk2StripHit[typesize] = TrackInfo->striphit[BInfo->rftk2_index[j]];

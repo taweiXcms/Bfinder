@@ -13,7 +13,7 @@ mkdir $LOGFOLDER
 
 g++ $NAME $(root-config --cflags --libs) -Wall -O2 -o "${NAME/%.C/}.exe"
 
-eos ls $INPUTDIR  | awk '{print "" $0}' >> mylistfinal.txt
+eos ls $INPUTDIR | grep root | awk '{print "" $0}' >> mylistfinal.txt
 
 maxf=1000 ;
 count=0 ; 
