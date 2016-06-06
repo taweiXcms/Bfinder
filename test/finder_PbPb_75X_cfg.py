@@ -214,7 +214,10 @@ if PbPbBdefault and not PbPbDMBdefault and not PbPbDHPdefault:
     process.Bfinder.tkPtCut = cms.double(0.8)#before fit
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
     process.Bfinder.bPtCut = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
-    process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
+    process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 0, 0, 0, 0)
+    process.Bfinder.doTkPreCut = cms.bool(False)
+    process.Bfinder.MuonTriggerMatchingPath = cms.vstring("HLT_HIL1DoubleMu0_v*", "HLT_HIL2DoubleMu0_NHitQ_v*", "HLT_HIL1DoubleMu0_part*")
+    process.Bfinder.makeBntuple = cms.bool(False)
     process.p = cms.Path(process.BfinderSequence)
 ## PbPb Dfinder setting on HardProbe
 if PbPbDHPdefault and not PbPbDMBdefault and not PbPbBdefault:

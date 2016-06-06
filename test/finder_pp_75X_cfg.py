@@ -229,7 +229,10 @@ if ppBdefault and not ppDMBdefault and not ppDHFdefault and not ppD0DstarV2:
     process.Bfinder.tkPtCut = cms.double(0.5)#before fit
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
     process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
-    process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
+    process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 0, 0, 0, 0)
+    process.Bfinder.doTkPreCut = cms.bool(False)
+    process.Bfinder.MuonTriggerMatchingPath = cms.vstring("HLT_HIL1DoubleMu0_v*", "HLT_HIL1DoubleMu10_v*", "HLT_HIL2DoubleMu0_NHitQ_v*", "HLT_HIL3DoubleMu0_OS_m2p5to4p5_v*")
+    process.Bfinder.makeBntuple = cms.bool(False)
     process.p = cms.Path(process.BfinderSequence)
 ## pp Dfinder setting on HeavyFlavor
 if ppDHFdefault and not ppDMBdefault and not ppBdefault and not ppD0DstarV2:
