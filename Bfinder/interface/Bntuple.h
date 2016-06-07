@@ -42,6 +42,7 @@ class BntupleBranches
   int      Bindex[MAX_XB];
   int      Btype[MAX_XB];
   float   Bmass[MAX_XB];
+  float   Bmass_unfitted[MAX_XB];
   float   Bpt[MAX_XB];
   float   Beta[MAX_XB];
   float   Bphi[MAX_XB];
@@ -235,6 +236,7 @@ class BntupleBranches
     nt->Branch("Bindex",Bindex,"Bindex[Bsize]/I");
     nt->Branch("Btype",Btype,"Btype[Bsize]/I");
     nt->Branch("Bmass",Bmass,"Bmass[Bsize]/F");
+    nt->Branch("Bmass_unfitted",Bmass_unfitted,"Bmass_unfitted[Bsize]/F");
     nt->Branch("Bpt",Bpt,"Bpt[Bsize]/F");
     nt->Branch("Beta",Beta,"Beta[Bsize]/F");
     nt->Branch("Bphi",Bphi,"Bphi[Bsize]/F");
@@ -593,6 +595,7 @@ class BntupleBranches
     Bindex[typesize] = typesize;
     Btype[typesize] = BInfo->type[j];
     Bmass[typesize] = BInfo->mass[j];
+    Bmass_unfitted[typesize] = BInfo->unfitted_mass[j];
     Bpt[typesize] = BInfo->pt[j];
     Beta[typesize] = BInfo->eta[j];
     Bphi[typesize] = BInfo->phi[j];
