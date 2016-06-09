@@ -464,6 +464,7 @@ class BntupleBranches
                   {
                     //if(BInfo->pt[j]<3.) continue;
                     if(BInfo->pt[j]<10.) continue;
+                    if(BInfo->mass[j]<5. || BInfo->mass[j]>6.) continue;
                   }
                 if(BInfo->type[j]==(t+1))
                   {
