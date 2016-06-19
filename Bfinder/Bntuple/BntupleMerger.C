@@ -7,10 +7,11 @@ using namespace std;
 
 string inFileNames[] = {
 //  "ntuple_finder_PbPb_989_1_vSW.root",
-//  "ntuple_finder_PbPb_988_1_6T3.root",
-//  "ntuple_finder_PbPb_993_1_o0L.root",
 //  "ntuple_finder_PbPb_995_1_5Vd.root",
-  "ntuple_finder_PbPb_989_1_vSW.root"
+	"HIOniaL1DoubleMu0/Bntuple20160610_crab_BfinderData_PbPb_HIOniaL1DoubleMu0_20160607_bPt5jpsiPt0tkPt0p8_Bp.root",
+	"HIOniaL1DoubleMu0B/Bntuple20160610_crab_BfinderData_PbPb_HIOniaL1DoubleMu0B_20160607_bPt5jpsiPt0tkPt0p8_Bp.root",
+	"HIOniaL1DoubleMu0C/Bntuple20160610_crab_BfinderData_PbPb_HIOniaL1DoubleMu0C_20160607_bPt5jpsiPt0tkPt0p8_Bp.root",
+	"HIOniaL1DoubleMu0D/Bntuple20160610_crab_BfinderData_PbPb_HIOniaL1DoubleMu0D_20160607_bPt5jpsiPt0tkPt0p8_Bp.root"
 };
 int nFiles = sizeof(inFileNames)/sizeof(string);
 
@@ -62,6 +63,7 @@ int BntupleMerger()
   Int_t fCurrent = -1;
   map< pair<int, int>, int> eList;
   map< pair<int, int>, int>::iterator it;
+  int nDuplicate = 0;
 
   Long64_t nentries = ntKp->GetEntries();
   cout<<" -- Event reading"<<endl;
@@ -90,6 +92,7 @@ int BntupleMerger()
       if (result.second == 0) {
         cout << " Duplicated event in File " << inFileNames[fCurrent] << " : " << RunNo << " " << EvtNo << endl;
 	    isDuplicate = true;
+        nDuplicate += 1;
       }
       //}
       //cout << " Duplicated event: " << runNb << " " << eventNb << endl;
@@ -108,6 +111,7 @@ int BntupleMerger()
 	  } 
     }
   outf->Write();
+  cout<<"# of duplicate: "<<nDuplicate<<endl;
   cout<<" -- Writing new trees done"<<endl;
   outf->Close();
 

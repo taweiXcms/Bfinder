@@ -534,12 +534,21 @@ class DntupleBranches
           {
             for(int j=0;j<DInfo->size;j++)
               {
+                b4P->SetPtEtaPhiM(DInfo->pt[j],DInfo->eta[j],DInfo->phi[j],DInfo->mass[j]);
                 if(skim)
                   {
-                    if(DInfo->alpha[j]>0.13) continue;
-                    if((DInfo->pt[j]>=13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<2.5)||
-                       (DInfo->pt[j]>=5.5&&DInfo->pt[j]<13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<4.)||
-                       (DInfo->pt[j]<5.5&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<5.)) continue;
+                    //if(DInfo->alpha[j]>0.13) continue;
+                    //if((DInfo->pt[j]>=13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<2.5)||
+                    //   (DInfo->pt[j]>=5.5&&DInfo->pt[j]<13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<4.)||
+                    //   (DInfo->pt[j]<5.5&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<5.)) continue;
+                    if(DInfo->pt[j]<2)continue;
+                    if(fabs(b4P->Rapidity())>1.1) continue;
+                    if(fabs(TrackInfo->eta[DInfo->rftk1_index[j]])>2.) continue;
+                    if(fabs(TrackInfo->eta[DInfo->rftk2_index[j]])>2.) continue;
+                    if(TrackInfo->pt[DInfo->rftk1_index[j]]<0.7) continue;
+                    if(TrackInfo->pt[DInfo->rftk2_index[j]]<0.7) continue;
+                    if((DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<2.9) continue;
+                    if(DInfo->alpha[j]>0.14) continue;
                   }
                 if(DInfo->type[j]==(t+1))
                   {
