@@ -321,10 +321,15 @@ class VtxInfoBranches { //{{{
 
         bool    isTriggered  [MAX_MUON];
         int	    MuTrgMatchPathSize;
-        std::vector<std::vector<double > > *MuTrgMatchTrgObjE;
-        std::vector<std::vector<double > > *MuTrgMatchTrgObjPt;
-        std::vector<std::vector<double > > *MuTrgMatchTrgObjEta;
-        std::vector<std::vector<double > > *MuTrgMatchTrgObjPhi;
+        std::vector<std::vector<double > > *MuTrgMatchPathTrgObjE;
+        std::vector<std::vector<double > > *MuTrgMatchPathTrgObjPt;
+        std::vector<std::vector<double > > *MuTrgMatchPathTrgObjEta;
+        std::vector<std::vector<double > > *MuTrgMatchPathTrgObjPhi;
+        int	    MuTrgMatchFilterSize;
+        std::vector<std::vector<double > > *MuTrgMatchFilterTrgObjE;
+        std::vector<std::vector<double > > *MuTrgMatchFilterTrgObjPt;
+        std::vector<std::vector<double > > *MuTrgMatchFilterTrgObjEta;
+        std::vector<std::vector<double > > *MuTrgMatchFilterTrgObjPhi;
 
         void regTree(TTree *root, bool detailMode = false){//{{{
             root->Branch("MuonInfo.size"          , &size         , "MuonInfo.size/I"			);
@@ -366,10 +371,15 @@ class VtxInfoBranches { //{{{
 
             root->Branch("MuonInfo.isTriggered" ,isTriggered, "MuonInfo.isTriggered[MuonInfo.size]/O");
             root->Branch("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize, "MuonInfo.MuTrgMatchPathSize/I");
-            root->Branch("MuonInfo.MuTrgMatchTrgObjE",   "std::vector<std::vector<double>>", &MuTrgMatchTrgObjE);
-            root->Branch("MuonInfo.MuTrgMatchTrgObjPt",  "std::vector<std::vector<double>>", &MuTrgMatchTrgObjPt);
-            root->Branch("MuonInfo.MuTrgMatchTrgObjEta", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjEta);
-            root->Branch("MuonInfo.MuTrgMatchTrgObjPhi", "std::vector<std::vector<double>>", &MuTrgMatchTrgObjPhi);
+            root->Branch("MuonInfo.MuTrgMatchPathTrgObjE",   "std::vector<std::vector<double>>", &MuTrgMatchPathTrgObjE);
+            root->Branch("MuonInfo.MuTrgMatchPathTrgObjPt",  "std::vector<std::vector<double>>", &MuTrgMatchPathTrgObjPt);
+            root->Branch("MuonInfo.MuTrgMatchPathTrgObjEta", "std::vector<std::vector<double>>", &MuTrgMatchPathTrgObjEta);
+            root->Branch("MuonInfo.MuTrgMatchPathTrgObjPhi", "std::vector<std::vector<double>>", &MuTrgMatchPathTrgObjPhi);
+            root->Branch("MuonInfo.MuTrgMatchFilterSize", &MuTrgMatchFilterSize, "MuonInfo.MuTrgMatchFilterSize/I");
+            root->Branch("MuonInfo.MuTrgMatchFilterTrgObjE",   "std::vector<std::vector<double>>", &MuTrgMatchFilterTrgObjE);
+            root->Branch("MuonInfo.MuTrgMatchFilterTrgObjPt",  "std::vector<std::vector<double>>", &MuTrgMatchFilterTrgObjPt);
+            root->Branch("MuonInfo.MuTrgMatchFilterTrgObjEta", "std::vector<std::vector<double>>", &MuTrgMatchFilterTrgObjEta);
+            root->Branch("MuonInfo.MuTrgMatchFilterTrgObjPhi", "std::vector<std::vector<double>>", &MuTrgMatchFilterTrgObjPhi);
 
             if(detailMode){
                 root->Branch("MuonInfo.iso_trk"       , iso_trk       , "MuonInfo.iso_trk[MuonInfo.size]/F");
@@ -437,15 +447,24 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.dxyPV"         , dxyPV             );
 
             root->SetBranchAddress("MuonInfo.isTriggered" , isTriggered);
-            MuTrgMatchTrgObjE = new  std::vector<std::vector<double > >();
-            MuTrgMatchTrgObjPt= new  std::vector<std::vector<double > >();                                                                                                                          
-            MuTrgMatchTrgObjEta= new std::vector<std::vector<double > >();
-            MuTrgMatchTrgObjPhi= new std::vector<std::vector<double > >();
+            MuTrgMatchPathTrgObjE = new  std::vector<std::vector<double > >();
+            MuTrgMatchPathTrgObjPt= new  std::vector<std::vector<double > >();
+            MuTrgMatchPathTrgObjEta= new std::vector<std::vector<double > >();
+            MuTrgMatchPathTrgObjPhi= new std::vector<std::vector<double > >();
             root->SetBranchAddress("MuonInfo.MuTrgMatchPathSize", &MuTrgMatchPathSize);
-            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjE", &MuTrgMatchTrgObjE);
-            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPt", &MuTrgMatchTrgObjPt);
-            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjEta", &MuTrgMatchTrgObjEta);
-            root->SetBranchAddress("MuonInfo.MuTrgMatchTrgObjPhi", &MuTrgMatchTrgObjPhi);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchPathTrgObjE", &MuTrgMatchPathTrgObjE);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchPathTrgObjPt", &MuTrgMatchPathTrgObjPt);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchPathTrgObjEta", &MuTrgMatchPathTrgObjEta);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchPathTrgObjPhi", &MuTrgMatchPathTrgObjPhi);
+            MuTrgMatchFilterTrgObjE = new  std::vector<std::vector<double > >();
+            MuTrgMatchFilterTrgObjPt= new  std::vector<std::vector<double > >();
+            MuTrgMatchFilterTrgObjEta= new std::vector<std::vector<double > >();
+            MuTrgMatchFilterTrgObjPhi= new std::vector<std::vector<double > >();
+            root->SetBranchAddress("MuonInfo.MuTrgMatchFilterSize", &MuTrgMatchFilterSize);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchFilterTrgObjE", &MuTrgMatchFilterTrgObjE);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchFilterTrgObjPt", &MuTrgMatchFilterTrgObjPt);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchFilterTrgObjEta", &MuTrgMatchFilterTrgObjEta);
+            root->SetBranchAddress("MuonInfo.MuTrgMatchFilterTrgObjPhi", &MuTrgMatchFilterTrgObjPhi);
 
             if(detailMode){
                 root->SetBranchAddress("MuonInfo.iso_trk"       , iso_trk);

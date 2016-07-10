@@ -73,17 +73,23 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	
 	## patMuonsWithTrigger
 	process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
-	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, changeTriggerProcessName, switchOffAmbiguityResolution
+	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, useL1MatchingWindowForSinglets, changeTriggerProcessName, switchOffAmbiguityResolution, addHLTL1Passthrough
 	#process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
 	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
 	process.patMuonsWithoutTrigger.isoDeposits = cms.PSet()
 	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()
 	if runOnMC:
 		addMCinfo(process)
+		process.muonMatch.maxDeltaR = cms.double(0.05)
 		process.muonMatch.resolveByMatchQuality = True
+
 	changeTriggerProcessName(process, "HLT")
 	switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
-	###Criterias from Hyunchul's 
+	addHLTL1Passthrough(process)
+
+	process.patTrigger.collections.remove("hltL3MuonCandidates")
+	process.patTrigger.collections.append("hltHIL3MuonCandidates")
+
 	process.muonL1Info.maxDeltaR = 0.3
 	process.muonL1Info.fallbackToME1 = True
 	process.muonMatchHLTL1.maxDeltaR = 0.3
@@ -96,6 +102,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
 	process.muonMatchHLTTrackMu.maxDeltaR = 0.1
 	process.muonMatchHLTTrackMu.maxDPtRel = 10.0
+	process.muonMatchHLTL3.matchedCuts = cms.string('coll("hltHIL3MuonCandidates")')
 	
 	# Merge muons, calomuons in a single collection for T&P
 	from RecoMuon.MuonIdentification.calomuons_cfi import calomuons;
@@ -134,9 +141,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		),
         detailMode = cms.bool(True),
         dropUnusedTracks = cms.bool(True),
-	    #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*"),
-	    MuonTriggerMatchingPath = cms.vstring("HLT_HIL2DoubleMu3_v*"),
-	    #MuonTriggerMatchingPath = cms.vstring("HLT_PAMu3_v*", "HLT_PAMu7_v*", "HLT_PAMu12_v*"),
+	    MuonTriggerMatchingPath = cms.vstring(""),
+		MuonTriggerMatchingFilter = cms.vstring(""),
 		HLTLabel = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel = cms.InputTag('genParticles'),
 		MuonLabel = cms.InputTag('patMuonsWithTrigger'),

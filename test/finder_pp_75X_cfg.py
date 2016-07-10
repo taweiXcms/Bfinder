@@ -231,7 +231,16 @@ if ppBdefault and not ppDMBdefault and not ppDHFdefault and not ppD0DstarV2:
     process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 0, 0, 0, 0)
     process.Bfinder.doTkPreCut = cms.bool(False)
-    process.Bfinder.MuonTriggerMatchingPath = cms.vstring("HLT_HIL1DoubleMu0_v*", "HLT_HIL1DoubleMu10_v*", "HLT_HIL2DoubleMu0_NHitQ_v*", "HLT_HIL3DoubleMu0_OS_m2p5to4p5_v*")
+    process.Bfinder.MuonTriggerMatchingPath = cms.vstring("HLT_HIL1DoubleMu0_v1",
+                                                          "HLT_HIL1DoubleMu10_v1",
+                                                          "HLT_HIL2DoubleMu0_NHitQ_v1",
+                                                          "HLT_HIL3DoubleMu0_OS_m2p5to4p5_v1",
+                                                          "HLT_HIL3DoubleMu0_OS_m7to14_v1")
+    process.Bfinder.MuonTriggerMatchingFilter = cms.vstring("hltHIDoubleMu0L1Filtered",
+                                                            "hltHIDoubleMu10MinBiasL1Filtered",
+                                                            "hltHIL2DoubleMu0NHitQFiltered",
+                                                            "hltHIDimuonOpenOSm2p5to4p5L3Filter",
+                                                            "hltHIDimuonOpenOSm7to14L3Filter")
     process.Bfinder.makeBntuple = cms.bool(False)
     process.p = cms.Path(process.BfinderSequence)
 ## pp Dfinder setting on HeavyFlavor

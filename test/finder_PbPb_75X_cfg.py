@@ -215,8 +215,47 @@ if PbPbBdefault and not PbPbDMBdefault and not PbPbDHPdefault:
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
     process.Bfinder.bPtCut = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
     process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 0, 0, 0, 0)
-    process.Bfinder.doTkPreCut = cms.bool(False)
-    process.Bfinder.MuonTriggerMatchingPath = cms.vstring("HLT_HIL1DoubleMu0_v*", "HLT_HIL2DoubleMu0_NHitQ_v*", "HLT_HIL1DoubleMu0_part*")
+    process.Bfinder.doTkPreCut = cms.bool(False)    
+    process.Bfinder.MuonTriggerMatchingPath = cms.vstring("HLT_HIL1DoubleMu0_v1",
+                                                          "HLT_HIL1DoubleMu0_part1_v1",
+                                                          "HLT_HIL1DoubleMu0_part2_v1",
+                                                          "HLT_HIL1DoubleMu0_part3_v1",
+                                                          "HLT_HIL1DoubleMu0_2HF_v1",
+                                                          "HLT_HIL1DoubleMu0_2HF0_v1",
+                                                          "HLT_HIL1DoubleMu10_v1",
+                                                          "HLT_HIL2DoubleMu0_NHitQ_v2",
+                                                          "HLT_HIL2DoubleMu0_NHitQ_2HF_v1",
+                                                          "HLT_HIL2DoubleMu0_NHitQ_2HF0_v1",
+                                                          "HLT_HIL1DoubleMu0_2HF_Cent30100_v1",
+                                                          "HLT_HIL1DoubleMu0_2HF0_Cent30100_v1",
+                                                          "HLT_HIL2DoubleMu0_2HF_Cent30100_NHitQ_v1",
+                                                          "HLT_HIL1DoubleMu0_Cent30_v1",
+                                                          "HLT_HIL2DoubleMu0_2HF0_Cent30100_NHitQ_v1",
+                                                          "HLT_HIL2DoubleMu0_Cent30_NHitQ_v1",
+                                                          "HLT_HIL2DoubleMu0_Cent30_OS_NHitQ_v1",
+                                                          "HLT_HIL3DoubleMu0_Cent30_v1",
+                                                          "HLT_HIL3DoubleMu0_Cent30_OS_m2p5to4p5_v1",
+                                                          "HLT_HIL3DoubleMu0_Cent30_OS_m7to14_v1",
+                                                          "HLT_HIL3DoubleMu0_OS_m2p5to4p5_v1",
+                                                          "HLT_HIL3DoubleMu0_OS_m7to14_v1")
+    process.Bfinder.MuonTriggerMatchingFilter = cms.vstring("hltHIDoubleMu0L1Filtered",
+                                                            "hltHIDoubleMu0MinBiasL1Filtered",
+                                                            "hltHIDoubleMu0HFTower0Filtered",
+                                                            "hltHIDoubleMu10L1Filtered",
+                                                            "hltHIL2DoubleMu0NHitQFiltered",
+                                                            "hltHIL2DoubleMu0NHitQ2HFFiltered",
+                                                            "hltHIL2DoubleMu0NHitQ2HF0Filtered",
+                                                            "hltHIDoubleMu0MinBiasCent30to100L1Filtered",
+                                                            "hltHIDoubleMu0HFTower0Cent30to100L1Filtered",
+                                                            "hltHIL2DoubleMu02HFcent30100NHitQFiltered",
+                                                            "hltHIDoubleMu0MinBiasCent30L1Filtered",
+                                                            "hltHIL2DoubleMu02HF0cent30100NHitQFiltered",
+                                                            "hltHIL2DoubleMu0cent30NHitQFiltered",
+                                                            "hltHIL2DoubleMu0cent30OSNHitQFiltered",
+                                                            "hltHIDimuonOpenCentrality30L3Filter",
+                                                            "hltHIDimuonOpenCentrality30OSm2p5to4p5L3Filter",
+                                                            "hltHIDimuonOpenCentrality30OSm7to14L3Filter",
+                                                            "hltHIDimuonOpenOSm2p5to4p5L3Filter","hltHIDimuonOpenOSm7to14L3Filter")
     process.Bfinder.makeBntuple = cms.bool(False)
     process.p = cms.Path(process.BfinderSequence)
 ## PbPb Dfinder setting on HardProbe
