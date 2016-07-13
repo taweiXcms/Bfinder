@@ -75,11 +75,11 @@ class Dfinder : public edm::EDAnalyzer
         bool dropUnusedTracks_;
         std::vector<int> Dchannel_;
         //edm::InputTag hltLabel_;
-        edm::InputTag genLabel_;
-        edm::InputTag trackLabel_;
-        edm::InputTag puInfoLabel_;
-        edm::InputTag bsLabel_;
-        edm::InputTag pvLabel_;
+        edm::EDGetTokenT<reco::GenParticleCollection> genLabel_;
+        edm::EDGetTokenT<std::vector<pat::GenericParticle>> trackLabel_;
+        edm::EDGetTokenT<std::vector<PileupSummaryInfo>> puInfoLabel_;
+        edm::EDGetTokenT<reco::BeamSpot> bsLabel_;
+        edm::EDGetTokenT<reco::VertexCollection> pvLabel_;
         double tkPtCut_;
         double tkEtaCut_;
         std::vector<double> dPtCut_;
@@ -97,7 +97,8 @@ class Dfinder : public edm::EDAnalyzer
         bool doTkPreCut_;
         bool makeDntuple_;
         bool doDntupleSkim_;
-        std::string MVAMapLabel_;
+        //edm::EDGetTokenT<edm::ValueMap<float>> MVAMapLabel_;
+
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -148,12 +149,12 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     dropUnusedTracks_ = iConfig.getParameter<bool>("dropUnusedTracks");
 
     Dchannel_ = iConfig.getParameter<std::vector<int> >("Dchannel");
-    genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
-    trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
+    genLabel_ = consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("GenLabel"));
+    trackLabel_ = consumes<std::vector<pat::GenericParticle>>(iConfig.getParameter<edm::InputTag>("TrackLabel"));
     //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
-    puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
-    bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
-    pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
+    puInfoLabel_ = consumes<std::vector< PileupSummaryInfo > >(iConfig.getParameter<edm::InputTag>("PUInfoLabel"));
+    bsLabel_ = consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BSLabel"));
+    pvLabel_ = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("PVLabel"));
 
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
@@ -172,7 +173,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
     doDntupleSkim_ = iConfig.getParameter<bool>("doDntupleSkim");
-    MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
+    //MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
     for(unsigned int i = 0; i < Dchannel_.size(); i++){
@@ -208,7 +209,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // Change used muon and track collections
     edm::Handle< std::vector<pat::GenericParticle> > tks;
-    iEvent.getByLabel(trackLabel_, tks);
+    iEvent.getByToken(trackLabel_, tks);
 
     //CLEAN all memory
     memset(&EvtInfo     ,0x00,sizeof(EvtInfo)   );
@@ -269,7 +270,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
     //iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
-    iEvent.getByLabel(bsLabel_, beamSpotHandle);
+    iEvent.getByToken(bsLabel_, beamSpotHandle);
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
         theBeamSpotV = Vertex(beamSpot.position(), beamSpot.covariance3D());
@@ -293,7 +294,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //get vertex informationa
     edm::Handle<reco::VertexCollection> VertexHandle;
-    iEvent.getByLabel(pvLabel_, VertexHandle);
+    iEvent.getByToken(pvLabel_, VertexHandle);
 
     /*  
     if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
@@ -370,7 +371,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // get pile-up information
     if (!iEvent.isRealData() && RunOnMC_){
         edm::Handle<std::vector< PileupSummaryInfo > >  PUHandle;
-        iEvent.getByLabel(puInfoLabel_, PUHandle);
+        iEvent.getByToken(puInfoLabel_, PUHandle);
         std::vector<PileupSummaryInfo>::const_iterator PVI;
         for(PVI = PUHandle->begin(); PVI != PUHandle->end(); ++PVI) {
             EvtInfo.nPU[EvtInfo.nBX]   = PVI->getPU_NumInteractions();
@@ -706,8 +707,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of DInfo.\n");
 
                     // TrackInfo section {{{
-                    Handle<edm::ValueMap<float> > mvaoutput;
-                    iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
+                    edm::Handle<edm::ValueMap<float> > mvaoutput;
+                   // iEvent.getByToken(MVAMapLabel_, mvaoutput);
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
@@ -781,7 +782,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
-                        TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
+                        //TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
 
@@ -835,7 +836,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //if (1){
             //edm::Handle< std::vector<reco::GenParticle> > gens;
             edm::Handle<reco::GenParticleCollection> gens;
-            iEvent.getByLabel(genLabel_, gens);
+            iEvent.getByToken(genLabel_, gens);
 
             std::vector<const reco::Candidate *> sel_cands;
             //deprecated
