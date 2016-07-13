@@ -72,12 +72,12 @@ class Bfinder : public edm::EDAnalyzer
         std::vector<std::string> MuonTriggerMatchingPath_;
         std::vector<std::string> MuonTriggerMatchingFilter_;
         //edm::InputTag hltLabel_;
-        edm::InputTag genLabel_;
-        edm::InputTag muonLabel_;
-        edm::InputTag trackLabel_;
-        edm::InputTag puInfoLabel_;
-        edm::InputTag bsLabel_;
-        edm::InputTag pvLabel_;
+        edm::EDGetTokenT< reco::GenParticleCollection > genLabel_;
+        edm::EDGetTokenT< std::vector<pat::Muon> > muonLabel_;
+        edm::EDGetTokenT< std::vector<pat::GenericParticle> > trackLabel_;
+        edm::EDGetTokenT< std::vector<PileupSummaryInfo> > puInfoLabel_;
+        edm::EDGetTokenT< reco::BeamSpot > bsLabel_;
+        edm::EDGetTokenT< reco::VertexCollection > pvLabel_;
         double tkPtCut_;
         double tkEtaCut_;
         double jpsiPtCut_;
@@ -147,17 +147,17 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     detailMode_ = iConfig.getParameter<bool>("detailMode");
     dropUnusedTracks_ = iConfig.getParameter<bool>("dropUnusedTracks");
 
-//  TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
+    //TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
+    //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
     Bchannel_= iConfig.getParameter<std::vector<int> >("Bchannel");
     MuonTriggerMatchingPath_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingPath");
     MuonTriggerMatchingFilter_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingFilter");
-    genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
-    trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
-    muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
-    //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
-    puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
-    bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
-    pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
+    genLabel_           = consumes< reco::GenParticleCollection >(iConfig.getParameter<edm::InputTag>("GenLabel"));
+    trackLabel_         = consumes< std::vector<pat::GenericParticle> >(iConfig.getParameter<edm::InputTag>("TrackLabel"));
+    muonLabel_          = consumes< std::vector<pat::Muon> >(iConfig.getParameter<edm::InputTag>("MuonLabel"));
+    puInfoLabel_    = consumes< std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("PUInfoLabel"));
+    bsLabel_        = consumes< reco::BeamSpot >(iConfig.getParameter<edm::InputTag>("BSLabel"));
+    pvLabel_        = consumes< reco::VertexCollection >(iConfig.getParameter<edm::InputTag>("PVLabel"));
 
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
@@ -212,9 +212,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // Change used muon and track collections
     edm::Handle< std::vector<pat::Muon> > muons;
-    iEvent.getByLabel(muonLabel_,muons);
+    iEvent.getByToken(muonLabel_,muons);
     edm::Handle< std::vector<pat::GenericParticle> > tks;
-    iEvent.getByLabel(trackLabel_, tks);
+    iEvent.getByToken(trackLabel_, tks);
 
     //CLEAN all memory
     memset(&EvtInfo     ,0x00,sizeof(EvtInfo)   );
@@ -275,8 +275,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
-    //iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
-    iEvent.getByLabel(bsLabel_, beamSpotHandle);
+    iEvent.getByToken(bsLabel_, beamSpotHandle);
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
         theBeamSpotV = Vertex(beamSpot.position(), beamSpot.covariance3D());
@@ -300,7 +299,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //get vertex informationa
     edm::Handle<reco::VertexCollection> VertexHandle;
-    iEvent.getByLabel(pvLabel_, VertexHandle);
+    iEvent.getByToken(pvLabel_, VertexHandle);
 
     /*  
     if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
@@ -376,8 +375,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // get pile-up information
     if (!iEvent.isRealData() && RunOnMC_){
-        edm::Handle<std::vector< PileupSummaryInfo > >  PUHandle;
-        iEvent.getByLabel(puInfoLabel_, PUHandle);
+        edm::Handle<std::vector<PileupSummaryInfo> >  PUHandle;
+        iEvent.getByToken(puInfoLabel_, PUHandle);
         std::vector<PileupSummaryInfo>::const_iterator PVI;
         for(PVI = PUHandle->begin(); PVI != PUHandle->end(); ++PVI) {
             EvtInfo.nPU[EvtInfo.nBX]   = PVI->getPU_NumInteractions();
@@ -1148,7 +1147,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //if (1){
             //edm::Handle< std::vector<reco::GenParticle> > gens;
             edm::Handle<reco::GenParticleCollection> gens;
-            iEvent.getByLabel(genLabel_, gens);
+            iEvent.getByToken(genLabel_, gens);
 
             std::vector<const reco::Candidate *> sel_cands;
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
