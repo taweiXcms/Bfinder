@@ -77,7 +77,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	#process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
 	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
 	process.patMuonsWithoutTrigger.isoDeposits = cms.PSet()
-	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()
+	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()	
+	process.patMuonsWithoutTrigger.pvSrc = cms.InputTag(VtxLabel)
 	if runOnMC:
 		addMCinfo(process)
 		process.muonMatch.maxDeltaR = cms.double(0.05)
@@ -226,3 +227,6 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	process.BfinderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder)
 	process.DfinderSequence = cms.Sequence(process.TrackCandSequence*process.Dfinder)
 	process.finderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder*process.Dfinder)
+
+	### Temporal fix for the PAT Trigger prescale warnings.
+	process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
