@@ -414,6 +414,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     MuonInfo.MuTrgMatchFilterTrgObjEta = new std::vector<std::vector<double>>();
     MuonInfo.MuTrgMatchFilterTrgObjPhi = new std::vector<std::vector<double>>();
 
+    std::vector<double> trgobjE;
+    std::vector<double> trgobjPt;
+    std::vector<double> trgobjEta;
+    std::vector<double> trgobjPhi;
+
     std::vector<pat::Muon>              input_muons;
     std::vector<pat::GenericParticle>   input_tracks;
     input_muons = *muons;
@@ -511,10 +516,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                         //Get Muon HLT Trigger matching
                         MuonInfo.MuTrgMatchPathSize = MuonTriggerMatchingPath_.size();
-                        std::vector<double> trgobjE;
-                        std::vector<double> trgobjPt;
-                        std::vector<double> trgobjEta;
-                        std::vector<double> trgobjPhi;
+                        trgobjE.clear();
+                        trgobjPt.clear();
+                        trgobjEta.clear();
+                        trgobjPhi.clear();
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchPathSize; _m++){
                             pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
                             if (match.empty()) {

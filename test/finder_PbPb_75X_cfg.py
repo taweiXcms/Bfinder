@@ -255,7 +255,8 @@ if PbPbBdefault and not PbPbDMBdefault and not PbPbDHPdefault:
                                                             "hltHIDimuonOpenCentrality30L3Filter",
                                                             "hltHIDimuonOpenCentrality30OSm2p5to4p5L3Filter",
                                                             "hltHIDimuonOpenCentrality30OSm7to14L3Filter",
-                                                            "hltHIDimuonOpenOSm2p5to4p5L3Filter","hltHIDimuonOpenOSm7to14L3Filter")
+                                                            "hltHIDimuonOpenOSm2p5to4p5L3Filter",
+                                                            "hltHIDimuonOpenOSm7to14L3Filter")
     process.Bfinder.makeBntuple = cms.bool(False)
     process.p = cms.Path(process.BfinderSequence)
 ## PbPb Dfinder setting on HardProbe
