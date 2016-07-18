@@ -28,6 +28,8 @@ def OnlyTrack_finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFo
 #	if UseGenPlusSim:
 #		process.muonMatch.matched = cms.InputTag("genParticlePlusGEANT")
 	
+	process.load('PhysicsTools/PatAlgos/mcMatchLayer0/muonMatch_cfi')
+
 	## TrackCand
 	from PhysicsTools.PatAlgos.tools.trackTools import makeTrackCandidates
 	if runOnMC:
@@ -229,4 +231,4 @@ def OnlyTrack_finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFo
 #	process.finderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder*process.Dfinder)
 
 	### Temporal fix for the PAT Trigger prescale warnings.
-	process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
+#	process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
