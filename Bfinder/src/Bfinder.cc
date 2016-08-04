@@ -135,7 +135,7 @@ void Bfinder::beginJob()
     ntGen = fs->make<TTree>("ntGen","");    Bntuple->buildGenBranch(ntGen);
     EvtInfo.regTree(root);
     VtxInfo.regTree(root);
-    MuonInfo.regTree(root, detailMode_);
+    MuonInfo.regTree(root, detailMode_, MuonTriggerMatchingPath_.size(), MuonTriggerMatchingFilter_.size());
     TrackInfo.regTree(root, detailMode_);
     BInfo.regTree(root, detailMode_);
     GenInfo.regTree(root);
@@ -201,6 +201,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //checking input parameter size
     if( (Bchannel_.size() != bPtCut_.size()) || (bPtCut_.size() != bEtaCut_.size()) || (bEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != svpvDistanceCut_.size()) || (svpvDistanceCut_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size())){
         std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
+        return;
+    }
+    //checking Trigger matching size
+    if(MuonTriggerMatchingPath_.size() > MAX_TRIGGER || MuonTriggerMatchingFilter_.size() > MAX_TRIGGER){
+        std::cout<<"Number of trigger matching pathes exceeded limit, EXIT"<<std::endl;
         return;
     }
 
@@ -403,22 +408,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         B_counter.push_back(0);
     }
 
-    //Branches of type std::vector pointer must reserve memory before using
-    MuonInfo.MuTrgMatchPathTrgObjE = new std::vector<std::vector<double>>();
-    MuonInfo.MuTrgMatchPathTrgObjPt = new std::vector<std::vector<double>>();
-    MuonInfo.MuTrgMatchPathTrgObjEta = new std::vector<std::vector<double>>();
-    MuonInfo.MuTrgMatchPathTrgObjPhi = new std::vector<std::vector<double>>();
-
-    MuonInfo.MuTrgMatchFilterTrgObjE = new std::vector<std::vector<double>>();
-    MuonInfo.MuTrgMatchFilterTrgObjPt = new std::vector<std::vector<double>>();
-    MuonInfo.MuTrgMatchFilterTrgObjEta = new std::vector<std::vector<double>>();
-    MuonInfo.MuTrgMatchFilterTrgObjPhi = new std::vector<std::vector<double>>();
-
-    std::vector<double> trgobjE;
-    std::vector<double> trgobjPt;
-    std::vector<double> trgobjEta;
-    std::vector<double> trgobjPhi;
-
     std::vector<pat::Muon>              input_muons;
     std::vector<pat::GenericParticle>   input_tracks;
     input_muons = *muons;
@@ -516,62 +505,41 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                         //Get Muon HLT Trigger matching
                         MuonInfo.MuTrgMatchPathSize = MuonTriggerMatchingPath_.size();
-                        trgobjE.clear();
-                        trgobjPt.clear();
-                        trgobjEta.clear();
-                        trgobjPhi.clear();
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchPathSize; _m++){
                             pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByPath(MuonTriggerMatchingPath_[_m].c_str());
                             if (match.empty()) {
-                                trgobjE.push_back(-999.);
-                                trgobjPt.push_back(-999.);
-                                trgobjEta.push_back(-999.);
-                                trgobjPhi.push_back(-999.);
+                                MuonInfo.MuTrgMatchPathTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchPathTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchPathTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchPathTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
                                 //std::cout << "Muon didn't match Trigger Object" << std::endl;
                             } else {
-                                trgobjE.push_back(match[0].energy());
-                                trgobjPt.push_back(match[0].pt());
-                                trgobjEta.push_back(match[0].eta());
-                                trgobjPhi.push_back(match[0].phi());
+                                MuonInfo.MuTrgMatchPathTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].energy();
+                                MuonInfo.MuTrgMatchPathTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].pt();
+                                MuonInfo.MuTrgMatchPathTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].eta();
+                                MuonInfo.MuTrgMatchPathTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].phi();
                                 //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
                             }
-
                         }
-
-                        MuonInfo.MuTrgMatchPathTrgObjE->push_back(trgobjE);
-                        MuonInfo.MuTrgMatchPathTrgObjPt->push_back(trgobjPt);
-                        MuonInfo.MuTrgMatchPathTrgObjEta->push_back(trgobjEta);
-                        MuonInfo.MuTrgMatchPathTrgObjPhi->push_back(trgobjPhi);
-
                         MuonInfo.MuTrgMatchFilterSize = MuonTriggerMatchingFilter_.size();
-                        trgobjE.clear();
-                        trgobjPt.clear();
-                        trgobjEta.clear();
-                        trgobjPhi.clear();
                         MuonInfo.isTriggered[MuonInfo.size] = false;
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchFilterSize; _m++){
                             pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByFilter(MuonTriggerMatchingFilter_[_m].c_str());
                             if (match.empty()) {
-                                trgobjE.push_back(-999.);
-                                trgobjPt.push_back(-999.);
-                                trgobjEta.push_back(-999.);
-                                trgobjPhi.push_back(-999.);
+                                MuonInfo.MuTrgMatchFilterTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
                                 //std::cout << "Muon didn't match Trigger Object" << std::endl;
                             } else {
-                                trgobjE.push_back(match[0].energy());
-                                trgobjPt.push_back(match[0].pt());
-                                trgobjEta.push_back(match[0].eta());
-                                trgobjPhi.push_back(match[0].phi());
+                                MuonInfo.MuTrgMatchFilterTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].energy();
+                                MuonInfo.MuTrgMatchFilterTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].pt();
+                                MuonInfo.MuTrgMatchFilterTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].eta();
+                                MuonInfo.MuTrgMatchFilterTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].phi();
                                 //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
                                 MuonInfo.isTriggered[MuonInfo.size] = true;
                             }
-
                         }
-
-                        MuonInfo.MuTrgMatchFilterTrgObjE->push_back(trgobjE);
-                        MuonInfo.MuTrgMatchFilterTrgObjPt->push_back(trgobjPt);
-                        MuonInfo.MuTrgMatchFilterTrgObjEta->push_back(trgobjEta);
-                        MuonInfo.MuTrgMatchFilterTrgObjPhi->push_back(trgobjPhi);
                         
                         //Muon general info.
                         MuonInfo.index          [MuonInfo.size] = MuonInfo.size;
