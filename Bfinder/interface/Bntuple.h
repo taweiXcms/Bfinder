@@ -479,7 +479,8 @@ class BntupleBranches
                 if(skim)
                   {
                     //if(BInfo->pt[j]<3.) continue;
-                    if(BInfo->pt[j]<10.) continue;
+                    //if(BInfo->pt[j]<10.) continue;
+                    if(!( (BInfo->pt[j] > 7. && BInfo->pt[j] < 10. && BInfo->svpvDistance[j]/BInfo->svpvDisErr[j] > 5.5) || (BInfo->pt[j] > 10. && BInfo->svpvDistance[j]/BInfo->svpvDisErr[j] > 3.5) )) continue;
                     if(BInfo->mass[j]<5. || BInfo->mass[j]>6.) continue;
                   }
                 if(BInfo->type[j]==(t+1))
