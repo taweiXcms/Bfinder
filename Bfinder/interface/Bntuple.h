@@ -698,10 +698,10 @@ class BntupleBranches
     Bmu1TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu2TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
 
-    Bmu1TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchPathSize+0];
-    Bmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchPathSize+0];
-    Bmu1TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchPathSize+0];
-    Bmu1TrgMatchFilterPhi[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPhi[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchPathSize+0];
+    Bmu1TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
+    Bmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
+    Bmu1TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
+    Bmu1TrgMatchFilterPhi[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPhi[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];

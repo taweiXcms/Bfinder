@@ -526,16 +526,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         for(int _m = 0; _m < MuonInfo.MuTrgMatchFilterSize; _m++){
                             pat::TriggerObjectStandAloneCollection match = mu_it->triggerObjectMatchesByFilter(MuonTriggerMatchingFilter_[_m].c_str());
                             if (match.empty()) {
-                                MuonInfo.MuTrgMatchFilterTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
-                                MuonInfo.MuTrgMatchFilterTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
-                                MuonInfo.MuTrgMatchFilterTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
-                                MuonInfo.MuTrgMatchFilterTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = -999.;
+                                MuonInfo.MuTrgMatchFilterTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = -999.;
                                 //std::cout << "Muon didn't match Trigger Object" << std::endl;
                             } else {
-                                MuonInfo.MuTrgMatchFilterTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].energy();
-                                MuonInfo.MuTrgMatchFilterTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].pt();
-                                MuonInfo.MuTrgMatchFilterTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].eta();
-                                MuonInfo.MuTrgMatchFilterTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchPathSize+_m] = match[0].phi();
+                                MuonInfo.MuTrgMatchFilterTrgObjE[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = match[0].energy();
+                                MuonInfo.MuTrgMatchFilterTrgObjPt[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = match[0].pt();
+                                MuonInfo.MuTrgMatchFilterTrgObjEta[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = match[0].eta();
+                                MuonInfo.MuTrgMatchFilterTrgObjPhi[MuonInfo.size*MuonInfo.MuTrgMatchFilterSize+_m] = match[0].phi();
                                 //std::cout << "Propagation succeeeded; eta = " << match[0].eta() << ", phi = " << match[0].phi() << std::endl;
                                 MuonInfo.isTriggered[MuonInfo.size] = true;
                             }
