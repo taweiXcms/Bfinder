@@ -667,10 +667,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     int PassedTrk = 0;
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end(); tk_it++){
-                        if(PassedTrk >= MAX_TRACK){
-                            fprintf(stderr,"ERROR: number of tracks exceeds the size of array.\n");
-                            break;
-                        }
                         isNeededTrack.push_back(false);
                         TrackCutLevel->Fill(0);//number of all tracks
                         bool isMuonTrack = false; //remove muon track
@@ -1046,6 +1042,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
+                        if(TrackInfo.size >= MAX_TRACK){
+                            fprintf(stderr,"ERROR: number of tracks exceeds the size of array.\n");
+                            break;
+                        }
                         if(tk_hindex>=int(isNeededTrack.size())) break;
                         if (isNeededTrack[tk_hindex]==false) continue;
 
