@@ -412,7 +412,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             if (input_tracks.size() == 0){
                 std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
-                std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
+                //std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
                 if (input_tracks.size() > 0){
 
                     //Preselect tracks{{{
@@ -452,7 +452,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PassedTrk++;
                     }//end of track preselection}}}
                     //printf("-----*****DEBUG:End of track preselection.\n");
-                    std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
+                    //std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
                     
                     // DInfo section{{{
                     //////////////////////////////////////////////////////////////////////////
@@ -699,11 +699,11 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 12, 1);
                     }
 
-                    printf("D_counter: ");
-                    for(unsigned int i = 0; i < Dchannel_.size(); i++){
-                        printf("%d/", D_counter[i]);
-                    }
-                    printf("\n");//}}}
+                    //printf("D_counter: ");
+                    //for(unsigned int i = 0; i < Dchannel_.size(); i++){
+                    //    printf("%d/", D_counter[i]);
+                    //}
+                    //printf("\n");//}}}
                     //printf("-----*****DEBUG:End of DInfo.\n");
 
                     // TrackInfo section {{{
