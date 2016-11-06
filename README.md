@@ -9,16 +9,12 @@ git clone -b test80forpPb https://github.com/taweiXcms/Bfinder.git
 
 To add B/D finder, paste the following block:
 
-#################
-### D/B finder
-#################
 AddCaloMuon = False
 runOnMC = False
 HIFormat = False
 UseGenPlusSim = False
 VtxLabel = "offlinePrimaryVerticesWithBS"
 TrkLabel = "generalTracks"
-### finder building block
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
 process.Dfinder.alphaCut = cms.vdouble(0.2, 0.2, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0, 999.0)
