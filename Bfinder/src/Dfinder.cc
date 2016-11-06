@@ -97,7 +97,8 @@ class Dfinder : public edm::EDAnalyzer
         bool doTkPreCut_;
         bool makeDntuple_;
         bool doDntupleSkim_;
-        //edm::EDGetTokenT<edm::ValueMap<float>> MVAMapLabel_;
+        bool printInfo_;
+        edm::EDGetTokenT<edm::ValueMap<float>> MVAMapLabel_;
 
 
         edm::Service<TFileService> fs;
@@ -151,7 +152,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     Dchannel_ = iConfig.getParameter<std::vector<int> >("Dchannel");
     genLabel_ = consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("GenLabel"));
     trackLabel_ = consumes<std::vector<pat::GenericParticle>>(iConfig.getParameter<edm::InputTag>("TrackLabel"));
-    //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
+    //hltLabel_ = iConfig.getParameter<edm::InputTag>("HLTLabel");
     puInfoLabel_ = consumes<std::vector< PileupSummaryInfo > >(iConfig.getParameter<edm::InputTag>("PUInfoLabel"));
     bsLabel_ = consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BSLabel"));
     pvLabel_ = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("PVLabel"));
@@ -173,7 +174,8 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
     doDntupleSkim_ = iConfig.getParameter<bool>("doDntupleSkim");
-    //MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
+    printInfo_ = iConfig.getParameter<bool>("printInfo");
+    MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
     for(unsigned int i = 0; i < Dchannel_.size(); i++){
@@ -207,7 +209,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //ESHandle<MagneticField> bField;
     iSetup.get<IdealMagneticFieldRecord>().get(bField);
 
-    // Change used muon and track collections
+    // muon and track collections
     edm::Handle< std::vector<pat::GenericParticle> > tks;
     iEvent.getByToken(trackLabel_, tks);
 
@@ -269,7 +271,6 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
-    //iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
     iEvent.getByToken(bsLabel_, beamSpotHandle);
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
@@ -405,14 +406,12 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         memset(genTrackPtr,0x00,MAX_GEN);
         //standard check for validity of input data
         if (0){
-        //if (input_muons.size() == 0){
-            std::cout << "There's no muon : " << iEvent.id() << std::endl;
+            if (printInfo_) std::cout << "There's no muon : " << iEvent.id() << std::endl;
         }else{
-            //std::cout << "Got " << input_muons.size() << " muons / ";
             if (input_tracks.size() == 0){
-                std::cout << "There's no track: " << iEvent.id() << std::endl;
+                if (printInfo_) std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
-                //std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
+                if (printInfo_) std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
                 if (input_tracks.size() > 0){
 
                     //Preselect tracks{{{
@@ -452,7 +451,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         PassedTrk++;
                     }//end of track preselection}}}
                     //printf("-----*****DEBUG:End of track preselection.\n");
-                    //std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
+                    if(printInfo_) std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
                     
                     // DInfo section{{{
                     //////////////////////////////////////////////////////////////////////////
@@ -699,16 +698,18 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 12, 1);
                     }
 
-                    //printf("D_counter: ");
-                    //for(unsigned int i = 0; i < Dchannel_.size(); i++){
-                    //    printf("%d/", D_counter[i]);
-                    //}
-                    //printf("\n");//}}}
+                    if(printInfo_){
+                        printf("D_counter: ");
+                        for(unsigned int i = 0; i < Dchannel_.size(); i++){
+                            printf("%d/", D_counter[i]);
+                        }
+                        printf("\n");
+                    }//}}}
                     //printf("-----*****DEBUG:End of DInfo.\n");
 
                     // TrackInfo section {{{
                     edm::Handle<edm::ValueMap<float> > mvaoutput;
-                   // iEvent.getByToken(MVAMapLabel_, mvaoutput);
+                    //iEvent.getByToken(MVAMapLabel_, mvaoutput);
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
@@ -828,7 +829,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of TrackInfo.\n");
                 }//has nTracks>1
             }//if no Tracks
-        }//if no Muons
+        }//
 
         // GenInfo section{{{
         if (!iEvent.isRealData() && RunOnMC_){

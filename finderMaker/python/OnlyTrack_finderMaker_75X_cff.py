@@ -212,6 +212,7 @@ def OnlyTrack_finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFo
 	    doTkPreCut = cms.bool(True),
 	    makeDntuple = cms.bool(True),
 	    doDntupleSkim = cms.bool(False),
+        printInfo = cms.bool(False),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)

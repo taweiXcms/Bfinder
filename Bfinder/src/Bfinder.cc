@@ -72,12 +72,12 @@ class Bfinder : public edm::EDAnalyzer
         std::vector<std::string> MuonTriggerMatchingPath_;
         std::vector<std::string> MuonTriggerMatchingFilter_;
         //edm::InputTag hltLabel_;
-        edm::InputTag genLabel_;
-        edm::InputTag muonLabel_;
-        edm::InputTag trackLabel_;
-        edm::InputTag puInfoLabel_;
-        edm::InputTag bsLabel_;
-        edm::InputTag pvLabel_;
+        edm::EDGetTokenT<std::vector<pat::Muon>> muonLabel_;
+        edm::EDGetTokenT<reco::GenParticleCollection> genLabel_;
+        edm::EDGetTokenT<std::vector<pat::GenericParticle>> trackLabel_;
+        edm::EDGetTokenT<std::vector<PileupSummaryInfo>> puInfoLabel_;
+        edm::EDGetTokenT<reco::BeamSpot> bsLabel_;
+        edm::EDGetTokenT<reco::VertexCollection> pvLabel_;
         double tkPtCut_;
         double tkEtaCut_;
         double jpsiPtCut_;
@@ -93,6 +93,7 @@ class Bfinder : public edm::EDAnalyzer
         bool doMuPreCut_;
         bool makeBntuple_;
         bool doBntupleSkim_;
+        bool printInfo_;
         std::string MVAMapLabel_;
 
         edm::Service<TFileService> fs;
@@ -151,13 +152,13 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     Bchannel_= iConfig.getParameter<std::vector<int> >("Bchannel");
     MuonTriggerMatchingPath_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingPath");
     MuonTriggerMatchingFilter_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingFilter");
-    genLabel_           = iConfig.getParameter<edm::InputTag>("GenLabel");
-    trackLabel_         = iConfig.getParameter<edm::InputTag>("TrackLabel");
-    muonLabel_          = iConfig.getParameter<edm::InputTag>("MuonLabel");
-    //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
-    puInfoLabel_        = iConfig.getParameter<edm::InputTag>("PUInfoLabel");
-    bsLabel_        = iConfig.getParameter<edm::InputTag>("BSLabel");
-    pvLabel_        = iConfig.getParameter<edm::InputTag>("PVLabel");
+    genLabel_ = consumes<reco::GenParticleCollection>(iConfig.getParameter<edm::InputTag>("GenLabel"));
+    trackLabel_ = consumes<std::vector<pat::GenericParticle>>(iConfig.getParameter<edm::InputTag>("TrackLabel"));
+    muonLabel_ = consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("MuonLabel"));
+    //hltLabel_ = iConfig.getParameter<edm::InputTag>("HLTLabel");
+    puInfoLabel_ = consumes<std::vector< PileupSummaryInfo > >(iConfig.getParameter<edm::InputTag>("PUInfoLabel"));
+    bsLabel_ = consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BSLabel"));
+    pvLabel_ = consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("PVLabel"));
 
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
@@ -174,6 +175,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     doMuPreCut_ = iConfig.getParameter<bool>("doMuPreCut");
     makeBntuple_ = iConfig.getParameter<bool>("makeBntuple");
     doBntupleSkim_ = iConfig.getParameter<bool>("doBntupleSkim");
+    printInfo_ = iConfig.getParameter<bool>("printInfo");
     MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
@@ -210,11 +212,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //ESHandle<MagneticField> bField;
     iSetup.get<IdealMagneticFieldRecord>().get(bField);
 
-    // Change used muon and track collections
+    // muon and track collections
     edm::Handle< std::vector<pat::Muon> > muons;
-    iEvent.getByLabel(muonLabel_,muons);
+    iEvent.getByToken(muonLabel_,muons);
     edm::Handle< std::vector<pat::GenericParticle> > tks;
-    iEvent.getByLabel(trackLabel_, tks);
+    iEvent.getByToken(trackLabel_, tks);
 
     //CLEAN all memory
     memset(&EvtInfo     ,0x00,sizeof(EvtInfo)   );
@@ -275,8 +277,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
     edm::Handle<reco::BeamSpot> beamSpotHandle;
-    //iEvent.getByLabel("offlineBeamSpot", beamSpotHandle);
-    iEvent.getByLabel(bsLabel_, beamSpotHandle);
+    iEvent.getByToken(bsLabel_, beamSpotHandle);
     if (beamSpotHandle.isValid()){
         beamSpot = *beamSpotHandle;
         theBeamSpotV = Vertex(beamSpot.position(), beamSpot.covariance3D());
@@ -300,7 +301,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     //get vertex informationa
     edm::Handle<reco::VertexCollection> VertexHandle;
-    iEvent.getByLabel(pvLabel_, VertexHandle);
+    iEvent.getByToken(pvLabel_, VertexHandle);
 
     /*  
     if (!VertexHandle.failedToGet() && VertexHandle->size()>0){
@@ -377,7 +378,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // get pile-up information
     if (!iEvent.isRealData() && RunOnMC_){
         edm::Handle<std::vector< PileupSummaryInfo > >  PUHandle;
-        iEvent.getByLabel(puInfoLabel_, PUHandle);
+        iEvent.getByToken(puInfoLabel_, PUHandle);
         std::vector<PileupSummaryInfo>::const_iterator PVI;
         for(PVI = PUHandle->begin(); PVI != PUHandle->end(); ++PVI) {
             EvtInfo.nPU[EvtInfo.nBX]   = PVI->getPU_NumInteractions();
@@ -426,13 +427,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         memset(genTrackPtr,0x00,MAX_GEN);
         //standard check for validity of input data
         if (input_muons.size() == 0){
-            std::cout << "There's no muon : " << iEvent.id() << std::endl;
+            if (printInfo_) std::cout << "There's no muon : " << iEvent.id() << std::endl;
         }else{
-            std::cout << "Got " << input_muons.size() << " muons / ";
+            if (printInfo_) std::cout << "Got " << input_muons.size() << " muons / ";
             if (input_tracks.size() == 0){
-                std::cout << "There's no track: " << iEvent.id() << std::endl;
+                if (printInfo_) std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
-                std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
+                if (printInfo_) std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
                 if (input_tracks.size() > 0 && input_muons.size() > 1){
 
                     //MuonInfo section{{{
@@ -733,7 +734,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
                         PassedTrk++;
                     }//end of track preselection}}}
-                    //std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
+                    if(printInfo_) std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
                     //printf("-----*****DEBUG:End of track preselection.\n");
 
                     // BInfo section{{{
@@ -1061,16 +1062,18 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             
                         }//Mu2
                     }//Mu1
-                    printf("B_counter: ");
-                    for(unsigned int i = 0; i < Bchannel_.size(); i++){
-                        printf("%d/", B_counter[i]);
-                    }
-                    printf("\n");//}}}
+                    if(printInfo_){
+                        printf("B_counter: ");
+                        for(unsigned int i = 0; i < Bchannel_.size(); i++){
+                            printf("%d/", B_counter[i]);
+                        }
+                        printf("\n");
+                    }//}}}
                     //printf("-----*****DEBUG:End of BInfo.\n");
 
                     // TrackInfo section {{{
                     Handle<edm::ValueMap<float> > mvaoutput;
-                    iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
+                    //iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
@@ -1113,7 +1116,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
-                        TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
+                        //TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
 
@@ -1148,7 +1151,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //if (1){
             //edm::Handle< std::vector<reco::GenParticle> > gens;
             edm::Handle<reco::GenParticleCollection> gens;
-            iEvent.getByLabel(genLabel_, gens);
+            iEvent.getByToken(genLabel_, gens);
 
             std::vector<const reco::Candidate *> sel_cands;
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
