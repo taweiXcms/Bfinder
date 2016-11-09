@@ -94,7 +94,7 @@ class Bfinder : public edm::EDAnalyzer
         bool makeBntuple_;
         bool doBntupleSkim_;
         bool printInfo_;
-        std::string MVAMapLabel_;
+        edm::EDGetTokenT<edm::ValueMap<float>> MVAMapLabel_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -176,7 +176,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     makeBntuple_ = iConfig.getParameter<bool>("makeBntuple");
     doBntupleSkim_ = iConfig.getParameter<bool>("doBntupleSkim");
     printInfo_ = iConfig.getParameter<bool>("printInfo");
-    MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
+    MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
