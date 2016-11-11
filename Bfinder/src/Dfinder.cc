@@ -1057,7 +1057,8 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         isDchannel[11] = 1;
         bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
         Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
-        if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
+        //if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
+        Dntuple->fillDGenTree(ntGen, &GenInfo);
     }
 
 }

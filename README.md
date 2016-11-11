@@ -1,14 +1,15 @@
 CMSSW_8_0_22
+=====
 
-check forest setup version in: https://github.com/CmsHI/cmssw/tree/forest_CMSSW_7_5_5_patch4/HeavyIonsAnalysis
-
-git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
-
-git clone -b test80forpPb https://github.com/taweiXcms/Bfinder.git
+0.check forest setup version in: https://github.com/CmsHI/cmssw/tree/forest_CMSSW_7_5_5_patch4/HeavyIonsAnalysis
+`git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION`
+`git clone -b test80forpPb https://github.com/taweiXcms/Bfinder.git`
 
 
 To add B/D finder, paste the following block:
+-----
 
+```
 AddCaloMuon = False
 runOnMC = False
 HIFormat = False
@@ -22,7 +23,11 @@ process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(2.0, 2.0, 0.0, 0.0, 0.0, 0.
 process.Dfinder.dPtCut = cms.vdouble(2.0, 2.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0)
 process.Bfinder.tkPtCut = cms.double(0.5)
 process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+```
 
-and
-Add to your cms.Path()
+And add to your cms.Path()
+-----
+
+```
 process.DfinderSequence+process.BfinderSequence
+```
