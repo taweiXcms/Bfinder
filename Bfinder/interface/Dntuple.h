@@ -201,7 +201,13 @@ class DntupleBranches
   int     DgencollisionId[MAX_XB];
   float   DgenBAncestorpt[MAX_XB];
   int     DgenBAncestorpdgId[MAX_XB];
-  
+  float   DgenprodvtxX[MAX_XB];
+  float   DgenprodvtxY[MAX_XB];
+  float   DgenprodvtxZ[MAX_XB];
+  float   DgendecayvtxX[MAX_XB];
+  float   DgendecayvtxY[MAX_XB];
+  float   DgendecayvtxZ[MAX_XB];
+
   void buildDBranch(TTree* dnt, bool D0kpimode=false, bool detailMode=true)
   {
     //EvtInfo
@@ -411,6 +417,12 @@ class DntupleBranches
     dnt->Branch("DgencollisionId",DgencollisionId,"DgencollisionId[Dsize]/I");
     dnt->Branch("DgenBAncestorpt",DgenBAncestorpt,"DgenBAncestorpt[Dsize]/F");
     dnt->Branch("DgenBAncestorpdgId",DgenBAncestorpdgId,"DgenBAncestorpdgId[Dsize]/I");
+	dnt->Branch("DgenprodvtxX",DgenprodvtxX,"DgenprodvtxX[Dsize]/F");
+	dnt->Branch("DgenprodvtxY",DgenprodvtxY,"DgenprodvtxY[Dsize]/F");
+	dnt->Branch("DgenprodvtxZ",DgenprodvtxZ,"DgenprodvtxZ[Dsize]/F");
+	dnt->Branch("DgendecayvtxX",DgendecayvtxX,"DgendecayvtxX[Dsize]/F");
+	dnt->Branch("DgendecayvtxY",DgendecayvtxY,"DgendecayvtxY[Dsize]/F");
+	dnt->Branch("DgendecayvtxZ",DgendecayvtxZ,"DgendecayvtxZ[Dsize]/F");
   }
   
   //GenInfo
@@ -422,6 +434,12 @@ class DntupleBranches
   int     GpdgId[MAX_GEN];
   int     GcollisionId[MAX_GEN];
   int     GisSignal[MAX_GEN];
+  float   GprodvtxX[MAX_GEN];//gen production vertex
+  float   GprodvtxY[MAX_GEN];
+  float   GprodvtxZ[MAX_GEN];
+  float   GdecayvtxX[MAX_GEN];//gen decay vertex
+  float   GdecayvtxY[MAX_GEN];
+  float   GdecayvtxZ[MAX_GEN];
   float   GBAncestorpt[MAX_GEN];
   int     GBAncestorpdgId[MAX_GEN];
   float   Gtk1pt[MAX_GEN];
@@ -469,6 +487,12 @@ class DntupleBranches
     nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/I");
 	nt->Branch("GBAncestorpt",GBAncestorpt,"GBAncestorpt[Gsize]/F");
 	nt->Branch("GBAncestorpdgId",GBAncestorpdgId,"GBAncestorpdgId[Gsize]/I");
+	nt->Branch("GprodvtxX",GprodvtxX,"GprodvtxX[Gsize]/F");
+	nt->Branch("GprodvtxY",GprodvtxY,"GprodvtxY[Gsize]/F");
+	nt->Branch("GprodvtxZ",GprodvtxZ,"GprodvtxZ[Gsize]/F");
+	nt->Branch("GdecayvtxX",GdecayvtxX,"GdecayvtxX[Gsize]/F");
+	nt->Branch("GdecayvtxY",GdecayvtxY,"GdecayvtxY[Gsize]/F");
+	nt->Branch("GdecayvtxZ",GdecayvtxZ,"GdecayvtxZ[Gsize]/F");
     nt->Branch("Gtk1pt",Gtk1pt,"Gtk1pt[Gsize]/F");
     nt->Branch("Gtk1eta",Gtk1eta,"Gtk1eta[Gsize]/F");
     nt->Branch("Gtk1y",Gtk1y,"Gtk1y[Gsize]/F");
@@ -619,6 +643,9 @@ class DntupleBranches
         Gphi[gsize] = GenInfo->phi[j];
         GpdgId[gsize] = GenInfo->pdgId[j];
         GcollisionId[gsize] = GenInfo->collisionId[j];
+		GprodvtxX[gsize] = GenInfo->vtxX[j];
+		GprodvtxY[gsize] = GenInfo->vtxY[j];
+		GprodvtxZ[gsize] = GenInfo->vtxZ[j];
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;
@@ -639,6 +666,9 @@ class DntupleBranches
 			GBAncestorpt[gsize] = GenInfo->pt[BAncestorindex];
 			GBAncestorpdgId[gsize] = GenInfo->pdgId[BAncestorindex];
 		}
+		GdecayvtxX[gsize] = -999;
+		GdecayvtxY[gsize] = -999;
+		GdecayvtxZ[gsize] = -999;
         Gtk1pt[gsize] = -1;
         Gtk1eta[gsize] = -20;
         Gtk1phi[gsize] = -20;
@@ -673,6 +703,9 @@ class DntupleBranches
         GRestk4y[gsize] = -1;
         if(GisSignal[gsize]==1||GisSignal[gsize]==2||GisSignal[gsize]==3||GisSignal[gsize]==4||GisSignal[gsize]==5||GisSignal[gsize]==6)
           {
+			GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];//all daughers should be from the same vertex, can be double checked here
+			GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
+			GdecayvtxZ[gsize] = GenInfo->vtxZ[GenInfo->da1[j]];
             Gtk1pt[gsize] = GenInfo->pt[GenInfo->da1[j]];
             Gtk1eta[gsize] = GenInfo->eta[GenInfo->da1[j]];
             Gtk1phi[gsize] = GenInfo->phi[GenInfo->da1[j]];
@@ -702,6 +735,9 @@ class DntupleBranches
           }
         if(GisSignal[gsize]==7||GisSignal[gsize]==8||GisSignal[gsize]==9||GisSignal[gsize]==10||GisSignal[gsize]==11||GisSignal[gsize]==12)
           {
+			GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];
+			GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
+			GdecayvtxZ[gsize] = GenInfo->vtxZ[GenInfo->da1[j]];
             Gtk1pt[gsize] = GenInfo->pt[GenInfo->da2[j]];
             Gtk1eta[gsize] = GenInfo->eta[GenInfo->da2[j]];
             Gtk1phi[gsize] = GenInfo->phi[GenInfo->da2[j]];
@@ -1295,9 +1331,15 @@ class DntupleBranches
     Dgeneta[typesize] = -20;
     Dgenphi[typesize] = -20;
     Dgeny[typesize] = -1;
-	DgenBAncestorpt[typesize] = -99;
+	DgenBAncestorpt[typesize] = -999;
 	DgenBAncestorpdgId[typesize] = 0;
-	DgencollisionId[typesize] = -99;
+	DgencollisionId[typesize] = -999;
+	DgenprodvtxX[typesize] = -999;
+	DgenprodvtxY[typesize] = -999;
+	DgenprodvtxZ[typesize] = -999;
+	DgendecayvtxX[typesize] = -999;
+	DgendecayvtxY[typesize] = -999;
+	DgendecayvtxZ[typesize] = -999;
     if(!REAL)
       {
         if(DInfo->type[j]==1||DInfo->type[j]==2)
@@ -1614,6 +1656,12 @@ class DntupleBranches
                              GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
                              GenInfo->mass[DgenIndex[typesize]]);
                 Dgeny[typesize] = b4P->Rapidity();
+				DgenprodvtxX[typesize] = GenInfo->vtxX[DgenIndex[typesize]];
+				DgenprodvtxY[typesize] = GenInfo->vtxY[DgenIndex[typesize]];
+				DgenprodvtxZ[typesize] = GenInfo->vtxZ[DgenIndex[typesize]];
+				DgendecayvtxX[typesize] = GenInfo->vtxX[GenInfo->da1[DgenIndex[typesize]]]; //production vertex of first daughter
+				DgendecayvtxY[typesize] = GenInfo->vtxY[GenInfo->da1[DgenIndex[typesize]]];
+				DgendecayvtxZ[typesize] = GenInfo->vtxZ[GenInfo->da1[DgenIndex[typesize]]];
 				int DgenBAncestorindex = findBAncestor(DgenIndex[typesize], GenInfo);
 				if( DgenBAncestorindex > 0 )
 				{
