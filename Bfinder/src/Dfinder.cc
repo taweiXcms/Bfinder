@@ -952,6 +952,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.collisionId[GenInfo.size]   = it_gen->collisionId();
                 GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
                 GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
+				GenInfo.vtxX[GenInfo.size]          = it_gen->vx(); //it should be the production vx of the particle, better to double check
+				GenInfo.vtxY[GenInfo.size]          = it_gen->vy();
+				GenInfo.vtxZ[GenInfo.size]          = it_gen->vz();
                 //GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
                 //GenInfo.mo2[GenInfo.size]           = iMo2;
                 //GenInfo.da1[GenInfo.size]           = iDa1;
