@@ -1238,6 +1238,9 @@ public:
 
 class GenInfoBranches{//{{{
     public:
+		float   genPVx;
+		float   genPVy;
+		float   genPVz;
         int     size;
         int     index       [MAX_GEN];
         int     handle_index[MAX_GEN];
@@ -1261,6 +1264,9 @@ class GenInfoBranches{//{{{
 		float  vtxZ         [MAX_GEN];
 
         void regTree(TTree *root){//{{{
+			root->Branch("GenInfo.genPVx"       ,&genPVx        ,"GenInfo.genPVx/F");
+			root->Branch("GenInfo.genPVy"       ,&genPVy        ,"GenInfo.genPVy/F");
+			root->Branch("GenInfo.genPVz"       ,&genPVz        ,"GenInfo.genPVz/F");
             root->Branch("GenInfo.size"         ,&size          ,"GenInfo.size/I");
             root->Branch("GenInfo.index"        ,index          ,"GenInfo.index[GenInfo.size]/I");
             root->Branch("GenInfo.handle_index" ,handle_index   ,"GenInfo.handle_index[GenInfo.size]/I");
@@ -1285,6 +1291,9 @@ class GenInfoBranches{//{{{
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
+			root->SetBranchAddress("GenInfo.genPVx"       ,&genPVx        );
+			root->SetBranchAddress("GenInfo.genPVy"       ,&genPVy        );
+			root->SetBranchAddress("GenInfo.genPVz"       ,&genPVz        );
             root->SetBranchAddress("GenInfo.size"         ,&size          );
             root->SetBranchAddress("GenInfo.index"        ,index          );
             root->SetBranchAddress("GenInfo.handle_index" ,handle_index   );

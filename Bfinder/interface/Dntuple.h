@@ -426,6 +426,9 @@ class DntupleBranches
   }
   
   //GenInfo
+  float   GPVx;
+  float   GPVy;
+  float   GPVz;
   int     Gsize;
   float   Gy[MAX_GEN];
   float   Geta[MAX_GEN];
@@ -477,6 +480,9 @@ class DntupleBranches
 
   void buildGenBranch(TTree* nt)
   {
+	nt->Branch("GPVx",&GPVx);
+	nt->Branch("GPVy",&GPVy);
+	nt->Branch("GPVz",&GPVz);
     nt->Branch("Gsize",&Gsize);
     nt->Branch("Gy",Gy,"Gy[Gsize]/F");
     nt->Branch("Geta",Geta,"Geta[Gsize]/F");
@@ -626,6 +632,9 @@ class DntupleBranches
   
   void fillDGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
   {
+	GPVx = GenInfo->genPVx;
+	GPVy = GenInfo->genPVy;
+	GPVz = GenInfo->genPVz;
     TLorentzVector* bGen = new TLorentzVector;
     int gt=0,sigtype=0;
     int gsize=0;
