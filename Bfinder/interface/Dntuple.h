@@ -207,6 +207,7 @@ class DntupleBranches
   float   DgendecayvtxX[MAX_XB];
   float   DgendecayvtxY[MAX_XB];
   float   DgendecayvtxZ[MAX_XB];
+  int     DgenfromgenPV[MAX_XB];
 
   void buildDBranch(TTree* dnt, bool D0kpimode=false, bool detailMode=true)
   {
@@ -423,6 +424,7 @@ class DntupleBranches
 	dnt->Branch("DgendecayvtxX",DgendecayvtxX,"DgendecayvtxX[Dsize]/F");
 	dnt->Branch("DgendecayvtxY",DgendecayvtxY,"DgendecayvtxY[Dsize]/F");
 	dnt->Branch("DgendecayvtxZ",DgendecayvtxZ,"DgendecayvtxZ[Dsize]/F");
+	dnt->Branch("DgenfromgenPV",DgenfromgenPV,"DgenfromgenPV[Dsize]/I");
   }
   
   //GenInfo
@@ -445,6 +447,7 @@ class DntupleBranches
   float   GdecayvtxZ[MAX_GEN];
   float   GBAncestorpt[MAX_GEN];
   int     GBAncestorpdgId[MAX_GEN];
+  int     GfromgenPV[MAX_GEN];
   float   Gtk1pt[MAX_GEN];
   float   Gtk1eta[MAX_GEN];
   float   Gtk1y[MAX_GEN];
@@ -493,6 +496,7 @@ class DntupleBranches
     nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/I");
 	nt->Branch("GBAncestorpt",GBAncestorpt,"GBAncestorpt[Gsize]/F");
 	nt->Branch("GBAncestorpdgId",GBAncestorpdgId,"GBAncestorpdgId[Gsize]/I");
+	nt->Branch("GfromgenPV",GfromgenPV,"GfromgenPV[Gsize]/I");
 	nt->Branch("GprodvtxX",GprodvtxX,"GprodvtxX[Gsize]/F");
 	nt->Branch("GprodvtxY",GprodvtxY,"GprodvtxY[Gsize]/F");
 	nt->Branch("GprodvtxZ",GprodvtxZ,"GprodvtxZ[Gsize]/F");
@@ -655,6 +659,10 @@ class DntupleBranches
 		GprodvtxX[gsize] = GenInfo->vtxX[j];
 		GprodvtxY[gsize] = GenInfo->vtxY[j];
 		GprodvtxZ[gsize] = GenInfo->vtxZ[j];
+		if( fabs(GprodvtxX[gsize]-GPVx) < 0.0001 && fabs(GprodvtxY[gsize]-GPVy) < 0.0001 && fabs(GprodvtxZ[gsize]-GPVz) < 0.0001 )
+			GfromgenPV[gsize] = 1;
+		else
+			GfromgenPV[gsize] = -1;
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;
@@ -1349,6 +1357,7 @@ class DntupleBranches
 	DgendecayvtxX[typesize] = -999;
 	DgendecayvtxY[typesize] = -999;
 	DgendecayvtxZ[typesize] = -999;
+	DgenfromgenPV[typesize] = -999;
     if(!REAL)
       {
         if(DInfo->type[j]==1||DInfo->type[j]==2)
@@ -1671,6 +1680,11 @@ class DntupleBranches
 				DgendecayvtxX[typesize] = GenInfo->vtxX[GenInfo->da1[DgenIndex[typesize]]]; //production vertex of first daughter
 				DgendecayvtxY[typesize] = GenInfo->vtxY[GenInfo->da1[DgenIndex[typesize]]];
 				DgendecayvtxZ[typesize] = GenInfo->vtxZ[GenInfo->da1[DgenIndex[typesize]]];
+				//decide if from gen PV or not
+				if( fabs(DgenprodvtxX[typesize] - GenInfo->genPVx) < 0.0001 && fabs(DgenprodvtxY[typesize] - GenInfo->genPVy) < 0.0001 && fabs(DgenprodvtxZ[typesize] - GenInfo->genPVz) < 0.0001 )
+					DgenfromgenPV[typesize] = 1;
+				else
+					DgenfromgenPV[typesize] = -1;
 				int DgenBAncestorindex = findBAncestor(DgenIndex[typesize], GenInfo);
 				if( DgenBAncestorindex > 0 )
 				{
