@@ -659,7 +659,7 @@ class DntupleBranches
 		GprodvtxX[gsize] = GenInfo->vtxX[j];
 		GprodvtxY[gsize] = GenInfo->vtxY[j];
 		GprodvtxZ[gsize] = GenInfo->vtxZ[j];
-		if( fabs(GprodvtxX[gsize]-GPVx) < 0.0001 && fabs(GprodvtxY[gsize]-GPVy) < 0.0001 && fabs(GprodvtxZ[gsize]-GPVz) < 0.0001 )
+		if( fabs(GprodvtxX[gsize]-GPVx) < 0.001 && fabs(GprodvtxY[gsize]-GPVy) < 0.001 && fabs(GprodvtxZ[gsize]-GPVz) < 0.001 )
 			GfromgenPV[gsize] = 1;
 		else
 			GfromgenPV[gsize] = -1;
@@ -1681,7 +1681,7 @@ class DntupleBranches
 				DgendecayvtxY[typesize] = GenInfo->vtxY[GenInfo->da1[DgenIndex[typesize]]];
 				DgendecayvtxZ[typesize] = GenInfo->vtxZ[GenInfo->da1[DgenIndex[typesize]]];
 				//decide if from gen PV or not
-				if( fabs(DgenprodvtxX[typesize] - GenInfo->genPVx) < 0.0001 && fabs(DgenprodvtxY[typesize] - GenInfo->genPVy) < 0.0001 && fabs(DgenprodvtxZ[typesize] - GenInfo->genPVz) < 0.0001 )
+				if( fabs(DgenprodvtxX[typesize] - GenInfo->genPVx) < 0.001 && fabs(DgenprodvtxY[typesize] - GenInfo->genPVy) < 0.001 && fabs(DgenprodvtxZ[typesize] - GenInfo->genPVz) < 0.001 )
 					DgenfromgenPV[typesize] = 1;
 				else
 					DgenfromgenPV[typesize] = -1;
