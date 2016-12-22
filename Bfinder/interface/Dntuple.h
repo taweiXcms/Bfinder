@@ -191,7 +191,7 @@ class DntupleBranches
   float   DRestrk4D0Err[MAX_XB];
   int     DRestrk4originalAlgo[MAX_XB];
   //DInfo.genInfo
-  float   Dgen[MAX_XB];
+  int     Dgen[MAX_XB];
   int     DgennDa[MAX_XB];
   int     DgenIndex[MAX_XB];
   float   Dgenpt[MAX_XB];
@@ -407,7 +407,7 @@ class DntupleBranches
         dnt->Branch("DRestrk4originalAlgo",DRestrk4originalAlgo,"DRestrk4originalAlgo[Dsize]/I");
       }
     //DInfo.genInfo
-    dnt->Branch("Dgen",Dgen,"Dgen[Dsize]/F");
+    dnt->Branch("Dgen",Dgen,"Dgen[Dsize]/I");
     dnt->Branch("DgenIndex",DgenIndex,"DgenIndex[Dsize]/I");
     dnt->Branch("DgennDa",DgennDa,"DgennDa[Dsize]/I");
     dnt->Branch("Dgenpt",Dgenpt,"Dgenpt[Dsize]/F");
