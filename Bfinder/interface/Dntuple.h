@@ -634,7 +634,7 @@ class DntupleBranches
 		GBAncestorpt[gsize] = -99.;
 		GBAncestorpdgId[gsize] = 0;
 		BAncestorindex = findBAncestor(j, GenInfo);
-		if( BAncestorindex > 0 )
+		if( BAncestorindex >= 0 )
 		{
 			GBAncestorpt[gsize] = GenInfo->pt[BAncestorindex];
 			GBAncestorpdgId[gsize] = GenInfo->pdgId[BAncestorindex];
@@ -1615,7 +1615,7 @@ class DntupleBranches
                              GenInfo->mass[DgenIndex[typesize]]);
                 Dgeny[typesize] = b4P->Rapidity();
 				int DgenBAncestorindex = findBAncestor(DgenIndex[typesize], GenInfo);
-				if( DgenBAncestorindex > 0 )
+				if( DgenBAncestorindex >= 0 )
 				{
 					DgenBAncestorpt[typesize] = GenInfo->pt[DgenBAncestorindex];
 					DgenBAncestorpdgId[typesize] = GenInfo->pdgId[DgenBAncestorindex];
