@@ -575,7 +575,7 @@ class DntupleBranches
                     //if((DInfo->pt[j]>=13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<2.5)||
                     //   (DInfo->pt[j]>=5.5&&DInfo->pt[j]<13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<4.)||
                     //   (DInfo->pt[j]<5.5&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<5.)) continue;
-                    if(DInfo->pt[j]<2)continue;
+                    if(DInfo->pt[j]<1.0)continue;
                     if(fabs(b4P->Rapidity())>1.1) continue;
                     if(fabs(TrackInfo->eta[DInfo->rftk1_index[j]])>2.) continue;
                     if(fabs(TrackInfo->eta[DInfo->rftk2_index[j]])>2.) continue;
