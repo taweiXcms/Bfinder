@@ -696,6 +696,40 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //}
                         Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 12, 1);
                     }
+                    //////////////////////////////////////////////////////////////////////////
+                    // RECONSTRUCTION: D0bar(K+pi-)pi+
+                    //////////////////////////////////////////////////////////////////////////
+                    //float bplus_mass_window[2] = {BPLUS_MASS-0.2,BPLUS_MASS+0.2};
+                    float bplus_mass_window[2] = {4.5, 6.5};
+                    if(Dchannel_[12] == 1){
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, bplus_mass_window, InVec, D0_MASS, 0.1, false, true, 13, 1);
+                    }
+                    //////////////////////////////////////////////////////////////////////////
+                    // RECONSTRUCTION: D0(K-pi+)pi-
+                    //////////////////////////////////////////////////////////////////////////
+                    if(Dchannel_[13] == 1){
+                        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+                        std::vector< std::pair<float, int> > InVec;
+                        std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 1);
+                        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 1);
+                        std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
+                        InVec.push_back(tk1);
+                        InVec.push_back(tk2);
+                        InVec.push_back(tk3);
+                        PermuVec = GetPermu(InVec);
+                        PermuVec = DelDuplicate(PermuVec);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, bplus_mass_window, InVec, D0_MASS, 0.1, false, true, 14, 1);
+                    }
 
                     printf("D_counter: ");
                     for(unsigned int i = 0; i < Dchannel_.size(); i++){
