@@ -9,13 +9,13 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
 {
   if(istest)
     {
-      infile="/store/group/phys_heavyions/HeavyFlavourRun2/DfinderRun2/MC_revised/Pythia8D0kpi_Dstarpt0p0_Pthat0_TuneCUETP8M1_5020GeV_GEN_SIM_PU_20160229/DfinderMC_PbPb_20160328_dPt0tkPt2p5_D0Dstar3p5p/finder_PbPb_62_1_9Rs.root";
-      outfile="test.root";
+      infile="/data/HeavyFlavourRun2/temp/finder_pp.root";
+      outfile="/data/wangj/testspace/test_Dntuple_pp.root";
       REAL=false;
-      isPbPb=true;
+      isPbPb=false;
       skim=false;
       checkMatching=true;
-      iseos=true;
+      iseos=false;
     }
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
@@ -55,19 +55,21 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
   TFile* outf = TFile::Open(Form("%s", outfile.Data()),"recreate");
 
-  int isDchannel[12];
-  isDchannel[0] = 1; //k+pi-
-  isDchannel[1] = 1; //k-pi+
-  isDchannel[2] = 1; //k-pi+pi+
-  isDchannel[3] = 1; //k+pi-pi-
-  isDchannel[4] = 1; //k-pi-pi+pi+
-  isDchannel[5] = 1; //k+pi+pi-pi-
+  int isDchannel[14];
+  isDchannel[0] = 1; //D0(k+pi-)
+  isDchannel[1] = 1; //D0(k-pi+)
+  isDchannel[2] = 1; //D*(D0(k-pi+)pi+)
+  isDchannel[3] = 1; //D*(D0(k+pi-)pi-)
+  isDchannel[4] = 1; //D*(D0(k-pi-pi+pi+)pi+)
+  isDchannel[5] = 1; //D*(D0(k+pi+pi-pi-)pi-)
   isDchannel[6] = 1; 
   isDchannel[7] = 1; 
   isDchannel[8] = 1; 
   isDchannel[9] = 1; 
   isDchannel[10] = 1; 
   isDchannel[11] = 1;
+  isDchannel[12] = 1; //B+(D0(k-pi+)pi+)
+  isDchannel[13] = 1; //B-(D0(k-pi+)pi-)
 
   cout<<"--- Building trees"<<endl;
   bool detailMode = true;
@@ -79,6 +81,7 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
   TTree* ntD4 = new TTree("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4,D0kpimode,detailMode);
   TTree* ntD5 = new TTree("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5,D0kpimode,detailMode);
   TTree* ntD6 = new TTree("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6,D0kpimode,detailMode);
+  TTree* ntD7 = new TTree("ntBptoD0pi","");       Dntuple->buildDBranch(ntD7,D0kpimode,detailMode);
   TTree* ntGen = new TTree("ntGen","");           Dntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
@@ -99,7 +102,7 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
       hltroot->GetEntry(i);
       skimroot->GetEntry(i);
       hiroot->GetEntry(i);
-      if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
+      if(i%1000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
         {
           if(((int)Df_HLT_Event!=EvtInfo->EvtNo||(int)Df_HLT_Run!=EvtInfo->RunNo||(int)Df_HLT_LumiBlock!=EvtInfo->LumiNo) || 
@@ -115,7 +118,7 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
       ntHlt->Fill();
       ntSkim->Fill();
       ntHi->Fill();
-      Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
+      Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7);
       if(!REAL) Dntuple->fillDGenTree(ntGen, GenInfo, gskim);
     }
   outf->Write();

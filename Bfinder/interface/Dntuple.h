@@ -66,12 +66,7 @@ class DntupleBranches
   float   DlxyBS[MAX_XB];
   float   DlxyBSErr[MAX_XB];
   float   DMaxDoca[MAX_XB];
-  /*
-  bool    Dmaxpt[MAX_XB];
-  bool    Dmaxprob[MAX_XB];
-  bool    DmaxptMatched[MAX_XB];
-  bool    DmaxprobMatched[MAX_XB];
-  */
+
   //DInfo.trkInfo
   int     Dtrk1Idx[MAX_XB];
   int     Dtrk2Idx[MAX_XB];
@@ -264,12 +259,7 @@ class DntupleBranches
     dnt->Branch("DlxyBS",DlxyBS,"DlxyBS[Dsize]/F");
     dnt->Branch("DlxyBSErr",DlxyBSErr,"DlxyBSErr[Dsize]/F");
     dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/F");
-    /*
-    dnt->Branch("Dmaxpt",Dmaxpt,"Dmaxpt[Dsize]/O");
-    dnt->Branch("Dmaxprob",Dmaxprob,"Dmaxprob[Dsize]/O");
-    dnt->Branch("DmaxptMatched",DmaxptMatched,"DmaxptMatched[Dsize]/O");
-    dnt->Branch("DmaxprobMatched",DmaxprobMatched,"DmaxprobMatched[Dsize]/O");
-    */
+
     //DInfo.trkInfo
     dnt->Branch("Dtrk1Pt",Dtrk1Pt,"Dtrk1Pt[Dsize]/F");
     dnt->Branch("Dtrk2Pt",Dtrk2Pt,"Dtrk2Pt[Dsize]/F");
@@ -467,8 +457,8 @@ class DntupleBranches
     nt->Branch("GpdgId",GpdgId,"GpdgId[Gsize]/I");
     nt->Branch("GcollisionId",GcollisionId,"GcollisionId[Gsize]/I");
     nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/I");
-	nt->Branch("GBAncestorpt",GBAncestorpt,"GBAncestorpt[Gsize]/F");
-	nt->Branch("GBAncestorpdgId",GBAncestorpdgId,"GBAncestorpdgId[Gsize]/I");
+    nt->Branch("GBAncestorpt",GBAncestorpt,"GBAncestorpt[Gsize]/F");
+    nt->Branch("GBAncestorpdgId",GBAncestorpdgId,"GBAncestorpdgId[Gsize]/I");
     nt->Branch("Gtk1pt",Gtk1pt,"Gtk1pt[Gsize]/F");
     nt->Branch("Gtk1eta",Gtk1eta,"Gtk1eta[Gsize]/F");
     nt->Branch("Gtk1y",Gtk1y,"Gtk1y[Gsize]/F");
@@ -503,32 +493,18 @@ class DntupleBranches
     nt->Branch("GRestk4phi",GRestk4phi,"GRestk4phi[Gsize]/F");
   }
   
-  void makeDNtuple(int isDchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3, TTree* ntD4, TTree* ntD5, TTree* ntD6)
+  void makeDNtuple(int isDchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3, TTree* ntD4, TTree* ntD5, TTree* ntD6, TTree* ntD7)
   {//{{{
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
     TLorentzVector* b4P = new TLorentzVector;
     fillTreeEvt(EvtInfo);
-    int Dtypesize[6]={0,0,0,0,0,0};
-    /*
-    int ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
-    float pttem=0,ptMatchedtem=0,probtem=0,probMatchedtem=0;
-    */
-    for(int t=0;t<12;t++)
+    int Dtypesize[7]={0,0,0,0,0,0,0};
+    for(int t=0;t<14;t++)
       {
         if(t%2==0)
           {
             Dsize = 0;
-            /*
-            ptflag = -1;
-            pttem = 0;
-            ptMatchedflag = -1;
-            ptMatchedtem = 0;
-            probflag = -1;
-            probtem = 0;
-            probMatchedflag = -1;
-            probMatchedtem = 0;
-            */
           }
         if(isDchannel[t]==1)
           {
@@ -537,10 +513,6 @@ class DntupleBranches
                 b4P->SetPtEtaPhiM(DInfo->pt[j],DInfo->eta[j],DInfo->phi[j],DInfo->mass[j]);
                 if(skim)
                   {
-                    //if(DInfo->alpha[j]>0.13) continue;
-                    //if((DInfo->pt[j]>=13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<2.5)||
-                    //   (DInfo->pt[j]>=5.5&&DInfo->pt[j]<13.&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<4.)||
-                    //   (DInfo->pt[j]<5.5&&(DInfo->svpvDistance[j]/DInfo->svpvDisErr[j])<5.)) continue;
                     if(DInfo->pt[j]<2)continue;
                     if(fabs(b4P->Rapidity())>1.1) continue;
                     if(fabs(TrackInfo->eta[DInfo->rftk1_index[j]])>2.) continue;
@@ -553,49 +525,16 @@ class DntupleBranches
                 if(DInfo->type[j]==(t+1))
                   {
                     fillDTree(bP,bVtx,b4P,j,Dtypesize[t/2],REAL,EvtInfo,VtxInfo,TrackInfo,DInfo,GenInfo);
-                    /*
-                    if(DInfo->pt[j]>pttem)
-                      {
-                        ptflag = Dtypesize[t/2];
-                        pttem = DInfo->pt[j];
-                      }
-                    if(TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j])>probtem)
-                      {
-                        probflag = Dtypesize[t/2];
-                        probtem = TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j]);
-                      }
-                    if(((!REAL&&(Dgen[Dtypesize[t/2]]==23333||Dgen[Dtypesize[t/2]]==23344))||REAL)&&true)//working selection
-                      {
-                        if(DInfo->pt[j]>ptMatchedtem)
-                          {
-                            ptMatchedflag = Dtypesize[t/2];
-                            ptMatchedtem = DInfo->pt[j];
-                          }
-                        if(TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j])>probMatchedtem)
-                          {
-                            probMatchedflag = Dtypesize[t/2];
-                            probMatchedtem = TMath::Prob(DInfo->vtxchi2[j],DInfo->vtxdof[j]);
-                          }
-                      }
-                    */
                     Dtypesize[t/2]++;
                   }
               }
-            /*
-            if(t%2==1)
-              {
-                if(ptflag>=0) Dmaxpt[ptflag] = true;
-                if(probflag>=0) Dmaxprob[probflag] = true;
-                if(ptMatchedflag>=0) DmaxptMatched[ptMatchedflag] = true;
-                if(probMatchedflag>=0) DmaxprobMatched[probMatchedflag] = true;
-              }
-            */
             if(t==1)       ntD1->Fill();
             else if(t==3)  ntD2->Fill();
             else if(t==5)  ntD3->Fill();
             else if(t==7)  ntD4->Fill();
             else if(t==9)  ntD5->Fill();
             else if(t==11) ntD6->Fill();
+            else if(t==13) ntD7->Fill();
           }
       }
   }//}}}
@@ -605,14 +544,15 @@ class DntupleBranches
     TLorentzVector* bGen = new TLorentzVector;
     int gt=0,sigtype=0;
     int gsize=0;
-	int BAncestorindex=-99;
+    int BAncestorindex=-99;
     Gsize = 0;
     for(int j=0;j<GenInfo->size;j++)
       {
         if(TMath::Abs(GenInfo->pdgId[j])!=DZERO_PDGID&&
            TMath::Abs(GenInfo->pdgId[j])!=DPLUS_PDGID&&
            TMath::Abs(GenInfo->pdgId[j])!=DSUBS_PDGID&&
-           TMath::Abs(GenInfo->pdgId[j])!=DSTAR_PDGID&&gskim) continue;
+           TMath::Abs(GenInfo->pdgId[j])!=DSTAR_PDGID&& 
+           TMath::Abs(GenInfo->pdgId[j])!=BPLUS_PDGID&&gskim) continue;
         Gsize = gsize+1;
         Gpt[gsize] = GenInfo->pt[j];
         Geta[gsize] = GenInfo->eta[j];
@@ -622,23 +562,23 @@ class DntupleBranches
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;
-        for(gt=1;gt<13;gt++)
+        for(gt=1;gt<15;gt++)
           {
-            if(isDsignalGen(gt,j, GenInfo))
+            if(isDsignalGen(gt,j,GenInfo))
               {
                 sigtype=gt;
                 break;
               }
           }
         GisSignal[gsize] = sigtype;
-		GBAncestorpt[gsize] = -99.;
-		GBAncestorpdgId[gsize] = 0;
-		BAncestorindex = findBAncestor(j, GenInfo);
-		if( BAncestorindex >= 0 )
-		{
-			GBAncestorpt[gsize] = GenInfo->pt[BAncestorindex];
-			GBAncestorpdgId[gsize] = GenInfo->pdgId[BAncestorindex];
-		}
+        GBAncestorpt[gsize] = -99.;
+        GBAncestorpdgId[gsize] = 0;
+        BAncestorindex = findBAncestor(j, GenInfo);
+        if(BAncestorindex>=0)
+          {
+            GBAncestorpt[gsize] = GenInfo->pt[BAncestorindex];
+            GBAncestorpdgId[gsize] = GenInfo->pdgId[BAncestorindex];
+          }
         Gtk1pt[gsize] = -1;
         Gtk1eta[gsize] = -20;
         Gtk1phi[gsize] = -20;
@@ -700,7 +640,7 @@ class DntupleBranches
                   }
               }
           }
-        if(GisSignal[gsize]==7||GisSignal[gsize]==8||GisSignal[gsize]==9||GisSignal[gsize]==10||GisSignal[gsize]==11||GisSignal[gsize]==12)
+        if(GisSignal[gsize]==7||GisSignal[gsize]==8||GisSignal[gsize]==9||GisSignal[gsize]==10||GisSignal[gsize]==11||GisSignal[gsize]==12||GisSignal[gsize]==13||GisSignal[gsize]==14)
           {
             Gtk1pt[gsize] = GenInfo->pt[GenInfo->da2[j]];
             Gtk1eta[gsize] = GenInfo->eta[GenInfo->da2[j]];
@@ -833,12 +773,7 @@ class DntupleBranches
     DlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
     DlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->vtxYErr[j]);
     DMaxDoca[typesize] = DInfo->MaxDoca[j];
-    /*
-    Dmaxpt[typesize] = false;
-    Dmaxprob[typesize] = false;
-    DmaxptMatched[typesize] = false;
-    DmaxprobMatched[typesize] = false;
-    */
+
     //DInfo.trkInfo
     float trk1mass,trk2mass,trk3mass,trk4mass;
     if(DInfo->type[j]==1||DInfo->type[j]==2||DInfo->type[j]==3||DInfo->type[j]==4||DInfo->type[j]==5||DInfo->type[j]==6)
@@ -1135,7 +1070,7 @@ class DntupleBranches
             DRestrk4originalAlgo[typesize] = 0;
           }
       }
-    else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12)
+    else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14)
       {
         Dtrk1Idx[typesize] = DInfo->rftk2_index[j];
         Dtrk1Pt[typesize] = TrackInfo->pt[DInfo->rftk2_index[j]];
@@ -1286,8 +1221,9 @@ class DntupleBranches
     else if(DInfo->type[j]==3||DInfo->type[j]==4) DpdgId=DPLUS_PDGID;
     else if(DInfo->type[j]==7||DInfo->type[j]==8) DpdgId=DSUBS_PDGID;
     else if(DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12) DpdgId=DSTAR_PDGID;
+    else if(DInfo->type[j]==13||DInfo->type[j]==14) DpdgId=BPLUS_PDGID;
     if(DInfo->type[j]==7||DInfo->type[j]==8) RpdgId=PHI_PDGID;
-    else if(DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12) RpdgId=DZERO_PDGID;
+    else if(DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14) RpdgId=DZERO_PDGID;
     Dgen[typesize] = 0;//gen init
     DgenIndex[typesize] = -1;
     DgennDa[typesize] = -1;
@@ -1295,9 +1231,9 @@ class DntupleBranches
     Dgeneta[typesize] = -20;
     Dgenphi[typesize] = -20;
     Dgeny[typesize] = -1;
-	DgenBAncestorpt[typesize] = -99;
-	DgenBAncestorpdgId[typesize] = 0;
-	DgencollisionId[typesize] = -99;
+    DgenBAncestorpt[typesize] = -99;
+    DgenBAncestorpdgId[typesize] = 0;
+    DgencollisionId[typesize] = -99;
     if(!REAL)
       {
         if(DInfo->type[j]==1||DInfo->type[j]==2)
@@ -1446,7 +1382,7 @@ class DntupleBranches
                   }
               }
           }
-        else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10)
+        else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==13||DInfo->type[j]==14)
           {
             if(DInfo->tktkRes_rftk1_index[j]>-1 && DInfo->tktkRes_rftk2_index[j]>-1)
               {
@@ -1470,7 +1406,7 @@ class DntupleBranches
                                         Dgen[typesize] = 3333;
                                         dGenIdxRes = GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]];
                                       }
-                                    if((DInfo->type[j]==9||DInfo->type[j]==10) &&
+                                    if((DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==3||DInfo->type[j]==14) &&
                                        TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->tktkRes_rftk2_index[j]]])==findPdgid(DInfo->tktkRes_rftk1_mass[j]) && 
                                        TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]])==findPdgid(DInfo->tktkRes_rftk2_mass[j]))
                                       {
@@ -1596,7 +1532,7 @@ class DntupleBranches
                   }
               }
           }
-
+        
         if(Dgen[typesize]==23333||Dgen[typesize]==23344)
           {
             if(dGenIdxRes<0) cout<<"ERROR: Gen-Matched D index is -1"<<endl;
@@ -1608,18 +1544,18 @@ class DntupleBranches
                 Dgenpt[typesize] = GenInfo->pt[DgenIndex[typesize]];
                 Dgeneta[typesize] = GenInfo->eta[DgenIndex[typesize]];
                 Dgenphi[typesize] = GenInfo->phi[DgenIndex[typesize]];
-				DgencollisionId[typesize] = GenInfo->collisionId[DgenIndex[typesize]];
+                DgencollisionId[typesize] = GenInfo->collisionId[DgenIndex[typesize]];
                 b4P->SetXYZM(GenInfo->pt[DgenIndex[typesize]]*cos(GenInfo->phi[DgenIndex[typesize]]),
                              GenInfo->pt[DgenIndex[typesize]]*sin(GenInfo->phi[DgenIndex[typesize]]),
                              GenInfo->pt[DgenIndex[typesize]]*sinh(GenInfo->eta[DgenIndex[typesize]]),
                              GenInfo->mass[DgenIndex[typesize]]);
                 Dgeny[typesize] = b4P->Rapidity();
-				int DgenBAncestorindex = findBAncestor(DgenIndex[typesize], GenInfo);
-				if( DgenBAncestorindex >= 0 )
-				{
-					DgenBAncestorpt[typesize] = GenInfo->pt[DgenBAncestorindex];
-					DgenBAncestorpdgId[typesize] = GenInfo->pdgId[DgenBAncestorindex];
-				}
+                int DgenBAncestorindex = findBAncestor(DgenIndex[typesize], GenInfo);
+                if(DgenBAncestorindex>=0)
+                  {
+                    DgenBAncestorpt[typesize] = GenInfo->pt[DgenBAncestorindex];
+                    DgenBAncestorpdgId[typesize] = GenInfo->pdgId[DgenBAncestorindex];
+                  }
               }
           }
       }//if(!real)
@@ -1627,25 +1563,25 @@ class DntupleBranches
   
   int findBAncestor(int j, GenInfoBranches *GenInfo)
   {
-	  int BAncestorindex = -999;
-	  if( GenInfo->nMo[j] == 0 ) return BAncestorindex;
-
-	  int motherindex = -999;
-	  int daughterindex = j;
-	  int igeneration = 0;//to control how many generations loop up, 50 is big enough. To avoid infinite loop
-	  //just work for 1 mom case yet, but more than 99.9% particle just have one mom
-	  //and in B->D decay chain, all particles should just have one mom (they are not from collision). Should be checked
-	  while( GenInfo->nMo[daughterindex] == 1 && BAncestorindex < 0 && igeneration < 50 )
-	  {
-		  motherindex = GenInfo->mo1[daughterindex];
-		  if( motherindex < 0 ) break;
-		  if( ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 500  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 600 ) || ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 5000  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 6000 ) )
-			  BAncestorindex = motherindex;
-		  igeneration++;
-		  daughterindex = motherindex;
-	  }
-
-	  return BAncestorindex;
+    int BAncestorindex = -999;
+    if( GenInfo->nMo[j] == 0 ) return BAncestorindex;
+    
+    int motherindex = -999;
+    int daughterindex = j;
+    int igeneration = 0;//to control how many generations loop up, 50 is big enough. To avoid infinite loop
+    //just work for 1 mom case yet, but more than 99.9% particle just have one mom
+    //and in B->D decay chain, all particles should just have one mom (they are not from collision). Should be checked
+    while( GenInfo->nMo[daughterindex] == 1 && BAncestorindex < 0 && igeneration < 50 )
+      {
+        motherindex = GenInfo->mo1[daughterindex];
+        if( motherindex < 0 ) break;
+        if( ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 500  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 600 ) || ( TMath::Abs( GenInfo->pdgId[motherindex] ) > 5000  && TMath::Abs( GenInfo->pdgId[motherindex] ) < 6000 ) )
+          BAncestorindex = motherindex;
+        igeneration++;
+        daughterindex = motherindex;
+      }
+    
+    return BAncestorindex;
   }
   
   bool isDsignalGen(int dmesontype, int j, GenInfoBranches *GenInfo)
@@ -1756,6 +1692,26 @@ class DntupleBranches
               }
           }
       }
+    if(dmesontype==13||dmesontype==14)
+      {
+        if(TMath::Abs(GenInfo->pdgId[j])==BPLUS_PDGID&&GenInfo->nDa[j]==2&&GenInfo->da1[j]!=-1&&GenInfo->da2[j]!=-1)
+          {
+            if(TMath::Abs(GenInfo->pdgId[GenInfo->da1[j]])==DZERO_PDGID)
+              {
+                if(GenInfo->nDa[GenInfo->da1[j]]==2&&GenInfo->da1[GenInfo->da1[j]]!=-1&&GenInfo->da2[GenInfo->da1[j]]!=-1)
+                  {
+                    if((((GenInfo->pdgId[GenInfo->da2[GenInfo->da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo->pdgId[GenInfo->da1[GenInfo->da1[j]]])==PION_PDGID)||
+                         (GenInfo->pdgId[GenInfo->da1[GenInfo->da1[j]]]==KAON_PDGID&&TMath::Abs(GenInfo->pdgId[GenInfo->da2[GenInfo->da1[j]]])==PION_PDGID))&&GenInfo->pdgId[GenInfo->da2[j]]==PION_PDGID&&dmesontype==13) ||
+                       (((GenInfo->pdgId[GenInfo->da2[GenInfo->da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo->pdgId[GenInfo->da1[GenInfo->da1[j]]])==PION_PDGID)||
+                         (GenInfo->pdgId[GenInfo->da1[GenInfo->da1[j]]]==(0-KAON_PDGID)&&TMath::Abs(GenInfo->pdgId[GenInfo->da2[GenInfo->da1[j]]])==PION_PDGID))&&GenInfo->pdgId[GenInfo->da2[j]]==(0-PION_PDGID)&&dmesontype==14))
+                      {
+                        flag=true;                      
+                      }
+                  }
+              }
+          }
+      }
+    
     return flag;
   }
 
