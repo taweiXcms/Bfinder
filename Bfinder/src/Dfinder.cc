@@ -114,6 +114,7 @@ class Dfinder : public edm::EDAnalyzer
         TTree* ntD4; 
         TTree* ntD5; 
         TTree* ntD6; 
+        TTree* ntD7; 
         TTree* ntGen;
 
         //histograms
@@ -133,6 +134,7 @@ void Dfinder::beginJob()
     ntD4 = fs->make<TTree>("ntDPhikkpi","");       Dntuple->buildDBranch(ntD4);
     ntD5 = fs->make<TTree>("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
     ntD6 = fs->make<TTree>("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
+    ntD7 = fs->make<TTree>("ntBptoD0pi","");       Dntuple->buildDBranch(ntD7);
     ntGen = fs->make<TTree>("ntGen","");           Dntuple->buildGenBranch(ntGen);
     EvtInfo.regTree(root);
     VtxInfo.regTree(root);
@@ -1073,7 +1075,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
  
     //Made a Dntuple on the fly   
     if(makeDntuple_){
-        int isDchannel[12];
+        int isDchannel[14];
         isDchannel[0] = 1; //k+pi-
         isDchannel[1] = 1; //k-pi+
         isDchannel[2] = 1; //k-pi+pi+
@@ -1086,8 +1088,10 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         isDchannel[9] = 1; 
         isDchannel[10] = 1; 
         isDchannel[11] = 1;
+        isDchannel[12] = 1; //B+(D0(k-pi+)pi+)
+        isDchannel[13] = 1; //B-(D0(k-pi+)pi-)
         bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-        Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6);
+        Dntuple->makeDNtuple(isDchannel, REAL, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7);
         if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
     }
 
