@@ -93,7 +93,9 @@ class Bfinder : public edm::EDAnalyzer
         bool doMuPreCut_;
         bool makeBntuple_;
         bool doBntupleSkim_;
-        std::string MVAMapLabel_;
+        bool printInfo_;
+        //std::string MVAMapLabel_;
+        edm::EDGetTokenT<edm::ValueMap<float>> MVAMapLabel_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -174,7 +176,9 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     doMuPreCut_ = iConfig.getParameter<bool>("doMuPreCut");
     makeBntuple_ = iConfig.getParameter<bool>("makeBntuple");
     doBntupleSkim_ = iConfig.getParameter<bool>("doBntupleSkim");
-    MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
+    printInfo_ = iConfig.getParameter<bool>("printInfo");
+    //MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
+    MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -419,13 +423,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         memset(genTrackPtr,0x00,MAX_GEN);
         //standard check for validity of input data
         if (input_muons.size() == 0){
-            std::cout << "There's no muon : " << iEvent.id() << std::endl;
+            if (printInfo_) std::cout << "There's no muon : " << iEvent.id() << std::endl;
         }else{
-            std::cout << "Got " << input_muons.size() << " muons / ";
+            if (printInfo_) std::cout << "Got " << input_muons.size() << " muons / ";
             if (input_tracks.size() == 0){
-                std::cout << "There's no track: " << iEvent.id() << std::endl;
+                if (printInfo_) std::cout << "There's no track: " << iEvent.id() << std::endl;
             }else{
-                std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
+                if (printInfo_) std::cout << "Got " << input_tracks.size() << " tracks" << std::endl;
                 if (input_tracks.size() > 0 && input_muons.size() > 1){
 
                     //MuonInfo section{{{
@@ -701,7 +705,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         isNeededTrack[tk_it-input_tracks.begin()] = true;
                         PassedTrk++;
                     }//end of track preselection}}}
-                    //std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;
+                    if(printInfo_) std::cout<<"PassedTrk: "<<PassedTrk<<std::endl;                    
                     //printf("-----*****DEBUG:End of track preselection.\n");
 
                     // BInfo section{{{
@@ -1029,16 +1033,20 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             
                         }//Mu2
                     }//Mu1
-                    printf("B_counter: ");
-                    for(unsigned int i = 0; i < Bchannel_.size(); i++){
-                        printf("%d/", B_counter[i]);
-                    }
-                    printf("\n");//}}}
+                    if(printInfo_){
+                        printf("B_counter: ");
+                        for(unsigned int i = 0; i < Bchannel_.size(); i++){
+                            printf("%d/", B_counter[i]);
+                        }
+                        printf("\n");
+                    }//}}}
                     //printf("-----*****DEBUG:End of BInfo.\n");
 
                     // TrackInfo section {{{
                     Handle<edm::ValueMap<float> > mvaoutput;
-                    iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
+                    //iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
+                    iEvent.getByToken(MVAMapLabel_, mvaoutput);
+
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
@@ -1201,6 +1209,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.mass[GenInfo.size]          = it_gen->mass();
                 GenInfo.pdgId[GenInfo.size]         = it_gen->pdgId();
                 GenInfo.status[GenInfo.size]        = it_gen->status();
+                GenInfo.collisionId[GenInfo.size]   = it_gen->collisionId();
                 GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
                 GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
                 GenInfo.mo1[GenInfo.size]           = -1;//To be matched later.

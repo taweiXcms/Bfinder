@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks"):
+def OnlyTrack_finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks"):
 	### Set TransientTrackBuilder 
 	process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 	
@@ -13,21 +13,23 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	)
 	
 	### Setup Pat
-	process.load("PhysicsTools.PatAlgos.patSequences_cff")
+#	process.load("PhysicsTools.PatAlgos.patSequences_cff")
 	###### Needed in CMSSW7
-	process.particleFlowPtrs.src = "particleFlowTmp"
-	process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag(VtxLabel)
-	process.pfPileUpPFBRECO.Vertices = cms.InputTag(VtxLabel)
+#	process.particleFlowPtrs.src = "particleFlowTmp"
+#	process.pfPileUpIsoPFBRECO.Vertices = cms.InputTag(VtxLabel)
+#	process.pfPileUpPFBRECO.Vertices = cms.InputTag(VtxLabel)
 	###### Needed in CMSSW7
 	
 	if HIFormat:
-		process.muonMatch.matched = cms.InputTag("hiGenParticles")
+#		process.muonMatch.matched = cms.InputTag("hiGenParticles")
 		process.genParticlePlusGEANT.genParticles = cms.InputTag("hiGenParticles")
 	
 	##Using GEN plus SIM list for matching
-	if UseGenPlusSim:
-		process.muonMatch.matched = cms.InputTag("genParticlePlusGEANT")
+#	if UseGenPlusSim:
+#		process.muonMatch.matched = cms.InputTag("genParticlePlusGEANT")
 	
+	process.load('PhysicsTools/PatAlgos/mcMatchLayer0/muonMatch_cfi')
+
 	## TrackCand
 	from PhysicsTools.PatAlgos.tools.trackTools import makeTrackCandidates
 	if runOnMC:
@@ -72,62 +74,62 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		process.TrackCandSequence = cms.Sequence(process.patAODTrackCandsUnfiltered*process.patAODTrackCands*process.patTrackCands*process.selectedPatTrackCands)
 	
 	## patMuonsWithTrigger
-	process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
-	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, useL1MatchingWindowForSinglets, changeTriggerProcessName, switchOffAmbiguityResolution, addHLTL1Passthrough
-	#process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
-	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
-	process.patMuonsWithoutTrigger.isoDeposits = cms.PSet()
-	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()	
-	process.patMuonsWithoutTrigger.pvSrc = cms.InputTag(VtxLabel)
-	if runOnMC:
-		addMCinfo(process)
-		process.muonMatch.maxDeltaR = cms.double(0.05)
-		process.muonMatch.resolveByMatchQuality = True
-
-	changeTriggerProcessName(process, "HLT")
-	switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
-	addHLTL1Passthrough(process)
-
-	process.patTrigger.collections.remove("hltL3MuonCandidates")
-	process.patTrigger.collections.append("hltHIL3MuonCandidates")
-
-	process.muonL1Info.maxDeltaR = 0.3
-	process.muonL1Info.fallbackToME1 = True
-	process.muonMatchHLTL1.maxDeltaR = 0.3
-	process.muonMatchHLTL1.fallbackToME1 = True
-	process.muonMatchHLTL2.maxDeltaR = 0.3
-	process.muonMatchHLTL2.maxDPtRel = 10.0
-	process.muonMatchHLTL3.maxDeltaR = 0.1
-	process.muonMatchHLTL3.maxDPtRel = 10.0
-	process.muonMatchHLTCtfTrack.maxDeltaR = 0.1
-	process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
-	process.muonMatchHLTTrackMu.maxDeltaR = 0.1
-	process.muonMatchHLTTrackMu.maxDPtRel = 10.0
-	process.muonMatchHLTL3.matchedCuts = cms.string('coll("hltHIL3MuonCandidates")')
-	
-	# Merge muons, calomuons in a single collection for T&P
-	from RecoMuon.MuonIdentification.calomuons_cfi import calomuons;
-	process.mergedMuons = cms.EDProducer("CaloMuonMerger",                                                                                                                                                  
-	    muons     = cms.InputTag("muons"),
-	    mergeCaloMuons = cms.bool(True),  ### NEEDED TO RUN ON AOD
-	    caloMuons = cms.InputTag("calomuons"),
-	    minCaloCompatibility = cms.double(0.6),
-	    mergeTracks = cms.bool(False),
-	    tracks = cms.InputTag(TrkLabel),
-	)
-	if AddCaloMuon:
-	    #changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
-	    #process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
-	    #process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
-	    #process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
-	
-	    #Or we change the muonMatch source of our patMuonsWithoutTrigger
-	    process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
-	    process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
-	    if runOnMC:
-	        process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
-	        process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
-	    process.patMuonsWithTriggerSequence = cms.Sequence(process.mergedMuons*process.patMuonsWithTriggerSequence)
+#	process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
+#	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, useL1MatchingWindowForSinglets, changeTriggerProcessName, switchOffAmbiguityResolution, addHLTL1Passthrough
+#	#process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
+#	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
+#	process.patMuonsWithoutTrigger.isoDeposits = cms.PSet()
+#	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()
+#	process.patMuonsWithoutTrigger.pvSrc = cms.InputTag(VtxLabel)
+#	if runOnMC:
+#		addMCinfo(process)
+#		process.muonMatch.maxDeltaR = cms.double(0.05)
+#		process.muonMatch.resolveByMatchQuality = True
+#
+#	changeTriggerProcessName(process, "HLT")
+#	switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
+#	addHLTL1Passthrough(process)
+#
+#	process.patTrigger.collections.remove("hltL3MuonCandidates")
+#	process.patTrigger.collections.append("hltHIL3MuonCandidates")
+#
+#	process.muonL1Info.maxDeltaR = 0.3
+#	process.muonL1Info.fallbackToME1 = True
+#	process.muonMatchHLTL1.maxDeltaR = 0.3
+#	process.muonMatchHLTL1.fallbackToME1 = True
+#	process.muonMatchHLTL2.maxDeltaR = 0.3
+#	process.muonMatchHLTL2.maxDPtRel = 10.0
+#	process.muonMatchHLTL3.maxDeltaR = 0.1
+#	process.muonMatchHLTL3.maxDPtRel = 10.0
+#	process.muonMatchHLTCtfTrack.maxDeltaR = 0.1
+#	process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
+#	process.muonMatchHLTTrackMu.maxDeltaR = 0.1
+#	process.muonMatchHLTTrackMu.maxDPtRel = 10.0
+#	process.muonMatchHLTL3.matchedCuts = cms.string('coll("hltHIL3MuonCandidates")')
+#	
+#	# Merge muons, calomuons in a single collection for T&P
+#	from RecoMuon.MuonIdentification.calomuons_cfi import calomuons;
+#	process.mergedMuons = cms.EDProducer("CaloMuonMerger",                                                                                                                                                  
+#	    muons     = cms.InputTag("muons"),
+#	    mergeCaloMuons = cms.bool(True),  ### NEEDED TO RUN ON AOD
+#	    caloMuons = cms.InputTag("calomuons"),
+#	    minCaloCompatibility = cms.double(0.6),
+#	    mergeTracks = cms.bool(False),
+#	    tracks = cms.InputTag(TrkLabel),
+#	)
+#	if AddCaloMuon:
+#	    #changeRecoMuonInput(process, "mergedMuons")#Add calo muon to the collection
+#	    #process.patMuons.muonSource = cms.InputTag("mergedMuons")#Need to use the same collection as they are internally entengled
+#	    #process.patMuons.embedCaloMETMuonCorrs = cms.bool(False)
+#	    #process.patMuons.embedTcMETMuonCorrs   = cms.bool(False)
+#	
+#	    #Or we change the muonMatch source of our patMuonsWithoutTrigger
+#	    process.patMuonsWithoutTrigger.muonSource = cms.InputTag("mergedMuons")
+#	    process.patMuonsWithoutTriggerMatch = PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi.muonMatch.clone( src = cms.InputTag("mergedMuons"))
+#	    if runOnMC:
+#	        process.patMuonsWithTriggerSequence.replace(process.patMuonsWithoutTrigger, process.patMuonsWithoutTriggerMatch + process.patMuonsWithoutTrigger)
+#	        process.patMuonsWithoutTrigger.genParticleMatch = 'patMuonsWithoutTriggerMatch'
+#	    process.patMuonsWithTriggerSequence = cms.Sequence(process.mergedMuons*process.patMuonsWithTriggerSequence)
 	
 	### Set Bfinder option
 	process.Bfinder = cms.EDAnalyzer('Bfinder',
@@ -148,7 +150,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    GenLabel = cms.InputTag('genParticles'),
 		MuonLabel = cms.InputTag('patMuonsWithTrigger'),
 		TrackLabel = cms.InputTag('patTrackCands'),
-        MVAMapLabel = cms.string(TrkLabel),
+        MVAMapLabel = cms.InputTag(TrkLabel),
 	    PUInfoLabel = cms.InputTag("addPileupInfo"),
 	    BSLabel = cms.InputTag("offlineBeamSpot"),
 	    PVLabel = cms.InputTag(VtxLabel),
@@ -167,7 +169,6 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    doMuPreCut = cms.bool(True),
 	    makeBntuple = cms.bool(True),
 	    doBntupleSkim = cms.bool(False),
-        printInfo = cms.bool(False),
 	)
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
@@ -184,31 +185,29 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	        0,#RECONSTRUCTION: D0bar(K+pi-)pi- : D-*
 	        0,#RECONSTRUCTION: D0(K-pi-pi+pi+)pi+ : D+*
 	        0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
-	        0,#RECONSTRUCTION: D0bar(K+pi+)pi+ : B+
-	        0,#RECONSTRUCTION: D0(K-pi+)pi- : B-
 		),
         detailMode = cms.bool(False),
         dropUnusedTracks = cms.bool(True),
 		HLTLabel = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel = cms.InputTag('genParticles'),
 		TrackLabel = cms.InputTag('patTrackCands'),
-		MVAMapLabel = cms.string(TrkLabel),
+		MVAMapLabel = cms.InputTag(TrkLabel),
 	    PUInfoLabel = cms.InputTag("addPileupInfo"),
 	    BSLabel = cms.InputTag("offlineBeamSpot"),
 	    PVLabel = cms.InputTag(VtxLabel),
 	    tkPtCut = cms.double(1.),#before fit
 	    tkEtaCut = cms.double(2.0),#before fit
-	    dPtCut = cms.vdouble(8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8.),#before fit
-	    dEtaCut = cms.vdouble(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),#before fit, not used currently
-		VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),#better not to cut for decay with resonance, cutting on both mother and daughter vertex fit now
-	    dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.),
-	    tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0),#if cut, only cut on last four channels, D*->D0
-	    tktkRes_svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0),#if cut, only cut on last four channels, D*->D0
-		tktkRes_alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.),#if cut, only cut on last four channels, D*->D0
-	    svpvDistanceCut_lowptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-	    svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-	    MaxDocaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.),
-	    alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.),
+	    dPtCut = cms.vdouble(8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8.),#before fit
+	    dEtaCut = cms.vdouble(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),#before fit, not used currently
+		VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),#better not to cut for decay with resonance, cutting on both mother and daughter vertex fit now
+	    dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.),
+	    tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0),#if cut, only cut on last four channels, D*->D0
+	    tktkRes_svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0),#if cut, only cut on last four channels, D*->D0
+		tktkRes_alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.),#if cut, only cut on last four channels, D*->D0
+	    svpvDistanceCut_lowptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+	    svpvDistanceCut_highptD = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+	    MaxDocaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.),
+	    alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.),
 	    RunOnMC = cms.bool(False),
 	    doTkPreCut = cms.bool(True),
 	    makeDntuple = cms.bool(True),
@@ -225,12 +224,12 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		process.Bfinder.GenLabel = cms.InputTag('genParticlePlusGEANT')
 		process.Dfinder.GenLabel = cms.InputTag('genParticlePlusGEANT')
 	
-	if runOnMC and UseGenPlusSim:
-		process.patMuonsWithTriggerSequence *= process.genParticlePlusGEANT
+#	if runOnMC and UseGenPlusSim:
+#		process.patMuonsWithTriggerSequence *= process.genParticlePlusGEANT
 	
-	process.BfinderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder)
+#	process.BfinderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder)
 	process.DfinderSequence = cms.Sequence(process.TrackCandSequence*process.Dfinder)
-	process.finderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder*process.Dfinder)
+#	process.finderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder*process.Dfinder)
 
 	### Temporal fix for the PAT Trigger prescale warnings.
-	process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
+#	process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")

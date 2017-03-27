@@ -414,8 +414,9 @@ class BntupleBranches
   float   Geta[MAX_GEN];
   float   Gphi[MAX_GEN];
   float   Gpt[MAX_GEN];
-  float   GpdgId[MAX_GEN];
-  float   GisSignal[MAX_GEN];
+  int     GpdgId[MAX_GEN];
+  int     GcollisionId[MAX_GEN];
+  int     GisSignal[MAX_GEN];
   float   Gmu1pt[MAX_GEN];
   float   Gmu2pt[MAX_GEN];
   float   Gmu1p[MAX_GEN];
@@ -439,6 +440,7 @@ class BntupleBranches
     nt->Branch("Gphi",Gphi,"Gphi[Gsize]/F");
     nt->Branch("Gpt",Gpt,"Gpt[Gsize]/F");
     nt->Branch("GpdgId",GpdgId,"GpdgId[Gsize]/F");
+    nt->Branch("GcollisionId",GcollisionId,"GcollisionId[Gsize]/I");
     nt->Branch("GisSignal",GisSignal,"GisSignal[Gsize]/F");
     nt->Branch("Gmu1eta",Gmu1eta,"Gmu1eta[Gsize]/F");
     nt->Branch("Gmu1phi",Gmu1phi,"Gmu1phi[Gsize]/F");
@@ -513,6 +515,7 @@ class BntupleBranches
         Geta[gsize] = GenInfo->eta[j];
         Gphi[gsize] = GenInfo->phi[j];
         GpdgId[gsize] = GenInfo->pdgId[j];
+        GcollisionId[gsize] = GenInfo->collisionId[j];
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;

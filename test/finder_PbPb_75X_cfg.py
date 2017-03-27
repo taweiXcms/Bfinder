@@ -23,10 +23,10 @@ ivars.parseArguments()# get and parse the command line arguments
 ### Custom options
 ########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
 ### PbPb B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
-PbPbBdefault = True
-PbPbDHPdefault = False
-PbPbDMBdefault = False
-PbPbBD0Pi = False
+PbPbBdefault = 1 
+PbPbDHPdefault = 0
+PbPbDMBdefault = 0
+PbPbBD0Pi = 0
 optSum = PbPbBdefault + PbPbDHPdefault + PbPbDMBdefault + PbPbBD0Pi 
 
 ### Run on MC?
