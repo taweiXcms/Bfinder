@@ -35,8 +35,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	        label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
 	        tracks=cms.InputTag(TrkLabel), # input track collection
 	    	particleType='pi+',                   # particle type (for assigning a mass)
-	        preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
-	        selection='pt > 0.3',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
+	        preselection='pt > 0.',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
+	        selection='pt > 0.',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
 	    	isolation={},                         # Isolations to use ('source':deltaR; set to {} for None)
 	       	isoDeposits=[],
 	        mcAs='muon'                           # Replicate MC match as the one used for Muons
@@ -58,8 +58,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	        label='TrackCands',                   # output collection will be 'allLayer0TrackCands', 'allLayer1TrackCands', 'selectedLayer1TrackCands'
 	        tracks=cms.InputTag(TrkLabel), # input track collection
 	        particleType='pi+',                   # particle type (for assigning a mass)
-	        preselection='pt > 0.3',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
-	        selection='pt > 0.3',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
+	        preselection='pt > 0.',              # preselection cut on candidates. Only methods of 'reco::Candidate' are available
+	        selection='pt > 0.',                 # Selection on PAT Layer 1 objects ('selectedLayer1TrackCands')
 	        isolation={},                         # Isolations to use ('source':deltaR; set to {} for None)
 	        isoDeposits=[],
 	        mcAs=None                             # Replicate MC match as the one used for Muons
@@ -148,7 +148,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    GenLabel = cms.InputTag('genParticles'),
 		MuonLabel = cms.InputTag('patMuonsWithTrigger'),
 		TrackLabel = cms.InputTag('patTrackCands'),
-        MVAMapLabel = cms.string(TrkLabel),
+		MVAMapLabel = cms.InputTag(TrkLabel,"MVAVals"),
 	    PUInfoLabel = cms.InputTag("addPileupInfo"),
 	    BSLabel = cms.InputTag("offlineBeamSpot"),
 	    PVLabel = cms.InputTag(VtxLabel),
@@ -167,7 +167,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    doMuPreCut = cms.bool(True),
 	    makeBntuple = cms.bool(True),
 	    doBntupleSkim = cms.bool(False),
-        printInfo = cms.bool(False),
+        printInfo = cms.bool(True),
 	)
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
@@ -192,7 +192,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		HLTLabel = cms.InputTag('TriggerResults::HLT'),
 	    GenLabel = cms.InputTag('genParticles'),
 		TrackLabel = cms.InputTag('patTrackCands'),
-		MVAMapLabel = cms.string(TrkLabel),
+        MVAMapLabel = cms.InputTag(TrkLabel,"MVAVals"),	
 	    PUInfoLabel = cms.InputTag("addPileupInfo"),
 	    BSLabel = cms.InputTag("offlineBeamSpot"),
 	    PVLabel = cms.InputTag(VtxLabel),
@@ -213,7 +213,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    doTkPreCut = cms.bool(True),
 	    makeDntuple = cms.bool(True),
 	    doDntupleSkim = cms.bool(False),
-        printInfo = cms.bool(False),
+        printInfo = cms.bool(True),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)

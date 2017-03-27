@@ -98,8 +98,9 @@ class Dfinder : public edm::EDAnalyzer
         bool makeDntuple_;
         bool doDntupleSkim_;
         bool printInfo_;
-        std::string MVAMapLabel_;
-        //edm::EDGetTokenT<edm::ValueMap<float>> MVAMapLabel_;
+        edm::EDGetTokenT<edm::ValueMap<float> > MVAMapLabel_;
+        edm::EDGetTokenT< std::vector<float> > MVAMapLabelpA_;
+        edm::InputTag MVAMapLabelInputTag_;
 
         edm::Service<TFileService> fs;
         TTree *root;
@@ -177,7 +178,9 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
     doDntupleSkim_ = iConfig.getParameter<bool>("doDntupleSkim");
     printInfo_ = iConfig.getParameter<bool>("printInfo");
-    MVAMapLabel_  = iConfig.getParameter<std::string>("MVAMapLabel");
+    MVAMapLabelInputTag_ = iConfig.getParameter<edm::InputTag>("MVAMapLabel");
+    MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
+    MVAMapLabelpA_ = consumes< std::vector<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
     for(unsigned int i = 0; i < Dchannel_.size(); i++){
@@ -745,8 +748,17 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                     // TrackInfo section {{{
                     Handle<edm::ValueMap<float> > mvaoutput;
-                    iEvent.getByLabel(MVAMapLabel_, "MVAVals", mvaoutput);
-                    //iEvent.getByToken(MVAMapLabel_, mvaoutput);
+                    Handle< std::vector<float> > mvaoutputpA;
+                    std::vector<float>   mvavector;
+                    if(MVAMapLabelInputTag_.instance() == "MVAVals") {
+                        iEvent.getByToken(MVAMapLabel_, mvaoutput);
+                    }
+                    if(MVAMapLabelInputTag_.instance() == "MVAValues") {
+                        iEvent.getByToken(MVAMapLabelpA_, mvaoutputpA);
+                        mvavector = *mvaoutputpA;
+                        assert(mvavector.size()==input_tracks.size());
+                    }
+
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
                         tk_it != input_tracks.end() ; tk_it++){
                         int tk_hindex = int(tk_it - input_tracks.begin());
@@ -820,7 +832,10 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
+                        if(MVAMapLabelInputTag_.instance() == "MVAVals") 
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
+                        if(MVAMapLabelInputTag_.instance() == "MVAValues") 
+                        TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_hindex];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
 
