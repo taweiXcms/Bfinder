@@ -138,7 +138,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 			0,#RECONSTRUCTION: J/psi + K* (K+, Pi-)
 			0,#RECONSTRUCTION: J/psi + K* (K-, Pi+)
 			0,#RECONSTRUCTION: J/psi + phi
-			1,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
+			0,#RECONSTRUCTION: J/psi + pi pi <= psi', X(3872), Bs->J/psi f0
 		),
         detailMode = cms.bool(True),
         dropUnusedTracks = cms.bool(True),
