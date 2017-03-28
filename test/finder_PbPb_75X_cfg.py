@@ -14,7 +14,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpipipi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_614_1_jV8.root'
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIOniaL1DoubleMu0/AOD/PromptReco-v1/000/262/735/00000/B0EC6FA1-4E99-E511-B663-02163E013910.root'#HIOniaL1DoubleMu0
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/FC577170-6C99-E511-9848-02163E014120.root'#HIHardProbes
-#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/6E423E98-5C99-E511-B72B-02163E0138EE.root'#HIHardProbes
+ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/6E423E98-5C99-E511-B72B-02163E0138EE.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/E67242E4-5E99-E511-947B-02163E0127B4.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias1/AOD/PromptReco-v1/000/262/726/00000/EE7F4A63-4599-E511-9CE5-02163E013850.root'#HIMinimumBias1
 ivars.outputFile='finder_PbPb.root'
@@ -23,9 +23,9 @@ ivars.parseArguments()# get and parse the command line arguments
 ### Custom options
 ########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
 ### PbPb B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
-PbPbBdefault = 1 
+PbPbBdefault = 0
 PbPbDHPdefault = 0
-PbPbDMBdefault = 0
+PbPbDMBdefault = 1
 PbPbBD0Pi = 0
 optSum = PbPbBdefault + PbPbDHPdefault + PbPbDMBdefault + PbPbBD0Pi 
 
@@ -142,7 +142,6 @@ process.centrality_path = cms.Path(process.centralityBin)
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
-
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
 	process.hiEvtAnalyzer.doHiMC = cms.bool(True)

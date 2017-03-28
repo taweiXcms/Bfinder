@@ -5,7 +5,7 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/data/twang/MC_samples/MinBias_TuneCUETP8M1_5p02TeV-pythia8/MinBias_TuneCUETP8M1_5p02TeV_pythia8_pp502Fall15_MCRUN2_71_V1_v1_AOD_CMSSW_7_5_4_20151113/step3_RAW2DIGI_L1Reco_RECO_993_1_q1f.root'
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/AOD/PromptReco-v1/000/262/235/00000/0E9E6AA6-F394-E511-B74B-02163E01474F.root'#AOD DoubleMu
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/DoubleMu/RECO/PromptReco-v1/000/262/163/00000/14A3BF17-D591-E511-868F-02163E014117.root'#RECO DoubleMu
-#ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/HeavyFlavor/AOD/PromptReco-v1/000/262/273/00000/06090E4E-0C97-E511-856C-02163E0142D2.root'#AOD HeavyFlavor
+ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/HeavyFlavor/AOD/PromptReco-v1/000/262/273/00000/06090E4E-0C97-E511-856C-02163E0142D2.root'#AOD HeavyFlavor
 #ivars.inputFiles='file:/data/twang/Data_samples/Run2015E/MinimumBias1/AOD/PromptReco-v1/000/262/274/00000/0E443E25-3C9A-E511-9263-02163E013626.root'#AOD MB1
 ivars.outputFile='finder_pp.root'
 ivars.parseArguments()# get and parse the command line arguments
@@ -13,9 +13,9 @@ ivars.parseArguments()# get and parse the command line arguments
 ### Custom options
 ########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
 ### pp B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
-ppBdefault = 1
+ppBdefault = 0
 ppDHFdefault = 0
-ppDMBdefault = 0
+ppDMBdefault = 1
 ppD0DstarV2 = 0
 ppBD0Pi = False
 optSum = ppBdefault + ppDHFdefault + ppDMBdefault + ppD0DstarV2 + ppBD0Pi
@@ -82,7 +82,6 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 #process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
-#process.load("Configuration.Geometry.GeometryIdeal_cff")
 #process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 
 ### All relevent GlobalTags
@@ -126,26 +125,14 @@ process.GlobalTag = GlobalTag(process.GlobalTag, globalTag, '')
 from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
 process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
 
-#### SetUp Evt Info (centrality)
-#for pp data create centrality object and bin
-process.load("RecoHI.HiCentralityAlgos.pACentrality_cfi")
-process.pACentrality.producePixelTracks = cms.bool(False)
-process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
-process.centralityBin.Centrality = cms.InputTag("pACentrality")
-process.centralityBin.centralityVariable = cms.string("HFtowers")
-if not RunOnAOD:
-	process.centrality_path = cms.Path(process.siPixelRecHits*process.pACentrality*process.centralityBin)
-
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 ### pp centrality
-process.hiEvtAnalyzer.CentralitySrc = cms.InputTag("pACentrality")
 process.hiEvtAnalyzer.Vertex = cms.InputTag("offlinePrimaryVertices")
+process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
 process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
-if RunOnAOD:
-	process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
 	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)

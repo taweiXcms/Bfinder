@@ -76,10 +76,9 @@ process.source = cms.Source("PoolSource",
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-#process.load("Configuration.StandardSequences.Reconstruction_cff")
-process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
+process.load("Configuration.StandardSequences.Reconstruction_cff")
+#process.load('Configuration.StandardSequences.ReconstructionHeavyIons_cff')
 process.load("Configuration.StandardSequences.MagneticField_cff")
-#process.load("Configuration.Geometry.GeometryIdeal_cff")
 #process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 
 ### All relevent GlobalTags
@@ -100,7 +99,7 @@ if runOnMC:
     #globalTag = '75X_mcRun2_asymptotic_v5'##pp for 7_5_3_patch1
     #globalTag = 'auto:run2_mc'
     #globalTag = '75X_mcRun2_asymptotic_ppAt5TeV_v3'
-    globalTag = '80X_mcRun2_asymptotic_v12'
+    globalTag = '80X_mcRun2_asymptotic_v20'
 	
 #Data
 else:
@@ -120,6 +119,19 @@ process.GlobalTag.globaltag = cms.string(globalTag)
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, globalTag, '')
 
+process.GlobalTag.toGet.extend([
+    cms.PSet(record = cms.string("HeavyIonRcd"),
+         #tag = cms.string("CentralityTable_HFtowersPlusTrunc200_EPOS8TeV_v80x01_mc"),
+                 tag = cms.string("CentralityTable_HFtowersPlusTrunc200_EPOS5TeV_v80x01_mc"),
+                 connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                 label = cms.untracked.string("HFtowersPlusTruncEpos")
+             ),
+    cms.PSet(record = cms.string("L1TGlobalPrescalesVetosRcd"),
+                tag = cms.string("L1TGlobalPrescalesVetos_Stage2v0_hlt"),
+                connect = cms.string("frontier://FrontierProd/CMS_CONDITIONS")
+                )
+])
+
 #### HI infomation
 from GeneratorInterface.HiGenCommon.HeavyIon_cff import *
 process.load('GeneratorInterface.HiGenCommon.HeavyIon_cff')
@@ -130,20 +142,21 @@ process.load("RecoHI.HiCentralityAlgos.pACentrality_cfi")
 process.pACentrality.producePixelTracks = cms.bool(False)
 process.load("RecoHI.HiCentralityAlgos.CentralityBin_cfi")
 process.centralityBin.Centrality = cms.InputTag("pACentrality")
-process.centralityBin.centralityVariable = cms.string("HFtowers")
+process.centralityBin.centralityVariable = cms.string("HFtowersPlusTrunc")
+process.centralityBin.nonDefaultGlauberModel = cms.string("Epos")
 if not RunOnAOD:
 	process.centrality_path = cms.Path(process.siPixelRecHits*process.pACentrality*process.centralityBin)
+process.centrality_path = cms.Path(process.centralityBin)
 
 ### Run the hiEvtAnalyzer sequence
 process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 ### pp centrality
 process.hiEvtAnalyzer.CentralitySrc = cms.InputTag("pACentrality")
+process.hiEvtAnalyzer.CentralityBinSrc = cms.InputTag("centralityBin","HFtowersPlusTrunc")
 process.hiEvtAnalyzer.Vertex = cms.InputTag("offlinePrimaryVertices")
 process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
 process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
-if RunOnAOD:
-	process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
 	#process.evtAna = cms.Path(process.heavyIon*process.hiEvtAnalyzer)
