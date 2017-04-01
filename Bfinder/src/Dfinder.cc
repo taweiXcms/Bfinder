@@ -82,17 +82,20 @@ class Dfinder : public edm::EDAnalyzer
         edm::EDGetTokenT< reco::VertexCollection > pvLabel_;
         double tkPtCut_;
         double tkEtaCut_;
+        std::vector<double> dCutSeparating_PtVal_;
         std::vector<double> dPtCut_;
         std::vector<double> dEtaCut_;
         std::vector<double> VtxChiProbCut_;
-        std::vector<double> dCutSeparating_PtVal_;
+        std::vector<double> svpvDistanceCut_lowptD_;
+        std::vector<double> svpvDistanceCut_highptD_;
+        std::vector<double> alphaCut_;
+        std::vector<double> MaxDocaCut_;
+        std::vector<double> tktkRes_dPtCut_;
+        std::vector<double> tktkRes_dEtaCut_;
+        std::vector<double> tktkRes_VtxChiProbCut_;
         std::vector<double> tktkRes_svpvDistanceCut_lowptD_;
         std::vector<double> tktkRes_svpvDistanceCut_highptD_;
 		std::vector<double> tktkRes_alphaCut_;
-        std::vector<double> svpvDistanceCut_lowptD_;
-        std::vector<double> svpvDistanceCut_highptD_;
-        std::vector<double> MaxDocaCut_;
-        std::vector<double> alphaCut_;
         bool RunOnMC_;
         bool doTkPreCut_;
         bool makeDntuple_;
@@ -162,17 +165,20 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 
     tkPtCut_ = iConfig.getParameter<double>("tkPtCut");
     tkEtaCut_ = iConfig.getParameter<double>("tkEtaCut");
+    dCutSeparating_PtVal_ = iConfig.getParameter<std::vector<double> >("dCutSeparating_PtVal");
     dPtCut_ = iConfig.getParameter<std::vector<double> >("dPtCut");
     dEtaCut_ = iConfig.getParameter<std::vector<double> >("dEtaCut");
     VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("VtxChiProbCut");
-    dCutSeparating_PtVal_ = iConfig.getParameter<std::vector<double> >("dCutSeparating_PtVal");
+    svpvDistanceCut_lowptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_lowptD");
+    svpvDistanceCut_highptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_highptD");
+    alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
+    MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
+    tktkRes_dPtCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_dPtCut");
+    tktkRes_dEtaCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_dEtaCut");
+    tktkRes_VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_VtxChiProbCut");
     tktkRes_svpvDistanceCut_lowptD_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut_lowptD");
     tktkRes_svpvDistanceCut_highptD_ = iConfig.getParameter<std::vector<double> >("tktkRes_svpvDistanceCut_highptD");
 	tktkRes_alphaCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_alphaCut");
-    svpvDistanceCut_lowptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_lowptD");
-    svpvDistanceCut_highptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_highptD");
-    MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
-    alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
     RunOnMC_ = iConfig.getParameter<bool>("RunOnMC");
     doTkPreCut_ = iConfig.getParameter<bool>("doTkPreCut");
     makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
@@ -203,7 +209,21 @@ Dfinder::~Dfinder()
 void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    //checking input parameter size
-    if( (Dchannel_.size() != dPtCut_.size()) || (dPtCut_.size() != dEtaCut_.size()) || (dEtaCut_.size() != VtxChiProbCut_.size()) || (VtxChiProbCut_.size() != tktkRes_svpvDistanceCut_lowptD_.size()) || (tktkRes_svpvDistanceCut_lowptD_.size() != tktkRes_svpvDistanceCut_highptD_.size()) || (tktkRes_svpvDistanceCut_highptD_.size() != svpvDistanceCut_lowptD_.size()) || (svpvDistanceCut_lowptD_.size() != svpvDistanceCut_highptD_.size()) || (svpvDistanceCut_highptD_.size() != MaxDocaCut_.size()) || (MaxDocaCut_.size() != alphaCut_.size()) || (alphaCut_.size() != tktkRes_alphaCut_.size())){
+    if((Dchannel_.size() != dCutSeparating_PtVal_.size())
+    || (Dchannel_.size() != dPtCut_.size())
+    || (Dchannel_.size() != dEtaCut_.size())
+    || (Dchannel_.size() != VtxChiProbCut_.size())
+    || (Dchannel_.size() != svpvDistanceCut_lowptD_.size())
+    || (Dchannel_.size() != svpvDistanceCut_highptD_.size())
+    || (Dchannel_.size() != alphaCut_.size())
+    || (Dchannel_.size() != MaxDocaCut_.size())
+    || (Dchannel_.size() != tktkRes_dPtCut_.size())
+    || (Dchannel_.size() != tktkRes_dEtaCut_.size())
+    || (Dchannel_.size() != tktkRes_VtxChiProbCut_.size())
+    || (Dchannel_.size() != tktkRes_svpvDistanceCut_lowptD_.size())
+    || (Dchannel_.size() != tktkRes_svpvDistanceCut_highptD_.size())
+    || (Dchannel_.size() != tktkRes_alphaCut_.size())
+    ){
         std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
         return;
     }
@@ -1248,7 +1268,11 @@ void Dfinder::TkCombinationPermutation(
             v4_Res = v4_Restk1 + v4_Restk2;
             if(TkMassCharge.size()==2){
                 //cut mass window before fit
-                if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                if(tktkRes_mass > 0) {
+                    if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                    if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                    //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                }
                 DMassCutLevel[Dchannel_number-1]->Fill(0);
                 if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                 if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
@@ -1278,7 +1302,11 @@ void Dfinder::TkCombinationPermutation(
                 else v4_Restk3.SetPtEtaPhiM(0,0,0,0);
                 v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
                 if(TkMassCharge.size()==3){
-                    if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                    if(tktkRes_mass > 0) {
+                        if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                        if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                        //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                    }
                     DMassCutLevel[Dchannel_number-1]->Fill(0);
                     if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                     if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
@@ -1310,7 +1338,11 @@ void Dfinder::TkCombinationPermutation(
                     else v4_Restk4.SetPtEtaPhiM(0,0,0,0);
                     v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
                     if(TkMassCharge.size()==4){
-                        if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                        if(tktkRes_mass > 0) {
+                            if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                            if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                            //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                        }
                         DMassCutLevel[Dchannel_number-1]->Fill(0);
                         if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                         if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
@@ -1344,7 +1376,11 @@ void Dfinder::TkCombinationPermutation(
                         else v4_Restk5.SetPtEtaPhiM(0,0,0,0);
                         v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
                         if(TkMassCharge.size()==5){
-                            if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                            if(tktkRes_mass > 0) {
+                                if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                                if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                                //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                            }
                             DMassCutLevel[Dchannel_number-1]->Fill(0);
                             if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                             if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
@@ -1410,7 +1446,11 @@ void Dfinder::TkCombinationResFast(
             v4_Res = v4_Restk1 + v4_Restk2;
             if(TkMassCharge.size()>2)
             if(TkMassCharge[1].second == 1 && TkMassCharge[2].second == 0 ){
-                if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                if(tktkRes_mass > 0) {
+                    if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                    if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                    //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                }
                 DMassCutLevel[Dchannel_number-1]->Fill(0);
             }
             if(TkMassCharge.size()==2){
@@ -1438,7 +1478,11 @@ void Dfinder::TkCombinationResFast(
                 v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3;
                 if(TkMassCharge.size()>3)
                 if(TkMassCharge[2].second == 1 && TkMassCharge[3].second == 0 ){
-                    if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                    if(tktkRes_mass > 0) {
+                        if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                        if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                        //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                    }
                     DMassCutLevel[Dchannel_number-1]->Fill(0);
                 }
                 if(TkMassCharge.size()==3){
@@ -1467,7 +1511,11 @@ void Dfinder::TkCombinationResFast(
                     v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4;
                     if(TkMassCharge.size()>4)
                     if(TkMassCharge[3].second == 1 && TkMassCharge[4].second == 0 ){
-                        if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                        if(tktkRes_mass > 0) {
+                            if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                            if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                            //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                        }
                         DMassCutLevel[Dchannel_number-1]->Fill(0);
                     }
                     if(TkMassCharge.size()==4){
@@ -1497,7 +1545,11 @@ void Dfinder::TkCombinationResFast(
                         else v4_Restk5.SetPtEtaPhiM(0,0,0,0);
                         v4_Res = v4_Restk1 + v4_Restk2 + v4_Restk3 + v4_Restk4 + v4_Restk5;
                         if(TkMassCharge.size()==5){
-                            if(tktkRes_mass > 0) {if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;}
+                            if(tktkRes_mass > 0) {
+                                if (fabs(v4_Res.Mag()-tktkRes_mass) > tktkRes_mass_window) continue;
+                                if (v4_Res.Pt() < tktkRes_dPtCut_[Dchannel_number-1]) continue;
+                                //if (fabs(v4_Res.Eta()) > tktkRes_dEtaCut_[Dchannel_number-1]) continue;
+                            }
                             DMassCutLevel[Dchannel_number-1]->Fill(0);
                             if(v4_D.Mag()<mass_window[0] || v4_D.Mag()>mass_window[1]) continue;
                             if(v4_D.Pt() < dPtCut_[Dchannel_number-1])continue;
@@ -1624,7 +1676,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tktkRes_VFPvtx = tktkRes_VFT->currentDecayVertex();
             double chi2_prob_tktkRes = TMath::Prob(tktkRes_VFPvtx->chiSquared(),tktkRes_VFPvtx->degreesOfFreedom());
 
-            if(chi2_prob_tktkRes < VtxChiProbCut_[Dchannel_number-1]) continue;
+            if(chi2_prob_tktkRes < tktkRes_VtxChiProbCut_[Dchannel_number-1]) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(4);
 
             if(SequentialFit){
