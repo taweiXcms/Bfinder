@@ -1492,8 +1492,6 @@ class BntupleBranches
     Jlxy[typesize] = ((BInfo->uj_vtxX[j]-EvtInfo->PVx)*b4P->Px() + (BInfo->uj_vtxY[j]-EvtInfo->PVy)*b4P->Py())/BInfo->uj_pt[j];
     float r2lxyBS = (BInfo->uj_vtxX[j]-EvtInfo->BSx+(BInfo->uj_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (BInfo->uj_vtxX[j]-EvtInfo->BSx+(BInfo->uj_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
       + (BInfo->uj_vtxY[j]-EvtInfo->BSy+(BInfo->uj_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (BInfo->uj_vtxY[j]-EvtInfo->BSy+(BInfo->uj_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
-    float xlxyBS = BInfo->uj_vtxX[j]-EvtInfo->BSx + (BInfo->uj_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
-    float ylxyBS = BInfo->uj_vtxY[j]-EvtInfo->BSy + (BInfo->uj_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
     JlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
     
     b4P->SetPtEtaPhiM(MuonInfo->pt[BInfo->uj_rfmu1_index[j]],MuonInfo->eta[BInfo->uj_rfmu1_index[j]],MuonInfo->phi[BInfo->uj_rfmu1_index[j]],MUON_MASS);

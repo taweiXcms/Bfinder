@@ -114,6 +114,7 @@ class Bfinder : public edm::EDAnalyzer
         TTree* nt3;
         TTree* nt5;
         TTree* nt6;
+        TTree* nt7;
         TTree* ntGen;
 
         //histograms
@@ -135,6 +136,7 @@ void Bfinder::beginJob()
     nt3   = fs->make<TTree>("ntKstar","");  Bntuple->buildBranch(nt3);
     nt5   = fs->make<TTree>("ntphi","");    Bntuple->buildBranch(nt5);
     nt6   = fs->make<TTree>("ntmix","");    Bntuple->buildBranch(nt6);
+    nt7   = fs->make<TTree>("ntJpsi","");    Bntuple->buildBranch(nt7,true);
     ntGen = fs->make<TTree>("ntGen","");    Bntuple->buildGenBranch(ntGen);
     EvtInfo.regTree(root);
     VtxInfo.regTree(root);
@@ -1277,7 +1279,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     //Made a Bntuple on the fly
     if(makeBntuple_){
-        int ifchannel[7];
+        int ifchannel[8];
         ifchannel[0] = 1; //jpsi+Kp
         ifchannel[1] = 1; //jpsi+pi
         ifchannel[2] = 1; //jpsi+Ks(pi+,pi-)
@@ -1285,8 +1287,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         ifchannel[4] = 1; //jpsi+K*(K-,pi+)
         ifchannel[5] = 1; //jpsi+phi(K+,K-)
         ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
+        ifchannel[7] = 1; //inclusive jpsi
         bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-        Bntuple->makeNtuple(ifchannel, REAL, doBntupleSkim_, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+        Bntuple->makeNtuple(ifchannel, REAL, doBntupleSkim_, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6, nt7);
         if(!REAL) Bntuple->fillGenTree(ntGen, &GenInfo);
     }
 }
