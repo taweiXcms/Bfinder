@@ -11,10 +11,10 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
 {
   if(istest)
     {
-      infile="/store/user/twang/HI_Bfinder/Data/HIOniaL1DoubleMu0/BfinderData_PbPb_20160406_bPt5jpsiPt0tkPt0p8_BpB0BsX_sub1/finder_PbPb_77_1_vc0.root";
+      infile="/store/group/phys_heavyions/HeavyFlavourRun2/BfinderRun2/MC_official/Pythia8_BuToJpsiK_Bpt0_Pthat15_TuneCUEP8M1/crab_BfinderMC_pp_Pythia8_BuToJpsiK_Bpt0_Pthat15_TuneCUEP8M1_20160816_bPt0jpsiPt0tkPt0p5_Bp/160816_214911/0000/finder_pp_5.root";
       outfile="test.root";
-      REAL=true;
-      isPbPb=true;
+      REAL=false;
+      isPbPb=false;
       skim=false;
       checkMatching=true;
       iseos=true;
@@ -59,7 +59,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   if(endEntries>nentries || endEntries == -1) endEntries = nentries;
   TFile *outf = TFile::Open(Form("%s", outfile.Data()),"recreate");
 
-  Int_t ifchannel[7];
+  Int_t ifchannel[8];
   ifchannel[0] = 1; //jpsi+Kp
   ifchannel[1] = 1; //jpsi+pi
   ifchannel[2] = 1; //jpsi+Ks(pi+,pi-)
@@ -67,15 +67,17 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   ifchannel[4] = 1; //jpsi+K*(K-,pi+)
   ifchannel[5] = 1; //jpsi+phi(K+,K-)
   ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
+  ifchannel[7] = 1; //inclusive jpsi
   
   cout<<"--- Building trees"<<endl;
-  TTree* nt0 = new TTree("ntKp","");     Bntuple->buildBranch(nt0);
-  TTree* nt1 = new TTree("ntpi","");     Bntuple->buildBranch(nt1);
-  TTree* nt2 = new TTree("ntKs","");     Bntuple->buildBranch(nt2);
-  TTree* nt3 = new TTree("ntKstar","");  Bntuple->buildBranch(nt3);
-  TTree* nt5 = new TTree("ntphi","");    Bntuple->buildBranch(nt5);
-  TTree* nt6 = new TTree("ntmix","");    Bntuple->buildBranch(nt6);
-  TTree* ntGen = new TTree("ntGen","");  Bntuple->buildGenBranch(ntGen);
+  TTree* nt0 = new TTree("ntKp","");      Bntuple->buildBranch(nt0);
+  TTree* nt1 = new TTree("ntpi","");      Bntuple->buildBranch(nt1);
+  TTree* nt2 = new TTree("ntKs","");      Bntuple->buildBranch(nt2);
+  TTree* nt3 = new TTree("ntKstar","");   Bntuple->buildBranch(nt3);
+  TTree* nt5 = new TTree("ntphi","");     Bntuple->buildBranch(nt5);
+  TTree* nt6 = new TTree("ntmix","");     Bntuple->buildBranch(nt6);
+  TTree* nt7 = new TTree("ntJpsi","");    Bntuple->buildBranch(nt7,true);
+  TTree* ntGen = new TTree("ntGen","");   Bntuple->buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
   ntHlt->SetName("ntHlt");
   TTree* ntSkim = skimroot->CloneTree(0);
@@ -113,7 +115,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
       ntHlt->Fill();
       ntSkim->Fill();
       ntHi->Fill();
-      Bntuple->makeNtuple(ifchannel, REAL, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6);
+      Bntuple->makeNtuple(ifchannel, REAL, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6, nt7);
       if(!REAL) Bntuple->fillGenTree(ntGen, GenInfo, gskim);
     }
   outf->Write();
