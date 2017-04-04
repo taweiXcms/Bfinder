@@ -15,10 +15,11 @@ ivars.parseArguments()# get and parse the command line arguments
 ### pp B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
 ppBdefault = 0
 ppDHFdefault = 0
-ppDMBdefault = 1
+ppDMBdefault = 0
 ppD0DstarV2 = 0
-ppBD0Pi = False
-optSum = ppBdefault + ppDHFdefault + ppDMBdefault + ppD0DstarV2 + ppBD0Pi
+ppBD0PiHF = 0
+ppBD0PiMB = 1
+optSum = ppBdefault + ppDHFdefault + ppDMBdefault + ppD0DstarV2 + ppBD0PiHF + ppBD0PiMB
 
 ### Run on MC?
 runOnMC = False
@@ -265,15 +266,31 @@ if ppD0DstarV2 and optSum is 1:
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0., 0., 0.)
     process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0)
     process.p = cms.Path(process.DfinderSequence)
-## pp B to D0 Pi channel
-if ppBD0Pi and optSum is 1:
+## pp B to D0 Pi channel on HeavyFlavor
+if ppBD0PiHF and optSum is 1:
     process.Dfinder.tkPtCut = cms.double(0.5)#before fit
-    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Dfinder.dCutSeparating_PtVal = cms.vdouble(8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8., 8.)
-    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 3.0, 3.0, 3.0, 3.0 ,3.0, 3.0)
-    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 1.5, 1.5, 1.5, 1.5, 1.5, 1.5)
+    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(3.0, 3.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0., 0., 0.)
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0., 0., 0., 0., 0., 0.)
+    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 3.0, 3.0, 3.0, 3.0 ,3.0, 3.0)
+    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 1.5, 1.5, 1.5, 1.5, 1.5, 1.5)
+    process.Dfinder.Dchannel = cms.vint32(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
+    process.p = cms.Path(process.DfinderSequence)
+## pp B to D0 Pi channel on MB
+if ppBD0PiMB and optSum is 1:
+    process.Dfinder.tkPtCut = cms.double(1.0)#before fit
+    process.Dfinder.dCutSeparating_PtVal = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 6., 6.)
+    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 3.0)#before fit
+    process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.)
+    process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.)
+    process.Dfinder.VtxChiProbCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.05, 0.05)
+    process.Dfinder.tktkRes_dCutSeparating_PtVal = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 6., 6.)
+    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 4.5, 4.5)
+    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 3, 3)
+    process.Dfinder.tktkRes_dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
+    process.Dfinder.tktkRes_VtxChiProbCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.05, 0.05)
+    process.Dfinder.tktkRes_alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 0.12, 0.12)
     process.Dfinder.Dchannel = cms.vint32(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
     process.p = cms.Path(process.DfinderSequence)
 

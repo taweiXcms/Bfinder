@@ -72,6 +72,14 @@ And add to your cms.Path()
 process.DfinderSequence+process.BfinderSequence
 ```
 
+And comment the following line in
+-----
+`Bfinder/finderMaker/python/finderMaker_75X_cff.py`
+
+```python
+process.patTrigger.collections.remove("hltL3MuonCandidates")
+```
+
 If running on MC
 -----
 

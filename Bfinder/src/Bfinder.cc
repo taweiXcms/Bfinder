@@ -1425,8 +1425,9 @@ void Bfinder::BranchOut2MuTk(
                              xCands[2]->currentState().kinematicParameters().energy());
       
       BInfo.index[BInfo.size]   = BInfo.size;
-      BInfo.mass[BInfo.size]    = xb_4vec.Mag();
       BInfo.unfitted_mass[BInfo.size] = (v4_mu1+v4_mu2+v4_tk1).Mag();
+      BInfo.unfitted_pt[BInfo.size] = (v4_mu1+v4_mu2+v4_tk1).Pt();
+      BInfo.mass[BInfo.size]    = xb_4vec.Mag();
       BInfo.pt[BInfo.size]    = xb_4vec.Pt();
       BInfo.eta[BInfo.size]    = xb_4vec.Eta();
       BInfo.phi[BInfo.size]    = xb_4vec.Phi();
@@ -1683,6 +1684,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             BInfo.index[BInfo.size]   = BInfo.size;
             BInfo.mass[BInfo.size]    = xb_4vec.Mag();
             BInfo.unfitted_mass[BInfo.size] = (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Mag();
+            BInfo.unfitted_pt[BInfo.size] = (v4_mu1+v4_mu2+v4_tk1+v4_tk2).Pt();
             BInfo.pt[BInfo.size]    = xb_4vec.Pt();
             BInfo.eta[BInfo.size]    = xb_4vec.Eta();
             BInfo.phi[BInfo.size]    = xb_4vec.Phi();
@@ -1740,6 +1742,7 @@ void Bfinder::BranchOut2MuX_XtoTkTk(
             
             //tktk fit info
             BInfo.tktk_unfitted_mass[BInfo.size]    = (v4_tk1+v4_tk2).Mag();
+            BInfo.tktk_unfitted_pt[BInfo.size]    = (v4_tk1+v4_tk2).Pt();
             if(tktk_VFT->isValid() && tktk_VFPvtx->vertexIsValid()){
                 std::vector<RefCountedKinematicParticle> tktkCands  = tktk_VFT->finalStateParticles();
                 tktk_4vec.SetPxPyPzE(tktk_VFP->currentState().kinematicParameters().momentum().x(),

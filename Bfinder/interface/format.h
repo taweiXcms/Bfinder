@@ -625,8 +625,9 @@ public:
     
     int	    size;
     int	    index[MAX_XB];
-    float	mass[MAX_XB];
     float	unfitted_mass[MAX_XB];
+    float	unfitted_pt[MAX_XB];
+    float	mass[MAX_XB];
     float	pt[MAX_XB];
     float	eta[MAX_XB];
     float	phi[MAX_XB];
@@ -672,13 +673,14 @@ public:
     float  rftk2_phi[MAX_XB];
     
     float	tktk_unfitted_mass[MAX_XB];
-    float	tktk_mass[MAX_XB];
-    float  tktk_pt[MAX_XB];
-    float  tktk_eta[MAX_XB];
-    float  tktk_phi[MAX_XB];
-    float  tktk_px[MAX_XB];
-    float  tktk_py[MAX_XB];
-    float  tktk_pz[MAX_XB];
+    float   tktk_unfitted_pt[MAX_XB];
+    float   tktk_mass[MAX_XB];
+    float   tktk_pt[MAX_XB];
+    float   tktk_eta[MAX_XB];
+    float   tktk_phi[MAX_XB];
+    float   tktk_px[MAX_XB];
+    float   tktk_py[MAX_XB];
+    float   tktk_pz[MAX_XB];
     float	tktk_vtxX[MAX_XB];
     float  tktk_vtxY[MAX_XB];
     float  tktk_vtxZ[MAX_XB];
@@ -717,8 +719,9 @@ public:
         
         root->Branch("BInfo.size"             , &size          , "BInfo.size/I"			);
         root->Branch("BInfo.index"            , index          , "BInfo.index[BInfo.size]/I"		);
-        root->Branch("BInfo.mass"             , mass           , "BInfo.mass[BInfo.size]/F"		);
         root->Branch("BInfo.unfitted_mass"    , unfitted_mass  , "BInfo.unfitted_mass[BInfo.size]/F");
+        root->Branch("BInfo.unfitted_pt"      , unfitted_pt    , "BInfo.unfitted_pt[BInfo.size]/F");
+        root->Branch("BInfo.mass"             , mass           , "BInfo.mass[BInfo.size]/F"		);
         root->Branch("BInfo.pt"               , pt             , "BInfo.pt[BInfo.size]/F"		);
         root->Branch("BInfo.eta"              , eta            , "BInfo.eta[BInfo.size]/F"		);
         root->Branch("BInfo.phi"              , phi            , "BInfo.phi[BInfo.size]/F"		);
@@ -751,6 +754,7 @@ public:
         root->Branch("BInfo.type"             , type           , "BInfo.type[BInfo.size]/I"	);
         
         root->Branch("BInfo.tktk_unfitted_mass" , tktk_unfitted_mass, "BInfo.tktk_unfitted_mass[BInfo.size]/F"     );
+        root->Branch("BInfo.tktk_unfitted_pt"   , tktk_unfitted_pt , "BInfo.tktk_unfitted_pt[BInfo.size]/F"     );
         root->Branch("BInfo.tktk_mass"          , tktk_mass        , "BInfo.tktk_mass[BInfo.size]/F"     );
         root->Branch("BInfo.tktk_pt"            , tktk_pt          , "BInfo.tktk_pt[BInfo.size]/F"	);
         root->Branch("BInfo.tktk_eta"            , tktk_eta          , "BInfo.tktk_eta[BInfo.size]/F"	);
@@ -830,8 +834,9 @@ public:
         
         root->SetBranchAddress("BInfo.size"            ,&size        );
         root->SetBranchAddress("BInfo.index"           ,index       	);
-        root->SetBranchAddress("BInfo.mass"		    ,mass		);
         root->SetBranchAddress("BInfo.unfitted_mass",unfitted_mass		);
+        root->SetBranchAddress("BInfo.unfitted_pt"  ,unfitted_pt		);
+        root->SetBranchAddress("BInfo.mass"		    ,mass		);
         root->SetBranchAddress("BInfo.pt"		    ,pt		);
         root->SetBranchAddress("BInfo.eta"		    ,eta		);
         root->SetBranchAddress("BInfo.phi"		    ,phi		);
@@ -864,6 +869,7 @@ public:
         root->SetBranchAddress("BInfo.type"            ,type   	);
         
         root->SetBranchAddress("BInfo.tktk_unfitted_mass",tktk_unfitted_mass    );
+        root->SetBranchAddress("BInfo.tktk_unfitted_pt"  ,tktk_unfitted_pt    );
         root->SetBranchAddress("BInfo.tktk_mass"         ,tktk_mass    );
         root->SetBranchAddress("BInfo.tktk_pt"           ,tktk_pt     	);
         root->SetBranchAddress("BInfo.tktk_eta"           ,tktk_eta     	);
@@ -929,10 +935,12 @@ public:
     int	    index[MAX_XB];
     int     type[MAX_XB];
 
+    float	tktkRes_unfitted_mass[MAX_XB];
+    float   tktkRes_unfitted_pt[MAX_XB];
     float	tktkRes_mass[MAX_XB];
-    float  tktkRes_pt[MAX_XB];
-    float  tktkRes_eta[MAX_XB];
-    float  tktkRes_phi[MAX_XB];
+    float   tktkRes_pt[MAX_XB];
+    float   tktkRes_eta[MAX_XB];
+    float   tktkRes_phi[MAX_XB];
     float	tktkRes_vtxX[MAX_XB];
     float  tktkRes_vtxY[MAX_XB];
     float  tktkRes_vtxZ[MAX_XB];
@@ -968,7 +976,9 @@ public:
     int     tktkRes_rftk3_index[MAX_XB];
     int     tktkRes_rftk4_index[MAX_XB];
 
-    float	mass[MAX_XB];
+    float  unfitted_mass[MAX_XB];
+    float  unfitted_pt[MAX_XB];
+    float  mass[MAX_XB];
     float  pt[MAX_XB];
     float  eta[MAX_XB];
     float  phi[MAX_XB];
@@ -1028,6 +1038,8 @@ public:
         root->Branch("DInfo.index"            , index          , "DInfo.index[DInfo.size]/I"		);
         root->Branch("DInfo.type"             , type           , "DInfo.type[DInfo.size]/I"	);
         
+        root->Branch("DInfo.tktkRes_unfitted_mass" , tktkRes_unfitted_mass     , "DInfo.tktkRes_unfitted_mass[DInfo.size]/F"     );
+        root->Branch("DInfo.tktkRes_unfitted_pt"   , tktkRes_unfitted_pt       , "DInfo.tktkRes_unfitted_pt[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_mass"          , tktkRes_mass              , "DInfo.tktkRes_mass[DInfo.size]/F"     );
         root->Branch("DInfo.tktkRes_pt"            , tktkRes_pt                , "DInfo.tktkRes_pt[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_eta"           , tktkRes_eta               , "DInfo.tktkRes_eta[DInfo.size]/F"	);
@@ -1052,6 +1064,8 @@ public:
         root->Branch("DInfo.tktkRes_rftk3_index"   , tktkRes_rftk3_index       , "DInfo.tktkRes_rftk3_index[DInfo.size]/I");
         root->Branch("DInfo.tktkRes_rftk4_index"   , tktkRes_rftk4_index       , "DInfo.tktkRes_rftk4_index[DInfo.size]/I");
 
+        root->Branch("DInfo.unfitted_mass"    , unfitted_mass     , "DInfo.unfitted_mass[DInfo.size]/F"     );
+        root->Branch("DInfo.unfitted_pt"      , unfitted_pt       , "DInfo.unfitted_pt[DInfo.size]/F"	);
         root->Branch("DInfo.mass"             , mass              , "DInfo.mass[DInfo.size]/F"     );
         root->Branch("DInfo.pt"               , pt                , "DInfo.pt[DInfo.size]/F"	);
         root->Branch("DInfo.eta"              , eta               , "DInfo.eta[DInfo.size]/F"	);
@@ -1135,6 +1149,8 @@ public:
         root->SetBranchAddress("DInfo.index"           ,index       	);
         root->SetBranchAddress("DInfo.type"            ,type   	);
         
+        root->SetBranchAddress("DInfo.tktkRes_unfitted_mass"   ,tktkRes_unfitted_mass    );
+        root->SetBranchAddress("DInfo.tktkRes_unfitted_pt"     ,tktkRes_unfitted_pt     	);
         root->SetBranchAddress("DInfo.tktkRes_mass"            ,tktkRes_mass    );
         root->SetBranchAddress("DInfo.tktkRes_pt"              ,tktkRes_pt     	);
         root->SetBranchAddress("DInfo.tktkRes_eta"             ,tktkRes_eta     	);
@@ -1159,6 +1175,8 @@ public:
         root->SetBranchAddress("DInfo.tktkRes_rftk3_index"     ,tktkRes_rftk3_index   	);
         root->SetBranchAddress("DInfo.tktkRes_rftk4_index"     ,tktkRes_rftk4_index   	);
 
+        root->SetBranchAddress("DInfo.unfitted_mass"   ,unfitted_mass    );
+        root->SetBranchAddress("DInfo.unfitted_pt"     ,unfitted_pt     	);
         root->SetBranchAddress("DInfo.mass"            ,mass    );
         root->SetBranchAddress("DInfo.pt"              ,pt     	);
         root->SetBranchAddress("DInfo.eta"             ,eta     	);

@@ -90,6 +90,7 @@ class Dfinder : public edm::EDAnalyzer
         std::vector<double> svpvDistanceCut_highptD_;
         std::vector<double> alphaCut_;
         std::vector<double> MaxDocaCut_;
+        std::vector<double> tktkRes_dCutSeparating_PtVal_;
         std::vector<double> tktkRes_dPtCut_;
         std::vector<double> tktkRes_dEtaCut_;
         std::vector<double> tktkRes_VtxChiProbCut_;
@@ -173,6 +174,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     svpvDistanceCut_highptD_ = iConfig.getParameter<std::vector<double> >("svpvDistanceCut_highptD");
     alphaCut_ = iConfig.getParameter<std::vector<double> >("alphaCut");
     MaxDocaCut_ = iConfig.getParameter<std::vector<double> >("MaxDocaCut");
+    tktkRes_dCutSeparating_PtVal_ = iConfig.getParameter<std::vector<double> >("tktkRes_dCutSeparating_PtVal");
     tktkRes_dPtCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_dPtCut");
     tktkRes_dEtaCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_dEtaCut");
     tktkRes_VtxChiProbCut_ = iConfig.getParameter<std::vector<double> >("tktkRes_VtxChiProbCut");
@@ -217,6 +219,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     || (Dchannel_.size() != svpvDistanceCut_highptD_.size())
     || (Dchannel_.size() != alphaCut_.size())
     || (Dchannel_.size() != MaxDocaCut_.size())
+    || (Dchannel_.size() != tktkRes_dCutSeparating_PtVal_.size())
     || (Dchannel_.size() != tktkRes_dPtCut_.size())
     || (Dchannel_.size() != tktkRes_dEtaCut_.size())
     || (Dchannel_.size() != tktkRes_VtxChiProbCut_.size())
@@ -1624,12 +1627,15 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
     TLorentzVector v4_tk;
     std::vector<TLorentzVector> tktk_4vecs;//fitted tks
     TLorentzVector tktk_4vec;//fitted D
+    TLorentzVector unfitted_tktk_4vec;//unfitted D
     std::vector<TLorentzVector> tktkRes_4vecs;//fitted Res tks
     TLorentzVector tktkRes_4vec;//fitted Res
+    TLorentzVector unfitted_tktkRes_4vec;//unfitted Res
     std::vector<RefCountedKinematicParticle> tktk_candidate;//input tracks to D fitter
     std::vector<RefCountedKinematicParticle> tktkRes_candidate;//input tracks to Res fitter
     std::vector<RefCountedKinematicParticle> tktkCands;//output tracks from D fitter
     std::vector<RefCountedKinematicParticle> tktkResCands;//output tracks from Res fitter
+    TLorentzVector temp_vec;//for temporary usage
 
     for(int i = 0; i < int(selectedTkhidxSet.size()); i++){
         if (DInfo.size >= MAX_XB) break;
@@ -1638,12 +1644,16 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         v4_tk.Clear();
         tktk_4vecs.clear();
         tktk_4vec.Clear();
+        unfitted_tktk_4vec.Clear();
         tktkRes_4vecs.clear();
         tktkRes_4vec.Clear();
+        unfitted_tktkRes_4vec.Clear();
         tktk_candidate.clear();
         tktkRes_candidate.clear();
         tktkCands.clear();
         tktkResCands.clear();
+        unfitted_tktk_4vec.SetPxPyPzE(0., 0., 0., 0.);
+        unfitted_tktkRes_4vec.SetPxPyPzE(0., 0., 0., 0.);
 
         //push back the Res tracks as first tracks
         ParticleMass tk_mass;
@@ -1652,6 +1662,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         std::vector<int> pushbackResTrkIdx;
         float tk_sigma;
         for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
+            temp_vec.SetPtEtaPhiM(input_tracks[selectedTkhidxSet[i][p]].pt(), input_tracks[selectedTkhidxSet[i][p]].eta(), input_tracks[selectedTkhidxSet[i][p]].phi(), fabs(TkMassCharge[p].first));
+            unfitted_tktk_4vec += temp_vec;
             if(TkMassCharge[p].second==0) continue;
             reco::TransientTrack tkTT(input_tracks[selectedTkhidxSet[i][p]].track(), &(*bField) );
             if (!tkTT.isValid()) continue;
@@ -1662,6 +1674,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                 pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
             }
             if(tktkRes_mass>0){
+                unfitted_tktkRes_4vec += temp_vec;
                 tktkRes_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
                 pushbackResTrkIdx.push_back(selectedTkhidxSet[i][p]);
             }
@@ -1766,6 +1779,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                     tktkRes_VFP->currentState().kinematicParameters().momentum().z(),
                     tktkRes_VFP->currentState().kinematicParameters().energy());
 
+            DInfo.tktkRes_unfitted_mass[DInfo.size]   = unfitted_tktkRes_4vec.Mag();
+            DInfo.tktkRes_unfitted_pt[DInfo.size]     = unfitted_tktkRes_4vec.Pt();
             DInfo.tktkRes_mass[DInfo.size]            = tktkRes_4vec.Mag();
             DInfo.tktkRes_pt[DInfo.size]              = tktkRes_4vec.Pt();
             DInfo.tktkRes_eta[DInfo.size]             = tktkRes_4vec.Eta();
@@ -1792,8 +1807,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             VertexDistance3D Res_a3d;
             DInfo.tktkRes_svpvDistance[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).value();
             DInfo.tktkRes_svpvDisErr[DInfo.size] = Res_a3d.distance(thePrimaryV,tktkRes_VFPvtx->vertexState()).error();
-            if(DInfo.tktkRes_pt[DInfo.size] <= dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_lowptD_[Dchannel_number-1]) continue;
-            else if( DInfo.tktkRes_pt[DInfo.size] > dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_highptD_[Dchannel_number-1]) continue;
+            if(DInfo.tktkRes_pt[DInfo.size] <= tktkRes_dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_lowptD_[Dchannel_number-1]) continue;
+            else if( DInfo.tktkRes_pt[DInfo.size] > tktkRes_dCutSeparating_PtVal_[Dchannel_number-1] && (DInfo.tktkRes_svpvDistance[DInfo.size]/DInfo.tktkRes_svpvDisErr[DInfo.size]) < tktkRes_svpvDistanceCut_highptD_[Dchannel_number-1]) continue;
             DMassCutLevel[Dchannel_number-1]->Fill(11);
 
             //index initialization to -2
@@ -1830,6 +1845,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
 
         //fit info
         DInfo.index[DInfo.size]           = DInfo.size;
+        DInfo.unfitted_mass[DInfo.size]   = unfitted_tktk_4vec.Mag();
+        DInfo.unfitted_pt[DInfo.size]     = unfitted_tktk_4vec.Pt();
         DInfo.mass[DInfo.size]            = tktk_4vec.Mag();
         DInfo.pt[DInfo.size]              = tktk_4vec.Pt();
         DInfo.eta[DInfo.size]             = tktk_4vec.Eta();
