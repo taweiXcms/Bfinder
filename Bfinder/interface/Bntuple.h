@@ -657,6 +657,7 @@ class BntupleBranches
             else if(t==6) nt6->Fill();
           }
       }
+    Jsize = 0;
     if(ifchannel[7]==1)
       {
         for(int j=0;j<BInfo->uj_size;j++)
