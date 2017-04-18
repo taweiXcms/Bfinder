@@ -188,6 +188,8 @@ from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
 process.p = cms.Path(process.finderSequence)
 
+process.Dfinder.makeDntuple = cms.bool(True)
+process.Bfinder.makeBntuple = cms.bool(True)
 process.Bfinder.Bchannel = cms.vint32(
     0,#RECONSTRUCTION: J/psi + K
     0,#RECONSTRUCTION: J/psi + Pi

@@ -217,6 +217,8 @@ process.p = cms.Path(process.finderSequence)
 process.Bfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 process.Dfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 
+process.Dfinder.makeDntuple = cms.bool(True)
+process.Bfinder.makeBntuple = cms.bool(True)
 process.Bfinder.Bchannel = cms.vint32(
     0,#RECONSTRUCTION: J/psi + K
     0,#RECONSTRUCTION: J/psi + Pi
