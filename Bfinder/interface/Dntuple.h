@@ -45,6 +45,7 @@ class DntupleBranches
   float   Dy[MAX_XB];
   float   DvtxX[MAX_XB];
   float   DvtxY[MAX_XB];
+  float   DvtxZ[MAX_XB];
   float   Dd0[MAX_XB];
   float   Dd0Err[MAX_XB];
   float   Ddxyz[MAX_XB];
@@ -250,6 +251,7 @@ class DntupleBranches
     dnt->Branch("Dy",Dy,"Dy[Dsize]/F");
     dnt->Branch("DvtxX",DvtxX,"DvtxX[Dsize]/F");
     dnt->Branch("DvtxY",DvtxY,"DvtxY[Dsize]/F");
+    dnt->Branch("DvtxZ",DvtxZ,"DvtxZ[Dsize]/F");
     dnt->Branch("Dd0",Dd0,"Dd0[Dsize]/F");
     dnt->Branch("Dd0Err",Dd0Err,"Dd0Err[Dsize]/F");
     dnt->Branch("Ddxyz",Ddxyz,"Ddxyz[Dsize]/F");
@@ -861,6 +863,7 @@ class DntupleBranches
     Dy[typesize] = b4P->Rapidity();
     DvtxX[typesize] = DInfo->vtxX[j] - EvtInfo->PVx;
     DvtxY[typesize] = DInfo->vtxY[j] - EvtInfo->PVy;
+    DvtxZ[typesize] = DInfo->vtxZ[j] - EvtInfo->PVz;
     Dd0[typesize] = TMath::Sqrt((DInfo->vtxX[j]-EvtInfo->PVx)*(DInfo->vtxX[j]-EvtInfo->PVx)+(DInfo->vtxY[j]-EvtInfo->PVy)*(DInfo->vtxY[j]-EvtInfo->PVy));
     Dd0Err[typesize] = TMath::Sqrt(DInfo->vtxXErr[j]*DInfo->vtxXErr[j]+DInfo->vtxYErr[j]*DInfo->vtxYErr[j]);
     Ddxyz[typesize] = TMath::Sqrt((DInfo->vtxX[j]-EvtInfo->PVx)*(DInfo->vtxX[j]-EvtInfo->PVx)+(DInfo->vtxY[j]-EvtInfo->PVy)*(DInfo->vtxY[j]-EvtInfo->PVy)+(DInfo->vtxZ[j]-EvtInfo->PVz)*(DInfo->vtxZ[j]-EvtInfo->PVz));
