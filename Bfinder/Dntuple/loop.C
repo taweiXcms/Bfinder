@@ -130,7 +130,7 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
   cout<<outfile<<endl;
   cout<<endl;
 
-  return 1;
+  return 0;
 }
 
 int main(int argc, char *argv[])

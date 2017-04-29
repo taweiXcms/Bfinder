@@ -127,7 +127,7 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
   cout<<outfile<<endl;
   cout<<endl;
 
-  return 1;
+  return 0;
 }
 
 int main(int argc, char *argv[])
@@ -139,9 +139,9 @@ int main(int argc, char *argv[])
   else
     {
       std::cout << "Usage: mergeForest <input_collection> <output_file>" << std::endl;
-      return 0;
+      return 1;
     }
-  return 1;
+  return 0;
 }
 
 

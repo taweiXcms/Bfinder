@@ -25,7 +25,7 @@ LOGDIR=/export/d00/scratch/jwang/hadooplogs/ntD_EvtBase_20170410_DfinderData_201
 
 ########################## Create subfile ###############################
 rm mylistfinal.txt
-ls $DATASET  | awk '{print "" $0}' >> mylistfinal.txt
+ls $DATASET  | awk '{print "" $0}' | grep .root >> mylistfinal.txt
 
 if [ ! -d $DESTINATION ]
 then
