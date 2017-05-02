@@ -80,6 +80,9 @@ class Dfinder : public edm::EDAnalyzer
         edm::EDGetTokenT< std::vector<PileupSummaryInfo> > puInfoLabel_;
         edm::EDGetTokenT< reco::BeamSpot > bsLabel_;
         edm::EDGetTokenT< reco::VertexCollection > pvLabel_;
+        edm::EDGetTokenT<edm::ValueMap<reco::DeDxData> > Dedx_Token1_;
+        edm::EDGetTokenT<edm::ValueMap<reco::DeDxData> > Dedx_Token2_;
+        
         double tkPtCut_;
         double tkEtaCut_;
         std::vector<double> dCutSeparating_PtVal_;
@@ -102,6 +105,7 @@ class Dfinder : public edm::EDAnalyzer
         bool makeDntuple_;
         bool doDntupleSkim_;
         bool printInfo_;
+        bool readDedx_;
         edm::EDGetTokenT<edm::ValueMap<float> > MVAMapLabel_;
         edm::EDGetTokenT< std::vector<float> > MVAMapLabelpA_;
         edm::InputTag MVAMapLabelInputTag_;
@@ -186,9 +190,12 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     makeDntuple_ = iConfig.getParameter<bool>("makeDntuple");
     doDntupleSkim_ = iConfig.getParameter<bool>("doDntupleSkim");
     printInfo_ = iConfig.getParameter<bool>("printInfo");
+    readDedx_ = iConfig.getParameter<bool>("readDedx");
     MVAMapLabelInputTag_ = iConfig.getParameter<edm::InputTag>("MVAMapLabel");
     MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
     MVAMapLabelpA_ = consumes< std::vector<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
+    Dedx_Token1_ = consumes<edm::ValueMap<reco::DeDxData> >(iConfig.getParameter<edm::InputTag>("Dedx_Token1"));
+    Dedx_Token2_ = consumes<edm::ValueMap<reco::DeDxData> >(iConfig.getParameter<edm::InputTag>("Dedx_Token2"));
 
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
     for(unsigned int i = 0; i < Dchannel_.size(); i++){
@@ -770,6 +777,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of DInfo.\n");
 
                     // TrackInfo section {{{
+                    // Setup MVA
                     Handle<edm::ValueMap<float> > mvaoutput;
                     Handle< std::vector<float> > mvaoutputpA;
                     std::vector<float>   mvavector;
@@ -780,6 +788,18 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         iEvent.getByToken(MVAMapLabelpA_, mvaoutputpA);
                         mvavector = *mvaoutputpA;
                         assert(mvavector.size()==input_tracks.size());
+                    }
+
+                    // Setup Dedx
+                    edm::Handle<edm::ValueMap<reco::DeDxData> > dEdxHandle1;
+                    edm::ValueMap<reco::DeDxData> dEdxTrack1;
+                    //edm::Handle<edm::ValueMap<reco::DeDxData> > dEdxHandle2;
+                    //edm::ValueMap<reco::DeDxData> dEdxTrack2;
+                    if(readDedx_) {
+                        iEvent.getByToken(Dedx_Token1_, dEdxHandle1);
+                        dEdxTrack1 = *dEdxHandle1.product();
+                        //iEvent.getByToken(Dedx_Token2_, dEdxHandle2);
+                        //dEdxTrack2 = *dEdxHandle2.product();
                     }
 
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
@@ -861,6 +881,10 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_hindex];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
+                        if(readDedx_) {
+                            TrackInfo.dedx           [TrackInfo.size] = dEdxTrack1[tk_it->track()].dEdx();
+                        }else 
+                            TrackInfo.dedx           [TrackInfo.size] = -1;
 
                         if(tk_it->track().isNonnull()){
                             for(int tq = 0; tq < reco::TrackBase::qualitySize; tq++){

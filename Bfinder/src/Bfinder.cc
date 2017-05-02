@@ -78,6 +78,9 @@ class Bfinder : public edm::EDAnalyzer
         edm::EDGetTokenT< std::vector<PileupSummaryInfo> > puInfoLabel_;
         edm::EDGetTokenT< reco::BeamSpot > bsLabel_;
         edm::EDGetTokenT< reco::VertexCollection > pvLabel_;
+        edm::EDGetTokenT<edm::ValueMap<reco::DeDxData> > Dedx_Token1_;
+        edm::EDGetTokenT<edm::ValueMap<reco::DeDxData> > Dedx_Token2_;
+
         double tkPtCut_;
         double tkEtaCut_;
         double jpsiPtCut_;
@@ -94,6 +97,7 @@ class Bfinder : public edm::EDAnalyzer
         bool makeBntuple_;
         bool doBntupleSkim_;
         bool printInfo_;
+        bool readDedx_;
         edm::EDGetTokenT<edm::ValueMap<float> > MVAMapLabel_;
         edm::EDGetTokenT< std::vector<float> > MVAMapLabelpA_;
         edm::InputTag MVAMapLabelInputTag_;
@@ -180,9 +184,12 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     makeBntuple_ = iConfig.getParameter<bool>("makeBntuple");
     doBntupleSkim_ = iConfig.getParameter<bool>("doBntupleSkim");
     printInfo_ = iConfig.getParameter<bool>("printInfo");
+    readDedx_ = iConfig.getParameter<bool>("readDedx");
     MVAMapLabelInputTag_ = iConfig.getParameter<edm::InputTag>("MVAMapLabel");
     MVAMapLabel_ = consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
     MVAMapLabelpA_ = consumes< std::vector<float> >(iConfig.getParameter<edm::InputTag>("MVAMapLabel"));
+    Dedx_Token1_ = consumes<edm::ValueMap<reco::DeDxData> >(iConfig.getParameter<edm::InputTag>("Dedx_Token1"));
+    Dedx_Token2_ = consumes<edm::ValueMap<reco::DeDxData> >(iConfig.getParameter<edm::InputTag>("Dedx_Token2"));
 
     MuonCutLevel        = fs->make<TH1F>("MuonCutLevel"     , "MuonCutLevel"    , 10, 0, 10);
     TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
@@ -1047,6 +1054,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //printf("-----*****DEBUG:End of BInfo.\n");
 
                     // TrackInfo section {{{
+                    // Setup MVA
                     Handle<edm::ValueMap<float> > mvaoutput;
                     Handle< std::vector<float> > mvaoutputpA;
                     std::vector<float>   mvavector;
@@ -1057,6 +1065,18 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         iEvent.getByToken(MVAMapLabelpA_, mvaoutputpA);
                         mvavector = *mvaoutputpA;
                         assert(mvavector.size()==input_tracks.size());
+                    }
+
+                    // Setup Dedx
+                    edm::Handle<edm::ValueMap<reco::DeDxData> > dEdxHandle1;
+                    edm::ValueMap<reco::DeDxData> dEdxTrack1;
+                    //edm::Handle<edm::ValueMap<reco::DeDxData> > dEdxHandle2;
+                    //edm::ValueMap<reco::DeDxData> dEdxTrack2;
+                    if(readDedx_) {
+                        iEvent.getByToken(Dedx_Token1_, dEdxHandle1);
+                        dEdxTrack1 = *dEdxHandle1.product();
+                        //iEvent.getByToken(Dedx_Token2_, dEdxHandle2);
+                        //dEdxTrack2 = *dEdxHandle2.product();
                     }
 
                     for(std::vector<pat::GenericParticle>::const_iterator tk_it=input_tracks.begin();
@@ -1111,7 +1131,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_hindex];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
-
+                        if(readDedx_) {
+                            TrackInfo.dedx           [TrackInfo.size] = dEdxTrack1[tk_it->track()].dEdx();
+                        }else
+                            TrackInfo.dedx           [TrackInfo.size] = -1;
 
                         //https://github.com/cms-sw/cmssw/blob/CMSSW_7_5_5_patch1/DataFormats/TrackReco/interface/TrackBase.h#L149
                         if(tk_it->track().isNonnull()){

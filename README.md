@@ -63,6 +63,9 @@ HIFormat = False
 UseGenPlusSim = False
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
+## DeDx info not in PbPb data
+process.Bfinder.readDedx = cms.bool(False)
+process.Dfinder.readDedx = cms.bool(False)
 ```
 
 And add to your cms.Path()

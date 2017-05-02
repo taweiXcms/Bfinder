@@ -60,6 +60,7 @@
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/TrackReco/interface/DeDxData.h"
 
 class CommonFuncts{//{{{
     public:
