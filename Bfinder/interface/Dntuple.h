@@ -86,6 +86,10 @@ class DntupleBranches
   float   Dtrk2Phi[MAX_XB];
   float   Dtrk3Phi[MAX_XB];
   float   Dtrk4Phi[MAX_XB];
+  float   Dtrk1P[MAX_XB];
+  float   Dtrk2P[MAX_XB];
+  float   Dtrk3P[MAX_XB];
+  float   Dtrk4P[MAX_XB];
   float   Dtrk1PtErr[MAX_XB];
   float   Dtrk2PtErr[MAX_XB];
   float   Dtrk3PtErr[MAX_XB];
@@ -154,6 +158,10 @@ class DntupleBranches
   int     Dtrk2Quality[MAX_XB];
   int     Dtrk3Quality[MAX_XB];
   int     Dtrk4Quality[MAX_XB];
+  float   Dtrk1dedx[MAX_XB];
+  float   Dtrk2dedx[MAX_XB];
+  float   Dtrk3dedx[MAX_XB];
+  float   Dtrk4dedx[MAX_XB];
   //DInfo.tktkResInfo
   float   DtktkResmass[MAX_XB];
   float   DtktkRespt[MAX_XB];
@@ -163,6 +171,7 @@ class DntupleBranches
   float   DRestrk1Eta[MAX_XB];
   float   DRestrk1Phi[MAX_XB];
   float   DRestrk1Y[MAX_XB];
+  float   DRestrk1P[MAX_XB];
   float   DRestrk1Dxy[MAX_XB];
   float   DRestrk1D0Err[MAX_XB];
   int     DRestrk1originalAlgo[MAX_XB];
@@ -170,6 +179,7 @@ class DntupleBranches
   float   DRestrk2Eta[MAX_XB];
   float   DRestrk2Phi[MAX_XB];
   float   DRestrk2Y[MAX_XB];
+  float   DRestrk2P[MAX_XB];
   float   DRestrk2Dxy[MAX_XB];
   float   DRestrk2D0Err[MAX_XB];
   int     DRestrk2originalAlgo[MAX_XB];
@@ -177,12 +187,14 @@ class DntupleBranches
   float   DRestrk3Eta[MAX_XB];
   float   DRestrk3Phi[MAX_XB];
   float   DRestrk3Y[MAX_XB];
+  float   DRestrk3P[MAX_XB];
   float   DRestrk3Dxy[MAX_XB];
   float   DRestrk3D0Err[MAX_XB];
   int     DRestrk3originalAlgo[MAX_XB];
   float   DRestrk4Pt[MAX_XB];
   float   DRestrk4Eta[MAX_XB];
   float   DRestrk4Phi[MAX_XB];
+  float   DRestrk4P[MAX_XB];
   float   DRestrk4Y[MAX_XB];
   float   DRestrk4Dxy[MAX_XB];
   float   DRestrk4D0Err[MAX_XB];
@@ -199,6 +211,10 @@ class DntupleBranches
   int     DRestrk2Quality[MAX_XB];
   int     DRestrk3Quality[MAX_XB];
   int     DRestrk4Quality[MAX_XB];
+  float   DRestrk1dedx[MAX_XB];
+  float   DRestrk2dedx[MAX_XB];
+  float   DRestrk3dedx[MAX_XB];
+  float   DRestrk4dedx[MAX_XB];
   //DInfo.genInfo
   float   Dgen[MAX_XB];
   int     DgennDa[MAX_XB];
@@ -283,6 +299,8 @@ class DntupleBranches
     dnt->Branch("Dtrk2Eta",Dtrk2Eta,"Dtrk2Eta[Dsize]/F");
     dnt->Branch("Dtrk1Phi",Dtrk1Phi,"Dtrk1Phi[Dsize]/F");
     dnt->Branch("Dtrk2Phi",Dtrk2Phi,"Dtrk2Phi[Dsize]/F");
+    dnt->Branch("Dtrk1P",Dtrk1P,"Dtrk1P[Dsize]/F");
+    dnt->Branch("Dtrk2P",Dtrk2P,"Dtrk2P[Dsize]/F");
     dnt->Branch("Dtrk1PtErr",Dtrk1PtErr,"Dtrk1PtErr[Dsize]/F");
     dnt->Branch("Dtrk2PtErr",Dtrk2PtErr,"Dtrk2PtErr[Dsize]/F");
     dnt->Branch("Dtrk1Dxy",Dtrk1Dxy,"Dtrk1Dxy[Dsize]/F");
@@ -305,6 +323,8 @@ class DntupleBranches
     dnt->Branch("Dtrk2originalAlgo",Dtrk2originalAlgo,"Dtrk2originalAlgo[Dsize]/I");
     dnt->Branch("Dtrk1highPurity",Dtrk1highPurity,"Dtrk1highPurity[Dsize]/O");
     dnt->Branch("Dtrk2highPurity",Dtrk2highPurity,"Dtrk2highPurity[Dsize]/O");
+    dnt->Branch("Dtrk1dedx",Dtrk1dedx,"Dtrk1dedx[Dsize]/F");
+    dnt->Branch("Dtrk2dedx",Dtrk2dedx,"Dtrk2dedx[Dsize]/F");
     if(!D0kpimode)
       {
         dnt->Branch("Dtrk3Pt",Dtrk3Pt,"Dtrk3Pt[Dsize]/F");
@@ -313,6 +333,8 @@ class DntupleBranches
         dnt->Branch("Dtrk4Eta",Dtrk4Eta,"Dtrk4Eta[Dsize]/F");
         dnt->Branch("Dtrk3Phi",Dtrk3Phi,"Dtrk3Phi[Dsize]/F");
         dnt->Branch("Dtrk4Phi",Dtrk4Phi,"Dtrk4Phi[Dsize]/F");
+        dnt->Branch("Dtrk3P",Dtrk3P,"Dtrk3P[Dsize]/F");
+        dnt->Branch("Dtrk4P",Dtrk4P,"Dtrk4P[Dsize]/F");
         dnt->Branch("Dtrk3PtErr",Dtrk3PtErr,"Dtrk3PtErr[Dsize]/F");
         dnt->Branch("Dtrk4PtErr",Dtrk4PtErr,"Dtrk4PtErr[Dsize]/F");
         dnt->Branch("Dtrk3Dxy",Dtrk3Dxy,"Dtrk3Dxy[Dsize]/F");
@@ -335,6 +357,8 @@ class DntupleBranches
         dnt->Branch("Dtrk4originalAlgo",Dtrk4originalAlgo,"Dtrk4originalAlgo[Dsize]/I");
         dnt->Branch("Dtrk3highPurity",Dtrk3highPurity,"Dtrk3highPurity[Dsize]/O");
         dnt->Branch("Dtrk4highPurity",Dtrk4highPurity,"Dtrk4highPurity[Dsize]/O");
+        dnt->Branch("Dtrk3dedx",Dtrk3dedx,"Dtrk3dedx[Dsize]/F");
+        dnt->Branch("Dtrk4dedx",Dtrk4dedx,"Dtrk4dedx[Dsize]/F");
       }
     if(detailMode)
       {
@@ -380,21 +404,25 @@ class DntupleBranches
         dnt->Branch("DRestrk1Pt",DRestrk1Pt,"DRestrk1Pt[Dsize]/F");
         dnt->Branch("DRestrk1Eta",DRestrk1Eta,"DRestrk1Eta[Dsize]/F");
         dnt->Branch("DRestrk1Phi",DRestrk1Phi,"DRestrk1Phi[Dsize]/F");
+        dnt->Branch("DRestrk1P",DRestrk1P,"DRestrk1P[Dsize]/F");
         dnt->Branch("DRestrk1Dxy",DRestrk1Dxy,"DRestrk1Dxy[Dsize]/F");
         dnt->Branch("DRestrk1originalAlgo",DRestrk1originalAlgo,"DRestrk1originalAlgo[Dsize]/I");
         dnt->Branch("DRestrk2Pt",DRestrk2Pt,"DRestrk2Pt[Dsize]/F");
         dnt->Branch("DRestrk2Eta",DRestrk2Eta,"DRestrk2Eta[Dsize]/F");
         dnt->Branch("DRestrk2Phi",DRestrk2Phi,"DRestrk2Phi[Dsize]/F");
+        dnt->Branch("DRestrk2P",DRestrk2P,"DRestrk2P[Dsize]/F");
         dnt->Branch("DRestrk2Dxy",DRestrk2Dxy,"DRestrk2Dxy[Dsize]/F");
         dnt->Branch("DRestrk2originalAlgo",DRestrk2originalAlgo,"DRestrk2originalAlgo[Dsize]/I");
         dnt->Branch("DRestrk3Pt",DRestrk3Pt,"DRestrk3Pt[Dsize]/F");
         dnt->Branch("DRestrk3Eta",DRestrk3Eta,"DRestrk3Eta[Dsize]/F");
         dnt->Branch("DRestrk3Phi",DRestrk3Phi,"DRestrk3Phi[Dsize]/F");
+        dnt->Branch("DRestrk3P",DRestrk3P,"DRestrk3P[Dsize]/F");
         dnt->Branch("DRestrk3Dxy",DRestrk3Dxy,"DRestrk3Dxy[Dsize]/F");
         dnt->Branch("DRestrk3originalAlgo",DRestrk3originalAlgo,"DRestrk3originalAlgo[Dsize]/I");
         dnt->Branch("DRestrk4Pt",DRestrk4Pt,"DRestrk4Pt[Dsize]/F");
         dnt->Branch("DRestrk4Eta",DRestrk4Eta,"DRestrk4Eta[Dsize]/F");
         dnt->Branch("DRestrk4Phi",DRestrk4Phi,"DRestrk4Phi[Dsize]/F");
+        dnt->Branch("DRestrk4P",DRestrk4P,"DRestrk4P[Dsize]/F");
         dnt->Branch("DRestrk4Dxy",DRestrk4Dxy,"DRestrk4Dxy[Dsize]/F");
         dnt->Branch("DRestrk4originalAlgo",DRestrk4originalAlgo,"DRestrk4originalAlgo[Dsize]/I");
         dnt->Branch("DRestrk1PtErr",DRestrk1PtErr,"DRestrk1PtErr[Dsize]/F");
@@ -405,6 +433,10 @@ class DntupleBranches
         dnt->Branch("DRestrk2highPurity",DRestrk2highPurity,"DRestrk2highPurity[Dsize]/O");
         dnt->Branch("DRestrk3highPurity",DRestrk3highPurity,"DRestrk3highPurity[Dsize]/O");
         dnt->Branch("DRestrk4highPurity",DRestrk4highPurity,"DRestrk4highPurity[Dsize]/O");
+        dnt->Branch("DRestrk1dedx",DRestrk1dedx,"DRestrk1dedx[Dsize]/F");
+        dnt->Branch("DRestrk2dedx",DRestrk2dedx,"DRestrk2dedx[Dsize]/F");
+        dnt->Branch("DRestrk3dedx",DRestrk3dedx,"DRestrk3dedx[Dsize]/F");
+        dnt->Branch("DRestrk4dedx",DRestrk4dedx,"DRestrk4dedx[Dsize]/F");
       }
     if(detailMode)
       {
@@ -828,6 +860,7 @@ class DntupleBranches
         trk1mass = findMass(DInfo->rftk1_MassHypo[j]);
         b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk1_index[j]],TrackInfo->eta[DInfo->rftk1_index[j]],TrackInfo->phi[DInfo->rftk1_index[j]],trk1mass);
         Dtrk1Y[typesize] = b4P->Rapidity();
+        Dtrk1P[typesize] = b4P->P();
         Dtrk1Dxy[typesize] = TrackInfo->dxyPV[DInfo->rftk1_index[j]];
         Dtrk1D0Err[typesize] = TrackInfo->d0error[DInfo->rftk1_index[j]];
         Dtrk1PixelHit[typesize] = TrackInfo->pixelhit[DInfo->rftk1_index[j]];
@@ -841,6 +874,7 @@ class DntupleBranches
         Dtrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk1_index[j]];
         Dtrk1highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk1_index[j]];
         Dtrk1Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk1_index[j]];
+        Dtrk1dedx[typesize] = TrackInfo->dedx[DInfo->rftk1_index[j]];
 
         Dtrk2Idx[typesize] = DInfo->rftk2_index[j];
         Dtrk2Pt[typesize] = TrackInfo->pt[DInfo->rftk2_index[j]];
@@ -852,6 +886,7 @@ class DntupleBranches
         trk2mass = findMass(DInfo->rftk2_MassHypo[j]);
         b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk2_index[j]],TrackInfo->eta[DInfo->rftk2_index[j]],TrackInfo->phi[DInfo->rftk2_index[j]],trk2mass);
         Dtrk2Y[typesize] = b4P->Rapidity();
+        Dtrk2P[typesize] = b4P->P();
         Dtrk2Dxy[typesize] = TrackInfo->dxyPV[DInfo->rftk2_index[j]];
         Dtrk2D0Err[typesize] = TrackInfo->d0error[DInfo->rftk2_index[j]];
         Dtrk2PixelHit[typesize] = TrackInfo->pixelhit[DInfo->rftk2_index[j]];
@@ -865,6 +900,7 @@ class DntupleBranches
         Dtrk2originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk2_index[j]];
         Dtrk2highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk2_index[j]];
         Dtrk2Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk2_index[j]];
+        Dtrk2dedx[typesize] = TrackInfo->dedx[DInfo->rftk2_index[j]];
 
         if(DInfo->type[j]==1||DInfo->type[j]==2)
           {
@@ -872,6 +908,7 @@ class DntupleBranches
             Dtrk3Pt[typesize] = -1;
             Dtrk3Eta[typesize] = -20;
             Dtrk3Phi[typesize] = -20;
+            Dtrk3P[typesize] = -1;
             Dtrk3PtErr[typesize] = 0;
             Dtrk3EtaErr[typesize] = 0;
             Dtrk3PhiErr[typesize] = 0;
@@ -889,10 +926,12 @@ class DntupleBranches
             Dtrk3originalAlgo[typesize] = 0;
             Dtrk3Quality[typesize] = 0;
             Dtrk3highPurity[typesize] = false;
+            Dtrk3dedx[typesize] = -20;
             Dtrk4Idx[typesize] = -1;
             Dtrk4Pt[typesize] = -1;
             Dtrk4Eta[typesize] = -20;
             Dtrk4Phi[typesize] = -20;
+            Dtrk4P[typesize] = -1;
             Dtrk4PtErr[typesize] = 0;
             Dtrk4EtaErr[typesize] = 0;
             Dtrk4PhiErr[typesize] = 0;
@@ -910,6 +949,7 @@ class DntupleBranches
             Dtrk4originalAlgo[typesize] = 0;
             Dtrk4Quality[typesize] = 0;
             Dtrk4highPurity[typesize] = false;
+            Dtrk4dedx[typesize] = -20;
           
             DtktkResmass[typesize] = -1;
             DtktkRespt[typesize] = -1;
@@ -919,6 +959,7 @@ class DntupleBranches
             DRestrk1Pt[typesize] = -1;
             DRestrk1Eta[typesize] = -20;
             DRestrk1Phi[typesize] = -20;
+            DRestrk1P[typesize] = -1;
             DRestrk1Y[typesize] = -1;
             DRestrk1Dxy[typesize] = -1;
             DRestrk1D0Err[typesize] = -1;
@@ -926,6 +967,7 @@ class DntupleBranches
             DRestrk2Pt[typesize] = -1;
             DRestrk2Eta[typesize] = -20;
             DRestrk2Phi[typesize] = -20;
+            DRestrk2P[typesize] = -1;
             DRestrk2Y[typesize] = -1;
             DRestrk2Dxy[typesize] = -1;
             DRestrk2D0Err[typesize] = -1;
@@ -933,6 +975,7 @@ class DntupleBranches
             DRestrk3Pt[typesize] = -1;
             DRestrk3Eta[typesize] = -20;
             DRestrk3Phi[typesize] = -20;
+            DRestrk3P[typesize] = -1;
             DRestrk3Y[typesize] = -1;
             DRestrk3Dxy[typesize] = -1;
             DRestrk3D0Err[typesize] = -1;
@@ -940,6 +983,7 @@ class DntupleBranches
             DRestrk4Pt[typesize] = -1;
             DRestrk4Eta[typesize] = -20;
             DRestrk4Phi[typesize] = -20;
+            DRestrk4P[typesize] = -1;
             DRestrk4Y[typesize] = -1;
             DRestrk4Dxy[typesize] = -1;
             DRestrk4D0Err[typesize] = -1;
@@ -956,6 +1000,10 @@ class DntupleBranches
             DRestrk2Quality[typesize] = -1;
             DRestrk3Quality[typesize] = -1;
             DRestrk4Quality[typesize] = -1;
+            DRestrk1dedx[typesize] = -20;
+            DRestrk2dedx[typesize] = -20;
+            DRestrk3dedx[typesize] = -20;
+            DRestrk4dedx[typesize] = -20;
           }
         else if(DInfo->type[j]==3||DInfo->type[j]==4)
           {
@@ -969,6 +1017,7 @@ class DntupleBranches
             trk3mass = findMass(DInfo->rftk3_MassHypo[j]);
             b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk3_index[j]],TrackInfo->eta[DInfo->rftk3_index[j]],TrackInfo->phi[DInfo->rftk3_index[j]],trk3mass);
             Dtrk3Y[typesize] = b4P->Rapidity();
+            Dtrk3P[typesize] = b4P->P();
             Dtrk3Dxy[typesize] = TrackInfo->dxyPV[DInfo->rftk3_index[j]];
             Dtrk3D0Err[typesize] = TrackInfo->d0error[DInfo->rftk3_index[j]];
             Dtrk3PixelHit[typesize] = TrackInfo->pixelhit[DInfo->rftk3_index[j]];
@@ -982,10 +1031,12 @@ class DntupleBranches
             Dtrk3originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk3_index[j]];
             Dtrk3highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk3_index[j]];
             Dtrk3Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk3_index[j]];
+            Dtrk3dedx[typesize] = TrackInfo->dedx[DInfo->rftk3_index[j]];
             Dtrk4Idx[typesize] = -1;
             Dtrk4Pt[typesize] = -1;
             Dtrk4Eta[typesize] = -20;
             Dtrk4Phi[typesize] = -20;
+            Dtrk4P[typesize] = -1;
             Dtrk4PtErr[typesize] = 0;
             Dtrk4EtaErr[typesize] = 0;
             Dtrk4PhiErr[typesize] = 0;
@@ -1003,6 +1054,7 @@ class DntupleBranches
             Dtrk4originalAlgo[typesize] = 0;
             Dtrk4Quality[typesize] = 0;
             Dtrk4highPurity[typesize] = false;
+            Dtrk4dedx[typesize] = -20;
 
             DtktkResmass[typesize] = -1;
             DtktkRespt[typesize] = -1;
@@ -1012,6 +1064,7 @@ class DntupleBranches
             DRestrk1Pt[typesize] = -1;
             DRestrk1Eta[typesize] = -20;
             DRestrk1Phi[typesize] = -20;
+            DRestrk1P[typesize] = -1;
             DRestrk1Y[typesize] = -1;
             DRestrk1Dxy[typesize] = -1;
             DRestrk1D0Err[typesize] = -1;
@@ -1019,6 +1072,7 @@ class DntupleBranches
             DRestrk2Pt[typesize] = -1;
             DRestrk2Eta[typesize] = -20;
             DRestrk2Phi[typesize] = -20;
+            DRestrk2P[typesize] = -1;
             DRestrk2Y[typesize] = -1;
             DRestrk2Dxy[typesize] = -1;
             DRestrk2D0Err[typesize] = -1;
@@ -1026,6 +1080,7 @@ class DntupleBranches
             DRestrk3Pt[typesize] = -1;
             DRestrk3Eta[typesize] = -20;
             DRestrk3Phi[typesize] = -20;
+            DRestrk3P[typesize] = -1;
             DRestrk3Y[typesize] = -1;
             DRestrk3Dxy[typesize] = -1;
             DRestrk3D0Err[typesize] = -1;
@@ -1033,6 +1088,7 @@ class DntupleBranches
             DRestrk4Pt[typesize] = -1;
             DRestrk4Eta[typesize] = -20;
             DRestrk4Phi[typesize] = -20;
+            DRestrk4P[typesize] = -1;
             DRestrk4Y[typesize] = -1;
             DRestrk4Dxy[typesize] = -1;
             DRestrk4D0Err[typesize] = -1;
@@ -1049,6 +1105,10 @@ class DntupleBranches
             DRestrk2Quality[typesize] = -1;
             DRestrk3Quality[typesize] = -1;
             DRestrk4Quality[typesize] = -1;
+            DRestrk1dedx[typesize] = -20;
+            DRestrk2dedx[typesize] = -20;
+            DRestrk3dedx[typesize] = -20;
+            DRestrk4dedx[typesize] = -20;
           }
         else if(DInfo->type[j]==5||DInfo->type[j]==6)
           {
@@ -1070,8 +1130,10 @@ class DntupleBranches
             trk4mass = findMass(DInfo->rftk4_MassHypo[j]);
             b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk3_index[j]],TrackInfo->eta[DInfo->rftk3_index[j]],TrackInfo->phi[DInfo->rftk3_index[j]],trk3mass);
             Dtrk3Y[typesize] = b4P->Rapidity();
+            Dtrk3P[typesize] = b4P->P();
             b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk4_index[j]],TrackInfo->eta[DInfo->rftk4_index[j]],TrackInfo->phi[DInfo->rftk4_index[j]],trk4mass);
             Dtrk4Y[typesize] = b4P->Rapidity();
+            Dtrk4P[typesize] = b4P->P();
             Dtrk3Dxy[typesize] = TrackInfo->dxyPV[DInfo->rftk3_index[j]];
             Dtrk4Dxy[typesize] = TrackInfo->dxyPV[DInfo->rftk4_index[j]];
             Dtrk3D0Err[typesize] = TrackInfo->d0error[DInfo->rftk3_index[j]];
@@ -1098,6 +1160,8 @@ class DntupleBranches
             Dtrk4highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk4_index[j]];
             Dtrk3Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk3_index[j]];
             Dtrk4Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk4_index[j]];
+            Dtrk3dedx[typesize] = TrackInfo->dedx[DInfo->rftk3_index[j]];
+            Dtrk4dedx[typesize] = TrackInfo->dedx[DInfo->rftk4_index[j]];
 
             DtktkResmass[typesize] = -1;
             DtktkRespt[typesize] = -1;
@@ -1107,6 +1171,7 @@ class DntupleBranches
             DRestrk1Pt[typesize] = -1;
             DRestrk1Eta[typesize] = -20;
             DRestrk1Phi[typesize] = -20;
+            DRestrk1P[typesize] = -1;
             DRestrk1Y[typesize] = -1;
             DRestrk1Dxy[typesize] = -1;
             DRestrk1D0Err[typesize] = -1;
@@ -1114,6 +1179,7 @@ class DntupleBranches
             DRestrk2Pt[typesize] = -1;
             DRestrk2Eta[typesize] = -20;
             DRestrk2Phi[typesize] = -20;
+            DRestrk2P[typesize] = -1;
             DRestrk2Y[typesize] = -1;
             DRestrk2Dxy[typesize] = -1;
             DRestrk2D0Err[typesize] = -1;
@@ -1121,6 +1187,7 @@ class DntupleBranches
             DRestrk3Pt[typesize] = -1;
             DRestrk3Eta[typesize] = -20;
             DRestrk3Phi[typesize] = -20;
+            DRestrk3P[typesize] = -1;
             DRestrk3Y[typesize] = -1;
             DRestrk3Dxy[typesize] = -1;
             DRestrk3D0Err[typesize] = -1;
@@ -1128,6 +1195,7 @@ class DntupleBranches
             DRestrk4Pt[typesize] = -1;
             DRestrk4Eta[typesize] = -20;
             DRestrk4Phi[typesize] = -20;
+            DRestrk4P[typesize] = -1;
             DRestrk4Y[typesize] = -1;
             DRestrk4Dxy[typesize] = -1;
             DRestrk4D0Err[typesize] = -1;
@@ -1144,6 +1212,10 @@ class DntupleBranches
             DRestrk2Quality[typesize] = -1;
             DRestrk3Quality[typesize] = -1;
             DRestrk4Quality[typesize] = -1;
+            DRestrk1dedx[typesize] = -20;
+            DRestrk2dedx[typesize] = -20;
+            DRestrk3dedx[typesize] = -20;
+            DRestrk4dedx[typesize] = -20;
           }
       }
     else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14)
@@ -1157,6 +1229,7 @@ class DntupleBranches
         Dtrk1PhiErr[typesize] = TrackInfo->phiErr[DInfo->rftk2_index[j]];
         b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk2_index[j]],TrackInfo->eta[DInfo->rftk2_index[j]],TrackInfo->phi[DInfo->rftk2_index[j]],PION_MASS);
         Dtrk1Y[typesize] = b4P->Rapidity();
+        Dtrk1P[typesize] = b4P->P();
         Dtrk1Dxy[typesize] = TrackInfo->dxyPV[DInfo->rftk2_index[j]];
         Dtrk1D0Err[typesize] = TrackInfo->d0error[DInfo->rftk2_index[j]];
         Dtrk1PixelHit[typesize] = TrackInfo->pixelhit[DInfo->rftk2_index[j]];
@@ -1170,11 +1243,13 @@ class DntupleBranches
         Dtrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->rftk2_index[j]];
         Dtrk1highPurity[typesize] = TrackInfo->highPurity[DInfo->rftk2_index[j]];
         Dtrk1Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk2_index[j]];
+        Dtrk1dedx[typesize] = TrackInfo->dedx[DInfo->rftk2_index[j]];
 
         Dtrk2Idx[typesize] = -1;
         Dtrk2Pt[typesize] = -1;
         Dtrk2Eta[typesize] = -20;
         Dtrk2Phi[typesize] = -20;
+        Dtrk2P[typesize] = -1;
         Dtrk2PtErr[typesize] = 0;
         Dtrk2EtaErr[typesize] = 0;
         Dtrk2PhiErr[typesize] = 0;
@@ -1192,10 +1267,12 @@ class DntupleBranches
         Dtrk2originalAlgo[typesize] = 0;
         Dtrk2Quality[typesize] = 0;
         Dtrk2highPurity[typesize] = false;
+        Dtrk2dedx[typesize] = -20;
         Dtrk3Idx[typesize] = -1;
         Dtrk3Pt[typesize] = -1;
         Dtrk3Eta[typesize] = -20;
         Dtrk3Phi[typesize] = -20;
+        Dtrk3P[typesize] = -1;
         Dtrk3PtErr[typesize] = 0;
         Dtrk3EtaErr[typesize] = 0;
         Dtrk3PhiErr[typesize] = 0;
@@ -1213,10 +1290,12 @@ class DntupleBranches
         Dtrk3originalAlgo[typesize] = 0;
         Dtrk3Quality[typesize] = 0;
         Dtrk3highPurity[typesize] = false;
+        Dtrk3dedx[typesize] = -20;
         Dtrk4Idx[typesize] = -1;
         Dtrk4Pt[typesize] = -1;
         Dtrk4Eta[typesize] = -20;
         Dtrk4Phi[typesize] = -20;
+        Dtrk4P[typesize] = -1;
         Dtrk4PtErr[typesize] = 0;
         Dtrk4EtaErr[typesize] = 0;
         Dtrk4PhiErr[typesize] = 0;
@@ -1234,6 +1313,7 @@ class DntupleBranches
         Dtrk4originalAlgo[typesize] = 0;
         Dtrk4Quality[typesize] = 0;
         Dtrk4highPurity[typesize] = false;
+        Dtrk4dedx[typesize] = -20;
 
         DtktkResmass[typesize] = DInfo->tktkRes_mass[j];
         DtktkRespt[typesize] = DInfo->tktkRes_pt[j];
@@ -1245,6 +1325,7 @@ class DntupleBranches
         DRestrk1Phi[typesize] = TrackInfo->phi[DInfo->tktkRes_rftk1_index[j]];
         b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->tktkRes_rftk1_index[j]],TrackInfo->eta[DInfo->tktkRes_rftk1_index[j]],TrackInfo->phi[DInfo->tktkRes_rftk1_index[j]],DInfo->tktkRes_rftk1_mass[j]);
         DRestrk1Y[typesize] = b4P->Rapidity();
+        DRestrk1P[typesize] = b4P->P();
         DRestrk1Dxy[typesize] = TrackInfo->dxyPV[DInfo->tktkRes_rftk1_index[j]];
         DRestrk1D0Err[typesize] = TrackInfo->d0error[DInfo->tktkRes_rftk1_index[j]];
         DRestrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->tktkRes_rftk1_index[j]];
@@ -1253,12 +1334,14 @@ class DntupleBranches
         DRestrk2Phi[typesize] = TrackInfo->phi[DInfo->tktkRes_rftk2_index[j]];
         b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->tktkRes_rftk2_index[j]],TrackInfo->eta[DInfo->tktkRes_rftk2_index[j]],TrackInfo->phi[DInfo->tktkRes_rftk2_index[j]],DInfo->tktkRes_rftk2_mass[j]);
         DRestrk2Y[typesize] = b4P->Rapidity();
+        DRestrk2P[typesize] = b4P->P();
         DRestrk2Dxy[typesize] = TrackInfo->dxyPV[DInfo->tktkRes_rftk2_index[j]];
         DRestrk2D0Err[typesize] = TrackInfo->d0error[DInfo->tktkRes_rftk2_index[j]];
         DRestrk2originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->tktkRes_rftk2_index[j]];
         DRestrk3Pt[typesize] = -1;
         DRestrk3Eta[typesize] = -20;
         DRestrk3Phi[typesize] = -20;
+        DRestrk3P[typesize] = -1;
         DRestrk3Y[typesize] = -1;
         DRestrk3Dxy[typesize] = -1;
         DRestrk3D0Err[typesize] = -1;
@@ -1266,6 +1349,7 @@ class DntupleBranches
         DRestrk4Pt[typesize] = -1;
         DRestrk4Eta[typesize] = -20;
         DRestrk4Phi[typesize] = -20;
+        DRestrk4P[typesize] = -1;
         DRestrk4Y[typesize] = -1;
         DRestrk4Dxy[typesize] = -1;
         DRestrk4D0Err[typesize] = -1;
@@ -1282,6 +1366,10 @@ class DntupleBranches
         DRestrk2Quality[typesize] = TrackInfo->trackQuality[DInfo->tktkRes_rftk2_index[j]];
         DRestrk3Quality[typesize] = -1;
         DRestrk4Quality[typesize] = -1;
+        DRestrk1dedx[typesize] = TrackInfo->dedx[DInfo->tktkRes_rftk1_index[j]];
+        DRestrk2dedx[typesize] = TrackInfo->dedx[DInfo->tktkRes_rftk2_index[j]];
+        DRestrk3dedx[typesize] = -20;
+        DRestrk4dedx[typesize] = -20;
         if(DInfo->type[j]==11||DInfo->type[j]==12)
           {
             DRestrk3Pt[typesize] = TrackInfo->pt[DInfo->tktkRes_rftk3_index[j]];
@@ -1289,6 +1377,7 @@ class DntupleBranches
             DRestrk3Phi[typesize] = TrackInfo->phi[DInfo->tktkRes_rftk3_index[j]];
             b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->tktkRes_rftk3_index[j]],TrackInfo->eta[DInfo->tktkRes_rftk3_index[j]],TrackInfo->phi[DInfo->tktkRes_rftk3_index[j]],DInfo->tktkRes_rftk3_mass[j]);
             DRestrk3Y[typesize] = b4P->Rapidity();
+            DRestrk3P[typesize] = b4P->P();
             DRestrk3Dxy[typesize] = TrackInfo->dxyPV[DInfo->tktkRes_rftk3_index[j]];
             DRestrk3D0Err[typesize] = TrackInfo->d0error[DInfo->tktkRes_rftk3_index[j]];
             DRestrk3originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->tktkRes_rftk3_index[j]];
@@ -1297,6 +1386,7 @@ class DntupleBranches
             DRestrk4Phi[typesize] = TrackInfo->phi[DInfo->tktkRes_rftk4_index[j]];
             b4P->SetPtEtaPhiM(TrackInfo->pt[DInfo->tktkRes_rftk4_index[j]],TrackInfo->eta[DInfo->tktkRes_rftk4_index[j]],TrackInfo->phi[DInfo->tktkRes_rftk4_index[j]],DInfo->tktkRes_rftk4_mass[j]);
             DRestrk4Y[typesize] = b4P->Rapidity();
+            DRestrk4P[typesize] = b4P->P();
             DRestrk4Dxy[typesize] = TrackInfo->dxyPV[DInfo->tktkRes_rftk4_index[j]];
             DRestrk4D0Err[typesize] = TrackInfo->d0error[DInfo->tktkRes_rftk4_index[j]];
             DRestrk4originalAlgo[typesize] = TrackInfo->originalTrkAlgo[DInfo->tktkRes_rftk4_index[j]];
@@ -1306,6 +1396,8 @@ class DntupleBranches
             DRestrk4highPurity[typesize] = TrackInfo->highPurity[DInfo->tktkRes_rftk4_index[j]];
             DRestrk3Quality[typesize] = TrackInfo->trackQuality[DInfo->tktkRes_rftk3_index[j]];
             DRestrk4Quality[typesize] = TrackInfo->trackQuality[DInfo->tktkRes_rftk4_index[j]];
+            DRestrk3dedx[typesize] = TrackInfo->dedx[DInfo->tktkRes_rftk3_index[j]];
+            DRestrk4dedx[typesize] = TrackInfo->dedx[DInfo->tktkRes_rftk4_index[j]];
           }
       }
     
