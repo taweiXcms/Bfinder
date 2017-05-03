@@ -149,6 +149,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		MuonLabel = cms.InputTag('patMuonsWithTrigger'),
 		TrackLabel = cms.InputTag('patTrackCands'),
 		MVAMapLabel = cms.InputTag(TrkLabel,"MVAVals"),
+        Dedx_Token1 = cms.InputTag('dedxHarmonic2'),
+        Dedx_Token2 = cms.InputTag('dedxTruncated40'),
 	    PUInfoLabel = cms.InputTag("addPileupInfo"),
 	    BSLabel = cms.InputTag("offlineBeamSpot"),
 	    PVLabel = cms.InputTag(VtxLabel),
@@ -168,6 +170,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    makeBntuple = cms.bool(True),
 	    doBntupleSkim = cms.bool(False),
         printInfo = cms.bool(True),
+	    readDedx = cms.bool(True),
 	)
 	### Set Dfinder option
 	process.Dfinder = cms.EDAnalyzer('Dfinder',
@@ -193,6 +196,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    GenLabel = cms.InputTag('genParticles'),
 		TrackLabel = cms.InputTag('patTrackCands'),
         MVAMapLabel = cms.InputTag(TrkLabel,"MVAVals"),	
+        Dedx_Token1 = cms.InputTag('dedxHarmonic2'),
+        Dedx_Token2 = cms.InputTag('dedxTruncated40'),
 	    PUInfoLabel = cms.InputTag("addPileupInfo"),
 	    BSLabel = cms.InputTag("offlineBeamSpot"),
 	    PVLabel = cms.InputTag(VtxLabel),
@@ -218,6 +223,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	    makeDntuple = cms.bool(True),
 	    doDntupleSkim = cms.bool(False),
         printInfo = cms.bool(True),
+	    readDedx = cms.bool(True),
 	)
 	if runOnMC:
 	    process.Bfinder.RunOnMC = cms.bool(True)
