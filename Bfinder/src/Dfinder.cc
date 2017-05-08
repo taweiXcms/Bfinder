@@ -948,6 +948,27 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             }
             */
 
+			//fill gen PV, parton, gluon, etc can also be used
+			GenInfo.genPVx = -99;
+			GenInfo.genPVy = -99;
+			GenInfo.genPVz = -99;
+            for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
+                it_gen != gens->end(); it_gen++){
+				
+				//pt 0 particle should be from beam. Apart from proton and neutron, they are also pointing to PV actually
+				if( !(it_gen->pt() > 0) ) continue;
+				
+				//take the vertex of first produced particle, should be enough. Better to check 2-3 particles if want
+				GenInfo.genPVx = it_gen->vx();
+				GenInfo.genPVy = it_gen->vy();
+				GenInfo.genPVz = it_gen->vz();
+				//if( abs(it_gen->pdgId()) == 421 ) cout << "DzeroDzeroDzeroDzero!!!!!!" << endl;
+				//cout << "Pid: " << it_gen->pdgId() << " status: " << it_gen->status() << endl;
+				//cout << " vx: " << it_gen->vx() << " vy: " << it_gen->vy() << " vz: " << it_gen->vz() << endl;
+				break;
+			}
+			//end fill gen PV
+
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
                 if (it_gen->status() > 2 && it_gen->status() != 8) continue;//only status 1, 2, 8(simulated)
@@ -1054,6 +1075,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 GenInfo.collisionId[GenInfo.size]   = it_gen->collisionId();
                 GenInfo.nMo[GenInfo.size]           = it_gen->numberOfMothers();
                 GenInfo.nDa[GenInfo.size]           = it_gen->numberOfDaughters();
+				GenInfo.vtxX[GenInfo.size]          = it_gen->vx(); //it should be the production vx of the particle, better to double check
+				GenInfo.vtxY[GenInfo.size]          = it_gen->vy();
+				GenInfo.vtxZ[GenInfo.size]          = it_gen->vz();
                 //GenInfo.mo1[GenInfo.size]           = iMo1;//To be matched later.
                 //GenInfo.mo2[GenInfo.size]           = iMo2;
                 //GenInfo.da1[GenInfo.size]           = iDa1;
