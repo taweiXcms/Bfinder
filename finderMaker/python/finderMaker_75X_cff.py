@@ -88,8 +88,8 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
 	addHLTL1Passthrough(process)
 
-	#process.patTrigger.collections.remove("hltL3MuonCandidates")
-	#process.patTrigger.collections.append("hltHIL3MuonCandidates")
+	process.patTrigger.collections.remove("hltL3MuonCandidates")
+	process.patTrigger.collections.append("hltHIL3MuonCandidates")
 
 	process.muonL1Info.maxDeltaR = 0.3
 	process.muonL1Info.fallbackToME1 = True
