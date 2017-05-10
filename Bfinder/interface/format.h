@@ -1262,6 +1262,9 @@ public:
 
 class GenInfoBranches{//{{{
     public:
+		float   genPVx;
+		float   genPVy;
+		float   genPVz;
         int     size;
         int     index       [MAX_GEN];
         int     handle_index[MAX_GEN];
@@ -1280,8 +1283,14 @@ class GenInfoBranches{//{{{
         int     da2         [MAX_GEN];
         int     da3         [MAX_GEN];
         int     da4         [MAX_GEN];
+		float  vtxX         [MAX_GEN];//production vertex of the particle
+		float  vtxY         [MAX_GEN];
+		float  vtxZ         [MAX_GEN];
 
         void regTree(TTree *root){//{{{
+			root->Branch("GenInfo.genPVx"       ,&genPVx        ,"GenInfo.genPVx/F");
+			root->Branch("GenInfo.genPVy"       ,&genPVy        ,"GenInfo.genPVy/F");
+			root->Branch("GenInfo.genPVz"       ,&genPVz        ,"GenInfo.genPVz/F");
             root->Branch("GenInfo.size"         ,&size          ,"GenInfo.size/I");
             root->Branch("GenInfo.index"        ,index          ,"GenInfo.index[GenInfo.size]/I");
             root->Branch("GenInfo.handle_index" ,handle_index   ,"GenInfo.handle_index[GenInfo.size]/I");
@@ -1300,9 +1309,15 @@ class GenInfoBranches{//{{{
             root->Branch("GenInfo.da2"          ,da2            ,"GenInfo.da2[GenInfo.size]/I");
             root->Branch("GenInfo.da3"          ,da3            ,"GenInfo.da3[GenInfo.size]/I");
             root->Branch("GenInfo.da4"          ,da4            ,"GenInfo.da4[GenInfo.size]/I");
+			root->Branch("GenInfo.vtxX"         ,vtxX           ,"GenInfo.vtxX[GenInfo.size]/F");
+			root->Branch("GenInfo.vtxY"         ,vtxY           ,"GenInfo.vtxY[GenInfo.size]/F");
+			root->Branch("GenInfo.vtxZ"         ,vtxZ           ,"GenInfo.vtxZ[GenInfo.size]/F");
         }//}}}
 
         void setbranchadd(TTree *root){//{{{
+			root->SetBranchAddress("GenInfo.genPVx"       ,&genPVx        );
+			root->SetBranchAddress("GenInfo.genPVy"       ,&genPVy        );
+			root->SetBranchAddress("GenInfo.genPVz"       ,&genPVz        );
             root->SetBranchAddress("GenInfo.size"         ,&size          );
             root->SetBranchAddress("GenInfo.index"        ,index          );
             root->SetBranchAddress("GenInfo.handle_index" ,handle_index   );
@@ -1321,6 +1336,9 @@ class GenInfoBranches{//{{{
             root->SetBranchAddress("GenInfo.da2"          ,da2            );
             root->SetBranchAddress("GenInfo.da3"          ,da3            );
             root->SetBranchAddress("GenInfo.da4"          ,da4            );
+			root->SetBranchAddress("GenInfo.vtxX"         ,vtxX           );
+			root->SetBranchAddress("GenInfo.vtxY"         ,vtxY           );
+			root->SetBranchAddress("GenInfo.vtxZ"         ,vtxZ           );
         }//}}}
 };//}}}
 
