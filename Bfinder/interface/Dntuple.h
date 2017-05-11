@@ -69,6 +69,11 @@ class DntupleBranches
   float   DtktkRes_lxyBS[MAX_XB];
   float   DtktkRes_lxyBSErr[MAX_XB];
   float   DMaxDoca[MAX_XB];
+  float   DtktkRes_alphaToSV[MAX_XB];
+  float   DtktkRes_angleToTrk1[MAX_XB];
+  float   DtktkRes_ptAsymToTrk1[MAX_XB];
+  float   DMaxTkPt[MAX_XB];
+  float   DMinTkPt[MAX_XB];
 
   //DInfo.trkInfo
   int     Dtrk1Idx[MAX_XB];
@@ -217,7 +222,7 @@ class DntupleBranches
   float   DRestrk3dedx[MAX_XB];
   float   DRestrk4dedx[MAX_XB];
   //DInfo.genInfo
-  int     Dgen[MAX_XB];
+  float   Dgen[MAX_XB];
   int     DgennDa[MAX_XB];
   int     DgenIndex[MAX_XB];
   float   Dgenpt[MAX_XB];
@@ -300,6 +305,11 @@ class DntupleBranches
     dnt->Branch("DtktkRes_lxyBS",DtktkRes_lxyBS,"DtktkRes_lxyBS[Dsize]/F");
     dnt->Branch("DtktkRes_lxyBSErr",DtktkRes_lxyBSErr,"DtktkRes_lxyBSErr[Dsize]/F");
     dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/F");
+    dnt->Branch("DtktkRes_alphaToSV",DtktkRes_alphaToSV,"DtktkRes_alphaToSV[Dsize]/F");
+    dnt->Branch("DtktkRes_angleToTrk1",DtktkRes_angleToTrk1,"DtktkRes_angleToTrk1[Dsize]/F");
+    dnt->Branch("DtktkRes_ptAsymToTrk1",DtktkRes_ptAsymToTrk1,"DtktkRes_ptAsymToTrk1[Dsize]/F");
+    dnt->Branch("DMaxTkPt",DMaxTkPt,"DMaxTkPt[Dsize]/F");
+    dnt->Branch("DMinTkPt",DMinTkPt,"DMinTkPt[Dsize]/F");
 
     //DInfo.trkInfo
     dnt->Branch("Dtrk1Pt",Dtrk1Pt,"Dtrk1Pt[Dsize]/F");
@@ -466,7 +476,7 @@ class DntupleBranches
           }
       }
     //DInfo.genInfo
-    dnt->Branch("Dgen",Dgen,"Dgen[Dsize]/I");
+    dnt->Branch("Dgen",Dgen,"Dgen[Dsize]/F");
     dnt->Branch("DgenIndex",DgenIndex,"DgenIndex[Dsize]/I");
     dnt->Branch("DgennDa",DgennDa,"DgennDa[Dsize]/I");
     dnt->Branch("Dgenpt",Dgenpt,"Dgenpt[Dsize]/F");
@@ -894,13 +904,13 @@ class DntupleBranches
     float ylxyBS = DInfo->vtxY[j]-EvtInfo->BSy + (DInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
     DlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
     DlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->vtxYErr[j]);
-    r2lxyBS = (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
-      + (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
-    xlxyBS = DInfo->tktkRes_vtxX[j]-EvtInfo->BSx + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
-    ylxyBS = DInfo->tktkRes_vtxY[j]-EvtInfo->BSy + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
-    DtktkRes_lxyBS[typesize] = TMath::Sqrt(r2lxyBS);
-    DtktkRes_lxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->tktkRes_vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->tktkRes_vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->tktkRes_vtxYErr[j]);
     DMaxDoca[typesize] = DInfo->MaxDoca[j];
+
+    DtktkRes_alphaToSV[typesize] = -1;
+    DtktkRes_angleToTrk1[typesize] = -1;
+    DtktkRes_ptAsymToTrk1[typesize] = -1;
+    DtktkRes_lxyBS[typesize] = -1;
+    DtktkRes_lxyBSErr[typesize] = -1;
 
     //DInfo.trkInfo
     float trk1mass,trk2mass,trk3mass,trk4mass;
@@ -1426,6 +1436,28 @@ class DntupleBranches
         DRestrk2dedx[typesize] = TrackInfo->dedx[DInfo->tktkRes_rftk2_index[j]];
         DRestrk3dedx[typesize] = -20;
         DRestrk4dedx[typesize] = -20;
+
+        r2lxyBS = (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
+          + (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
+        xlxyBS = DInfo->tktkRes_vtxX[j]-EvtInfo->BSx + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
+        ylxyBS = DInfo->tktkRes_vtxY[j]-EvtInfo->BSy + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
+        DtktkRes_lxyBS[typesize] = TMath::Sqrt(r2lxyBS);
+        DtktkRes_lxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->tktkRes_vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->tktkRes_vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->tktkRes_vtxYErr[j]);
+
+        TVector3 *DisSvResVtx = new TVector3;
+        DisSvResVtx->SetXYZ(DInfo->tktkRes_vtxX[j]-DInfo->vtxX[j],
+                            DInfo->tktkRes_vtxY[j]-DInfo->vtxY[j],
+                            DInfo->tktkRes_vtxZ[j]-DInfo->vtxZ[j]);
+        TLorentzVector *tktkRes4Vec = new TLorentzVector;
+        tktkRes4Vec->SetPtEtaPhiM(DInfo->tktkRes_pt[j], DInfo->tktkRes_eta[j], DInfo->tktkRes_phi[j], DInfo->tktkRes_mass[j]);
+        DtktkRes_alphaToSV[typesize] = tktkRes4Vec->Angle(*DisSvResVtx);
+    
+        TLorentzVector *trk14Vec = new TLorentzVector;
+        trk14Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk2_index[j]], TrackInfo->eta[DInfo->rftk2_index[j]], TrackInfo->phi[DInfo->rftk2_index[j]], PION_MASS);
+        DtktkRes_angleToTrk1[typesize] = tktkRes4Vec->Angle(trk14Vec->Vect());
+
+        DtktkRes_ptAsymToTrk1[typesize] = (DInfo->tktkRes_pt[j]-TrackInfo->pt[DInfo->rftk2_index[j]])/(DInfo->tktkRes_pt[j]+TrackInfo->pt[DInfo->rftk2_index[j]]);
+
         if(DInfo->type[j]==11||DInfo->type[j]==12)
           {
             DRestrk3Pt[typesize] = TrackInfo->pt[DInfo->tktkRes_rftk3_index[j]];
@@ -1456,6 +1488,9 @@ class DntupleBranches
             DRestrk4dedx[typesize] = TrackInfo->dedx[DInfo->tktkRes_rftk4_index[j]];
           }
       }
+    DMaxTkPt[typesize] = max(Dtrk1Pt[typesize], max(Dtrk2Pt[typesize], max(Dtrk3Pt[typesize], max(Dtrk4Pt[typesize], max(DRestrk1Pt[typesize], max(DRestrk2Pt[typesize], max(DRestrk3Pt[typesize], DRestrk4Pt[typesize])))))));
+    DMinTkPt[typesize] = max(1/Dtrk1Pt[typesize], max(1/Dtrk2Pt[typesize], max(1/Dtrk3Pt[typesize], max(1/Dtrk4Pt[typesize], max(1/DRestrk1Pt[typesize], max(1/DRestrk2Pt[typesize], max(1/DRestrk3Pt[typesize], 1/DRestrk4Pt[typesize])))))));
+    DMinTkPt[typesize] = 1/DMinTkPt[typesize];
     
     int DpdgId=0,RpdgId=0;
     int dGenIdxRes = -1;
