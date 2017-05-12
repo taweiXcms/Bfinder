@@ -18,4 +18,6 @@ cd -
 
 #root -l -b -q  $CONFIGFILE++\(\"${INFILE}\",\"${OUTFILE}\"\)
 root -l -b -q  $CONFIGFILE\(\"${INFILE}\",\"${OUTFILE}\"\)
-mv ${OUTFILE} ${DESTINATION}/${OUTFILE}
+if [[ $? -eq 0 ]]; then
+	mv ${OUTFILE} ${DESTINATION}/${OUTFILE}
+fi
