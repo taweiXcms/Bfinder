@@ -596,8 +596,8 @@ class TrackInfoBranches{//{{{
 
 class BInfoBranches{//{{{
 public:
-    int	    uj_size;
-    int	    uj_index[MAX_XB];
+    int	   uj_size;
+    int	   uj_index[MAX_XB];
     float  uj_mass[MAX_XB];
     float  uj_pt[MAX_XB];
     float  uj_eta[MAX_XB];
@@ -605,7 +605,7 @@ public:
     float  uj_px[MAX_XB];
     float  uj_py[MAX_XB];
     float  uj_pz[MAX_XB];
-    float	uj_vtxX[MAX_XB];
+    float  uj_vtxX[MAX_XB];
     float  uj_vtxY[MAX_XB];
     float  uj_vtxZ[MAX_XB];
     float  uj_vtxXErr[MAX_XB];
@@ -614,10 +614,10 @@ public:
     float  uj_vtxYXErr[MAX_XB];
     float  uj_vtxZXErr[MAX_XB];
     float  uj_vtxZYErr[MAX_XB];
-    float	uj_vtxdof[MAX_XB];
-    float	uj_vtxchi2[MAX_XB];
-    int     uj_rfmu1_index[MAX_XB];
-    int     uj_rfmu2_index[MAX_XB];
+    float  uj_vtxdof[MAX_XB];
+    float  uj_vtxchi2[MAX_XB];
+    int    uj_rfmu1_index[MAX_XB];
+    int    uj_rfmu2_index[MAX_XB];
     
     float  uj_rfmu1_pt[MAX_XB];
     float  uj_rfmu1_eta[MAX_XB];
@@ -626,17 +626,17 @@ public:
     float  uj_rfmu2_eta[MAX_XB];
     float  uj_rfmu2_phi[MAX_XB];
     
-    int	    size;
-    int	    index[MAX_XB];
-    float	unfitted_mass[MAX_XB];
-    float	unfitted_pt[MAX_XB];
-    float	mass[MAX_XB];
-    float	pt[MAX_XB];
-    float	eta[MAX_XB];
-    float	phi[MAX_XB];
-    float	px[MAX_XB];
-    float	py[MAX_XB];
-    float	pz[MAX_XB];
+    int	   size;
+    int	   index[MAX_XB];
+    float  unfitted_mass[MAX_XB];
+    float  unfitted_pt[MAX_XB];
+    float  mass[MAX_XB];
+    float  pt[MAX_XB];
+    float  eta[MAX_XB];
+    float  phi[MAX_XB];
+    float  px[MAX_XB];
+    float  py[MAX_XB];
+    float  pz[MAX_XB];
     float  pxE[MAX_XB];
     float  pyE[MAX_XB];
     float  pzE[MAX_XB];
@@ -655,12 +655,12 @@ public:
     float  vtxYXErr[MAX_XB];
     float  vtxZXErr[MAX_XB];
     float  vtxZYErr[MAX_XB];
-    float	vtxdof[MAX_XB];
-    float	vtxchi2[MAX_XB];
-    int     rfuj_index[MAX_XB];
-    int     rftk1_index[MAX_XB];
-    int     rftk2_index[MAX_XB];
-    int     type[MAX_XB];
+    float  vtxdof[MAX_XB];
+    float  vtxchi2[MAX_XB];
+    int    rfuj_index[MAX_XB];
+    int    rftk1_index[MAX_XB];
+    int    rftk2_index[MAX_XB];
+    int    type[MAX_XB];
     
     float  rfmu1_pt[MAX_XB];
     float  rfmu1_eta[MAX_XB];
@@ -675,16 +675,16 @@ public:
     float  rftk2_eta[MAX_XB];
     float  rftk2_phi[MAX_XB];
     
-    float	tktk_unfitted_mass[MAX_XB];
-    float   tktk_unfitted_pt[MAX_XB];
-    float   tktk_mass[MAX_XB];
-    float   tktk_pt[MAX_XB];
-    float   tktk_eta[MAX_XB];
-    float   tktk_phi[MAX_XB];
-    float   tktk_px[MAX_XB];
-    float   tktk_py[MAX_XB];
-    float   tktk_pz[MAX_XB];
-    float	tktk_vtxX[MAX_XB];
+    float  tktk_unfitted_mass[MAX_XB];
+    float  tktk_unfitted_pt[MAX_XB];
+    float  tktk_mass[MAX_XB];
+    float  tktk_pt[MAX_XB];
+    float  tktk_eta[MAX_XB];
+    float  tktk_phi[MAX_XB];
+    float  tktk_px[MAX_XB];
+    float  tktk_py[MAX_XB];
+    float  tktk_pz[MAX_XB];
+    float  tktk_vtxX[MAX_XB];
     float  tktk_vtxY[MAX_XB];
     float  tktk_vtxZ[MAX_XB];
     float  tktk_vtxXErr[MAX_XB];
@@ -693,8 +693,8 @@ public:
     float  tktk_vtxYXErr[MAX_XB];
     float  tktk_vtxZXErr[MAX_XB];
     float  tktk_vtxZYErr[MAX_XB];
-    float	tktk_vtxdof[MAX_XB];
-    float	tktk_vtxchi2[MAX_XB];
+    float  tktk_vtxdof[MAX_XB];
+    float  tktk_vtxchi2[MAX_XB];
     float  tktk_rftk1_pt[MAX_XB];
     float  tktk_rftk1_eta[MAX_XB];
     float  tktk_rftk1_phi[MAX_XB];
@@ -707,8 +707,8 @@ public:
         root->Branch("BInfo.uj_index"         , uj_index       , "BInfo.uj_index[BInfo.uj_size]/I"	);
         root->Branch("BInfo.uj_mass"          , uj_mass        , "BInfo.uj_mass[BInfo.uj_size]/F"	);
         root->Branch("BInfo.uj_pt"            , uj_pt          , "BInfo.uj_pt[BInfo.uj_size]/F" );
-        root->Branch("BInfo.uj_eta"            , uj_eta          , "BInfo.uj_eta[BInfo.uj_size]/F"  );
-        root->Branch("BInfo.uj_phi"            , uj_phi          , "BInfo.uj_phi[BInfo.uj_size]/F"  );
+        root->Branch("BInfo.uj_eta"           , uj_eta         , "BInfo.uj_eta[BInfo.uj_size]/F"  );
+        root->Branch("BInfo.uj_phi"           , uj_phi         , "BInfo.uj_phi[BInfo.uj_size]/F"  );
         root->Branch("BInfo.uj_px"            , uj_px          , "BInfo.uj_px[BInfo.uj_size]/F"	);
         root->Branch("BInfo.uj_py"            , uj_py          , "BInfo.uj_py[BInfo.uj_size]/F"	);
         root->Branch("BInfo.uj_pz"            , uj_pz          , "BInfo.uj_pz[BInfo.uj_size]/F"	);
@@ -756,15 +756,15 @@ public:
         root->Branch("BInfo.rftk2_index"      , rftk2_index    , "BInfo.rftk2_index[BInfo.size]/I");
         root->Branch("BInfo.type"             , type           , "BInfo.type[BInfo.size]/I"	);
         
-        root->Branch("BInfo.tktk_unfitted_mass" , tktk_unfitted_mass, "BInfo.tktk_unfitted_mass[BInfo.size]/F"     );
-        root->Branch("BInfo.tktk_unfitted_pt"   , tktk_unfitted_pt , "BInfo.tktk_unfitted_pt[BInfo.size]/F"     );
-        root->Branch("BInfo.tktk_mass"          , tktk_mass        , "BInfo.tktk_mass[BInfo.size]/F"     );
-        root->Branch("BInfo.tktk_pt"            , tktk_pt          , "BInfo.tktk_pt[BInfo.size]/F"	);
-        root->Branch("BInfo.tktk_eta"            , tktk_eta          , "BInfo.tktk_eta[BInfo.size]/F"	);
-        root->Branch("BInfo.tktk_phi"            , tktk_phi          , "BInfo.tktk_phi[BInfo.size]/F"	);
-        root->Branch("BInfo.tktk_px"            , tktk_px          , "BInfo.tktk_px[BInfo.size]/F"	);
-        root->Branch("BInfo.tktk_py"            , tktk_py          , "BInfo.tktk_py[BInfo.size]/F"	);
-        root->Branch("BInfo.tktk_pz"            , tktk_pz          , "BInfo.tktk_pz[BInfo.size]/F"	);
+        root->Branch("BInfo.tktk_unfitted_mass" , tktk_unfitted_mass , "BInfo.tktk_unfitted_mass[BInfo.size]/F"     );
+        root->Branch("BInfo.tktk_unfitted_pt"   , tktk_unfitted_pt   , "BInfo.tktk_unfitted_pt[BInfo.size]/F"     );
+        root->Branch("BInfo.tktk_mass"          , tktk_mass          , "BInfo.tktk_mass[BInfo.size]/F"     );
+        root->Branch("BInfo.tktk_pt"            , tktk_pt            , "BInfo.tktk_pt[BInfo.size]/F"	);
+        root->Branch("BInfo.tktk_eta"           , tktk_eta           , "BInfo.tktk_eta[BInfo.size]/F"	);
+        root->Branch("BInfo.tktk_phi"           , tktk_phi           , "BInfo.tktk_phi[BInfo.size]/F"	);
+        root->Branch("BInfo.tktk_px"            , tktk_px            , "BInfo.tktk_px[BInfo.size]/F"	);
+        root->Branch("BInfo.tktk_py"            , tktk_py            , "BInfo.tktk_py[BInfo.size]/F"	);
+        root->Branch("BInfo.tktk_pz"            , tktk_pz            , "BInfo.tktk_pz[BInfo.size]/F"	);
 
         if(detailMode){
             root->Branch("BInfo.uj_rfmu1_pt"      , uj_rfmu1_pt    , "BInfo.uj_rfmu1_pt[BInfo.uj_size]/F");
@@ -795,35 +795,35 @@ public:
             root->Branch("BInfo.uj_vtxZXErr"      , uj_vtxZXErr    , "BInfo.uj_vtxZXErr[BInfo.uj_size]/F"   );
             root->Branch("BInfo.uj_vtxZYErr"      , uj_vtxZYErr    , "BInfo.uj_vtxZYErr[BInfo.uj_size]/F"   );
 
-            root->Branch("BInfo.tktk_vtxX"          , tktk_vtxX        , "BInfo.tktk_vtxX[BInfo.size]/F"	);
-            root->Branch("BInfo.tktk_vtxY"          , tktk_vtxY        , "BInfo.tktk_vtxY[BInfo.size]/F"	);
-            root->Branch("BInfo.tktk_vtxZ"          , tktk_vtxZ        , "BInfo.tktk_vtxZ[BInfo.size]/F"	);
-            root->Branch("BInfo.tktk_vtxXErr"       , tktk_vtxXErr     , "BInfo.tktk_vtxXErr[BInfo.size]/F"   );
-            root->Branch("BInfo.tktk_vtxYErr"       , tktk_vtxYErr     , "BInfo.tktk_vtxYErr[BInfo.size]/F"   );
-            root->Branch("BInfo.tktk_vtxZErr"       , tktk_vtxZErr     , "BInfo.tktk_vtxZErr[BInfo.size]/F"   );
-            root->Branch("BInfo.tktk_vtxYXErr"      , tktk_vtxYXErr    , "BInfo.tktk_vtxYXErr[BInfo.size]/F"   );
-            root->Branch("BInfo.tktk_vtxZXErr"      , tktk_vtxZXErr    , "BInfo.tktk_vtxZXErr[BInfo.size]/F"   );
-            root->Branch("BInfo.tktk_vtxZYErr"      , tktk_vtxZYErr    , "BInfo.tktk_vtxZYErr[BInfo.size]/F"   );
-            root->Branch("BInfo.tktk_vtxdof"        , tktk_vtxdof      , "BInfo.tktk_vtxdof[BInfo.size]/F"	);
-            root->Branch("BInfo.tktk_vtxchi2"       , tktk_vtxchi2     , "BInfo.tktk_vtxchi2[BInfo.size]/F"	);
+            root->Branch("BInfo.tktk_vtxX"        , tktk_vtxX      , "BInfo.tktk_vtxX[BInfo.size]/F"	);
+            root->Branch("BInfo.tktk_vtxY"        , tktk_vtxY      , "BInfo.tktk_vtxY[BInfo.size]/F"	);
+            root->Branch("BInfo.tktk_vtxZ"        , tktk_vtxZ      , "BInfo.tktk_vtxZ[BInfo.size]/F"	);
+            root->Branch("BInfo.tktk_vtxXErr"     , tktk_vtxXErr   , "BInfo.tktk_vtxXErr[BInfo.size]/F"   );
+            root->Branch("BInfo.tktk_vtxYErr"     , tktk_vtxYErr   , "BInfo.tktk_vtxYErr[BInfo.size]/F"   );
+            root->Branch("BInfo.tktk_vtxZErr"     , tktk_vtxZErr   , "BInfo.tktk_vtxZErr[BInfo.size]/F"   );
+            root->Branch("BInfo.tktk_vtxYXErr"    , tktk_vtxYXErr  , "BInfo.tktk_vtxYXErr[BInfo.size]/F"   );
+            root->Branch("BInfo.tktk_vtxZXErr"    , tktk_vtxZXErr  , "BInfo.tktk_vtxZXErr[BInfo.size]/F"   );
+            root->Branch("BInfo.tktk_vtxZYErr"    , tktk_vtxZYErr  , "BInfo.tktk_vtxZYErr[BInfo.size]/F"   );
+            root->Branch("BInfo.tktk_vtxdof"      , tktk_vtxdof    , "BInfo.tktk_vtxdof[BInfo.size]/F"	);
+            root->Branch("BInfo.tktk_vtxchi2"     , tktk_vtxchi2   , "BInfo.tktk_vtxchi2[BInfo.size]/F"	);
 
-            root->Branch("BInfo.tktk_rftk1_pt"      , tktk_rftk1_pt    , "BInfo.tktk_rftk1_pt[BInfo.size]/F"     );
-            root->Branch("BInfo.tktk_rftk1_eta"     , tktk_rftk1_eta   , "BInfo.tktk_rftk1_eta[BInfo.size]/F"     );
-            root->Branch("BInfo.tktk_rftk1_phi"     , tktk_rftk1_phi   , "BInfo.tktk_rftk1_phi[BInfo.size]/F"     );
-            root->Branch("BInfo.tktk_rftk2_pt"      , tktk_rftk2_pt    , "BInfo.tktk_rftk2_pt[BInfo.size]/F"     );
-            root->Branch("BInfo.tktk_rftk2_eta"     , tktk_rftk2_eta   , "BInfo.tktk_rftk2_eta[BInfo.size]/F"     );
-            root->Branch("BInfo.tktk_rftk2_phi"     , tktk_rftk2_phi   , "BInfo.tktk_rftk2_phi[BInfo.size]/F"     );
+            root->Branch("BInfo.tktk_rftk1_pt"    , tktk_rftk1_pt  , "BInfo.tktk_rftk1_pt[BInfo.size]/F"     );
+            root->Branch("BInfo.tktk_rftk1_eta"   , tktk_rftk1_eta , "BInfo.tktk_rftk1_eta[BInfo.size]/F"     );
+            root->Branch("BInfo.tktk_rftk1_phi"   , tktk_rftk1_phi , "BInfo.tktk_rftk1_phi[BInfo.size]/F"     );
+            root->Branch("BInfo.tktk_rftk2_pt"    , tktk_rftk2_pt  , "BInfo.tktk_rftk2_pt[BInfo.size]/F"     );
+            root->Branch("BInfo.tktk_rftk2_eta"   , tktk_rftk2_eta , "BInfo.tktk_rftk2_eta[BInfo.size]/F"     );
+            root->Branch("BInfo.tktk_rftk2_phi"   , tktk_rftk2_phi , "BInfo.tktk_rftk2_phi[BInfo.size]/F"     );
         }
     }//}}}
     
     void setbranchadd(TTree *root, bool detailMode = false){//{{{
-        root->SetBranchAddress("BInfo.uj_size"		    ,&uj_size	);
-        root->SetBranchAddress("BInfo.uj_size"		    ,&uj_size	    );
+        root->SetBranchAddress("BInfo.uj_size"		   ,&uj_size	);
+        root->SetBranchAddress("BInfo.uj_size"		   ,&uj_size	    );
         root->SetBranchAddress("BInfo.uj_index"        ,uj_index   );
         root->SetBranchAddress("BInfo.uj_mass"         ,uj_mass   	);
         root->SetBranchAddress("BInfo.uj_pt"           ,uj_pt       );
-        root->SetBranchAddress("BInfo.uj_eta"           ,uj_eta         );
-        root->SetBranchAddress("BInfo.uj_phi"           ,uj_phi         );
+        root->SetBranchAddress("BInfo.uj_eta"          ,uj_eta         );
+        root->SetBranchAddress("BInfo.uj_phi"          ,uj_phi         );
         root->SetBranchAddress("BInfo.uj_px"           ,uj_px     	);
         root->SetBranchAddress("BInfo.uj_py"           ,uj_py    	);
         root->SetBranchAddress("BInfo.uj_pz"           ,uj_pz   	);
@@ -837,12 +837,12 @@ public:
         
         root->SetBranchAddress("BInfo.size"            ,&size        );
         root->SetBranchAddress("BInfo.index"           ,index       	);
-        root->SetBranchAddress("BInfo.unfitted_mass",unfitted_mass		);
-        root->SetBranchAddress("BInfo.unfitted_pt"  ,unfitted_pt		);
-        root->SetBranchAddress("BInfo.mass"		    ,mass		);
-        root->SetBranchAddress("BInfo.pt"		    ,pt		);
-        root->SetBranchAddress("BInfo.eta"		    ,eta		);
-        root->SetBranchAddress("BInfo.phi"		    ,phi		);
+        root->SetBranchAddress("BInfo.unfitted_mass"   ,unfitted_mass		);
+        root->SetBranchAddress("BInfo.unfitted_pt"     ,unfitted_pt		);
+        root->SetBranchAddress("BInfo.mass"		       ,mass		);
+        root->SetBranchAddress("BInfo.pt"		       ,pt		);
+        root->SetBranchAddress("BInfo.eta"		       ,eta		);
+        root->SetBranchAddress("BInfo.phi"		       ,phi		);
         root->SetBranchAddress("BInfo.px"              ,px         	);
         root->SetBranchAddress("BInfo.py"              ,py        	);
         root->SetBranchAddress("BInfo.pz"              ,pz           );
@@ -864,7 +864,7 @@ public:
         root->SetBranchAddress("BInfo.vtxYXErr"        ,vtxYXErr 	);
         root->SetBranchAddress("BInfo.vtxZXErr"        ,vtxZXErr    );
         root->SetBranchAddress("BInfo.vtxZYErr"        ,vtxZYErr  	);
-        root->SetBranchAddress("BInfo.vtxdof"		    ,vtxdof		);
+        root->SetBranchAddress("BInfo.vtxdof"		   ,vtxdof		);
         root->SetBranchAddress("BInfo.vtxchi2"         ,vtxchi2   	);
         root->SetBranchAddress("BInfo.rfuj_index"      ,rfuj_index   	);
         root->SetBranchAddress("BInfo.rftk1_index"     ,rftk1_index   	);
@@ -875,8 +875,8 @@ public:
         root->SetBranchAddress("BInfo.tktk_unfitted_pt"  ,tktk_unfitted_pt    );
         root->SetBranchAddress("BInfo.tktk_mass"         ,tktk_mass    );
         root->SetBranchAddress("BInfo.tktk_pt"           ,tktk_pt     	);
-        root->SetBranchAddress("BInfo.tktk_eta"           ,tktk_eta     	);
-        root->SetBranchAddress("BInfo.tktk_phi"           ,tktk_phi     	);
+        root->SetBranchAddress("BInfo.tktk_eta"          ,tktk_eta     	);
+        root->SetBranchAddress("BInfo.tktk_phi"          ,tktk_phi     	);
         root->SetBranchAddress("BInfo.tktk_px"           ,tktk_px     	);
         root->SetBranchAddress("BInfo.tktk_py"           ,tktk_py    	);
         root->SetBranchAddress("BInfo.tktk_pz"           ,tktk_pz   	);
@@ -919,7 +919,7 @@ public:
             root->SetBranchAddress("BInfo.tktk_vtxYXErr"     ,tktk_vtxYXErr );
             root->SetBranchAddress("BInfo.tktk_vtxZXErr"     ,tktk_vtxZXErr );
             root->SetBranchAddress("BInfo.tktk_vtxZYErr"     ,tktk_vtxZYErr );
-            root->SetBranchAddress("BInfo.tktk_vtxdof"	      ,tktk_vtxdof	);
+            root->SetBranchAddress("BInfo.tktk_vtxdof"	     ,tktk_vtxdof	);
             root->SetBranchAddress("BInfo.tktk_vtxchi2"      ,tktk_vtxchi2 );
 
             root->SetBranchAddress("BInfo.tktk_rftk1_pt"     ,tktk_rftk1_pt 	);
@@ -934,17 +934,17 @@ public:
 
 class DInfoBranches{//{{{
 public:
-    int	    size;
-    int	    index[MAX_XB];
-    int     type[MAX_XB];
+    int	   size;
+    int	   index[MAX_XB];
+    int    type[MAX_XB];
 
-    float	tktkRes_unfitted_mass[MAX_XB];
-    float   tktkRes_unfitted_pt[MAX_XB];
-    float	tktkRes_mass[MAX_XB];
-    float   tktkRes_pt[MAX_XB];
-    float   tktkRes_eta[MAX_XB];
-    float   tktkRes_phi[MAX_XB];
-    float	tktkRes_vtxX[MAX_XB];
+    float  tktkRes_unfitted_mass[MAX_XB];
+    float  tktkRes_unfitted_pt[MAX_XB];
+    float  tktkRes_mass[MAX_XB];
+    float  tktkRes_pt[MAX_XB];
+    float  tktkRes_eta[MAX_XB];
+    float  tktkRes_phi[MAX_XB];
+    float  tktkRes_vtxX[MAX_XB];
     float  tktkRes_vtxY[MAX_XB];
     float  tktkRes_vtxZ[MAX_XB];
     float  tktkRes_vtxXErr[MAX_XB];
@@ -953,11 +953,12 @@ public:
     float  tktkRes_vtxYXErr[MAX_XB];
     float  tktkRes_vtxZXErr[MAX_XB];
     float  tktkRes_vtxZYErr[MAX_XB];
-    float	tktkRes_vtxdof[MAX_XB];
-    float	tktkRes_vtxchi2[MAX_XB];
+    float  tktkRes_vtxdof[MAX_XB];
+    float  tktkRes_vtxchi2[MAX_XB];
     float  tktkRes_svpvDistance[MAX_XB];
     float  tktkRes_svpvDisErr[MAX_XB];
 	float  tktkRes_alpha[MAX_XB];
+	float  tktkRes_alphaToSV[MAX_XB];
     float  tktkRes_rftk1_mass[MAX_XB];
     float  tktkRes_rftk1_pt[MAX_XB];
     float  tktkRes_rftk1_eta[MAX_XB];
@@ -974,10 +975,10 @@ public:
     float  tktkRes_rftk4_pt[MAX_XB];
     float  tktkRes_rftk4_eta[MAX_XB];
     float  tktkRes_rftk4_phi[MAX_XB];
-    int     tktkRes_rftk1_index[MAX_XB];
-    int     tktkRes_rftk2_index[MAX_XB];
-    int     tktkRes_rftk3_index[MAX_XB];
-    int     tktkRes_rftk4_index[MAX_XB];
+    int    tktkRes_rftk1_index[MAX_XB];
+    int    tktkRes_rftk2_index[MAX_XB];
+    int    tktkRes_rftk3_index[MAX_XB];
+    int    tktkRes_rftk4_index[MAX_XB];
 
     float  unfitted_mass[MAX_XB];
     float  unfitted_pt[MAX_XB];
@@ -994,7 +995,7 @@ public:
     float  svpvDistance_2D[MAX_XB];
     float  svpvDisErr_2D[MAX_XB];
     float  MaxDoca[MAX_XB];
-    float	vtxX[MAX_XB];
+    float  vtxX[MAX_XB];
     float  vtxY[MAX_XB];
     float  vtxZ[MAX_XB];
     float  vtxXErr[MAX_XB];
@@ -1003,8 +1004,8 @@ public:
     float  vtxYXErr[MAX_XB];
     float  vtxZXErr[MAX_XB];
     float  vtxZYErr[MAX_XB];
-    float	vtxdof[MAX_XB];
-    float	vtxchi2[MAX_XB];
+    float  vtxdof[MAX_XB];
+    float  vtxchi2[MAX_XB];
     float  rftk1_mass[MAX_XB];
     float  rftk1_pt[MAX_XB];
     float  rftk1_eta[MAX_XB];
@@ -1025,16 +1026,16 @@ public:
     float  rftk5_pt[MAX_XB];
     float  rftk5_eta[MAX_XB];
     float  rftk5_phi[MAX_XB];
-    int     rftk1_index[MAX_XB];
-    int     rftk2_index[MAX_XB];
-    int     rftk3_index[MAX_XB];
-    int     rftk4_index[MAX_XB];
-    int     rftk5_index[MAX_XB];
-    int     rftk1_MassHypo[MAX_XB];
-    int     rftk2_MassHypo[MAX_XB];
-    int     rftk3_MassHypo[MAX_XB];
-    int     rftk4_MassHypo[MAX_XB];
-    int     rftk5_MassHypo[MAX_XB];
+    int    rftk1_index[MAX_XB];
+    int    rftk2_index[MAX_XB];
+    int    rftk3_index[MAX_XB];
+    int    rftk4_index[MAX_XB];
+    int    rftk5_index[MAX_XB];
+    int    rftk1_MassHypo[MAX_XB];
+    int    rftk2_MassHypo[MAX_XB];
+    int    rftk3_MassHypo[MAX_XB];
+    int    rftk4_MassHypo[MAX_XB];
+    int    rftk5_MassHypo[MAX_XB];
    
     void regTree(TTree *root, bool detailMode = false){//{{{
         root->Branch("DInfo.size"             , &size          , "DInfo.size/I"			);
@@ -1061,6 +1062,7 @@ public:
         root->Branch("DInfo.tktkRes_svpvDistance"  , tktkRes_svpvDistance      , "DInfo.tktkRes_svpvDistance[DInfo.size]/F"	);
         root->Branch("DInfo.tktkRes_svpvDisErr"    , tktkRes_svpvDisErr        , "DInfo.tktkRes_svpvDisErr[DInfo.size]/F"	);
 		root->Branch("DInfo.tktkRes_alpha"         , tktkRes_alpha             , "DInfo.tktkRes_alpha[DInfo.size]/F" );
+		root->Branch("DInfo.tktkRes_alphaToSV"     , tktkRes_alphaToSV         , "DInfo.tktkRes_alphaToSV[DInfo.size]/F" );
 
         root->Branch("DInfo.tktkRes_rftk1_index"   , tktkRes_rftk1_index       , "DInfo.tktkRes_rftk1_index[DInfo.size]/I");
         root->Branch("DInfo.tktkRes_rftk2_index"   , tktkRes_rftk2_index       , "DInfo.tktkRes_rftk2_index[DInfo.size]/I");
@@ -1172,6 +1174,7 @@ public:
         root->SetBranchAddress("DInfo.tktkRes_svpvDistance"    ,tktkRes_svpvDistance   	);
         root->SetBranchAddress("DInfo.tktkRes_svpvDisErr"      ,tktkRes_svpvDisErr   	);
 		root->SetBranchAddress("DInfo.tktkRes_alpha"           ,tktkRes_alpha    );
+		root->SetBranchAddress("DInfo.tktkRes_alphaToSV"       ,tktkRes_alphaToSV    );
 
         root->SetBranchAddress("DInfo.tktkRes_rftk1_index"     ,tktkRes_rftk1_index   	);
         root->SetBranchAddress("DInfo.tktkRes_rftk2_index"     ,tktkRes_rftk2_index   	);
