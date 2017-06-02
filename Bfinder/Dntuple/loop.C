@@ -5,6 +5,7 @@ using namespace std;
 #include "Dntuple.h"
 
 Bool_t istest = false;
+bool fillZeroCandEvt = true;
 int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=false)
 {
   if(istest)
@@ -115,11 +116,23 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
               continue;
             }
         }
-      ntHlt->Fill();
-      ntSkim->Fill();
-      ntHi->Fill();
-      Dntuple->makeDNtuple(isDchannel, REAL, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7);
-      if(!REAL) Dntuple->fillDGenTree(ntGen, GenInfo, gskim);
+      int Dtypesize[7]={0,0,0,0,0,0,0};
+      if(!REAL) fillZeroCandEvt = true;// on MC one should not ignore any reco event 
+      Dntuple->makeDNtuple(isDchannel, Dtypesize, REAL, fillZeroCandEvt, skim, EvtInfo, VtxInfo, TrackInfo, DInfo, GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7);
+
+      bool zeroCand = true;
+      for(int t=0;t<7;t++)
+        {
+          if(Dtypesize[t] != 0) zeroCand = false;        
+        }
+      if(fillZeroCandEvt || !zeroCand)
+        {
+          ntHlt->Fill();
+          ntSkim->Fill();
+          ntHi->Fill();
+          if(!REAL) Dntuple->fillDGenTree(ntGen, GenInfo, gskim);
+        }
+
     }
   outf->Write();
   cout<<"--- Writing finished"<<endl;

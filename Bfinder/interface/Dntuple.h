@@ -72,6 +72,7 @@ class DntupleBranches
   float   DtktkRes_alphaToSV[MAX_XB];
   float   DtktkRes_angleToTrk1[MAX_XB];
   float   DtktkRes_ptAsymToTrk1[MAX_XB];
+  float   DtktkRes_unfitter_ptAsymToTrk1[MAX_XB];
   float   DMaxTkPt[MAX_XB];
   float   DMinTkPt[MAX_XB];
 
@@ -308,6 +309,7 @@ class DntupleBranches
     dnt->Branch("DtktkRes_alphaToSV",DtktkRes_alphaToSV,"DtktkRes_alphaToSV[Dsize]/F");
     dnt->Branch("DtktkRes_angleToTrk1",DtktkRes_angleToTrk1,"DtktkRes_angleToTrk1[Dsize]/F");
     dnt->Branch("DtktkRes_ptAsymToTrk1",DtktkRes_ptAsymToTrk1,"DtktkRes_ptAsymToTrk1[Dsize]/F");
+    dnt->Branch("DtktkRes_unfitter_ptAsymToTrk1",DtktkRes_unfitter_ptAsymToTrk1,"DtktkRes_unfitter_ptAsymToTrk1[Dsize]/F");
     dnt->Branch("DMaxTkPt",DMaxTkPt,"DMaxTkPt[Dsize]/F");
     dnt->Branch("DMinTkPt",DMinTkPt,"DMinTkPt[Dsize]/F");
 
@@ -605,13 +607,13 @@ class DntupleBranches
     nt->Branch("GRestk4phi",GRestk4phi,"GRestk4phi[Gsize]/F");
   }
   
-  void makeDNtuple(int isDchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3, TTree* ntD4, TTree* ntD5, TTree* ntD6, TTree* ntD7)
+  void makeDNtuple(int isDchannel[], int Dtypesize[], bool REAL, bool fillZeroCandEvt, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3, TTree* ntD4, TTree* ntD5, TTree* ntD6, TTree* ntD7)
   {//{{{
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
     TLorentzVector* b4P = new TLorentzVector;
     fillTreeEvt(EvtInfo);
-    int Dtypesize[7]={0,0,0,0,0,0,0};
+    bool zeroCand = true;
     for(int t=0;t<14;t++)
       {
         if(t%2==0)
@@ -640,6 +642,8 @@ class DntupleBranches
                     Dtypesize[t/2]++;
                   }
               }
+            if(Dtypesize[t/2] != 0) zeroCand = false;
+            else continue;
             if(t==1)       ntD1->Fill();
             else if(t==3)  ntD2->Fill();
             else if(t==5)  ntD3->Fill();
@@ -649,6 +653,25 @@ class DntupleBranches
             else if(t==13) ntD7->Fill();
           }
       }
+
+    Dsize = 0;
+    for(int t = 1; t < 14; t+=2)
+      {
+        if(isDchannel[t]==1 && Dtypesize[t/2]==0)
+          {
+            if(!zeroCand || fillZeroCandEvt)
+              {
+                if(t==1)       ntD1->Fill();
+                else if(t==3)  ntD2->Fill();
+                else if(t==5)  ntD3->Fill();
+                else if(t==7)  ntD4->Fill();
+                else if(t==9)  ntD5->Fill();
+                else if(t==11) ntD6->Fill();
+                else if(t==13) ntD7->Fill();
+              }
+          }
+      }
+
   }//}}}
   
   void fillDGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
@@ -909,6 +932,7 @@ class DntupleBranches
     DtktkRes_alphaToSV[typesize] = -1;
     DtktkRes_angleToTrk1[typesize] = -1;
     DtktkRes_ptAsymToTrk1[typesize] = -1;
+    DtktkRes_unfitter_ptAsymToTrk1[typesize] = -1;
     DtktkRes_lxyBS[typesize] = -1;
     DtktkRes_lxyBSErr[typesize] = -1;
 
@@ -1450,13 +1474,15 @@ class DntupleBranches
                             DInfo->tktkRes_vtxZ[j]-DInfo->vtxZ[j]);
         TLorentzVector *tktkRes4Vec = new TLorentzVector;
         tktkRes4Vec->SetPtEtaPhiM(DInfo->tktkRes_pt[j], DInfo->tktkRes_eta[j], DInfo->tktkRes_phi[j], DInfo->tktkRes_mass[j]);
-        DtktkRes_alphaToSV[typesize] = tktkRes4Vec->Angle(*DisSvResVtx);
+        //DtktkRes_alphaToSV[typesize] = tktkRes4Vec->Angle(*DisSvResVtx);
+        DtktkRes_alphaToSV[typesize] = DInfo->tktkRes_alphaToSV[j];
     
         TLorentzVector *trk14Vec = new TLorentzVector;
         trk14Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk2_index[j]], TrackInfo->eta[DInfo->rftk2_index[j]], TrackInfo->phi[DInfo->rftk2_index[j]], PION_MASS);
         DtktkRes_angleToTrk1[typesize] = tktkRes4Vec->Angle(trk14Vec->Vect());
 
         DtktkRes_ptAsymToTrk1[typesize] = (DInfo->tktkRes_pt[j]-TrackInfo->pt[DInfo->rftk2_index[j]])/(DInfo->tktkRes_pt[j]+TrackInfo->pt[DInfo->rftk2_index[j]]);
+        DtktkRes_unfitter_ptAsymToTrk1[typesize] = (DInfo->tktkRes_unfitted_pt[j]-TrackInfo->pt[DInfo->rftk2_index[j]])/(DInfo->tktkRes_unfitted_pt[j]+TrackInfo->pt[DInfo->rftk2_index[j]]);
 
         if(DInfo->type[j]==11||DInfo->type[j]==12)
           {
