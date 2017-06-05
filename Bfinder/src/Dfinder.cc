@@ -748,7 +748,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     // RECONSTRUCTION: D0bar(K+pi-)pi+
                     //////////////////////////////////////////////////////////////////////////
                     //float bplus_mass_window[2] = {BPLUS_MASS-0.2,BPLUS_MASS+0.2};
-                    float bplus_mass_window[2] = {4.5, 6.5};
+//                    float bplus_mass_window[2] = {4.5, 6.5};
+                    float bplus_mass_window[2] = {4.9, 6.1};
+//                    float bplus_mass_window[2] = {4.9, 5.6};
                     if(Dchannel_[12] == 1){
                         std::vector< std::vector< std::pair<float, int> > > PermuVec;
                         std::vector< std::pair<float, int> > InVec;
@@ -760,7 +762,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         InVec.push_back(tk3);
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, bplus_mass_window, InVec, D0_MASS, 0.1, false, true, 13, 1);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, bplus_mass_window, InVec, D0_MASS, 0.04, false, true, 13, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: D0(K-pi+)pi-
@@ -776,7 +778,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         InVec.push_back(tk3);
                         PermuVec = GetPermu(InVec);
                         PermuVec = DelDuplicate(PermuVec);
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, bplus_mass_window, InVec, D0_MASS, 0.1, false, true, 14, 1);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, bplus_mass_window, InVec, D0_MASS, 0.04, false, true, 14, 1);
                     }
 
                     if(printInfo_){
