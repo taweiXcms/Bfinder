@@ -10,13 +10,13 @@ int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb
 {
   if(istest)
     {
-      infile="/data/HeavyFlavourRun2/temp/finder_pp.root";
-      outfile="/data/wangj/testspace/test_Dntuple_pp.root";
+      infile="/store/group/phys_heavyions/HeavyFlavourRun2/DfinderRun2/MC_official/Pythia8_prompt_D0pt0p0_Pthat0_pp502_TuneCUETP8M1/crab_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar/160502_191346/0000/finder_pp_53.root";
+      outfile="test.root";
       REAL=false;
       isPbPb=false;
       skim=false;
       checkMatching=true;
-      iseos=false;
+      iseos=true;
     }
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";

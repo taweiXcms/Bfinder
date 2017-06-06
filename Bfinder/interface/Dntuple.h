@@ -75,6 +75,7 @@ class DntupleBranches
   float   DtktkRes_unfitter_ptAsymToTrk1[MAX_XB];
   float   DMaxTkPt[MAX_XB];
   float   DMinTkPt[MAX_XB];
+  float   Ddca[MAX_XB];
 
   //DInfo.trkInfo
   int     Dtrk1Idx[MAX_XB];
@@ -336,6 +337,7 @@ class DntupleBranches
     dnt->Branch("DtktkRes_unfitter_ptAsymToTrk1",DtktkRes_unfitter_ptAsymToTrk1,"DtktkRes_unfitter_ptAsymToTrk1[Dsize]/F");
     dnt->Branch("DMaxTkPt",DMaxTkPt,"DMaxTkPt[Dsize]/F");
     dnt->Branch("DMinTkPt",DMinTkPt,"DMinTkPt[Dsize]/F");
+    dnt->Branch("Ddca",Ddca,"Ddca[Dsize]/F");
 
     //DInfo.trkInfo
     dnt->Branch("Dtrk1Pt",Dtrk1Pt,"Dtrk1Pt[Dsize]/F");
@@ -536,13 +538,13 @@ class DntupleBranches
     dnt->Branch("DgencollisionId",DgencollisionId,"DgencollisionId[Dsize]/I");
     dnt->Branch("DgenBAncestorpt",DgenBAncestorpt,"DgenBAncestorpt[Dsize]/F");
     dnt->Branch("DgenBAncestorpdgId",DgenBAncestorpdgId,"DgenBAncestorpdgId[Dsize]/I");
-	dnt->Branch("DgenprodvtxX",DgenprodvtxX,"DgenprodvtxX[Dsize]/F");
-	dnt->Branch("DgenprodvtxY",DgenprodvtxY,"DgenprodvtxY[Dsize]/F");
-	dnt->Branch("DgenprodvtxZ",DgenprodvtxZ,"DgenprodvtxZ[Dsize]/F");
-	dnt->Branch("DgendecayvtxX",DgendecayvtxX,"DgendecayvtxX[Dsize]/F");
-	dnt->Branch("DgendecayvtxY",DgendecayvtxY,"DgendecayvtxY[Dsize]/F");
-	dnt->Branch("DgendecayvtxZ",DgendecayvtxZ,"DgendecayvtxZ[Dsize]/F");
-	dnt->Branch("DgenfromgenPV",DgenfromgenPV,"DgenfromgenPV[Dsize]/I");
+    dnt->Branch("DgenprodvtxX",DgenprodvtxX,"DgenprodvtxX[Dsize]/F");
+    dnt->Branch("DgenprodvtxY",DgenprodvtxY,"DgenprodvtxY[Dsize]/F");
+    dnt->Branch("DgenprodvtxZ",DgenprodvtxZ,"DgenprodvtxZ[Dsize]/F");
+    dnt->Branch("DgendecayvtxX",DgendecayvtxX,"DgendecayvtxX[Dsize]/F");
+    dnt->Branch("DgendecayvtxY",DgendecayvtxY,"DgendecayvtxY[Dsize]/F");
+    dnt->Branch("DgendecayvtxZ",DgendecayvtxZ,"DgendecayvtxZ[Dsize]/F");
+    dnt->Branch("DgenfromgenPV",DgenfromgenPV,"DgenfromgenPV[Dsize]/I");
   }
   
   //GenInfo
@@ -601,9 +603,9 @@ class DntupleBranches
 
   void buildGenBranch(TTree* nt)
   {
-	nt->Branch("GPVx",&GPVx);
-	nt->Branch("GPVy",&GPVy);
-	nt->Branch("GPVz",&GPVz);
+    nt->Branch("GPVx",&GPVx);
+    nt->Branch("GPVy",&GPVy);
+    nt->Branch("GPVz",&GPVz);
     nt->Branch("Gsize",&Gsize);
     nt->Branch("Gy",Gy,"Gy[Gsize]/F");
     nt->Branch("Geta",Geta,"Geta[Gsize]/F");
@@ -726,9 +728,9 @@ class DntupleBranches
   
   void fillDGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
   {
-	GPVx = GenInfo->genPVx;
-	GPVy = GenInfo->genPVy;
-	GPVz = GenInfo->genPVz;
+    GPVx = GenInfo->genPVx;
+    GPVy = GenInfo->genPVy;
+    GPVz = GenInfo->genPVz;
     TLorentzVector* bGen = new TLorentzVector;
     int gt=0,sigtype=0;
     int gsize=0;
@@ -747,13 +749,13 @@ class DntupleBranches
         Gphi[gsize] = GenInfo->phi[j];
         GpdgId[gsize] = GenInfo->pdgId[j];
         GcollisionId[gsize] = GenInfo->collisionId[j];
-		GprodvtxX[gsize] = GenInfo->vtxX[j];
-		GprodvtxY[gsize] = GenInfo->vtxY[j];
-		GprodvtxZ[gsize] = GenInfo->vtxZ[j];
-		if( fabs(GprodvtxX[gsize]-GPVx) < 0.001 && fabs(GprodvtxY[gsize]-GPVy) < 0.001 && fabs(GprodvtxZ[gsize]-GPVz) < 0.001 )
-			GfromgenPV[gsize] = 1;
-		else
-			GfromgenPV[gsize] = -1;
+        GprodvtxX[gsize] = GenInfo->vtxX[j];
+        GprodvtxY[gsize] = GenInfo->vtxY[j];
+        GprodvtxZ[gsize] = GenInfo->vtxZ[j];
+        if( fabs(GprodvtxX[gsize]-GPVx) < 0.001 && fabs(GprodvtxY[gsize]-GPVy) < 0.001 && fabs(GprodvtxZ[gsize]-GPVz) < 0.001 )
+          GfromgenPV[gsize] = 1;
+        else
+          GfromgenPV[gsize] = -1;
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;
@@ -811,9 +813,9 @@ class DntupleBranches
         GRestk4y[gsize] = -1;
         if(GisSignal[gsize]==1||GisSignal[gsize]==2||GisSignal[gsize]==3||GisSignal[gsize]==4||GisSignal[gsize]==5||GisSignal[gsize]==6)
           {
-			GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];//all daughers should be from the same vertex, can be double checked here
-			GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
-			GdecayvtxZ[gsize] = GenInfo->vtxZ[GenInfo->da1[j]];
+            GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];//all daughers should be from the same vertex, can be double checked here
+            GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
+            GdecayvtxZ[gsize] = GenInfo->vtxZ[GenInfo->da1[j]];
             Gtk1pt[gsize] = GenInfo->pt[GenInfo->da1[j]];
             Gtk1eta[gsize] = GenInfo->eta[GenInfo->da1[j]];
             Gtk1phi[gsize] = GenInfo->phi[GenInfo->da1[j]];
@@ -843,9 +845,9 @@ class DntupleBranches
           }
         if(GisSignal[gsize]==7||GisSignal[gsize]==8||GisSignal[gsize]==9||GisSignal[gsize]==10||GisSignal[gsize]==11||GisSignal[gsize]==12||GisSignal[gsize]==13||GisSignal[gsize]==14)
           {
-			GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];
-			GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
-			GdecayvtxZ[gsize] = GenInfo->vtxZ[GenInfo->da1[j]];
+            GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];
+            GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
+            GdecayvtxZ[gsize] = GenInfo->vtxZ[GenInfo->da1[j]];
             Gtk1pt[gsize] = GenInfo->pt[GenInfo->da2[j]];
             Gtk1eta[gsize] = GenInfo->eta[GenInfo->da2[j]];
             Gtk1phi[gsize] = GenInfo->phi[GenInfo->da2[j]];
@@ -980,6 +982,7 @@ class DntupleBranches
     DlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
     DlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->vtxYErr[j]);
     DMaxDoca[typesize] = DInfo->MaxDoca[j];
+    Ddca[typesize] = DInfo->svpvDistance[j]*TMath::Sin(DInfo->alpha[j]);
 
     DtktkRes_alphaToSV[typesize] = -1;
     DtktkRes_angleToTrk1[typesize] = -1;
