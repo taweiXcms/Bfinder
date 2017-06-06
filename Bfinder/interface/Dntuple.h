@@ -59,23 +59,12 @@ class DntupleBranches
   float   DsvpvDisErr[MAX_XB];
   float   DsvpvDistance_2D[MAX_XB];
   float   DsvpvDisErr_2D[MAX_XB];
-  float   DtktkRes_chi2ndf[MAX_XB];
-  float   DtktkRes_chi2cl[MAX_XB];
-  float   DtktkRes_alpha[MAX_XB];
-  float   DtktkRes_svpvDistance[MAX_XB];
-  float   DtktkRes_svpvDisErr[MAX_XB];
+  float   Ddca[MAX_XB];
   float   DlxyBS[MAX_XB];
   float   DlxyBSErr[MAX_XB];
-  float   DtktkRes_lxyBS[MAX_XB];
-  float   DtktkRes_lxyBSErr[MAX_XB];
   float   DMaxDoca[MAX_XB];
-  float   DtktkRes_alphaToSV[MAX_XB];
-  float   DtktkRes_angleToTrk1[MAX_XB];
-  float   DtktkRes_ptAsymToTrk1[MAX_XB];
-  float   DtktkRes_unfitter_ptAsymToTrk1[MAX_XB];
   float   DMaxTkPt[MAX_XB];
   float   DMinTkPt[MAX_XB];
-  float   Ddca[MAX_XB];
 
   //DInfo.trkInfo
   int     Dtrk1Idx[MAX_XB];
@@ -187,6 +176,22 @@ class DntupleBranches
   float   DtktkRespt[MAX_XB];
   float   DtktkReseta[MAX_XB];
   float   DtktkResphi[MAX_XB];
+  float   DtktkRes_chi2ndf[MAX_XB];
+  float   DtktkRes_chi2cl[MAX_XB];
+  float   DtktkRes_alpha[MAX_XB];
+  float   DtktkRes_alphaToSV[MAX_XB];
+  float   DtktkRes_svpvDistance[MAX_XB];
+  float   DtktkRes_svpvDisErr[MAX_XB];
+  float   DtktkRes_svpvDistanceToSV[MAX_XB];
+  float   DtktkRes_svpvDisErrToSV[MAX_XB];
+  float   DtktkRes_dca[MAX_XB];
+  float   DtktkRes_dcaToSV[MAX_XB];
+  float   DtktkRes_lxyBS[MAX_XB];
+  float   DtktkRes_lxyBSErr[MAX_XB];
+  float   DtktkRes_angleToTrk1[MAX_XB];
+  float   DtktkRes_ptAsymToTrk1[MAX_XB];
+  float   DtktkRes_unfitter_ptAsymToTrk1[MAX_XB];
+
   float   DRestrk1Pt[MAX_XB];
   float   DRestrk1Eta[MAX_XB];
   float   DRestrk1Phi[MAX_XB];
@@ -321,23 +326,12 @@ class DntupleBranches
     dnt->Branch("DsvpvDisErr",DsvpvDisErr,"DsvpvDisErr[Dsize]/F");
     dnt->Branch("DsvpvDistance_2D",DsvpvDistance_2D,"DsvpvDistance_2D[Dsize]/F");
     dnt->Branch("DsvpvDisErr_2D",DsvpvDisErr_2D,"DsvpvDisErr_2D[Dsize]/F");
-    dnt->Branch("DtktkRes_chi2ndf",DtktkRes_chi2ndf,"DtktkRes_chi2ndf[Dsize]/F");
-    dnt->Branch("DtktkRes_chi2cl",DtktkRes_chi2cl,"DtktkRes_chi2cl[Dsize]/F");
-    dnt->Branch("DtktkRes_alpha",DtktkRes_alpha,"DtktkRes_alpha[Dsize]/F");
-    dnt->Branch("DtktkRes_svpvDistance",DtktkRes_svpvDistance,"DtktkRes_svpvDistance[Dsize]/F");
-    dnt->Branch("DtktkRes_svpvDisErr",DtktkRes_svpvDisErr,"DtktkRes_svpvDisErr[Dsize]/F");
+    dnt->Branch("Ddca",Ddca,"Ddca[Dsize]/F");
     dnt->Branch("DlxyBS",DlxyBS,"DlxyBS[Dsize]/F");
     dnt->Branch("DlxyBSErr",DlxyBSErr,"DlxyBSErr[Dsize]/F");
-    dnt->Branch("DtktkRes_lxyBS",DtktkRes_lxyBS,"DtktkRes_lxyBS[Dsize]/F");
-    dnt->Branch("DtktkRes_lxyBSErr",DtktkRes_lxyBSErr,"DtktkRes_lxyBSErr[Dsize]/F");
     dnt->Branch("DMaxDoca",DMaxDoca,"DMaxDoca[Dsize]/F");
-    dnt->Branch("DtktkRes_alphaToSV",DtktkRes_alphaToSV,"DtktkRes_alphaToSV[Dsize]/F");
-    dnt->Branch("DtktkRes_angleToTrk1",DtktkRes_angleToTrk1,"DtktkRes_angleToTrk1[Dsize]/F");
-    dnt->Branch("DtktkRes_ptAsymToTrk1",DtktkRes_ptAsymToTrk1,"DtktkRes_ptAsymToTrk1[Dsize]/F");
-    dnt->Branch("DtktkRes_unfitter_ptAsymToTrk1",DtktkRes_unfitter_ptAsymToTrk1,"DtktkRes_unfitter_ptAsymToTrk1[Dsize]/F");
     dnt->Branch("DMaxTkPt",DMaxTkPt,"DMaxTkPt[Dsize]/F");
     dnt->Branch("DMinTkPt",DMinTkPt,"DMinTkPt[Dsize]/F");
-    dnt->Branch("Ddca",Ddca,"Ddca[Dsize]/F");
 
     //DInfo.trkInfo
     dnt->Branch("Dtrk1Pt",Dtrk1Pt,"Dtrk1Pt[Dsize]/F");
@@ -460,6 +454,22 @@ class DntupleBranches
         dnt->Branch("DtktkRespt",DtktkRespt,"DtktkRespt[Dsize]/F");
         dnt->Branch("DtktkReseta",DtktkReseta,"DtktkReseta[Dsize]/F");
         dnt->Branch("DtktkResphi",DtktkResphi,"DtktkResphi[Dsize]/F");
+        dnt->Branch("DtktkRes_chi2ndf",DtktkRes_chi2ndf,"DtktkRes_chi2ndf[Dsize]/F");
+        dnt->Branch("DtktkRes_chi2cl",DtktkRes_chi2cl,"DtktkRes_chi2cl[Dsize]/F");
+        dnt->Branch("DtktkRes_alpha",DtktkRes_alpha,"DtktkRes_alpha[Dsize]/F");
+        dnt->Branch("DtktkRes_alphaToSV",DtktkRes_alphaToSV,"DtktkRes_alphaToSV[Dsize]/F");
+        dnt->Branch("DtktkRes_svpvDistance",DtktkRes_svpvDistance,"DtktkRes_svpvDistance[Dsize]/F");
+        dnt->Branch("DtktkRes_svpvDisErr",DtktkRes_svpvDisErr,"DtktkRes_svpvDisErr[Dsize]/F");
+        dnt->Branch("DtktkRes_svpvDistanceToSV",DtktkRes_svpvDistanceToSV,"DtktkRes_svpvDistanceToSV[Dsize]/F");
+        dnt->Branch("DtktkRes_svpvDisErrToSV",DtktkRes_svpvDisErrToSV,"DtktkRes_svpvDisErrToSV[Dsize]/F");
+        dnt->Branch("DtktkRes_dca",DtktkRes_dca,"DtktkRes_dca[Dsize]/F");
+        dnt->Branch("DtktkRes_dcaToSV",DtktkRes_dcaToSV,"DtktkRes_dcaToSV[Dsize]/F");
+        dnt->Branch("DtktkRes_lxyBS",DtktkRes_lxyBS,"DtktkRes_lxyBS[Dsize]/F");
+        dnt->Branch("DtktkRes_lxyBSErr",DtktkRes_lxyBSErr,"DtktkRes_lxyBSErr[Dsize]/F");
+        dnt->Branch("DtktkRes_angleToTrk1",DtktkRes_angleToTrk1,"DtktkRes_angleToTrk1[Dsize]/F");
+        dnt->Branch("DtktkRes_ptAsymToTrk1",DtktkRes_ptAsymToTrk1,"DtktkRes_ptAsymToTrk1[Dsize]/F");
+        dnt->Branch("DtktkRes_unfitter_ptAsymToTrk1",DtktkRes_unfitter_ptAsymToTrk1,"DtktkRes_unfitter_ptAsymToTrk1[Dsize]/F");
+
         dnt->Branch("DRestrk1Pt",DRestrk1Pt,"DRestrk1Pt[Dsize]/F");
         dnt->Branch("DRestrk1Eta",DRestrk1Eta,"DRestrk1Eta[Dsize]/F");
         dnt->Branch("DRestrk1Phi",DRestrk1Phi,"DRestrk1Phi[Dsize]/F");
@@ -970,11 +980,8 @@ class DntupleBranches
     DsvpvDisErr[typesize] = DInfo->svpvDisErr[j];
     DsvpvDistance_2D[typesize] = DInfo->svpvDistance_2D[j];
     DsvpvDisErr_2D[typesize] = DInfo->svpvDisErr_2D[j];
-    DtktkRes_chi2ndf[typesize] = DInfo->tktkRes_vtxchi2[j]/DInfo->tktkRes_vtxdof[j];
-    DtktkRes_chi2cl[typesize] = TMath::Prob(DInfo->tktkRes_vtxchi2[j], DInfo->tktkRes_vtxdof[j]);
-    DtktkRes_alpha[typesize] = DInfo->tktkRes_alpha[j];
-    DtktkRes_svpvDistance[typesize] = DInfo->tktkRes_svpvDistance[j];
-    DtktkRes_svpvDisErr[typesize] = DInfo->tktkRes_svpvDisErr[j];
+    Ddca[typesize] = DInfo->svpvDistance[j]*TMath::Sin(DInfo->alpha[j]);
+
     float r2lxyBS = (DInfo->vtxX[j]-EvtInfo->BSx+(DInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (DInfo->vtxX[j]-EvtInfo->BSx+(DInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
       + (DInfo->vtxY[j]-EvtInfo->BSy+(DInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (DInfo->vtxY[j]-EvtInfo->BSy+(DInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
     float xlxyBS = DInfo->vtxX[j]-EvtInfo->BSx + (DInfo->vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
@@ -982,15 +989,89 @@ class DntupleBranches
     DlxyBS[typesize] = TMath::Sqrt(r2lxyBS);
     DlxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->vtxYErr[j]);
     DMaxDoca[typesize] = DInfo->MaxDoca[j];
-    Ddca[typesize] = DInfo->svpvDistance[j]*TMath::Sin(DInfo->alpha[j]);
 
+    //
+    DtktkResmass[typesize] = -1;
+    DtktkRespt[typesize] = -1;
+    DtktkReseta[typesize] = -20;
+    DtktkResphi[typesize] = -20;
+    DtktkRes_chi2ndf[typesize] = -1;
+    DtktkRes_chi2cl[typesize] = -1;
+    DtktkRes_alpha[typesize] = -1;
     DtktkRes_alphaToSV[typesize] = -1;
+    DtktkRes_svpvDistance[typesize] = -1;
+    DtktkRes_svpvDisErr[typesize] = -1;
+    DtktkRes_svpvDistanceToSV[typesize] = -1;
+    DtktkRes_svpvDisErrToSV[typesize] = -1;
+    DtktkRes_dca[typesize] = -1;
+    DtktkRes_dcaToSV[typesize] = -1;
     DtktkRes_angleToTrk1[typesize] = -1;
     DtktkRes_ptAsymToTrk1[typesize] = -1;
     DtktkRes_unfitter_ptAsymToTrk1[typesize] = -1;
     DtktkRes_lxyBS[typesize] = -1;
     DtktkRes_lxyBSErr[typesize] = -1;
-
+    
+    DRestrk1Pt[typesize] = -1;
+    DRestrk1Eta[typesize] = -20;
+    DRestrk1Phi[typesize] = -20;
+    DRestrk1P[typesize] = -1;
+    DRestrk1Y[typesize] = -1;
+    DRestrk1Dz[typesize] = -1;
+    DRestrk1Dxy[typesize] = -1;
+    DRestrk1D0[typesize] = -1;
+    DRestrk1D0Err[typesize] = -1;
+    DRestrk1originalAlgo[typesize] = 0;
+    DRestrk2Pt[typesize] = -1;
+    DRestrk2Eta[typesize] = -20;
+    DRestrk2Phi[typesize] = -20;
+    DRestrk2P[typesize] = -1;
+    DRestrk2Y[typesize] = -1;
+    DRestrk2Dz[typesize] = -1;
+    DRestrk2Dxy[typesize] = -1;
+    DRestrk2D0[typesize] = -1;
+    DRestrk2D0Err[typesize] = -1;
+    DRestrk2originalAlgo[typesize] = 0;
+    DRestrk3Pt[typesize] = -1;
+    DRestrk3Eta[typesize] = -20;
+    DRestrk3Phi[typesize] = -20;
+    DRestrk3P[typesize] = -1;
+    DRestrk3Y[typesize] = -1;
+    DRestrk3Dz[typesize] = -1;
+    DRestrk3Dxy[typesize] = -1;
+    DRestrk3D0[typesize] = -1;
+    DRestrk3D0Err[typesize] = -1;
+    DRestrk3originalAlgo[typesize] = 0;
+    DRestrk4Pt[typesize] = -1;
+    DRestrk4Eta[typesize] = -20;
+    DRestrk4Phi[typesize] = -20;
+    DRestrk4P[typesize] = -1;
+    DRestrk4Y[typesize] = -1;
+    DRestrk4Dz[typesize] = -1;
+    DRestrk4Dxy[typesize] = -1;
+    DRestrk4D0[typesize] = -1;
+    DRestrk4D0Err[typesize] = -1;
+    DRestrk4originalAlgo[typesize] = 0;
+    DRestrk1PtErr[typesize] = -1;
+    DRestrk2PtErr[typesize] = -1;
+    DRestrk3PtErr[typesize] = -1;
+    DRestrk4PtErr[typesize] = -1;
+    DRestrk1highPurity[typesize] = -1;
+    DRestrk2highPurity[typesize] = -1;
+    DRestrk3highPurity[typesize] = -1;
+    DRestrk4highPurity[typesize] = -1;
+    DRestrk1Quality[typesize] = -1;
+    DRestrk2Quality[typesize] = -1;
+    DRestrk3Quality[typesize] = -1;
+    DRestrk4Quality[typesize] = -1;
+    DRestrk1dedx[typesize] = -20;
+    DRestrk2dedx[typesize] = -20;
+    DRestrk3dedx[typesize] = -20;
+    DRestrk4dedx[typesize] = -20;
+    DRestrk1thetastar[typesize] = -20;
+    DRestrk2thetastar[typesize] = -20;
+    DRestrk3thetastar[typesize] = -20;
+    DRestrk4thetastar[typesize] = -20;
+    
     //DInfo.trkInfo
     float trk1mass,trk2mass,trk3mass,trk4mass;
     if(DInfo->type[j]==1||DInfo->type[j]==2||DInfo->type[j]==3||DInfo->type[j]==4||DInfo->type[j]==5||DInfo->type[j]==6)
@@ -1109,72 +1190,6 @@ class DntupleBranches
             Dtrk4highPurity[typesize] = false;
             Dtrk4dedx[typesize] = -20;
             Dtrk4thetastar[typesize] = -20;
-          
-            DtktkResmass[typesize] = -1;
-            DtktkRespt[typesize] = -1;
-            DtktkReseta[typesize] = -20;
-            DtktkResphi[typesize] = -20;
-          
-            DRestrk1Pt[typesize] = -1;
-            DRestrk1Eta[typesize] = -20;
-            DRestrk1Phi[typesize] = -20;
-            DRestrk1P[typesize] = -1;
-            DRestrk1Y[typesize] = -1;
-            DRestrk1Dz[typesize] = -1;
-            DRestrk1Dxy[typesize] = -1;
-            DRestrk1D0[typesize] = -1;
-            DRestrk1D0Err[typesize] = -1;
-            DRestrk1originalAlgo[typesize] = 0;
-            DRestrk2Pt[typesize] = -1;
-            DRestrk2Eta[typesize] = -20;
-            DRestrk2Phi[typesize] = -20;
-            DRestrk2P[typesize] = -1;
-            DRestrk2Y[typesize] = -1;
-            DRestrk2Dz[typesize] = -1;
-            DRestrk2Dxy[typesize] = -1;
-            DRestrk2D0[typesize] = -1;
-            DRestrk2D0Err[typesize] = -1;
-            DRestrk2originalAlgo[typesize] = 0;
-            DRestrk3Pt[typesize] = -1;
-            DRestrk3Eta[typesize] = -20;
-            DRestrk3Phi[typesize] = -20;
-            DRestrk3P[typesize] = -1;
-            DRestrk3Y[typesize] = -1;
-            DRestrk3Dz[typesize] = -1;
-            DRestrk3Dxy[typesize] = -1;
-            DRestrk3D0[typesize] = -1;
-            DRestrk3D0Err[typesize] = -1;
-            DRestrk3originalAlgo[typesize] = 0;
-            DRestrk4Pt[typesize] = -1;
-            DRestrk4Eta[typesize] = -20;
-            DRestrk4Phi[typesize] = -20;
-            DRestrk4P[typesize] = -1;
-            DRestrk4Y[typesize] = -1;
-            DRestrk4Dz[typesize] = -1;
-            DRestrk4Dxy[typesize] = -1;
-            DRestrk4D0[typesize] = -1;
-            DRestrk4D0Err[typesize] = -1;
-            DRestrk4originalAlgo[typesize] = 0;
-            DRestrk1PtErr[typesize] = -1;
-            DRestrk2PtErr[typesize] = -1;
-            DRestrk3PtErr[typesize] = -1;
-            DRestrk4PtErr[typesize] = -1;
-            DRestrk1highPurity[typesize] = -1;
-            DRestrk2highPurity[typesize] = -1;
-            DRestrk3highPurity[typesize] = -1;
-            DRestrk4highPurity[typesize] = -1;
-            DRestrk1Quality[typesize] = -1;
-            DRestrk2Quality[typesize] = -1;
-            DRestrk3Quality[typesize] = -1;
-            DRestrk4Quality[typesize] = -1;
-            DRestrk1dedx[typesize] = -20;
-            DRestrk2dedx[typesize] = -20;
-            DRestrk3dedx[typesize] = -20;
-            DRestrk4dedx[typesize] = -20;
-            DRestrk1thetastar[typesize] = -20;
-            DRestrk2thetastar[typesize] = -20;
-            DRestrk3thetastar[typesize] = -20;
-            DRestrk4thetastar[typesize] = -20;
           }
         else if(DInfo->type[j]==3||DInfo->type[j]==4)
           {
@@ -1233,72 +1248,6 @@ class DntupleBranches
             Dtrk4highPurity[typesize] = false;
             Dtrk4dedx[typesize] = -20;
             Dtrk4thetastar[typesize] = -20;
-
-            DtktkResmass[typesize] = -1;
-            DtktkRespt[typesize] = -1;
-            DtktkReseta[typesize] = -20;
-            DtktkResphi[typesize] = -20;
-
-            DRestrk1Pt[typesize] = -1;
-            DRestrk1Eta[typesize] = -20;
-            DRestrk1Phi[typesize] = -20;
-            DRestrk1P[typesize] = -1;
-            DRestrk1Y[typesize] = -1;
-            DRestrk1Dz[typesize] = -1;
-            DRestrk1Dxy[typesize] = -1;
-            DRestrk1D0[typesize] = -1;
-            DRestrk1D0Err[typesize] = -1;
-            DRestrk1originalAlgo[typesize] = 0;
-            DRestrk2Pt[typesize] = -1;
-            DRestrk2Eta[typesize] = -20;
-            DRestrk2Phi[typesize] = -20;
-            DRestrk2P[typesize] = -1;
-            DRestrk2Y[typesize] = -1;
-            DRestrk2Dz[typesize] = -1;
-            DRestrk2Dxy[typesize] = -1;
-            DRestrk2D0[typesize] = -1;
-            DRestrk2D0Err[typesize] = -1;
-            DRestrk2originalAlgo[typesize] = 0;
-            DRestrk3Pt[typesize] = -1;
-            DRestrk3Eta[typesize] = -20;
-            DRestrk3Phi[typesize] = -20;
-            DRestrk3P[typesize] = -1;
-            DRestrk3Y[typesize] = -1;
-            DRestrk3Dz[typesize] = -1;
-            DRestrk3Dxy[typesize] = -1;
-            DRestrk3D0[typesize] = -1;
-            DRestrk3D0Err[typesize] = -1;
-            DRestrk3originalAlgo[typesize] = 0;
-            DRestrk4Pt[typesize] = -1;
-            DRestrk4Eta[typesize] = -20;
-            DRestrk4Phi[typesize] = -20;
-            DRestrk4P[typesize] = -1;
-            DRestrk4Y[typesize] = -1;
-            DRestrk4Dz[typesize] = -1;
-            DRestrk4Dxy[typesize] = -1;
-            DRestrk4D0[typesize] = -1;
-            DRestrk4D0Err[typesize] = -1;
-            DRestrk4originalAlgo[typesize] = 0;
-            DRestrk1PtErr[typesize] = -1;
-            DRestrk2PtErr[typesize] = -1;
-            DRestrk3PtErr[typesize] = -1;
-            DRestrk4PtErr[typesize] = -1;
-            DRestrk1highPurity[typesize] = -1;
-            DRestrk2highPurity[typesize] = -1;
-            DRestrk3highPurity[typesize] = -1;
-            DRestrk4highPurity[typesize] = -1;
-            DRestrk1Quality[typesize] = -1;
-            DRestrk2Quality[typesize] = -1;
-            DRestrk3Quality[typesize] = -1;
-            DRestrk4Quality[typesize] = -1;
-            DRestrk1dedx[typesize] = -20;
-            DRestrk2dedx[typesize] = -20;
-            DRestrk3dedx[typesize] = -20;
-            DRestrk4dedx[typesize] = -20;
-            DRestrk1thetastar[typesize] = -20;
-            DRestrk2thetastar[typesize] = -20;
-            DRestrk3thetastar[typesize] = -20;
-            DRestrk4thetastar[typesize] = -20;
           }
         else if(DInfo->type[j]==5||DInfo->type[j]==6)
           {
@@ -1360,72 +1309,6 @@ class DntupleBranches
             Dtrk4Quality[typesize] = TrackInfo->trackQuality[DInfo->rftk4_index[j]];
             Dtrk3dedx[typesize] = TrackInfo->dedx[DInfo->rftk3_index[j]];
             Dtrk4dedx[typesize] = TrackInfo->dedx[DInfo->rftk4_index[j]];
-
-            DtktkResmass[typesize] = -1;
-            DtktkRespt[typesize] = -1;
-            DtktkReseta[typesize] = -20;
-            DtktkResphi[typesize] = -20;
-
-            DRestrk1Pt[typesize] = -1;
-            DRestrk1Eta[typesize] = -20;
-            DRestrk1Phi[typesize] = -20;
-            DRestrk1P[typesize] = -1;
-            DRestrk1Y[typesize] = -1;
-            DRestrk1Dz[typesize] = -1;
-            DRestrk1Dxy[typesize] = -1;
-            DRestrk1D0[typesize] = -1;
-            DRestrk1D0Err[typesize] = -1;
-            DRestrk1originalAlgo[typesize] = 0;
-            DRestrk2Pt[typesize] = -1;
-            DRestrk2Eta[typesize] = -20;
-            DRestrk2Phi[typesize] = -20;
-            DRestrk2P[typesize] = -1;
-            DRestrk2Y[typesize] = -1;
-            DRestrk2Dz[typesize] = -1;
-            DRestrk2Dxy[typesize] = -1;
-            DRestrk2D0[typesize] = -1;
-            DRestrk2D0Err[typesize] = -1;
-            DRestrk2originalAlgo[typesize] = 0;
-            DRestrk3Pt[typesize] = -1;
-            DRestrk3Eta[typesize] = -20;
-            DRestrk3Phi[typesize] = -20;
-            DRestrk3P[typesize] = -1;
-            DRestrk3Y[typesize] = -1;
-            DRestrk3Dz[typesize] = -1;
-            DRestrk3Dxy[typesize] = -1;
-            DRestrk3D0[typesize] = -1;
-            DRestrk3D0Err[typesize] = -1;
-            DRestrk3originalAlgo[typesize] = 0;
-            DRestrk4Pt[typesize] = -1;
-            DRestrk4Eta[typesize] = -20;
-            DRestrk4Phi[typesize] = -20;
-            DRestrk4P[typesize] = -1;
-            DRestrk4Y[typesize] = -1;
-            DRestrk4Dz[typesize] = -1;
-            DRestrk4Dxy[typesize] = -1;
-            DRestrk4D0[typesize] = -1;
-            DRestrk4D0Err[typesize] = -1;
-            DRestrk4originalAlgo[typesize] = 0;
-            DRestrk1PtErr[typesize] = -1;
-            DRestrk2PtErr[typesize] = -1;
-            DRestrk3PtErr[typesize] = -1;
-            DRestrk4PtErr[typesize] = -1;
-            DRestrk1highPurity[typesize] = -1;
-            DRestrk2highPurity[typesize] = -1;
-            DRestrk3highPurity[typesize] = -1;
-            DRestrk4highPurity[typesize] = -1;
-            DRestrk1Quality[typesize] = -1;
-            DRestrk2Quality[typesize] = -1;
-            DRestrk3Quality[typesize] = -1;
-            DRestrk4Quality[typesize] = -1;
-            DRestrk1dedx[typesize] = -20;
-            DRestrk2dedx[typesize] = -20;
-            DRestrk3dedx[typesize] = -20;
-            DRestrk4dedx[typesize] = -20;
-            DRestrk1thetastar[typesize] = -20;
-            DRestrk2thetastar[typesize] = -20;
-            DRestrk3thetastar[typesize] = -20;
-            DRestrk4thetastar[typesize] = -20;
           }
       }
     else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14)
@@ -1538,11 +1421,6 @@ class DntupleBranches
         Dtrk4dedx[typesize] = -20;
         Dtrk4thetastar[typesize] = -20;
 
-        DtktkResmass[typesize] = DInfo->tktkRes_mass[j];
-        DtktkRespt[typesize] = DInfo->tktkRes_pt[j];
-        DtktkReseta[typesize] = DInfo->tktkRes_eta[j];
-        DtktkResphi[typesize] = DInfo->tktkRes_phi[j];
-
         DRestrk1Pt[typesize] = TrackInfo->pt[DInfo->tktkRes_rftk1_index[j]];
         DRestrk1Eta[typesize] = TrackInfo->eta[DInfo->tktkRes_rftk1_index[j]];
         DRestrk1Phi[typesize] = TrackInfo->phi[DInfo->tktkRes_rftk1_index[j]];
@@ -1608,13 +1486,14 @@ class DntupleBranches
         DRestrk3thetastar[typesize] = -20;
         DRestrk4thetastar[typesize] = -20;
 
-        r2lxyBS = (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
-          + (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
-        xlxyBS = DInfo->tktkRes_vtxX[j]-EvtInfo->BSx + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
-        ylxyBS = DInfo->tktkRes_vtxY[j]-EvtInfo->BSy + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
-        DtktkRes_lxyBS[typesize] = TMath::Sqrt(r2lxyBS);
-        DtktkRes_lxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->tktkRes_vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->tktkRes_vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->tktkRes_vtxYErr[j]);
+        DtktkResmass[typesize] = DInfo->tktkRes_mass[j];
+        DtktkRespt[typesize] = DInfo->tktkRes_pt[j];
+        DtktkReseta[typesize] = DInfo->tktkRes_eta[j];
+        DtktkResphi[typesize] = DInfo->tktkRes_phi[j];
 
+        DtktkRes_chi2ndf[typesize] = DInfo->tktkRes_vtxchi2[j]/DInfo->tktkRes_vtxdof[j];
+        DtktkRes_chi2cl[typesize] = TMath::Prob(DInfo->tktkRes_vtxchi2[j], DInfo->tktkRes_vtxdof[j]);
+        DtktkRes_alpha[typesize] = DInfo->tktkRes_alpha[j];
         TVector3 *DisSvResVtx = new TVector3;
         DisSvResVtx->SetXYZ(DInfo->tktkRes_vtxX[j]-DInfo->vtxX[j],
                             DInfo->tktkRes_vtxY[j]-DInfo->vtxY[j],
@@ -1622,8 +1501,24 @@ class DntupleBranches
         TLorentzVector *tktkRes4Vec = new TLorentzVector;
         tktkRes4Vec->SetPtEtaPhiM(DInfo->tktkRes_pt[j], DInfo->tktkRes_eta[j], DInfo->tktkRes_phi[j], DInfo->tktkRes_mass[j]);
         DtktkRes_alphaToSV[typesize] = tktkRes4Vec->Angle(*DisSvResVtx);
-        //DtktkRes_alphaToSV[typesize] = DInfo->tktkRes_alphaToSV[j];//same as above
-    
+        //DtktkRes_alphaToSV[typesize] = DInfo->tktkRes_alphaToSV[j]; // update after moving to new Dfinder
+        DtktkRes_svpvDistance[typesize] = DInfo->tktkRes_svpvDistance[j];
+        DtktkRes_svpvDisErr[typesize] = DInfo->tktkRes_svpvDisErr[j];
+        DtktkRes_svpvDistanceToSV[typesize] = DisSvResVtx->Mag();
+        //DtktkRes_svpvDistanceToSV[typesize] = DInfo->tktkRes_svpvDistanceToSV[j]; // update after moving to new Dfinder
+        DtktkRes_svpvDisErrToSV[typesize] = 1;
+        //DtktkRes_svpvDisErrToSV[typesize] = DInfo->tktkRes_svpvDisErrToSV[j]; // update after moving to new Dfinder
+        DtktkRes_dca[typesize] = DInfo->tktkRes_svpvDistance[j]*TMath::Sin(DInfo->tktkRes_alpha[j]);
+        DtktkRes_dcaToSV[typesize] = DtktkRes_svpvDistanceToSV[typesize]*TMath::Sin(DtktkRes_alphaToSV[typesize]);
+        //DtktkRes_dcaToSV[typesize] = DInfo->tktkRes_svpvDistanceToSV[j]*TMath::Sin(DInfo->tktkRes_alphaToSV[j]); // update after moving to new Dfinder
+        
+        r2lxyBS = (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz) * (DInfo->tktkRes_vtxX[j]-EvtInfo->BSx+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz)
+          + (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz) * (DInfo->tktkRes_vtxY[j]-EvtInfo->BSy+(DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz);
+        xlxyBS = DInfo->tktkRes_vtxX[j]-EvtInfo->BSx + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdxdz;
+        ylxyBS = DInfo->tktkRes_vtxY[j]-EvtInfo->BSy + (DInfo->tktkRes_vtxZ[j]-EvtInfo->BSz)*EvtInfo->BSdydz;
+        DtktkRes_lxyBS[typesize] = TMath::Sqrt(r2lxyBS);
+        DtktkRes_lxyBSErr[typesize] = (1./r2lxyBS) * ((xlxyBS*xlxyBS)*DInfo->tktkRes_vtxXErr[j] + (2*xlxyBS*ylxyBS)*DInfo->tktkRes_vtxYXErr[j] + (ylxyBS*ylxyBS)*DInfo->tktkRes_vtxYErr[j]);
+
         TLorentzVector *trk14Vec = new TLorentzVector;
         trk14Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk2_index[j]], TrackInfo->eta[DInfo->rftk2_index[j]], TrackInfo->phi[DInfo->rftk2_index[j]], PION_MASS);
         DtktkRes_angleToTrk1[typesize] = tktkRes4Vec->Angle(trk14Vec->Vect());
