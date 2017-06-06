@@ -513,6 +513,8 @@ class TrackInfoBranches{//{{{
         float	ndf          [ MAX_TRACK];
         float	d0           [ MAX_TRACK];
         float	d0error      [ MAX_TRACK];
+        float	dz           [ MAX_TRACK];
+        float	dzerror      [ MAX_TRACK];
         float	dzPV         [ MAX_TRACK];
         float	dxyPV        [ MAX_TRACK];
         int     geninfo_index[ MAX_TRACK];
@@ -544,6 +546,8 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.ndf"		    ,ndf		    ,"TrackInfo.ndf[TrackInfo.size]/F"	);
             root->Branch("TrackInfo.d0"		        ,d0		        ,"TrackInfo.d0[TrackInfo.size]/F"	);
             root->Branch("TrackInfo.d0error"	    ,d0error	    ,"TrackInfo.d0error[TrackInfo.size]/F"	);
+            root->Branch("TrackInfo.dz"		        ,dz		        ,"TrackInfo.dz[TrackInfo.size]/F"	);
+            root->Branch("TrackInfo.dzerror"	    ,dzerror	    ,"TrackInfo.dzerror[TrackInfo.size]/F"	);
             root->Branch("TrackInfo.dzPV"           ,dzPV           ,"TrackInfo.dzPV[TrackInfo.size]/F"		);
             root->Branch("TrackInfo.dxyPV"          ,dxyPV          ,"TrackInfo.dxyPV[TrackInfo.size]/F"		);
             root->Branch("TrackInfo.geninfo_index"  ,geninfo_index  ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
@@ -579,6 +583,8 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.ndf"           , ndf         );
             root->SetBranchAddress("TrackInfo.d0"            , d0          );
             root->SetBranchAddress("TrackInfo.d0error"       , d0error     );
+            root->SetBranchAddress("TrackInfo.dz"            , dz          );
+            root->SetBranchAddress("TrackInfo.dzerror"       , dzerror     );
             root->SetBranchAddress("TrackInfo.dzPV"          , dzPV        );
             root->SetBranchAddress("TrackInfo.dxyPV"         , dxyPV       );
             root->SetBranchAddress("TrackInfo.geninfo_index" , geninfo_index  );
