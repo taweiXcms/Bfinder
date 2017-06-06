@@ -963,6 +963,8 @@ public:
     float  tktkRes_vtxchi2[MAX_XB];
     float  tktkRes_svpvDistance[MAX_XB];
     float  tktkRes_svpvDisErr[MAX_XB];
+    float  tktkRes_svpvDistanceToSV[MAX_XB];
+    float  tktkRes_svpvDisErrToSV[MAX_XB];
 	float  tktkRes_alpha[MAX_XB];
 	float  tktkRes_alphaToSV[MAX_XB];
     float  tktkRes_rftk1_mass[MAX_XB];
@@ -1048,32 +1050,33 @@ public:
         root->Branch("DInfo.index"            , index          , "DInfo.index[DInfo.size]/I"		);
         root->Branch("DInfo.type"             , type           , "DInfo.type[DInfo.size]/I"	);
         
-        root->Branch("DInfo.tktkRes_unfitted_mass" , tktkRes_unfitted_mass     , "DInfo.tktkRes_unfitted_mass[DInfo.size]/F"     );
-        root->Branch("DInfo.tktkRes_unfitted_pt"   , tktkRes_unfitted_pt       , "DInfo.tktkRes_unfitted_pt[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_mass"          , tktkRes_mass              , "DInfo.tktkRes_mass[DInfo.size]/F"     );
-        root->Branch("DInfo.tktkRes_pt"            , tktkRes_pt                , "DInfo.tktkRes_pt[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_eta"           , tktkRes_eta               , "DInfo.tktkRes_eta[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_phi"           , tktkRes_phi               , "DInfo.tktkRes_phi[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_vtxX"          , tktkRes_vtxX              , "DInfo.tktkRes_vtxX[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_vtxY"          , tktkRes_vtxY              , "DInfo.tktkRes_vtxY[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_vtxZ"          , tktkRes_vtxZ              , "DInfo.tktkRes_vtxZ[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_vtxXErr"       , tktkRes_vtxXErr           , "DInfo.tktkRes_vtxXErr[DInfo.size]/F"   );
-        root->Branch("DInfo.tktkRes_vtxYErr"       , tktkRes_vtxYErr           , "DInfo.tktkRes_vtxYErr[DInfo.size]/F"   );
-        root->Branch("DInfo.tktkRes_vtxZErr"       , tktkRes_vtxZErr           , "DInfo.tktkRes_vtxZErr[DInfo.size]/F"   );
-        root->Branch("DInfo.tktkRes_vtxYXErr"      , tktkRes_vtxYXErr          , "DInfo.tktkRes_vtxYXErr[DInfo.size]/F"   );
-        root->Branch("DInfo.tktkRes_vtxZXErr"      , tktkRes_vtxZXErr          , "DInfo.tktkRes_vtxZXErr[DInfo.size]/F"   );
-        root->Branch("DInfo.tktkRes_vtxZYErr"      , tktkRes_vtxZYErr          , "DInfo.tktkRes_vtxZYErr[DInfo.size]/F"   );
-        root->Branch("DInfo.tktkRes_vtxdof"        , tktkRes_vtxdof            , "DInfo.tktkRes_vtxdof[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_vtxchi2"       , tktkRes_vtxchi2           , "DInfo.tktkRes_vtxchi2[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_svpvDistance"  , tktkRes_svpvDistance      , "DInfo.tktkRes_svpvDistance[DInfo.size]/F"	);
-        root->Branch("DInfo.tktkRes_svpvDisErr"    , tktkRes_svpvDisErr        , "DInfo.tktkRes_svpvDisErr[DInfo.size]/F"	);
-		root->Branch("DInfo.tktkRes_alpha"         , tktkRes_alpha             , "DInfo.tktkRes_alpha[DInfo.size]/F" );
-		root->Branch("DInfo.tktkRes_alphaToSV"     , tktkRes_alphaToSV         , "DInfo.tktkRes_alphaToSV[DInfo.size]/F" );
-
-        root->Branch("DInfo.tktkRes_rftk1_index"   , tktkRes_rftk1_index       , "DInfo.tktkRes_rftk1_index[DInfo.size]/I");
-        root->Branch("DInfo.tktkRes_rftk2_index"   , tktkRes_rftk2_index       , "DInfo.tktkRes_rftk2_index[DInfo.size]/I");
-        root->Branch("DInfo.tktkRes_rftk3_index"   , tktkRes_rftk3_index       , "DInfo.tktkRes_rftk3_index[DInfo.size]/I");
-        root->Branch("DInfo.tktkRes_rftk4_index"   , tktkRes_rftk4_index       , "DInfo.tktkRes_rftk4_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_unfitted_mass"     , tktkRes_unfitted_mass     , "DInfo.tktkRes_unfitted_mass[DInfo.size]/F"     );
+        root->Branch("DInfo.tktkRes_unfitted_pt"       , tktkRes_unfitted_pt       , "DInfo.tktkRes_unfitted_pt[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_mass"              , tktkRes_mass              , "DInfo.tktkRes_mass[DInfo.size]/F"     );
+        root->Branch("DInfo.tktkRes_pt"                , tktkRes_pt                , "DInfo.tktkRes_pt[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_eta"               , tktkRes_eta               , "DInfo.tktkRes_eta[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_phi"               , tktkRes_phi               , "DInfo.tktkRes_phi[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_vtxX"              , tktkRes_vtxX              , "DInfo.tktkRes_vtxX[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_vtxY"              , tktkRes_vtxY              , "DInfo.tktkRes_vtxY[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_vtxZ"              , tktkRes_vtxZ              , "DInfo.tktkRes_vtxZ[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_vtxXErr"           , tktkRes_vtxXErr           , "DInfo.tktkRes_vtxXErr[DInfo.size]/F"   );
+        root->Branch("DInfo.tktkRes_vtxYErr"           , tktkRes_vtxYErr           , "DInfo.tktkRes_vtxYErr[DInfo.size]/F"   );
+        root->Branch("DInfo.tktkRes_vtxZErr"           , tktkRes_vtxZErr           , "DInfo.tktkRes_vtxZErr[DInfo.size]/F"   );
+        root->Branch("DInfo.tktkRes_vtxYXErr"          , tktkRes_vtxYXErr          , "DInfo.tktkRes_vtxYXErr[DInfo.size]/F"   );
+        root->Branch("DInfo.tktkRes_vtxZXErr"          , tktkRes_vtxZXErr          , "DInfo.tktkRes_vtxZXErr[DInfo.size]/F"   );
+        root->Branch("DInfo.tktkRes_vtxZYErr"          , tktkRes_vtxZYErr          , "DInfo.tktkRes_vtxZYErr[DInfo.size]/F"   );
+        root->Branch("DInfo.tktkRes_vtxdof"            , tktkRes_vtxdof            , "DInfo.tktkRes_vtxdof[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_vtxchi2"           , tktkRes_vtxchi2           , "DInfo.tktkRes_vtxchi2[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_svpvDistance"      , tktkRes_svpvDistance      , "DInfo.tktkRes_svpvDistance[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_svpvDisErr"        , tktkRes_svpvDisErr        , "DInfo.tktkRes_svpvDisErr[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_svpvDistanceToSV"  , tktkRes_svpvDistanceToSV  , "DInfo.tktkRes_svpvDistanceToSV[DInfo.size]/F"	);
+        root->Branch("DInfo.tktkRes_svpvDisErrToSV"    , tktkRes_svpvDisErrToSV    , "DInfo.tktkRes_svpvDisErrToSV[DInfo.size]/F"	);
+		root->Branch("DInfo.tktkRes_alpha"             , tktkRes_alpha             , "DInfo.tktkRes_alpha[DInfo.size]/F" );
+		root->Branch("DInfo.tktkRes_alphaToSV"         , tktkRes_alphaToSV         , "DInfo.tktkRes_alphaToSV[DInfo.size]/F" );
+        root->Branch("DInfo.tktkRes_rftk1_index"       , tktkRes_rftk1_index       , "DInfo.tktkRes_rftk1_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_rftk2_index"       , tktkRes_rftk2_index       , "DInfo.tktkRes_rftk2_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_rftk3_index"       , tktkRes_rftk3_index       , "DInfo.tktkRes_rftk3_index[DInfo.size]/I");
+        root->Branch("DInfo.tktkRes_rftk4_index"       , tktkRes_rftk4_index       , "DInfo.tktkRes_rftk4_index[DInfo.size]/I");
 
         root->Branch("DInfo.unfitted_mass"    , unfitted_mass     , "DInfo.unfitted_mass[DInfo.size]/F"     );
         root->Branch("DInfo.unfitted_pt"      , unfitted_pt       , "DInfo.unfitted_pt[DInfo.size]/F"	);
@@ -1179,6 +1182,8 @@ public:
         root->SetBranchAddress("DInfo.tktkRes_vtxZYErr"        ,tktkRes_vtxZYErr   );
         root->SetBranchAddress("DInfo.tktkRes_svpvDistance"    ,tktkRes_svpvDistance   	);
         root->SetBranchAddress("DInfo.tktkRes_svpvDisErr"      ,tktkRes_svpvDisErr   	);
+        root->SetBranchAddress("DInfo.tktkRes_svpvDistanceToSV",tktkRes_svpvDistanceToSV);
+        root->SetBranchAddress("DInfo.tktkRes_svpvDisErrToSV"  ,tktkRes_svpvDisErrToSV	);
 		root->SetBranchAddress("DInfo.tktkRes_alpha"           ,tktkRes_alpha    );
 		root->SetBranchAddress("DInfo.tktkRes_alphaToSV"       ,tktkRes_alphaToSV    );
 
