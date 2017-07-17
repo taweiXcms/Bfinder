@@ -53,6 +53,9 @@
 #include <TString.h>
 #include <TNtuple.h>
 #include <TVector3.h>
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/MethodCuts.h"
 
 #define ELECTRON_MASS 0.0005
 #define MUON_MASS   0.10565837
