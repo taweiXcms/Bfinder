@@ -14,9 +14,13 @@ ivars = VarParsing.VarParsing('analysis')
 #ivars.inputFiles='file:/data/twang/MC_samples/Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120/Pythia8_5020GeV_DstarD0kpipipi_755patch3_step3_20151120/step3_RAW2DIGI_L1Reco_RECO_614_1_jV8.root'
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIOniaL1DoubleMu0/AOD/PromptReco-v1/000/262/735/00000/B0EC6FA1-4E99-E511-B663-02163E013910.root'#HIOniaL1DoubleMu0
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/AOD/PromptReco-v1/000/262/735/00000/FC577170-6C99-E511-9848-02163E014120.root'#HIHardProbes
-ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/6E423E98-5C99-E511-B72B-02163E0138EE.root'#HIHardProbes
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/6E423E98-5C99-E511-B72B-02163E0138EE.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIHardProbes/RECO/D0Meson-PromptReco-v1/000/262/735/00000/E67242E4-5E99-E511-947B-02163E0127B4.root'#HIHardProbes
 #ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias1/AOD/PromptReco-v1/000/262/726/00000/EE7F4A63-4599-E511-9CE5-02163E013850.root'#HIMinimumBias1
+ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias2/AOD/PromptReco-v1/000/262/548/00000/FA165E36-1F9A-E511-9D40-02163E011B92.root'#HIMinimumBias2
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias2/AOD/PromptReco-v1/000/263/757/00001/FCC156B2-F0BA-E511-95B6-02163E0146FF.root'#HIMinimumBias2
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias3/AOD/PromptReco-v1/000/263/233/00000/048B4DED-38A7-E511-8C73-02163E01183A.root'#HIMinimumBias3
+#ivars.inputFiles='file:/data/twang/Data_samples/HIRun2015/HIMinimumBias3/AOD/PromptReco-v1/000/263/757/00001/FA43C598-BCBA-E511-BAA9-02163E0119F8.root'#HIMinimumBias3
 ivars.outputFile='finder_PbPb.root'
 ivars.parseArguments()# get and parse the command line arguments
 
@@ -301,19 +305,27 @@ if PbPbBD0PiHP and optSum is 1:
     process.p = cms.Path(process.DfinderSequence)
 ## PbPB B to D0 Pi channel on MB
 if PbPbBD0PiMB and optSum is 1:
-    process.Dfinder.tkPtCut = cms.double(1.0)#before fit
-    process.Dfinder.dCutSeparating_PtVal = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 6., 6.)
-    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 3.0)#before fit
+    process.Dfinder.tkPtCut = cms.double(0.5)#before fit
+    process.Dfinder.tkEtaCut = cms.double(999.0)#before fit
+    process.Dfinder.dCutSeparating_PtVal = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 7., 7.)
+    process.Dfinder.dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 4.0)#before fit
+    process.Dfinder.VtxChiProbCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.05, 0.05)
+    process.Dfinder.alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.)
     process.Dfinder.svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.)
     process.Dfinder.svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.)
-    process.Dfinder.VtxChiProbCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.05, 0.05)
-    process.Dfinder.tktkRes_dCutSeparating_PtVal = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 6., 6.)
-    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 4.5, 4.5)
-    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 3, 3)
+    process.Dfinder.tktkRes_dCutSeparating_PtVal = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 7., 7.)
     process.Dfinder.tktkRes_dPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)#before fit
     process.Dfinder.tktkRes_VtxChiProbCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.05, 0.05)
-    process.Dfinder.tktkRes_alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 0.12, 0.12)
+    process.Dfinder.tktkRes_alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.)
+    process.Dfinder.tktkRes_svpvDistanceCut_lowptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.)
+    process.Dfinder.tktkRes_svpvDistanceCut_highptD = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.)
+    process.Dfinder.ResToNonRes_PtAsym_max = cms.vdouble(1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.)
+    process.Dfinder.ResToNonRes_PtAsym_min = cms.vdouble(-1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.)
     process.Dfinder.Dchannel = cms.vint32(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
+    process.Dfinder.tmvaXmlFile = cms.string("TMVA_MLP_pp_5_7_varStage3.weights.xml")
+    process.Dfinder.tmvaMethodName = cms.string("MLP method")
+    process.Dfinder.tmvaCutValue = cms.double(0.01)
+    process.Dfinder.doTmvaCut = cms.bool(False)
     process.p = cms.Path(process.DfinderSequence)
 
 ### Add centrality filter
