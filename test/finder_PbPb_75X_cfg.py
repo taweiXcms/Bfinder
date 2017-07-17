@@ -326,6 +326,7 @@ if PbPbBD0PiMB and optSum is 1:
     process.Dfinder.tmvaMethodName = cms.string("MLP method")
     process.Dfinder.tmvaCutValue = cms.double(0.01)
     process.Dfinder.doTmvaCut = cms.bool(False)
+    process.Dfinder.makeDntuple = cms.bool(False)
     process.p = cms.Path(process.DfinderSequence)
 
 ### Add centrality filter

@@ -311,6 +311,7 @@ if ppBD0PiHFMBV2 and optSum is 1:
     process.Dfinder.tktkRes_VtxChiProbCut = cms.vdouble(0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.05, 0.05)
     process.Dfinder.tktkRes_alphaCut = cms.vdouble(999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999., 999.)
     process.Dfinder.Dchannel = cms.vint32(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
+    process.Dfinder.makeDntuple = cms.bool(False)
     process.p = cms.Path(process.DfinderSequence)
 
 ### Add centrality filter
