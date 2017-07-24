@@ -40,6 +40,7 @@ class DntupleBranches
   int     Dtype[MAX_XB];
   float   Dmass[MAX_XB];
   float   Dpt[MAX_XB];
+  float   D_unfitted_pt[MAX_XB];
   float   Deta[MAX_XB];
   float   Dphi[MAX_XB];
   float   Dy[MAX_XB];
@@ -178,6 +179,7 @@ class DntupleBranches
   //DInfo.tktkResInfo
   float   DtktkResmass[MAX_XB];
   float   DtktkRespt[MAX_XB];
+  float   DtktkRes_unfitted_pt[MAX_XB];
   float   DtktkReseta[MAX_XB];
   float   DtktkResphi[MAX_XB];
   float   DtktkRes_chi2ndf[MAX_XB];
@@ -316,6 +318,7 @@ class DntupleBranches
     dnt->Branch("Dtype",Dtype,"Dtype[Dsize]/I");
     dnt->Branch("Dmass",Dmass,"Dmass[Dsize]/F");
     dnt->Branch("Dpt",Dpt,"Dpt[Dsize]/F");
+    dnt->Branch("D_unfitted_pt",D_unfitted_pt,"D_unfitted_pt[Dsize]/F");
     dnt->Branch("Deta",Deta,"Deta[Dsize]/F");
     dnt->Branch("Dphi",Dphi,"Dphi[Dsize]/F");
     dnt->Branch("Dy",Dy,"Dy[Dsize]/F");
@@ -465,6 +468,7 @@ class DntupleBranches
       {
         dnt->Branch("DtktkResmass",DtktkResmass,"DtktkResmass[Dsize]/F");
         dnt->Branch("DtktkRespt",DtktkRespt,"DtktkRespt[Dsize]/F");
+        dnt->Branch("DtktkRes_unfitted_pt",DtktkRes_unfitted_pt,"DtktkRes_unfitted_pt[Dsize]/F");
         dnt->Branch("DtktkReseta",DtktkReseta,"DtktkReseta[Dsize]/F");
         dnt->Branch("DtktkResphi",DtktkResphi,"DtktkResphi[Dsize]/F");
         dnt->Branch("DtktkRes_chi2ndf",DtktkRes_chi2ndf,"DtktkRes_chi2ndf[Dsize]/F");
@@ -991,6 +995,7 @@ class DntupleBranches
     Dtype[typesize] = DInfo->type[j];
     Dmass[typesize] = DInfo->mass[j];
     Dpt[typesize] = DInfo->pt[j];
+    D_unfitted_pt[typesize] = DInfo->unfitted_pt[j];
     Deta[typesize] = DInfo->eta[j];
     Dphi[typesize] = DInfo->phi[j];
     Dy[typesize] = b4P->Rapidity();
@@ -1023,6 +1028,7 @@ class DntupleBranches
     //
     DtktkResmass[typesize] = -1;
     DtktkRespt[typesize] = -1;
+    DtktkRes_unfitted_pt[typesize] = -1;
     DtktkReseta[typesize] = -20;
     DtktkResphi[typesize] = -20;
     DtktkRes_chi2ndf[typesize] = -1;
@@ -1574,6 +1580,7 @@ class DntupleBranches
 
         DtktkResmass[typesize] = DInfo->tktkRes_mass[j];
         DtktkRespt[typesize] = DInfo->tktkRes_pt[j];
+        DtktkRes_unfitted_pt[typesize] = DInfo->tktkRes_unfitted_pt[j];
         DtktkReseta[typesize] = DInfo->tktkRes_eta[j];
         DtktkResphi[typesize] = DInfo->tktkRes_phi[j];
 
