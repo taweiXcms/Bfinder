@@ -1882,6 +1882,8 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         //keep track of the push_back track index
         std::vector<int> pushbackTrkIdx;
         std::vector<int> pushbackResTrkIdx;
+        std::vector<float> pushbackTrkMassHypo;
+        std::vector<float> pushbackResTrkMassHypo;
         float tk_sigma;
         for(int p = 0; p < int(selectedTkhidxSet[0].size()); p++){        
             temp_vec.SetXYZM(input_tracks[selectedTkhidxSet[i][p]].px(), input_tracks[selectedTkhidxSet[i][p]].py(), input_tracks[selectedTkhidxSet[i][p]].pz(), fabs(TkMassCharge[p].first));
@@ -1894,11 +1896,13 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             if(!SequentialFit){
                 tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
                 pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
+                pushbackTrkMassHypo.push_back(tk_mass);
             }
             if(tktkRes_mass>0){
                 unfitted_tktkRes_4vec += temp_vec;
                 tktkRes_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
                 pushbackResTrkIdx.push_back(selectedTkhidxSet[i][p]);
+                pushbackResTrkMassHypo.push_back(tk_mass);
             }
         }
 
@@ -1920,6 +1924,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                 tktk_candidate.push_back(vFactory.particle(tktkRes_VFP->currentState(),tktkchi,tktkndf,tktkRes_VFP));
                 //tktk_candidate.push_back(tktkRes_VFP);
                 pushbackTrkIdx.push_back(-1);//means its a resonance particle
+                pushbackTrkMassHypo.push_back(-1);//means its a resonance particle
             }
         }
         //push back the other tracks
@@ -1931,6 +1936,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             tk_sigma = Functs.getParticleSigma(tk_mass);
             tktk_candidate.push_back(pFactory.particle(tkTT,tk_mass,chi,ndf,tk_sigma));
             pushbackTrkIdx.push_back(selectedTkhidxSet[i][p]);
+            pushbackTrkMassHypo.push_back(tk_mass);
         }
         DMassCutLevel[Dchannel_number-1]->Fill(5);
 
@@ -2050,23 +2056,30 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.tktkRes_rftk2_index[DInfo.size]     = -2;
             DInfo.tktkRes_rftk3_index[DInfo.size]     = -2;
             DInfo.tktkRes_rftk4_index[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk1_MassHypo[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk2_MassHypo[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk3_MassHypo[DInfo.size]     = -2;
+            DInfo.tktkRes_rftk4_MassHypo[DInfo.size]     = -2;
 
             DInfo.tktkRes_rftk1_mass[DInfo.size]      = tktkRes_4vecs[0].Mag();
             DInfo.tktkRes_rftk1_pt[DInfo.size]        = tktkRes_4vecs[0].Pt();
             DInfo.tktkRes_rftk1_eta[DInfo.size]       = tktkRes_4vecs[0].Eta();
             DInfo.tktkRes_rftk1_phi[DInfo.size]       = tktkRes_4vecs[0].Phi();
             DInfo.tktkRes_rftk1_index[DInfo.size]     = pushbackResTrkIdx[0];
+            DInfo.tktkRes_rftk1_MassHypo[DInfo.size]     = pushbackResTrkMassHypo[0];
             DInfo.tktkRes_rftk2_mass[DInfo.size]      = tktkRes_4vecs[1].Mag();
             DInfo.tktkRes_rftk2_pt[DInfo.size]        = tktkRes_4vecs[1].Pt();
             DInfo.tktkRes_rftk2_eta[DInfo.size]       = tktkRes_4vecs[1].Eta();
             DInfo.tktkRes_rftk2_phi[DInfo.size]       = tktkRes_4vecs[1].Phi();
             DInfo.tktkRes_rftk2_index[DInfo.size]     = pushbackResTrkIdx[1];
+            DInfo.tktkRes_rftk2_MassHypo[DInfo.size]     = pushbackResTrkMassHypo[1];
             if(tktkResCands.size()>2){
                 DInfo.tktkRes_rftk3_mass[DInfo.size]      = tktkRes_4vecs[2].Mag();
                 DInfo.tktkRes_rftk3_pt[DInfo.size]        = tktkRes_4vecs[2].Pt();
                 DInfo.tktkRes_rftk3_eta[DInfo.size]       = tktkRes_4vecs[2].Eta();
                 DInfo.tktkRes_rftk3_phi[DInfo.size]       = tktkRes_4vecs[2].Phi();
                 DInfo.tktkRes_rftk3_index[DInfo.size]     = pushbackResTrkIdx[2];
+                DInfo.tktkRes_rftk3_MassHypo[DInfo.size]     = pushbackResTrkMassHypo[2];
             }
             if(tktkResCands.size()>3){
                 DInfo.tktkRes_rftk4_mass[DInfo.size]      = tktkRes_4vecs[3].Mag();
@@ -2074,6 +2087,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
                 DInfo.tktkRes_rftk4_eta[DInfo.size]       = tktkRes_4vecs[3].Eta();
                 DInfo.tktkRes_rftk4_phi[DInfo.size]       = tktkRes_4vecs[3].Phi();
                 DInfo.tktkRes_rftk4_index[DInfo.size]     = pushbackResTrkIdx[3];
+                DInfo.tktkRes_rftk4_MassHypo[DInfo.size]     = pushbackResTrkMassHypo[3];
             }
         }
 
@@ -2144,18 +2158,20 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
         DInfo.rftk3_index[DInfo.size] = -2;
         DInfo.rftk4_index[DInfo.size] = -2;
         DInfo.rftk5_index[DInfo.size] = -2;
+        DInfo.rftk1_MassHypo[DInfo.size] = -2;
+        DInfo.rftk2_MassHypo[DInfo.size] = -2;
+        DInfo.rftk3_MassHypo[DInfo.size] = -2;
+        DInfo.rftk4_MassHypo[DInfo.size] = -2;
+        DInfo.rftk5_MassHypo[DInfo.size] = -2;
 
         DInfo.rftk1_index[DInfo.size]     = pushbackTrkIdx[0];
         DInfo.rftk2_index[DInfo.size]     = pushbackTrkIdx[1];
+        DInfo.rftk1_MassHypo[DInfo.size] = pushbackTrkMassHypo[0];
+        DInfo.rftk2_MassHypo[DInfo.size] = pushbackTrkMassHypo[1];
 
         //document the mass hypothesis
-        if( fabs(tktk_4vecs[0].Mag()-PION_MASS) < fabs(tktk_4vecs[0].Mag()-KAON_MASS) ) DInfo.rftk1_MassHypo[DInfo.size] = 211;
-        else DInfo.rftk1_MassHypo[DInfo.size] = 321;
         //If its a Res particle, save it as D0
-        if( DInfo.rftk1_index[DInfo.size] == -1) DInfo.rftk1_MassHypo[DInfo.size] = 421;
-
-        if( fabs(tktk_4vecs[1].Mag()-PION_MASS) < fabs(tktk_4vecs[1].Mag()-KAON_MASS) ) DInfo.rftk2_MassHypo[DInfo.size] = 211;
-        else DInfo.rftk2_MassHypo[DInfo.size] = 321;
+        if( DInfo.rftk1_index[DInfo.size] == -1) DInfo.rftk1_MassHypo[DInfo.size] = D0_MASS;
 
         if(tktkCands.size()>2){
             DInfo.rftk3_mass[DInfo.size]  = tktk_4vecs[2].Mag();
@@ -2163,8 +2179,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.rftk3_eta[DInfo.size]   = tktk_4vecs[2].Eta();
             DInfo.rftk3_phi[DInfo.size]   = tktk_4vecs[2].Phi();
             DInfo.rftk3_index[DInfo.size] = pushbackTrkIdx[2];
-            if( fabs(tktk_4vecs[2].Mag()-PION_MASS) < fabs(tktk_4vecs[2].Mag()-KAON_MASS) ) DInfo.rftk3_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk3_MassHypo[DInfo.size] = 321;
+            DInfo.rftk3_MassHypo[DInfo.size] = pushbackTrkMassHypo[2];
         }
         if(tktkCands.size()>3){
             DInfo.rftk4_mass[DInfo.size]  = tktk_4vecs[3].Mag();
@@ -2172,8 +2187,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.rftk4_eta[DInfo.size]   = tktk_4vecs[3].Eta();
             DInfo.rftk4_phi[DInfo.size]   = tktk_4vecs[3].Phi();
             DInfo.rftk4_index[DInfo.size] = pushbackTrkIdx[3];
-            if( fabs(tktk_4vecs[3].Mag()-PION_MASS) < fabs(tktk_4vecs[3].Mag()-KAON_MASS) ) DInfo.rftk4_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk4_MassHypo[DInfo.size] = 321;
+            DInfo.rftk4_MassHypo[DInfo.size] = pushbackTrkMassHypo[3];
         }
         if(tktkCands.size()>4){
             DInfo.rftk5_mass[DInfo.size]  = tktk_4vecs[4].Mag();
@@ -2181,8 +2195,7 @@ void Dfinder::BranchOutNTk(//input 2~4 tracks
             DInfo.rftk5_eta[DInfo.size]   = tktk_4vecs[4].Eta();
             DInfo.rftk5_phi[DInfo.size]   = tktk_4vecs[4].Phi();
             DInfo.rftk5_index[DInfo.size] = pushbackTrkIdx[4];
-            if( fabs(tktk_4vecs[4].Mag()-PION_MASS) < fabs(tktk_4vecs[4].Mag()-KAON_MASS) ) DInfo.rftk5_MassHypo[DInfo.size] = 211;
-            else DInfo.rftk5_MassHypo[DInfo.size] = 321;
+            DInfo.rftk5_MassHypo[DInfo.size] = pushbackTrkMassHypo[4];
         }
 
         DInfo.type[DInfo.size] = Dchannel_number;
