@@ -133,6 +133,12 @@ class Dfinder : public edm::EDAnalyzer
         Float_t __Dtrk1Dxy_Over_Dtrk1D0Err;
         Float_t __DRestrk1Dxy_Over_DRestrk1D0Err;
         Float_t __DRestrk2Dxy_Over_DRestrk2D0Err;
+        Float_t __DtktkRes_unfitted_angleToTrk1;
+        Float_t __Dtrk1thetastar_uf;
+        Float_t __DRestrk1thetastar_uf;
+        Float_t __DRestrk2thetastar_uf;
+        Float_t __DtktkRes_unfitter_ptAsymToTrk1;
+        Float_t __DtktkRes_unfitted_pt;
 
         //A tag for any use at your wish
         int codeCat_;
@@ -246,6 +252,12 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
         reader->AddVariable("Dtrk1Dxy/Dtrk1D0Err",                       &__Dtrk1Dxy_Over_Dtrk1D0Err);
         reader->AddVariable("DRestrk1Dxy/DRestrk1D0Err",                 &__DRestrk1Dxy_Over_DRestrk1D0Err);
         reader->AddVariable("DRestrk2Dxy/DRestrk2D0Err",                 &__DRestrk2Dxy_Over_DRestrk2D0Err);
+        reader->AddVariable("DtktkRes_unfitted_angleToTrk1",             &__DtktkRes_unfitted_angleToTrk1);
+        reader->AddVariable("Dtrk1thetastar_uf",                         &__Dtrk1thetastar_uf);
+        reader->AddVariable("DRestrk1thetastar_uf",                      &__DRestrk1thetastar_uf);
+        reader->AddVariable("DRestrk2thetastar_uf",                      &__DRestrk2thetastar_uf);
+        reader->AddVariable("DtktkRes_unfitter_ptAsymToTrk1",            &__DtktkRes_unfitter_ptAsymToTrk1);
+        reader->AddVariable("DtktkRes_unfitted_pt",                      &__DtktkRes_unfitted_pt);
         reader->BookMVA( tmvaMethodName_, tmvaXmlFile_ );
     }
 
@@ -1589,6 +1601,9 @@ void Dfinder::TkCombinationResFast(
     TLorentzVector v4_tk1, v4_tk2, v4_tk3, v4_tk4, v4_tk5;// all tracks
     TLorentzVector v4_Restk1, v4_Restk2, v4_Restk3, v4_Restk4, v4_Restk5;// resonance tracks
     TLorentzVector v4_NonRestk1, v4_NonRestk2, v4_NonRestk3, v4_NonRestk4, v4_NonRestk5;// non-resonance tracks, i.e., all - resonance tracks
+    TVector3 *Sumboost = new TVector3();
+    TVector3 *Sum3Vec = new TVector3();
+
 	for(int tk1idx = 0; tk1idx < (int)isNeededTrackIdx.size(); tk1idx++){
         v4_D.Clear(); v4_Res.Clear();
         tk1_hindex = isNeededTrackIdx[tk1idx];
@@ -1693,6 +1708,20 @@ void Dfinder::TkCombinationResFast(
                         __Dtrk1Dxy_Over_Dtrk1D0Err                       = input_tracks[tk3_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk3_hindex].track()->d0Error();
                         __DRestrk1Dxy_Over_DRestrk1D0Err                 = input_tracks[tk1_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk1_hindex].track()->d0Error();
                         __DRestrk2Dxy_Over_DRestrk2D0Err                 = input_tracks[tk2_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk2_hindex].track()->d0Error();
+                        __DtktkRes_unfitted_angleToTrk1 = v4_Res.Angle(v4_tk3.Vect());
+                        Sumboost->SetXYZ(v4_D.BoostVector().X(), v4_D.BoostVector().Y(), v4_D.BoostVector().Z());
+                        Sum3Vec->SetXYZ(v4_D.Vect().X(), v4_D.Vect().Y(), v4_D.Vect().Z());
+                        v4_tk3.Boost(-*Sumboost);
+                        __Dtrk1thetastar_uf = v4_tk3.Angle(*Sum3Vec);
+                        v4_tk3.SetXYZM(input_tracks[tk3_hindex].px(),input_tracks[tk3_hindex].py(),input_tracks[tk3_hindex].pz(),fabs(TkMassCharge[2].first));
+                        v4_tk1.Boost(-*Sumboost);
+                        __DRestrk1thetastar_uf = v4_tk1.Angle(*Sum3Vec);
+                        v4_tk1.SetXYZM(input_tracks[tk1_hindex].px(),input_tracks[tk1_hindex].py(),input_tracks[tk1_hindex].pz(),fabs(TkMassCharge[0].first));
+                        v4_tk2.Boost(-*Sumboost);
+                        __DRestrk2thetastar_uf = v4_tk2.Angle(*Sum3Vec);
+                        v4_tk2.SetXYZM(input_tracks[tk2_hindex].px(),input_tracks[tk2_hindex].py(),input_tracks[tk2_hindex].pz(),fabs(TkMassCharge[1].first));
+                        __DtktkRes_unfitted_pt = v4_Res.Pt();
+                        __DtktkRes_unfitter_ptAsymToTrk1 = (__DtktkRes_unfitted_pt-__Dtrk1Pt)/(__DtktkRes_unfitted_pt+__Dtrk1Pt);
                         tmvaValue = reader->EvaluateMVA(tmvaMethodName_);
                         if(tmvaValue < tmvaCutValue_) continue;
                     }                      
