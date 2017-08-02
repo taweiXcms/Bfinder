@@ -1697,7 +1697,7 @@ void Dfinder::TkCombinationResFast(
                     DMassCutLevel[Dchannel_number-1]->Fill(2);
                     
                     //Special TMVA reader for 3 tracks channels
-                    if(doTmvaCut_){
+                    if(doTmvaCut_ && v4_D.Pt()<7){
                         float tmvaValue = -999.;
                         __Dtrk1Pt                                        = input_tracks[tk3_hindex].pt();
                         __DRestrk1Pt                                     = input_tracks[tk1_hindex].pt();
