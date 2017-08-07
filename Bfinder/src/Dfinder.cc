@@ -166,6 +166,8 @@ class Dfinder : public edm::EDAnalyzer
         //How many channel
         static int const Nchannel = 20;
         std::vector<TH1F*> DMassCutLevel;
+        // mva values
+        TH1F* MVAValues;
         
 };//}}}
 
@@ -256,18 +258,19 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
         reader->AddVariable("Dtrk1thetastar_uf",                         &__Dtrk1thetastar_uf);
         reader->AddVariable("DRestrk1thetastar_uf",                      &__DRestrk1thetastar_uf);
         reader->AddVariable("DRestrk2thetastar_uf",                      &__DRestrk2thetastar_uf);
-        reader->AddVariable("DtktkRes_unfitter_ptAsymToTrk1",            &__DtktkRes_unfitter_ptAsymToTrk1);
-        reader->AddVariable("DtktkRes_unfitted_pt",                      &__DtktkRes_unfitted_pt);
+//        reader->AddVariable("DtktkRes_unfitter_ptAsymToTrk1",            &__DtktkRes_unfitter_ptAsymToTrk1);
+//        reader->AddVariable("DtktkRes_unfitted_pt",                      &__DtktkRes_unfitted_pt);
         reader->BookMVA( tmvaMethodName_, tmvaXmlFile_ );
     }
 
     codeCat_ = iConfig.getParameter<int>("codeCat");
 
-    TrackCutLevel       = fs->make<TH1F>("TrackCutLevel"    , "TrackCutLevel"   , 10, 0, 10);
+    TrackCutLevel= fs->make<TH1F>("TrackCutLevel", "TrackCutLevel", 10, 0, 10);
     for(unsigned int i = 0; i < Dchannel_.size(); i++){
         TH1F* DMassCutLevel_temp      = fs->make<TH1F>(TString::Format("DMassCutLevel_i")   ,TString::Format("DMassCutLevel_i")  , 10, 0, 10);
         DMassCutLevel.push_back(DMassCutLevel_temp);
     }
+    MVAValues = fs->make<TH1F>("MVAValues", "MVAValues", 200, 0, 1);
 }//}}}
 
 Dfinder::~Dfinder()
@@ -1723,6 +1726,7 @@ void Dfinder::TkCombinationResFast(
                         __DtktkRes_unfitted_pt = v4_Res.Pt();
                         __DtktkRes_unfitter_ptAsymToTrk1 = (__DtktkRes_unfitted_pt-__Dtrk1Pt)/(__DtktkRes_unfitted_pt+__Dtrk1Pt);
                         tmvaValue = reader->EvaluateMVA(tmvaMethodName_);
+                        MVAValues->Fill(tmvaValue);
                         if(tmvaValue < tmvaCutValue_) continue;
                     }                      
 
