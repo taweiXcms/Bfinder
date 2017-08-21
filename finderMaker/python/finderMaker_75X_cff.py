@@ -230,9 +230,10 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
         doDntupleSkim = cms.bool(False),
         printInfo = cms.bool(True),
         readDedx = cms.bool(True),
-        tmvaXmlFile = cms.string("TMVA_MLP_pp_5_7_varStage3.weights.xml"),
-        tmvaMethodName = cms.string("MLP method"),
-        tmvaCutValue = cms.double(0.0),
+        tmvaXmlFile = cms.vstring("TMVA_MLP_pp_5_7_varStage3.weights.xml"),
+        tmvaMethodName = cms.vstring("MLP method"),
+		tmvaPtInteval = cms.vdouble(5.,7.),
+        tmvaCutValue = cms.vdouble(0.0),
         doTmvaCut = cms.bool(False),
 		codeCat = cms.int32(-1),
 	)

@@ -118,11 +118,12 @@ class Dfinder : public edm::EDAnalyzer
         edm::EDGetTokenT< std::vector<float> > MVAMapLabelpA_;
         edm::InputTag MVAMapLabelInputTag_;
 
-        //Special TMVA reader for 3 tracks channels
-        TMVA::Reader *reader;
-        string tmvaXmlFile_;
-        string tmvaMethodName_;  
-        double tmvaCutValue_;
+        //Special TMVA reader for 3 tracks channels, 
+        std::vector<TMVA::Reader*> reader;
+        std::vector<string> tmvaXmlFile_;
+        std::vector<string> tmvaMethodName_;  
+        std::vector<double> tmvaCutValue_;
+        std::vector<double> tmvaPtInteval_;
         bool doTmvaCut_;
         Float_t __Dtrk1Pt;
         Float_t __DRestrk1Pt;
@@ -167,7 +168,7 @@ class Dfinder : public edm::EDAnalyzer
         static int const Nchannel = 20;
         std::vector<TH1F*> DMassCutLevel;
         // mva values
-        TH1F* MVAValues;
+        std::vector<TH1F*> TMVADisVal;
         
 };//}}}
 
@@ -241,26 +242,31 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     //Special TMVA reader for 3 tracks channels
     doTmvaCut_ = iConfig.getParameter<bool>("doTmvaCut");
     if(doTmvaCut_){
-        reader = new TMVA::Reader( "!Color:!Silent" );
-        tmvaXmlFile_ = iConfig.getParameter<string>("tmvaXmlFile");
-        tmvaMethodName_ = iConfig.getParameter<string>("tmvaMethodName");
-        tmvaCutValue_ = iConfig.getParameter<double>("tmvaCutValue");
-        reader->AddVariable("Dtrk1Pt",                                   &__Dtrk1Pt);
-        reader->AddVariable("DRestrk1Pt",                                &__DRestrk1Pt);
-        reader->AddVariable("DRestrk2Pt",                                &__DRestrk2Pt);
-        reader->AddVariable("Dtrk1Eta",                                  &__Dtrk1Eta);
-        reader->AddVariable("DRestrk1Eta",                               &__DRestrk1Eta);
-        reader->AddVariable("DRestrk2Eta",                               &__DRestrk2Eta);
-        reader->AddVariable("Dtrk1Dxy/Dtrk1D0Err",                       &__Dtrk1Dxy_Over_Dtrk1D0Err);
-        reader->AddVariable("DRestrk1Dxy/DRestrk1D0Err",                 &__DRestrk1Dxy_Over_DRestrk1D0Err);
-        reader->AddVariable("DRestrk2Dxy/DRestrk2D0Err",                 &__DRestrk2Dxy_Over_DRestrk2D0Err);
-        reader->AddVariable("DtktkRes_unfitted_angleToTrk1",             &__DtktkRes_unfitted_angleToTrk1);
-        reader->AddVariable("Dtrk1thetastar_uf",                         &__Dtrk1thetastar_uf);
-        reader->AddVariable("DRestrk1thetastar_uf",                      &__DRestrk1thetastar_uf);
-        reader->AddVariable("DRestrk2thetastar_uf",                      &__DRestrk2thetastar_uf);
-//        reader->AddVariable("DtktkRes_unfitter_ptAsymToTrk1",            &__DtktkRes_unfitter_ptAsymToTrk1);
-//        reader->AddVariable("DtktkRes_unfitted_pt",                      &__DtktkRes_unfitted_pt);
-        reader->BookMVA( tmvaMethodName_, tmvaXmlFile_ );
+        tmvaXmlFile_ = iConfig.getParameter<std::vector<string> >("tmvaXmlFile");
+        tmvaMethodName_ = iConfig.getParameter<std::vector<string> >("tmvaMethodName");
+        tmvaCutValue_ = iConfig.getParameter<std::vector<double> >("tmvaCutValue");
+        tmvaPtInteval_ = iConfig.getParameter<std::vector<double> >("tmvaPtInteval");
+        reader.reserve(4);//reserve 4 readers, increase this if needed
+        for(int r=0; r<int(tmvaXmlFile_.size()); r++){
+            reader.push_back(new TMVA::Reader( "!Color:!Silent" ));
+            reader[r]->AddVariable("Dtrk1Pt",                                   &__Dtrk1Pt);
+            reader[r]->AddVariable("DRestrk1Pt",                                &__DRestrk1Pt);
+            reader[r]->AddVariable("DRestrk2Pt",                                &__DRestrk2Pt);
+            reader[r]->AddVariable("Dtrk1Dxy/Dtrk1D0Err",                       &__Dtrk1Dxy_Over_Dtrk1D0Err);
+            reader[r]->AddVariable("DRestrk1Dxy/DRestrk1D0Err",                 &__DRestrk1Dxy_Over_DRestrk1D0Err);
+            reader[r]->AddVariable("DRestrk2Dxy/DRestrk2D0Err",                 &__DRestrk2Dxy_Over_DRestrk2D0Err);
+            //reader[r]->AddVariable("Dtrk1Eta",                                  &__Dtrk1Eta);
+            //reader[r]->AddVariable("DRestrk1Eta",                               &__DRestrk1Eta);
+            //reader[r]->AddVariable("DRestrk2Eta",                               &__DRestrk2Eta);
+            //reader[r]->AddVariable("DtktkRes_unfitted_angleToTrk1",             &__DtktkRes_unfitted_angleToTrk1);
+            //reader[r]->AddVariable("Dtrk1thetastar_uf",                         &__Dtrk1thetastar_uf);
+            //reader[r]->AddVariable("DRestrk1thetastar_uf",                      &__DRestrk1thetastar_uf);
+            //reader[r]->AddVariable("DRestrk2thetastar_uf",                      &__DRestrk2thetastar_uf);
+            //reader[r]->AddVariable("DtktkRes_unfitter_ptAsymToTrk1",            &__DtktkRes_unfitter_ptAsymToTrk1);
+            //reader[r]->AddVariable("DtktkRes_unfitted_pt",                      &__DtktkRes_unfitted_pt);
+            reader[r]->BookMVA( tmvaMethodName_[r], tmvaXmlFile_[r]);
+            TMVADisVal.push_back(fs->make<TH1F>(Form("TMVADisVal%d",r), Form("TMVADisVal%d",r), 200, 0, 1));
+        }
     }
 
     codeCat_ = iConfig.getParameter<int>("codeCat");
@@ -270,7 +276,6 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
         TH1F* DMassCutLevel_temp      = fs->make<TH1F>(TString::Format("DMassCutLevel_i")   ,TString::Format("DMassCutLevel_i")  , 10, 0, 10);
         DMassCutLevel.push_back(DMassCutLevel_temp);
     }
-    MVAValues = fs->make<TH1F>("MVAValues", "MVAValues", 200, 0, 1);
 }//}}}
 
 Dfinder::~Dfinder()
@@ -310,6 +315,16 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     || (Dchannel_.size() != ResToNonRes_PtAsym_max_.size())
     ){
         std::cout<<"Unmatched input parameter vector size, EXIT"<<std::endl;
+        return;
+    }
+
+    if( doTmvaCut_ &&
+        ( (tmvaXmlFile_.size() != tmvaMethodName_.size())
+        ||(tmvaXmlFile_.size() != tmvaCutValue_.size())
+        ||(tmvaXmlFile_.size() != tmvaPtInteval_.size()-1)
+        )
+    ){
+        std::cout<<"Unmatched TMVA method vector size, EXIT"<<std::endl;
         return;
     }
 
@@ -1700,34 +1715,41 @@ void Dfinder::TkCombinationResFast(
                     DMassCutLevel[Dchannel_number-1]->Fill(2);
                     
                     //Special TMVA reader for 3 tracks channels
-                    if(doTmvaCut_ && v4_D.Pt()<7){
-                        float tmvaValue = -999.;
-                        __Dtrk1Pt                                        = input_tracks[tk3_hindex].pt();
-                        __DRestrk1Pt                                     = input_tracks[tk1_hindex].pt();
-                        __DRestrk2Pt                                     = input_tracks[tk2_hindex].pt();
-                        __Dtrk1Eta                                       = input_tracks[tk3_hindex].eta();
-                        __DRestrk1Eta                                    = input_tracks[tk1_hindex].eta();
-                        __DRestrk2Eta                                    = input_tracks[tk2_hindex].eta();
-                        __Dtrk1Dxy_Over_Dtrk1D0Err                       = input_tracks[tk3_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk3_hindex].track()->d0Error();
-                        __DRestrk1Dxy_Over_DRestrk1D0Err                 = input_tracks[tk1_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk1_hindex].track()->d0Error();
-                        __DRestrk2Dxy_Over_DRestrk2D0Err                 = input_tracks[tk2_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk2_hindex].track()->d0Error();
-                        __DtktkRes_unfitted_angleToTrk1 = v4_Res.Angle(v4_tk3.Vect());
-                        Sumboost->SetXYZ(v4_D.BoostVector().X(), v4_D.BoostVector().Y(), v4_D.BoostVector().Z());
-                        Sum3Vec->SetXYZ(v4_D.Vect().X(), v4_D.Vect().Y(), v4_D.Vect().Z());
-                        v4_tk3.Boost(-*Sumboost);
-                        __Dtrk1thetastar_uf = v4_tk3.Angle(*Sum3Vec);
-                        v4_tk3.SetXYZM(input_tracks[tk3_hindex].px(),input_tracks[tk3_hindex].py(),input_tracks[tk3_hindex].pz(),fabs(TkMassCharge[2].first));
-                        v4_tk1.Boost(-*Sumboost);
-                        __DRestrk1thetastar_uf = v4_tk1.Angle(*Sum3Vec);
-                        v4_tk1.SetXYZM(input_tracks[tk1_hindex].px(),input_tracks[tk1_hindex].py(),input_tracks[tk1_hindex].pz(),fabs(TkMassCharge[0].first));
-                        v4_tk2.Boost(-*Sumboost);
-                        __DRestrk2thetastar_uf = v4_tk2.Angle(*Sum3Vec);
-                        v4_tk2.SetXYZM(input_tracks[tk2_hindex].px(),input_tracks[tk2_hindex].py(),input_tracks[tk2_hindex].pz(),fabs(TkMassCharge[1].first));
-                        __DtktkRes_unfitted_pt = v4_Res.Pt();
-                        __DtktkRes_unfitter_ptAsymToTrk1 = (__DtktkRes_unfitted_pt-__Dtrk1Pt)/(__DtktkRes_unfitted_pt+__Dtrk1Pt);
-                        tmvaValue = reader->EvaluateMVA(tmvaMethodName_);
-                        MVAValues->Fill(tmvaValue);
-                        if(tmvaValue < tmvaCutValue_) continue;
+                    
+                    if(doTmvaCut_){
+                        bool tmvaPass = true;
+                        for(int r=0; r<int(tmvaXmlFile_.size()); r++){
+                            if(v4_D.Pt() > tmvaPtInteval_[r] && v4_D.Pt() < tmvaPtInteval_[r+1]){
+                                float tmvaValue = -999.;
+                                __Dtrk1Pt                                        = input_tracks[tk3_hindex].pt();
+                                __DRestrk1Pt                                     = input_tracks[tk1_hindex].pt();
+                                __DRestrk2Pt                                     = input_tracks[tk2_hindex].pt();
+                                __Dtrk1Dxy_Over_Dtrk1D0Err                       = input_tracks[tk3_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk3_hindex].track()->d0Error();
+                                __DRestrk1Dxy_Over_DRestrk1D0Err                 = input_tracks[tk1_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk1_hindex].track()->d0Error();
+                                __DRestrk2Dxy_Over_DRestrk2D0Err                 = input_tracks[tk2_hindex].track()->dxy(thePrimaryV.position())/input_tracks[tk2_hindex].track()->d0Error();
+                                __Dtrk1Eta                                       = input_tracks[tk3_hindex].eta();
+                                __DRestrk1Eta                                    = input_tracks[tk1_hindex].eta();
+                                __DRestrk2Eta                                    = input_tracks[tk2_hindex].eta();
+                                __DtktkRes_unfitted_angleToTrk1 = v4_Res.Angle(v4_tk3.Vect());
+                                Sumboost->SetXYZ(v4_D.BoostVector().X(), v4_D.BoostVector().Y(), v4_D.BoostVector().Z());
+                                Sum3Vec->SetXYZ(v4_D.Vect().X(), v4_D.Vect().Y(), v4_D.Vect().Z());
+                                v4_tk3.Boost(-*Sumboost);
+                                __Dtrk1thetastar_uf = v4_tk3.Angle(*Sum3Vec);
+                                v4_tk3.SetXYZM(input_tracks[tk3_hindex].px(),input_tracks[tk3_hindex].py(),input_tracks[tk3_hindex].pz(),fabs(TkMassCharge[2].first));
+                                v4_tk1.Boost(-*Sumboost);
+                                __DRestrk1thetastar_uf = v4_tk1.Angle(*Sum3Vec);
+                                v4_tk1.SetXYZM(input_tracks[tk1_hindex].px(),input_tracks[tk1_hindex].py(),input_tracks[tk1_hindex].pz(),fabs(TkMassCharge[0].first));
+                                v4_tk2.Boost(-*Sumboost);
+                                __DRestrk2thetastar_uf = v4_tk2.Angle(*Sum3Vec);
+                                v4_tk2.SetXYZM(input_tracks[tk2_hindex].px(),input_tracks[tk2_hindex].py(),input_tracks[tk2_hindex].pz(),fabs(TkMassCharge[1].first));
+                                __DtktkRes_unfitted_pt = v4_Res.Pt();
+                                __DtktkRes_unfitter_ptAsymToTrk1 = (__DtktkRes_unfitted_pt-__Dtrk1Pt)/(__DtktkRes_unfitted_pt+__Dtrk1Pt);
+                                tmvaValue = reader[r]->EvaluateMVA(tmvaMethodName_[r]);
+                                TMVADisVal[r]->Fill(tmvaValue);
+                                if(tmvaValue < tmvaCutValue_[r]) tmvaPass = false;
+                            }
+                        }
+                        if(!tmvaPass) continue;
                     }                      
 
                     selectedTkhidx.push_back(tk1_hindex);
