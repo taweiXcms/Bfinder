@@ -322,11 +322,11 @@ if PbPbBD0PiMB and optSum is 1:
     process.Dfinder.ResToNonRes_PtAsym_max = cms.vdouble(1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.)
     process.Dfinder.ResToNonRes_PtAsym_min = cms.vdouble(-1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.)
     process.Dfinder.Dchannel = cms.vint32(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
-    process.Dfinder.tmvaXmlFile = cms.vstring("TMVA_MLP_pp_5_7_varStage3.weights.xml")
-    process.Dfinder.tmvaMethodName = cms.vstring("MLP method")
-    process.Dfinder.tmvaCutValue = cms.vdouble(0.01)
-    process.Dfinder.tmvaPtInteval = cms.vdouble(5., 7.)
-    process.Dfinder.doTmvaCut = cms.bool(False)
+    process.Dfinder.tmvaXmlFile = cms.vstring("TMVA_MLP_pp_5_7_varStage2.weights.xml", "TMVA_MLP_pp_7_10_varStage2.weights.xml", "TMVA_MLP_pp_7_10_varStage2.weights.xml")
+    process.Dfinder.tmvaMethodName = cms.vstring("MLP method", "MLP method", "MLP method")
+    process.Dfinder.tmvaCutValue = cms.vdouble(0.465245, 0.658840, 0.409983)#MLP 0.005, 0.01, 0.1
+    process.Dfinder.tmvaPtInteval = cms.vdouble(0., 7., 10., 15.)
+    process.Dfinder.doTmvaCut = cms.bool(True)
     process.Dfinder.makeDntuple = cms.bool(False)
     process.p = cms.Path(process.DfinderSequence)
 
