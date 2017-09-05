@@ -163,6 +163,8 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
     #process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
     #process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
 process.hltAna = cms.Path(process.hltanalysis)
+process.load('HeavyIonsAnalysis.EventAnalysis.hltobject_PbPb_cfi')
+process.hltObj = cms.Path(process.hltobject)
 
 ### Set basic filter
 # Common offline event selection

@@ -134,7 +134,6 @@ process.load('HeavyIonsAnalysis.EventAnalysis.hievtanalyzer_data_cfi')
 process.hiEvtAnalyzer.Vertex = cms.InputTag("offlinePrimaryVertices")
 process.hiEvtAnalyzer.doCentrality = cms.bool(False) 
 process.hiEvtAnalyzer.doEvtPlane = cms.bool(False)
-process.load('HeavyIonsAnalysis.EventAnalysis.hltanalysis_cff')
 process.evtAna = cms.Path(process.hiEvtAnalyzer)
 if runOnMC:
 	process.hiEvtAnalyzer.doMC = cms.bool(True)
@@ -151,6 +150,8 @@ process.hltanalysis.OfflinePrimaryVertices0 = cms.InputTag(VtxLabel)
     #process.hltanalysis.hltresults = cms.InputTag("TriggerResults","","HISIGNAL")
     #process.hltanalysis.l1GtObjectMapRecord = cms.InputTag("hltL1GtObjectMap::HISIGNAL")
 process.hltAna = cms.Path(process.hltanalysis)
+process.load('HeavyIonsAnalysis.EventAnalysis.hltobject_cfi')
+process.hltObj = cms.Path(process.hltobject)
 
 ### Set basic filter
 process.load('HeavyIonsAnalysis.JetAnalysis.EventSelection_cff')
