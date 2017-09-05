@@ -1,13 +1,13 @@
 To setup Bfinder
 =====
 
-Recommended using `CMSSW_7_5_8_patch3` for 2015 5TeV pp and PbPb data and `CMSSW_8_0_22` for 2016 pPb data
+Branch for CMSSW_9XX Recommended using `CMSSW_9_2_3`
 
 Check forest version in: https://github.com/CmsHI/cmssw/tree/forest_CMSSW_7_5_8_patch3/HeavyIonsAnalysis
 
 ```
 git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
-git clone -b Dfinder https://github.com/taweiXcms/Bfinder.git
+git clone -b Dfinder_9XX https://github.com/taweiXcms/Bfinder.git
 ```
 
 To add B/D finder to forest, paste the following block:
