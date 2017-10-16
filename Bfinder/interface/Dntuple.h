@@ -837,35 +837,35 @@ class DntupleBranches
         Gtk1pt[gsize] = -1;
         Gtk1eta[gsize] = -20;
         Gtk1phi[gsize] = -20;
-        Gtk1y[gsize] = -1;
+        Gtk1y[gsize] = -20;
         Gtk2pt[gsize] = -1;
         Gtk2eta[gsize] = -20;
         Gtk2phi[gsize] = -20;
-        Gtk2y[gsize] = -1;
+        Gtk2y[gsize] = -20;
         Gtk3pt[gsize] = -1;
         Gtk3eta[gsize] = -20;
         Gtk3phi[gsize] = -20;
-        Gtk3y[gsize] = -1;
+        Gtk3y[gsize] = -20;
         Gtk4pt[gsize] = -1;
         Gtk4eta[gsize] = -20;
         Gtk4phi[gsize] = -20;
-        Gtk4y[gsize] = -1;
+        Gtk4y[gsize] = -20;
         GRestk1pt[gsize] = -1;
         GRestk1eta[gsize] = -20;
         GRestk1phi[gsize] = -20;
-        GRestk1y[gsize] = -1;
+        GRestk1y[gsize] = -20;
         GRestk2pt[gsize] = -1;
         GRestk2eta[gsize] = -20;
         GRestk2phi[gsize] = -20;
-        GRestk2y[gsize] = -1;
+        GRestk2y[gsize] = -20;
         GRestk3pt[gsize] = -1;
         GRestk3eta[gsize] = -20;
         GRestk3phi[gsize] = -20;
-        GRestk3y[gsize] = -1;
+        GRestk3y[gsize] = -20;
         GRestk4pt[gsize] = -1;
         GRestk4eta[gsize] = -20;
         GRestk4phi[gsize] = -20;
-        GRestk4y[gsize] = -1;
+        GRestk4y[gsize] = -20;
         if(GisSignal[gsize]==1||GisSignal[gsize]==2||GisSignal[gsize]==3||GisSignal[gsize]==4||GisSignal[gsize]==5||GisSignal[gsize]==6)
           {
             GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];//all daughers should be from the same vertex, can be double checked here
@@ -1087,7 +1087,7 @@ class DntupleBranches
     DRestrk1Eta[typesize] = -20;
     DRestrk1Phi[typesize] = -20;
     DRestrk1P[typesize] = -1;
-    DRestrk1Y[typesize] = -1;
+    DRestrk1Y[typesize] = -20;
     DRestrk1MassHypo[typesize] = -1;
     DRestrk1Dz[typesize] = -1;
     DRestrk1Dxy[typesize] = -1;
@@ -1105,7 +1105,7 @@ class DntupleBranches
     DRestrk2Eta[typesize] = -20;
     DRestrk2Phi[typesize] = -20;
     DRestrk2P[typesize] = -1;
-    DRestrk2Y[typesize] = -1;
+    DRestrk2Y[typesize] = -20;
     DRestrk2MassHypo[typesize] = -1;
     DRestrk2Dz[typesize] = -1;
     DRestrk2Dxy[typesize] = -1;
@@ -1123,7 +1123,7 @@ class DntupleBranches
     DRestrk3Eta[typesize] = -20;
     DRestrk3Phi[typesize] = -20;
     DRestrk3P[typesize] = -1;
-    DRestrk3Y[typesize] = -1;
+    DRestrk3Y[typesize] = -20;
     DRestrk3MassHypo[typesize] = -1;
     DRestrk3Dz[typesize] = -1;
     DRestrk3Dxy[typesize] = -1;
@@ -1141,7 +1141,7 @@ class DntupleBranches
     DRestrk4Eta[typesize] = -20;
     DRestrk4Phi[typesize] = -20;
     DRestrk4P[typesize] = -1;
-    DRestrk4Y[typesize] = -1;
+    DRestrk4Y[typesize] = -20;
     DRestrk4MassHypo[typesize] = -1;
     DRestrk4Dz[typesize] = -1;
     DRestrk4Dxy[typesize] = -1;
@@ -1227,7 +1227,7 @@ class DntupleBranches
             Dtrk3PtErr[typesize] = 0;
             Dtrk3EtaErr[typesize] = 0;
             Dtrk3PhiErr[typesize] = 0;
-            Dtrk3Y[typesize] = -1;
+            Dtrk3Y[typesize] = -20;
             Dtrk3Dz[typesize] = -1;
             Dtrk3Dxy[typesize] = -1;
             Dtrk3D0[typesize] = -1;
@@ -1254,7 +1254,7 @@ class DntupleBranches
             Dtrk4PtErr[typesize] = 0;
             Dtrk4EtaErr[typesize] = 0;
             Dtrk4PhiErr[typesize] = 0;
-            Dtrk4Y[typesize] = -1;
+            Dtrk4Y[typesize] = -20;
             Dtrk4Dz[typesize] = -1;
             Dtrk4Dxy[typesize] = -1;
             Dtrk4D0[typesize] = -1;
@@ -1313,7 +1313,7 @@ class DntupleBranches
             Dtrk4PtErr[typesize] = 0;
             Dtrk4EtaErr[typesize] = 0;
             Dtrk4PhiErr[typesize] = 0;
-            Dtrk4Y[typesize] = -1;
+            Dtrk4Y[typesize] = -20;
             Dtrk4Dz[typesize] = -1;
             Dtrk4Dxy[typesize] = -1;
             Dtrk4D0[typesize] = -1;
@@ -1467,7 +1467,7 @@ class DntupleBranches
         Dtrk2PtErr[typesize] = 0;
         Dtrk2EtaErr[typesize] = 0;
         Dtrk2PhiErr[typesize] = 0;
-        Dtrk2Y[typesize] = -1;
+        Dtrk2Y[typesize] = -20;
         Dtrk2Dz[typesize] = -1;
         Dtrk2Dxy[typesize] = -1;
         Dtrk2D0[typesize] = -1;
@@ -1494,7 +1494,7 @@ class DntupleBranches
         Dtrk3PtErr[typesize] = 0;
         Dtrk3EtaErr[typesize] = 0;
         Dtrk3PhiErr[typesize] = 0;
-        Dtrk3Y[typesize] = -1;
+        Dtrk3Y[typesize] = -20;
         Dtrk3Dz[typesize] = -1;
         Dtrk3Dxy[typesize] = -1;
         Dtrk3D0[typesize] = -1;
@@ -1521,7 +1521,7 @@ class DntupleBranches
         Dtrk4PtErr[typesize] = 0;
         Dtrk4EtaErr[typesize] = 0;
         Dtrk4PhiErr[typesize] = 0;
-        Dtrk4Y[typesize] = -1;
+        Dtrk4Y[typesize] = -20;
         Dtrk4Dz[typesize] = -1;
         Dtrk4Dxy[typesize] = -1;
         Dtrk4D0[typesize] = -1;
@@ -1585,7 +1585,7 @@ class DntupleBranches
         DRestrk3Eta[typesize] = -20;
         DRestrk3Phi[typesize] = -20;
         DRestrk3P[typesize] = -1;
-        DRestrk3Y[typesize] = -1;
+        DRestrk3Y[typesize] = -20;
         DRestrk3thetastar[typesize] = -20;
         DRestrk3Dz[typesize] = -1;
         DRestrk3Dxy[typesize] = -1;
@@ -1602,7 +1602,7 @@ class DntupleBranches
         DRestrk4Eta[typesize] = -20;
         DRestrk4Phi[typesize] = -20;
         DRestrk4P[typesize] = -1;
-        DRestrk4Y[typesize] = -1;
+        DRestrk4Y[typesize] = -20;
         DRestrk4thetastar[typesize] = -20;
         DRestrk4Dz[typesize] = -1;
         DRestrk4Dxy[typesize] = -1;
@@ -1749,7 +1749,7 @@ class DntupleBranches
     Dgenpt[typesize] = -1;
     Dgeneta[typesize] = -20;
     Dgenphi[typesize] = -20;
-    Dgeny[typesize] = -1;
+    Dgeny[typesize] = -20;
     DgenBAncestorpt[typesize] = -99;
     DgenBAncestorpdgId[typesize] = 0;
     DgencollisionId[typesize] = -99;
