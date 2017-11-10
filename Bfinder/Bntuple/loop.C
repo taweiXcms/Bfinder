@@ -5,9 +5,8 @@ using namespace std;
 #include "loop.h"
 
 Bool_t istest = false;
-int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_20151130/finder_pp_merged.root", 
-         TString outfile="test.root", 
-         Bool_t REAL=false, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1,  Bool_t skim=true, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=true)
+bool fillZeroCandEvt = true;
+int loop(TString infile="", TString outfile="", Bool_t REAL=false, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true, Bool_t iseos=false, Bool_t SkimHLTtree=false)
 {
   if(istest)
     {
@@ -19,7 +18,6 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
       checkMatching=true;
       iseos=true;
     }
-
   cout<<endl;
   if(REAL) cout<<"--- Processing - REAL DATA";
   else cout<<"--- Processing - MC";
@@ -98,10 +96,9 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
       hltroot->GetEntry(i);
       skimroot->GetEntry(i);
       hiroot->GetEntry(i);
-      
-      if(i%100000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
+      if(i%1000==0) cout<<setw(7)<<i<<" / "<<endEntries<<endl;
       if(checkMatching)
-	{
+        {
           if(((int)Bf_HLT_Event!=EvtInfo->EvtNo||(int)Bf_HLT_Run!=EvtInfo->RunNo||(int)Bf_HLT_LumiBlock!=EvtInfo->LumiNo) || 
              ((int)Bf_HiTree_Evt!=EvtInfo->EvtNo||(int)Bf_HiTree_Run!=EvtInfo->RunNo||(int)Bf_HiTree_Lumi!=EvtInfo->LumiNo))
             {
@@ -111,12 +108,23 @@ int loop(TString infile="/data/twang/BfinderRun2/DoubleMu/BfinderData_pp_2015113
               cout<<"LumiNo("<<Bf_HLT_LumiBlock<<","<<EvtInfo->LumiNo<<","<<Bf_HiTree_Lumi<<")"<<endl;
               continue;
             }
-	}
-      ntHlt->Fill();
-      ntSkim->Fill();
-      ntHi->Fill();
-      Bntuple->makeNtuple(ifchannel, REAL, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6, nt7);
-      if(!REAL) Bntuple->fillGenTree(ntGen, GenInfo, gskim);
+	    }
+      int Btypesize[8]={0,0,0,0,0,0,0,0};
+      if(!REAL) fillZeroCandEvt = true;// on MC one should not ignore any reco event
+      Bntuple->makeNtuple(ifchannel, Btypesize, REAL, fillZeroCandEvt, skim, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo, nt0, nt1, nt2, nt3, nt5, nt6, nt7);
+
+      bool zeroCand = true;
+      for(int t=0;t<8;t++)
+        {
+          if(Btypesize[t] != 0) zeroCand = false;
+        }
+      if(fillZeroCandEvt || !zeroCand)
+        {
+          ntHlt->Fill();
+          ntSkim->Fill();
+          ntHi->Fill();
+          if(!REAL) Bntuple->fillGenTree(ntGen, GenInfo, gskim);
+        }
     }
   outf->Write();
   cout<<"--- Writing finished"<<endl;

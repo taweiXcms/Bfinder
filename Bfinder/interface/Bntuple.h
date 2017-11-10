@@ -616,13 +616,13 @@ class BntupleBranches
     nt->Branch("Gtk2phi",Gtk2phi,"Gtk2phi[Gsize]/F");
   }
   
-  void makeNtuple(int ifchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6, TTree* nt7)
+  void makeNtuple(int ifchannel[], int Btypesize[], bool REAL, bool fillZeroCandEvt, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6, TTree* nt7)
   {//{{{
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
     TLorentzVector* b4P = new TLorentzVector;
     fillTreeEvt(EvtInfo);
-    int Btypesize[8]={0,0,0,0,0,0,0,0};
+    bool zeroCand = true;
     for(int t=0;t<7;t++)
       {
         int tidx = t-1;
@@ -638,9 +638,8 @@ class BntupleBranches
               {
                 if(skim)
                   {
-                    //if(BInfo->pt[j]<3.) continue;
-                    //if(BInfo->pt[j]<10.) continue;
                     if(!( (BInfo->pt[j] > 7. && BInfo->pt[j] < 10. && BInfo->svpvDistance[j]/BInfo->svpvDisErr[j] > 5.5) || (BInfo->pt[j] > 10. && BInfo->svpvDistance[j]/BInfo->svpvDisErr[j] > 3.5) )) continue;
+                    //if(BInfo->pt[j]<15.) continue;
                     if(BInfo->mass[j]<5. || BInfo->mass[j]>6.) continue;
                   }
                 if(BInfo->type[j]==(t+1))
@@ -649,6 +648,8 @@ class BntupleBranches
                     Btypesize[tidx]++;
                   }
               }
+            if(Btypesize[tidx] != 0) zeroCand = false;
+            else continue;
             if(t==0)      nt0->Fill();
             else if(t==1) nt1->Fill();
             else if(t==2) nt2->Fill();
@@ -657,6 +658,7 @@ class BntupleBranches
             else if(t==6) nt6->Fill();
           }
       }
+
     Jsize = 0;
     if(ifchannel[7]==1)
       {
@@ -669,8 +671,31 @@ class BntupleBranches
             fillJpsiTree(bP, bVtx, b4P, j, Btypesize[7], REAL, EvtInfo, VtxInfo, MuonInfo, TrackInfo, BInfo, GenInfo);
             Btypesize[7]++;
           }
-        nt7->Fill();
+        if(Btypesize[7] != 0) 
+          {
+            zeroCand = false;
+            nt7->Fill();
+          }
       }
+
+    Bsize = 0;
+    for(int t=0;t<8;t++)
+      {
+        if(ifchannel[t]==1 && Btypesize[t]==0)
+          {
+            if(!zeroCand || fillZeroCandEvt)
+              {
+                if(t==0)      nt0->Fill();
+                else if(t==1) nt1->Fill();
+                else if(t==2) nt2->Fill();
+                else if(t==4) nt3->Fill();
+                else if(t==5) nt5->Fill();
+                else if(t==6) nt6->Fill();
+                else if(t==7) nt7->Fill();
+              }
+          }
+      }
+
   }//}}}
   
   void fillGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
