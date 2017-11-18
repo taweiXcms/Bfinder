@@ -28,11 +28,12 @@ ivars.parseArguments()# get and parse the command line arguments
 ########## MUST CUSTOMIZE THE FOLLOWING THREE ##########
 ### PbPb B/Dfinder recommended setting, choose only one from them or set all to false and made your own setting
 PbPbBdefault = 0
+PbPbBs = 0
 PbPbDHPdefault = 0
 PbPbDMBdefault = 0
 PbPbBD0PiHP = 0
 PbPbBD0PiMB = 1
-optSum = PbPbBdefault + PbPbDHPdefault + PbPbDMBdefault + PbPbBD0PiHP + PbPbBD0PiMB 
+optSum = PbPbBdefault + PbPbBs + PbPbDHPdefault + PbPbDMBdefault + PbPbBD0PiHP + PbPbBD0PiMB 
 
 ### Run on MC?
 runOnMC = False
@@ -223,7 +224,7 @@ process.Dfinder.Dchannel = cms.vint32(
     0,#RECONSTRUCTION: D0bar(K+pi+pi-pi-)pi- : D-*
 )
 ## PbPb Bfinder setting on DoubleMu
-if PbPbBdefault and optSum is 1:
+if (PbPbBdefault or PbPbBs) and optSum is 1:
     process.Bfinder.tkPtCut = cms.double(0.8)#before fit
     process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
     process.Bfinder.bPtCut = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
@@ -271,6 +272,10 @@ if PbPbBdefault and optSum is 1:
                                                             "hltHIDimuonOpenOSm2p5to4p5L3Filter",
                                                             "hltHIDimuonOpenOSm7to14L3Filter")
     process.Bfinder.makeBntuple = cms.bool(False)
+    if PbPbBs:
+        process.Bfinder.bPtCut = cms.vdouble(0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0)#before fit
+        process.Bfinder.Bchannel = cms.vint32(0, 0, 0, 0, 0, 1, 0)
+        process.Bfinder.doTkPreCut = cms.bool(True)    
     process.p = cms.Path(process.BfinderSequence)
 ## PbPb Dfinder setting on HardProbe
 if PbPbDHPdefault and optSum is 1:

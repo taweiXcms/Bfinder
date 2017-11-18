@@ -4,16 +4,13 @@ from CRABClient.UserUtilities import config
 config = config()
 config.General.transferOutputs = True
 config.General.transferLogs = True
-config.General.requestName = 'BfinderData_pp_20160606_bPt0jpsiPt0tkPt0p5_Bp'
+config.General.requestName = 'BfinderData_pp_20160816_bPt0jpsiPt0tkPt0p5_Bp'
 config.General.workArea = 'crab_projects'
-
 config.JobType.psetName = 'finder_pp_75X_cfg.py'
 config.JobType.pluginName = 'Analysis'
 config.JobType.pyCfgParams = ['noprint']
 config.JobType.outputFiles = ['finder_pp.root']
-
 config.Data.inputDataset = '/DoubleMu/Run2015E-PromptReco-v1/AOD'
-
 config.Data.totalUnits = -1
 config.Data.unitsPerJob = 30000
 #config.Data.inputDBS = 'phys03'
