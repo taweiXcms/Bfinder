@@ -1,34 +1,27 @@
+#!/bin/bash
 ###This is a modification of the default condor submission script for doing submission from the new hidisk2
 ###Initialize your grid certificate before submitting jobs
 ###TA-WEI WANG, 06/08/2017 created
 
-###Plain root .C to be run
-CONFIGFILE="loop.C"
+DATASET=$1
+DESTINATION=$2
+MAXFILES=$3
+LOGDIR=$4
 
 PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
-
-###All the header/related files needed
+CONFIGFILE="loop.C"
 TRANSFERFILE="loop.C,loop.h,Dntuple.h,format.h"
+OUTFILE="ntuple"
 
-###Folder location within which files are to be run
-DATASET=/mnt/hadoop/cms/store/user/twang/DfinderRun2/MinimumBias2/crab_DfinderData_pp_20170423_BtoD0Pi/170425_201429/0000/ 
-
-###Output file location
-DESTINATION=/mnt/hadoop/cms/store/user/tawei_hid2/DntupleData/Dntuple_20170606_MinimumBias2_DfinderData_pp_20170423_BtoD0Pi_Dpt5Dy1Alpha0p6Svpv2Tketa1p5EvtSkim
-
-###Maximum number of files to be run
-MAXFILES=10000
-
-###Log file location and it's name
-LOGDIR=/net/hisrv0001/home/tawei/scratch/hadooplogs
-
-########################## Create subfile ###############################
 rm mylistfinal.txt
 ls $DATASET  | awk '{print "" $0}' | grep .root >> mylistfinal.txt
 
+SRM_PREFIX="/mnt/hadoop/"
+SRM_PATH=${DESTINATION#${SRM_PREFIX}}
+
 if [ ! -d $DESTINATION ]
 then
-	gfal-mkdir -p srm://se01.cmsaf.mit.edu:8443/srm/v2/server?SFN=$DESTINATION
+    gfal-mkdir -p gsiftp://se01.cmsaf.mit.edu:2811/${SRM_PATH}
 fi
 
 if [ ! -d $LOGDIR ]
@@ -36,20 +29,21 @@ then
     mkdir -p $LOGDIR
 fi
 
-dateTime=$(date +%Y%m%d%H%M)
-INFILE=""
-fileCounter=0
+counter=0
 for i in `cat mylistfinal.txt`
 do
-    if [ $fileCounter -ge $MAXFILES ]
+    if [ $counter -ge $MAXFILES ]
     then
 	break
     fi
-    ifexist=`ls $DESTINATION/ntuple_$i`
-    if [ -z $ifexist ]
+    # ifexist=`ls $DESTINATION/ntuple_$i`
+    # if [ -z $ifexist ]
+    # then
+    if [ ! -f ${DESTINATION}/${OUTFILE}_$i ] && [ -f ${DATASET}/$i ]
     then
+        echo -e "\033[38;5;242mSubmitting a job for output\033[0m ${DESTINATION}/${OUTFILE}_$i"
 	infn=`echo $i | awk -F "." '{print $1}'`
-	INFILE="$DATASET$i"
+	INFILE="${DATASET}/$i"
 	
 # make the condor file
 	cat > subfile <<EOF
@@ -74,13 +68,15 @@ transfer_input_files = $TRANSFERFILE,/tmp/$PROXYFILE
 
 Queue
 EOF
-	
+
 ############################ Submit ###############################
-	
+
 #cat subfile
-    condor_submit subfile -pool submit.mit.edu:9615 -name submit.mit.edu -spool
-	mv subfile $LOGDIR/log-${infn}.subfile
-	fileCounter=$((fileCounter+1))
+condor_submit subfile -name submit.mit.edu
+# condor_submit subfile -pool submit.mit.edu:9615 -name submit.mit.edu -spool
+mv subfile $LOGDIR/log-${infn}.subfile
+counter=$((counter+1))
     fi
 done
-echo "Submitted $fileCounter jobs to Condor."
+
+echo -e "Submitted \033[1;36m$counter\033[0m jobs to Condor."
