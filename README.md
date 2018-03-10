@@ -6,8 +6,8 @@ Recommended using `CMSSW_7_5_8_patch3` for 2015 5TeV pp and PbPb data and `CMSSW
 Check forest version in: https://github.com/CmsHI/cmssw/tree/forest_CMSSW_7_5_8_patch3/HeavyIonsAnalysis
 
 ```
-git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
-git clone -b Dfinder https://github.com/taweiXcms/Bfinder.git
+git cms-merge-topic --ssh -u CmsHI:forest_$CMSSW_VERSION
+git clone -b Dfinder git@github.com:taweiXcms/Bfinder.git
 ```
 
 To add B/D finder to forest, paste the following block:
