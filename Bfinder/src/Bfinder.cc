@@ -986,7 +986,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + phi
                             //////////////////////////////////////////////////////////////////////////
                             
-                            TkTk_window = 0.1;
+                            //TkTk_window = 0.1;
+                            //TkTk_window = 0.02;
+                            TkTk_window = 0.015;
+                            //TkTk_window = 0.01;
                             if(Bchannel_[5] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
