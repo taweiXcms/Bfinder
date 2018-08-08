@@ -1051,6 +1051,8 @@ public:
     float  rftk3_MassHypo[MAX_XB];
     float  rftk4_MassHypo[MAX_XB];
     float  rftk5_MassHypo[MAX_XB];
+
+    bool   isSequentialFit[MAX_XB];
    
     void regTree(TTree *root, bool detailMode = false){//{{{
         root->Branch("DInfo.size"             , &size          , "DInfo.size/I"			);
@@ -1126,6 +1128,8 @@ public:
         root->Branch("DInfo.rftk3_MassHypo"   , rftk3_MassHypo    , "DInfo.rftk3_MassHypo[DInfo.size]/F");
         root->Branch("DInfo.rftk4_MassHypo"   , rftk4_MassHypo    , "DInfo.rftk4_MassHypo[DInfo.size]/F");
         root->Branch("DInfo.rftk5_MassHypo"   , rftk5_MassHypo    , "DInfo.rftk5_MassHypo[DInfo.size]/F");
+
+        root->Branch("DInfo.isSequentialFit"  , isSequentialFit   , "DInfo.isSequentialFit[DInfo.size]/O");
 
         if(detailMode){
             root->Branch("DInfo.tktkRes_rftk1_pt"      , tktkRes_rftk1_pt          , "DInfo.tktkRes_rftk1_pt[DInfo.size]/F"     );
@@ -1243,6 +1247,8 @@ public:
         root->SetBranchAddress("DInfo.rftk3_MassHypo"     ,rftk3_MassHypo   	);
         root->SetBranchAddress("DInfo.rftk4_MassHypo"     ,rftk4_MassHypo   	);
         root->SetBranchAddress("DInfo.rftk5_MassHypo"     ,rftk5_MassHypo   	);
+
+        root->SetBranchAddress("DInfo.isSequentialFit"    ,isSequentialFit   	);
 
         if(detailMode){
             root->SetBranchAddress("DInfo.tktkRes_rftk1_pt"        ,tktkRes_rftk1_pt  );
