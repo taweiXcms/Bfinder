@@ -796,7 +796,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
                         //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 11, 0);
                         //}
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, false, 11, 1);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 11, 1);
                     }
 
                     //////////////////////////////////////////////////////////////////////////
@@ -820,7 +820,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //for(unsigned int i = 0; i < PermuVec.size(); i++){
                         //    Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, PermuVec[i], D0_MASS, 0.1, false, true, 12, 0);
                         //}
-                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, false, 12, 1);
+                        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, dstar_mass_window, InVec, D0_MASS, 0.1, false, true, 12, 1);
                     }
                     //////////////////////////////////////////////////////////////////////////
                     // RECONSTRUCTION: D0bar(K+pi-)pi+
