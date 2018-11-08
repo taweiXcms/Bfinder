@@ -1,107 +1,36 @@
 To setup Bfinder
 =====
 
-Branch for CMSSW_9XX Recommended using `CMSSW_9_2_3`
+Branch for CMSSW_10XX Recommended using `CMSSW_10_3_1`
 
-Check forest version in: https://github.com/CmsHI/cmssw/tree/forest_CMSSW_7_5_8_patch3/HeavyIonsAnalysis
+Check forest version in: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiForestSetup#Setup%20for%2010_3_1%20(%202018%20_PbPb%20da
 
 ```
-git cms-merge-topic -u CmsHI:forest_$CMSSW_VERSION
-git clone -b Dfinder_9XX https://github.com/taweiXcms/Bfinder.git
+cmsrel CMSSW_10_3_1
+cd CMSSW_10_3_1/src
+cmsenv
+git cms-merge-topic -u CmsHI:forest_CMSSW_10_3_1
+# Switch to the branch HEAD
+git remote add cmshi git@github.com:CmsHI/cmssw.git
+git fetch cmshi --no-tags # don't fetch tags unless you have 20 mins to burn
+git checkout -b forest_CMSSW_10_3_1 remotes/cmshi/forest_CMSSW_10_3_1
+cd HeavyIonsAnalysis/JetAnalysis/python/jets
+./makeJetSequences.sh
+cd ../../../..
+scram build -j4
 ```
 
-To add B/D finder to forest, paste the following block:
+To add Dfinder to forest:
 =====
 
-pp
------
-
-```python
-#################
-### D/B finder
-#################
-AddCaloMuon = False
-runOnMC = False
-HIFormat = False
-UseGenPlusSim = False
-VtxLabel = "offlinePrimaryVerticesWithBS"
-TrkLabel = "generalTracks"
-from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
 ```
+cd $CMSSW_BASE/src
+cmsenv
+git clone -b Dfinder_10XX https://github.com/taweiXcms/Bfinder.git
+scram b -j4
+source Bfinder/test/Dfinder_to_Forest.sh
 
-pPb
------
+# config to run Forest+Dfinder: HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_wDfinder.py
+# config to run Dfinder only: HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyDfinder.py
 
-```python
-#################
-### D/B finder
-#################
-AddCaloMuon = False
-runOnMC = False
-HIFormat = False
-UseGenPlusSim = False
-VtxLabel = "offlinePrimaryVerticesWithBS"
-TrkLabel = "generalTracks"
-from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
-### MVA label changed in pPb data CMSSW8XX
-process.Bfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
-process.Dfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 ```
-
-PbPb
------
-
-```python
-#################
-### D/B finder
-#################
-AddCaloMuon = False
-runOnMC = False
-HIFormat = False
-UseGenPlusSim = False
-from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim)
-## DeDx info not in PbPb data
-process.Bfinder.readDedx = cms.bool(False)
-process.Dfinder.readDedx = cms.bool(False)
-```
-
-And add to your cms.Path()
------
-
-```python
-process.DfinderSequence+process.BfinderSequence
-```
-
-And comment the following line in
------
-`Bfinder/finderMaker/python/finderMaker_75X_cff.py`
-
-```python
-process.patTrigger.collections.remove("hltL3MuonCandidates")
-```
-
-If running on MC
------
-
-Remember to set
-```python
-runOnMC = True
-```
-
-Note:
------
-
-By default it will only run B to Jpsi Pi and D to K Pi channel.
-
-Find more customizations in `Bfinder/finderMaker/python/finderMaker_75X_cff.py`
-
-and add lines like
-
-```python
-process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0)
-```
-
-to customize your own selection values and channels
