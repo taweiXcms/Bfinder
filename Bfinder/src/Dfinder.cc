@@ -1336,23 +1336,25 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //Made a Dntuple on the fly   
         if(makeDntuple_){
             int isDchannel[16];
-            isDchannel[0] = 0; //k+pi-
-            isDchannel[1] = 0; //k-pi+
-            isDchannel[2] = 0; //k-pi+pi+
-            isDchannel[3] = 0; //k+pi-pi-
-            isDchannel[4] = 0; //k-pi-pi+pi+
-            isDchannel[5] = 0; //k+pi+pi-pi-
-            isDchannel[6] = 1; // Ds+ phikkpi+ 
-            isDchannel[7] = 1; // Ds- phikkpi-
-            isDchannel[8] = 0; 
-            isDchannel[9] = 0; 
-            isDchannel[10] = 0; 
-            isDchannel[11] = 0;
-			isDchannel[12] = 0; //B+(D0(k-pi+)pi+)
-			isDchannel[13] = 0; //B-(D0(k-pi+)pi-)
-			isDchannel[14] = 1; //lambdaC(p+pi+k-)
-			isDchannel[15] = 1; //lambdaC(p-k+pi-)
-			bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
+            for(int ichannel=0; ichannel<16; ichannel++)
+              { isDchannel[ichannel] = Dchannel_[ichannel]; }
+            // isDchannel[0] = 0; //k+pi-
+            // isDchannel[1] = 0; //k-pi+
+            // isDchannel[2] = 0; //k-pi+pi+
+            // isDchannel[3] = 0; //k+pi-pi-
+            // isDchannel[4] = 0; //k-pi-pi+pi+
+            // isDchannel[5] = 0; //k+pi+pi-pi-
+            // isDchannel[6] = 1; // Ds+ phikkpi+ 
+            // isDchannel[7] = 1; // Ds- phikkpi-
+            // isDchannel[8] = 0; 
+            // isDchannel[9] = 0; 
+            // isDchannel[10] = 0; 
+            // isDchannel[11] = 0;
+            // isDchannel[12] = 0; //B+(D0(k-pi+)pi+)
+            // isDchannel[13] = 0; //B-(D0(k-pi+)pi-)
+            // isDchannel[14] = 1; //lambdaC(p+pi+k-)
+            // isDchannel[15] = 1; //lambdaC(p-k+pi-)
+            bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
             bool fillZeroCandEvt = true;
             int Dtypesize[8]={0,0,0,0,0,0,0,0};
             Dntuple->makeDNtuple(isDchannel, Dtypesize, REAL, fillZeroCandEvt, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7, ntD8);
