@@ -74,6 +74,11 @@
 #define BPLUS_MASS 5.27931
 #define BZERO_MASS 5.27962
 #define BSUBS_MASS 5.36682
+#define F0980_MASS 0.99
+#define LAMBDAC_MASS 2.286
+#define KSTAR892_MASS 0.89581
+#define DELTA1232PLUSPLUS_MASS 1.209
+#define LAMBDA1520_MASS 1.5195
 
 #define MUON_PDGID 13
 #define PION_PDGID 211
@@ -88,6 +93,13 @@
 #define DPLUS_PDGID 411
 #define DSUBS_PDGID 431
 #define DSTAR_PDGID 413
+#define F0980_PDGID 9010221
+#define PROTON_PDGID 2212
+#define LAMBDAC_PDGID 4122
+#define KSTAR892_PDGID 313
+#define DELTA1232PLUSPLUS_PDGID 2224
+#define LAMBDA1520_PDGID  3124
+
 
 class EvtInfoBranches{ //{{{
 	public:
@@ -1051,7 +1063,6 @@ public:
     float  rftk3_MassHypo[MAX_XB];
     float  rftk4_MassHypo[MAX_XB];
     float  rftk5_MassHypo[MAX_XB];
-
     bool   isSequentialFit[MAX_XB];
    
     void regTree(TTree *root, bool detailMode = false){//{{{
@@ -1248,7 +1259,7 @@ public:
         root->SetBranchAddress("DInfo.rftk4_MassHypo"     ,rftk4_MassHypo   	);
         root->SetBranchAddress("DInfo.rftk5_MassHypo"     ,rftk5_MassHypo   	);
 
-        root->SetBranchAddress("DInfo.isSequentialFit"    ,isSequentialFit   	);
+        root->SetBranchAddress("DInfo.isSequentialFit"    ,isSequentialFit     );
 
         if(detailMode){
             root->SetBranchAddress("DInfo.tktkRes_rftk1_pt"        ,tktkRes_rftk1_pt  );
