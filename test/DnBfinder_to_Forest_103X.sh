@@ -1,9 +1,10 @@
 #!/bin/bash
 
 PATHTOTEST=$CMSSW_BASE/src/HeavyIonsAnalysis/JetAnalysis/test
+FOREST=runForestAOD_pponAA_DATA_103X
 
 ##
-cp ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X.py ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_wDfinder.py
+cp ${PATHTOTEST}/${FOREST}.py ${PATHTOTEST}/${FOREST}_wDfinder.py
 
 echo '
 #################### D/B finder ################# 
@@ -11,7 +12,7 @@ AddCaloMuon = False
 runOnMC = False 
 HIFormat = False 
 UseGenPlusSim = False 
-VtxLabel = "offlinePrimaryVerticesWithBS" 
+VtxLabel = "offlinePrimaryVerticesRecovery" 
 TrkLabel = "generalTracks" 
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X 
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
@@ -29,22 +30,10 @@ process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 
 
 process.dfinder = cms.Path(process.DfinderSequence)
 
-' >> ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_wDfinder.py
-
-cp ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_wDfinder.py ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_onlyDfinder.py
-
-echo '
-process.ana_step = cms.Path(
-    process.HiForest +
-    process.hltanalysis +
-    process.hltobject +
-    process.centralityBin +
-    process.hiEvtAnalyzer 
-    )
-' >> ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_onlyDfinder.py
+' >> ${PATHTOTEST}/${FOREST}_wDfinder.py
 
 ##
-cp ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X.py ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_wBfinder.py
+cp ${PATHTOTEST}/${FOREST}.py ${PATHTOTEST}/${FOREST}_wBfinder.py
 
 echo '
 #################### D/B finder #################
@@ -52,7 +41,7 @@ AddCaloMuon = False
 runOnMC = False
 HIFormat = False
 UseGenPlusSim = False
-VtxLabel = "offlinePrimaryVerticesWithBS"
+VtxLabel = "offlinePrimaryVerticesRecovery"
 TrkLabel = "generalTracks"
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
@@ -110,18 +99,24 @@ process.Bfinder.MuonTriggerMatchingFilter = cms.vstring("hltHIDoubleMu0L1Filtere
                                                         "hltHIDimuonOpenOSm7to14L3Filter")
 process.p = cms.Path(process.BfinderSequence)
 
-' >> ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_wBfinder.py
+' >> ${PATHTOTEST}/${FOREST}_wBfinder.py
 
-cp ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_wBfinder.py ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_onlyBfinder.py
+#
+cp ${PATHTOTEST}/${FOREST}_wDfinder.py ${PATHTOTEST}/${FOREST}_onlyDfinder.py
+cp ${PATHTOTEST}/${FOREST}_wBfinder.py ${PATHTOTEST}/${FOREST}_onlyBfinder.py
 
-echo '
-process.ana_step = cms.Path(
-    process.HiForest +
-    process.hltanalysis +
-    process.hltobject +
-    process.centralityBin +
-    process.hiEvtAnalyzer 
-    )
-' >> ${PATHTOTEST}/runForestAOD_pponAA_DATA_103X_onlyBfinder.py
+for ifile in ${PATHTOTEST}/${FOREST}_onlyBfinder.py ${PATHTOTEST}/${FOREST}_onlyDfinder.py
+do
+    sed -i "/D\/B finder/i \\
+process.ana_step = cms.Path( \\
+    process.offlinePrimaryVerticesRecovery + \\
+    process.HiForest + \\
+    process.hltanalysis + \\
+    process.hltobject + \\
+    process.centralityBin + \\
+    process.hiEvtAnalyzer  \\
+    ) \\
+" $ifile
+done
 
 ##
