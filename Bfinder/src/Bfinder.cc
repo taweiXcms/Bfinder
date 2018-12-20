@@ -429,9 +429,11 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     input_tracks = *tks;
     try{
         const reco::GenParticle* genMuonPtr[MAX_MUON];
-        memset(genMuonPtr,0x00,MAX_MUON);
+        // memset(genMuonPtr,0x00,MAX_MUON);
+        memset(genMuonPtr,0x00,MAX_MUON*sizeof(genMuonPtr[0]));
         const reco::GenParticle* genTrackPtr[MAX_TRACK];
-        memset(genTrackPtr,0x00,MAX_GEN);
+        // memset(genTrackPtr,0x00,MAX_GEN);
+        memset(genTrackPtr,0x00,MAX_GEN*sizeof(genTrackPtr[0]));
         //standard check for validity of input data
         if (input_muons.size() == 0){
             if (printInfo_) std::cout << "There's no muon : " << iEvent.id() << std::endl;
@@ -990,7 +992,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             // RECONSTRUCTION: J/psi + phi
                             //////////////////////////////////////////////////////////////////////////
                             
-                            TkTk_window = 0.1;
+                            TkTk_window = 0.15;
                             if(Bchannel_[5] == 1){
                                 BranchOut2MuX_XtoTkTk(
                                     BInfo,
@@ -1318,7 +1320,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         ifchannel[6] = 1; //jpsi+pi pi <= psi', X(3872), Bs->J/psi f0
         ifchannel[7] = 1; //inclusive jpsi
         bool REAL = ((!iEvent.isRealData() && RunOnMC_) ? false:true);
-        Bntuple->makeNtuple(ifchannel, REAL, doBntupleSkim_, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6, nt7);
+        int Btypesize[8]={0,0,0,0,0,0,0,0};
+        Bntuple->makeNtuple(ifchannel, Btypesize, REAL, doBntupleSkim_, &EvtInfo, &VtxInfo, &MuonInfo, &TrackInfo, &BInfo, &GenInfo, nt0, nt1, nt2, nt3, nt5, nt6, nt7);
         if(!REAL) Bntuple->fillGenTree(ntGen, &GenInfo);
     }
 }

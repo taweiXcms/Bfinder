@@ -5,7 +5,7 @@
 
 class BntupleBranches
 {//{{{
- public:
+public:
   float tk1mass[7] = {KAON_MASS, PION_MASS, PION_MASS,   KAON_MASS,  KAON_MASS,  KAON_MASS, PION_MASS};
   float tk2mass[7] = {0,         0,         PION_MASS,   PION_MASS,  PION_MASS,  KAON_MASS, PION_MASS};
   float midmass[7] = {0,         0,         KSHORT_MASS, KSTAR_MASS, KSTAR_MASS, PHI_MASS,  0};
@@ -616,13 +616,12 @@ class BntupleBranches
     nt->Branch("Gtk2phi",Gtk2phi,"Gtk2phi[Gsize]/F");
   }
   
-  void makeNtuple(int ifchannel[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6, TTree* nt7)
+  void makeNtuple(int ifchannel[], int Btypesize[], bool REAL, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, MuonInfoBranches *MuonInfo, TrackInfoBranches *TrackInfo, BInfoBranches *BInfo, GenInfoBranches *GenInfo, TTree* nt0, TTree* nt1, TTree* nt2, TTree* nt3, TTree* nt5, TTree* nt6, TTree* nt7)
   {//{{{
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
     TLorentzVector* b4P = new TLorentzVector;
     fillTreeEvt(EvtInfo);
-    int Btypesize[8]={0,0,0,0,0,0,0,0};
     for(int t=0;t<7;t++)
       {
         int tidx = t-1;
@@ -639,9 +638,6 @@ class BntupleBranches
                 if(skim)
                   {
                     //if(BInfo->pt[j]<3.) continue;
-                    //if(BInfo->pt[j]<10.) continue;
-                    if(!( (BInfo->pt[j] > 7. && BInfo->pt[j] < 10. && BInfo->svpvDistance[j]/BInfo->svpvDisErr[j] > 5.5) || (BInfo->pt[j] > 10. && BInfo->svpvDistance[j]/BInfo->svpvDisErr[j] > 3.5) )) continue;
-                    if(BInfo->mass[j]<5. || BInfo->mass[j]>6.) continue;
                   }
                 if(BInfo->type[j]==(t+1))
                   {
@@ -649,6 +645,7 @@ class BntupleBranches
                     Btypesize[tidx]++;
                   }
               }
+            
             if(t==0)      nt0->Fill();
             else if(t==1) nt1->Fill();
             else if(t==2) nt2->Fill();
