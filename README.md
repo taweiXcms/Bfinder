@@ -3,7 +3,7 @@ To setup Bfinder
 
 Branch for CMSSW_10XX Recommended using `CMSSW_10_3_1`
 
-Check forest version in: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiForestSetup#Setup%20for%2010_3_1%20(%202018%20_PbPb%20da
+Check forest version in: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiForestSetup#Setup_for_10_3_1_2018_PbPb_data
 
 ```
 cmsrel CMSSW_10_3_1
@@ -17,20 +17,20 @@ git checkout -b forest_CMSSW_10_3_1 remotes/cmshi/forest_CMSSW_10_3_1
 cd HeavyIonsAnalysis/JetAnalysis/python/jets
 ./makeJetSequences.sh
 cd ../../../..
-scram build -j4
+scram b -j4
 ```
 
-To add Dfinder to forest:
+To add D/Bfinder to forest:
 =====
 
 ```
 cd $CMSSW_BASE/src
 cmsenv
-git clone -b Dfinder_10XX https://github.com/taweiXcms/Bfinder.git
+git clone --branch v1_Forest20181220_data https://github.com/boundino/Bfinder.git --depth 1
+source Bfinder/test/DnBfinder_to_Forest_103X.sh
 scram b -j4
-source Bfinder/test/Dfinder_to_Forest.sh
-
-# config to run Forest+Dfinder: HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_wDfinder.py
-# config to run Dfinder only: HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyDfinder.py
-
+mkdir -p bfinder && cp HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyBfinder.py bfinder/runForestAOD_pponAA_DATA_103X_onlyBfinder.py # Bfinder
+# mkdir -p bfinder && cp HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyDfinder.py bfinder/runForestAOD_pponAA_DATA_103X_onlyDfinder.py # Dfinder
+cd bfinder/
+cmsRun runForestAOD_pponAA_DATA_103X_onlyBfinder.py
 ```
