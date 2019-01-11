@@ -121,4 +121,29 @@ process.ana_step = cms.Path( \\
 " $ifile
 done
 
+#
+for ifile in ${PATHTOTEST}/${FOREST}_onlyBfinder.py ${PATHTOTEST}/${FOREST}_onlyDfinder.py ${PATHTOTEST}/${FOREST}_wBfinder.py ${PATHTOTEST}/${FOREST}_wDfinder.py
+do
+    echo '###############################
+import FWCore.ParameterSet.VarParsing as VarParsing
+ivars = VarParsing.VarParsing('"'"'analysis'"'"')
+
+ivars.maxEvents = -1
+ivars.outputFile='"'"'HiForestAOD.root'"'"'
+ivars.inputFiles='"'"'file:/eos/cms/store/group/phys_heavyions/wangj/AOD/HIDoubleMuon_PromptReco-v1/CF143D2D-4992-8040-9717-F6ADA30B914C.root'"'"'
+ivars.parseArguments()# get and parse the command line arguments
+
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(ivars.inputFiles)
+)
+
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(ivars.maxEvents)
+)
+
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string(ivars.outputFile))
+' >> $ifile
+done
+
 ##
