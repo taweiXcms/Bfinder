@@ -1179,7 +1179,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             std::vector<const reco::Candidate *> sel_cands;
             for(std::vector<reco::GenParticle>::const_iterator it_gen=gens->begin();
                 it_gen != gens->end(); it_gen++){
-                if (it_gen->status() > 2 && it_gen->status() != 8) continue;//only status 1, 2, 8(simulated)
+                if (it_gen->status() > 2 && it_gen->status() != 8 && it_gen->status() != 91) continue;//only status 1, 2, 8(simulated)
                 if(GenInfo.size >= MAX_GEN){
                     fprintf(stderr,"ERROR: number of gens exceeds the size of array.\n");
                     break;;
@@ -1193,7 +1193,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     abs(it_gen->pdgId()) == 511 ||//B_0
                     abs(it_gen->pdgId()) == 521 ||//B_+-
                     abs(it_gen->pdgId()) == 531 ||//B_s
-                    abs(it_gen->pdgId()) == 130 ||//KL
                     //abs(it_gen->pdgId()) == 311 ||//K0
                     //abs(it_gen->pdgId()) == 321 ||//K+
                     //abs(it_gen->pdgId()) == 310 ||//KS
@@ -1202,6 +1201,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     //abs(it_gen->pdgId()) == 333 ||//phi(1020)
                     it_gen->pdgId() == 443      ||//Jpsi
                     it_gen->pdgId() == 100443   ||//Psi(2S)
+                    it_gen->pdgId() == 20443   ||//chi_c1(1P)
                     it_gen->pdgId() == 553      ||//Upsilon
                     it_gen->pdgId() == 100553     //Upsilon(2S)
                    ) isGenSignal = true;//b, c, s mesons
@@ -1211,6 +1211,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 if (
                     abs(int(it_gen->pdgId()/100) % 100) == 3  ||//s menson
                     abs(it_gen->pdgId()) == 111 || //pi0
+                    abs(it_gen->pdgId()) == 113 ||//rho0
+                    abs(it_gen->pdgId()) == 130 ||//KL
                     abs(it_gen->pdgId()) == 211 //pi+
                     ){
                     reco::GenParticle _deRef = (*it_gen);

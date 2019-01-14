@@ -678,7 +678,9 @@ public:
     Gsize = 0;
     for(int j=0;j<GenInfo->size;j++)
       {
-        if((TMath::Abs(GenInfo->pdgId[j])!=BPLUS_PDGID&&TMath::Abs(GenInfo->pdgId[j])!=BZERO_PDGID&&TMath::Abs(GenInfo->pdgId[j])!=BSUBS_PDGID&&TMath::Abs(GenInfo->pdgId[j])!=JPSI_PDGID) && gskim) continue;
+        if((TMath::Abs(GenInfo->pdgId[j])!=BPLUS_PDGID && TMath::Abs(GenInfo->pdgId[j])!=BZERO_PDGID && TMath::Abs(GenInfo->pdgId[j])!=BSUBS_PDGID &&
+            TMath::Abs(GenInfo->pdgId[j])!=CHIC1_PDGID && TMath::Abs(GenInfo->pdgId[j])!=PSI2S_PDGID &&
+            TMath::Abs(GenInfo->pdgId[j])!=JPSI_PDGID) && gskim) continue;
         Gsize = gsize+1;
         Gpt[gsize] = GenInfo->pt[j];
         Geta[gsize] = GenInfo->eta[j];
@@ -1220,6 +1222,13 @@ public:
             tk1Id = 321;//K+
             tk2Id = 321;//K-
           }
+        if(BInfo->type[j]==7)
+          {
+            BId = 20443;//X3872
+            MId = 113;//rho
+            tk1Id = 211;//pi+
+            tk2Id = 211;//pi-
+          }
 
         int twoTks,kStar,flagkstar=0;
         if(BInfo->type[j]==1 || BInfo->type[j]==2) twoTks=0;
@@ -1262,11 +1271,20 @@ public:
                             mGenIdxTk1=GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk1_index[j]]];
                           }
                       }
+                    if(BInfo->type[j]==7 && level < 3)
+                      {
+                        mGenIdxTk1=0;
+                        if(abs(GenInfo->pdgId[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk1_index[j]]]])==20443 || abs(GenInfo->pdgId[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk1_index[j]]]])==100443)
+                          {
+                            level = 3;
+                            bGenIdxTk1=GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk1_index[j]]];
+                          }
+                      }
                   }
               }
             Bgen[typesize]=level;
           }
-        
+              
         //tk2
         if(!twoTks)//one trk channel
           {
@@ -1296,6 +1314,15 @@ public:
                                   }
                               }
                             mGenIdxTk2 = GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk2_index[j]]];
+                          }
+                        if(BInfo->type[j]==7 && level < 3)
+                          {
+                            mGenIdxTk2 = 0;
+                            if(abs(GenInfo->pdgId[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk2_index[j]]]])==20443 || abs(GenInfo->pdgId[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk2_index[j]]]])==100443)
+                              {
+                                level = 3;
+                                bGenIdxTk2 = GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk2_index[j]]];
+                              }
                           }
                       }
                   }
@@ -1742,9 +1769,17 @@ public:
             tk2Id = -321;//K-
             twoTks = 1;
           }
+        if(Btype==7)
+          {
+            BId = 20443;//X3872
+            MId = 113;//rho
+            tk1Id = 211;//pi+
+            tk2Id = -211;//pi-
+            twoTks = 1;
+          }
         
         int flag=0;
-        if (abs(GenInfo->pdgId[j])==BId&&GenInfo->nDa[j]==2&&GenInfo->da1[j]!=-1&&GenInfo->da2[j]!=-1)
+        if(abs(GenInfo->pdgId[j])==BId&&GenInfo->nDa[j]==2&&GenInfo->da1[j]!=-1&&GenInfo->da2[j]!=-1)
           {
             if (abs(GenInfo->pdgId[GenInfo->da1[j]])==443)//jpsi
               {
@@ -1770,7 +1805,27 @@ public:
                   }
               }
           }
+        if(Btype==7 && flag==0)
+          {
+            if((abs(GenInfo->pdgId[j])==20443 || abs(GenInfo->pdgId[j])==100443)&&GenInfo->nDa[j]==3&&GenInfo->da1[j]!=-1&&GenInfo->da2[j]!=-1&&GenInfo->da3[j]!=-1)
+              {
+                if (abs(GenInfo->pdgId[GenInfo->da1[j]])==443)//jpsi
+                  {
+                    if(GenInfo->da1[GenInfo->da1[j]]!=-1&&GenInfo->da2[GenInfo->da1[j]]!=-1)
+                      {
+                        if(abs(GenInfo->pdgId[GenInfo->da1[GenInfo->da1[j]]])==13&&abs(GenInfo->pdgId[GenInfo->da2[GenInfo->da1[j]]])==13)
+                          {
+                            if(abs(GenInfo->pdgId[GenInfo->da2[j]])==abs(tk1Id) && abs(GenInfo->pdgId[GenInfo->da3[j]])==abs(tk2Id))
+                              {
+                                flag++;
+                              }
+                          }
+                      }
+                  }
+              }
+          }
         return flag;
+
       }
 
   }//}}}
