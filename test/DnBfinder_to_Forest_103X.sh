@@ -1,7 +1,8 @@
 #!/bin/bash
 
 PATHTOTEST=$CMSSW_BASE/src/HeavyIonsAnalysis/JetAnalysis/test
-FOREST=runForestAOD_pponAA_DATA_103X
+# FOREST=runForestAOD_pponAA_DATA_103X
+FOREST=runForestAOD_pponAA_MIX_103X
 
 ##
 cp ${PATHTOTEST}/${FOREST}.py ${PATHTOTEST}/${FOREST}_wDfinder.py
@@ -9,7 +10,7 @@ cp ${PATHTOTEST}/${FOREST}.py ${PATHTOTEST}/${FOREST}_wDfinder.py
 echo '
 #################### D/B finder ################# 
 AddCaloMuon = False 
-runOnMC = False 
+runOnMC = True ## !!
 HIFormat = False 
 UseGenPlusSim = False 
 VtxLabel = "offlinePrimaryVerticesRecovery" 
@@ -38,7 +39,7 @@ cp ${PATHTOTEST}/${FOREST}.py ${PATHTOTEST}/${FOREST}_wBfinder.py
 echo '
 #################### D/B finder #################
 AddCaloMuon = False
-runOnMC = False
+runOnMC = True ## !!
 HIFormat = False
 UseGenPlusSim = False
 VtxLabel = "offlinePrimaryVerticesRecovery"
@@ -111,8 +112,9 @@ do
 process.ana_step = cms.Path( \\
     process.offlinePrimaryVerticesRecovery + \\
     process.HiForest + \\
+    process.runAnalyzer + \\
     process.hltanalysis + \\
-    process.hltobject + \\
+    # process.hltobject + \\
     process.centralityBin + \\
     process.hiEvtAnalyzer  \\
     ) \\

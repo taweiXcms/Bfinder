@@ -99,6 +99,8 @@
 #define KSTAR892_PDGID 313
 #define DELTA1232PLUSPLUS_PDGID 2224
 #define LAMBDA1520_PDGID  3124
+#define CHIC1_PDGID 20443
+#define PSI2S_PDGID 100443
 
 
 class EvtInfoBranches{ //{{{
