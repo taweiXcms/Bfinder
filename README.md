@@ -26,7 +26,7 @@ To add D/Bfinder to forest:
 ```
 cd $CMSSW_BASE/src
 cmsenv
-git clone --branch v1_Forest20181220_data https://github.com/boundino/Bfinder.git --depth 1
+git clone --branch CMSSW_10XX-F20190115_MC https://github.com/boundino/Bfinder.git --depth 1
 source Bfinder/test/DnBfinder_to_Forest_103X.sh
 scram b -j4
 # mkdir -p bfinder && cp HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyDfinder.py bfinder/runForestAOD_pponAA_DATA_103X_onlyBfinder.py # Bfinder data
