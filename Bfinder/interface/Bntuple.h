@@ -698,6 +698,7 @@ public:
                 break;
               }
           }
+        int type7flag = sigtype!=7?-1:(TMath::Abs(GenInfo->pdgId[GenInfo->da2[j]])==113?1:0);
         GisSignal[gsize] = sigtype;
         Gmu1pt[gsize] = -1;
         Gmu1eta[gsize] = -20;
@@ -736,11 +737,17 @@ public:
                 Gmu2eta[gsize] = GenInfo->eta[GenInfo->da2[GenInfo->da1[j]]];
                 Gmu2phi[gsize] = GenInfo->phi[GenInfo->da2[GenInfo->da1[j]]];
                 Gmu2p[gsize] = Gmu2pt[gsize]*cosh(Gmu2eta[gsize]);
-                if(sigtype==1||sigtype==2)
+                if(sigtype==1||sigtype==2 || type7flag==0)
                   {
                     Gtk1pt[gsize] = GenInfo->pt[GenInfo->da2[j]];
                     Gtk1eta[gsize] = GenInfo->eta[GenInfo->da2[j]];
                     Gtk1phi[gsize] = GenInfo->phi[GenInfo->da2[j]];
+                    if(sigtype==7)
+                      {
+                        Gtk2pt[gsize] = GenInfo->pt[GenInfo->da3[j]];
+                        Gtk2eta[gsize] = GenInfo->eta[GenInfo->da3[j]];
+                        Gtk2phi[gsize] = GenInfo->phi[GenInfo->da3[j]];
+                      }
                   }
                 else
                   {
@@ -1348,15 +1355,15 @@ public:
                           {
                             if(abs(GenInfo->pdgId[GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]]]]])==BId)
                               {
-                                //nonprompt=1;
                                 level = 3;
                                 bGenIdxMu1=GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]]]];
-                                flagkstar++;///////////////////////////////////////////////=1
+                                flagkstar++;//=1
                               }
-                          }
-                        else 
-                          {
-                            //prompt=1;
+                            else if(BInfo->type[j]==7 && abs(GenInfo->pdgId[GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]]]]])==100443)
+                              {
+                                level = 3;
+                                bGenIdxMu1=GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]]]];
+                              }
                           }
                       } 
                   }
@@ -1383,7 +1390,12 @@ public:
                               {
                                 level = 3;
                                 bGenIdxMu2=GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]]]];
-                                flagkstar++;///////////////////////////////////////////////////=2
+                                flagkstar++;//=2
+                              }
+                            else if(BInfo->type[j]==7 && abs(GenInfo->pdgId[GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]]]]])==100443)
+                              {
+                                level = 3;
+                                bGenIdxMu2=GenInfo->mo1[GenInfo->mo1[MuonInfo->geninfo_index[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]]]];
                               }
                           }
                       }
@@ -1432,7 +1444,7 @@ public:
                               {
                                 if(abs(GenInfo->pdgId[GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk1_index[j]]]]])==BId)
                                   {
-                                    flagkstar++;//////////////////////////////////////////////=3
+                                    flagkstar++;//=3
                                     bGenIdxTk1=GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk1_index[j]]]];
                                   }
                               }
@@ -1455,7 +1467,7 @@ public:
                               {
                                 if(abs(GenInfo->pdgId[GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk2_index[j]]]]])==BId)
                                   {
-                                    flagkstar++;////////////////////////////////////////////////////=4
+                                    flagkstar++;//=4
                                     bGenIdxTk2 = GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[BInfo->rftk2_index[j]]]];
                                   }
                               }
