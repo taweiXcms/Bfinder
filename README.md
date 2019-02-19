@@ -30,7 +30,8 @@ git clone --branch CMSSW_10XX-F20190115_MC https://github.com/boundino/Bfinder.g
 source Bfinder/test/DnBfinder_to_Forest_103X.sh
 scram b -j4
 # mkdir -p bfinder && cp HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyDfinder.py bfinder/runForestAOD_pponAA_DATA_103X_onlyBfinder.py # Bfinder data
-mkdir -p bfinder && cp HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_DATA_103X_onlyBfinder.py bfinder/runForestAOD_pponAA_MIX_103X_onlyBfinder.py # Bfinder MC
+mkdir -p bfinder && cp HeavyIonsAnalysis/JetAnalysis/test/runForestAOD_pponAA_MIX_103X_onlyBfinder.py bfinder/runForestAOD_pponAA_MIX_103X_onlyBfinder.py # Bfinder MC
 cd bfinder/
+# cmsRun runForestAOD_pponAA_DATA_103X_onlyBfinder.py
 cmsRun runForestAOD_pponAA_MIX_103X_onlyBfinder.py
 ```
