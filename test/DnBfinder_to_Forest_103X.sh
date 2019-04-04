@@ -98,26 +98,27 @@ process.ana_step = cms.Path( \\
 #
     for ifile in ${PATHTOTEST}/${FOREST}_onlyBfinder.py ${PATHTOTEST}/${FOREST}_onlyDfinder.py ${PATHTOTEST}/${FOREST}_wBfinder.py ${PATHTOTEST}/${FOREST}_wDfinder.py
     do
-        echo '###############################
-        import FWCore.ParameterSet.VarParsing as VarParsing
-        ivars = VarParsing.VarParsing('"'"'analysis'"'"')
+        echo '
+###############################
+import FWCore.ParameterSet.VarParsing as VarParsing
+ivars = VarParsing.VarParsing('"'"'analysis'"'"')
 
-        ivars.maxEvents = -1
-        ivars.outputFile='"'"'HiForestAOD.root'"'"'
-        ivars.inputFiles='"'${INFILES[cc]}'"'
-        ivars.parseArguments()# get and parse the command line arguments
+ivars.maxEvents = -1
+ivars.outputFile='"'"'HiForestAOD.root'"'"'
+ivars.inputFiles='"'${INFILES[cc]}'"'
+ivars.parseArguments() # get and parse the command line arguments
 
-        process.source = cms.Source("PoolSource",
-            fileNames = cms.untracked.vstring(ivars.inputFiles)
-        )
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(ivars.inputFiles)
+)
 
-        process.maxEvents = cms.untracked.PSet(
-            input = cms.untracked.int32(ivars.maxEvents)
-        )
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(ivars.maxEvents)
+)
 
-        process.TFileService = cms.Service("TFileService",
-            fileName = cms.string(ivars.outputFile))
-        ' >> $ifile
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string(ivars.outputFile))
+' >> $ifile
     done
 ##
     cc=$((cc+1))
