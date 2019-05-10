@@ -5,7 +5,7 @@ FORESTS=(runForestAOD_pponAA_DATA_103X runForestAOD_pponAA_MIX_103X)
 RUNONMC=(False True)
 # DIFFPATH=("process.hltanalysisReco *" "process.hltanalysis * process.runAnalyzer *")
 INFILES=(
-    "file:/eos/cms/store/group/phys_heavyions/wangj/AOD/HIDoubleMuon_PromptReco-v1/CF143D2D-4992-8040-9717-F6ADA30B914C.root"
+    "file:/afs/cern.ch/work/w/wangj/public/HIDoubleMuonPsiPeri/HIRun2018A-04Apr2019-v1/FFA13E32-1396-E541-B151-8DEAA600EA0C.root"
     "file:/afs/cern.ch/work/w/wangj/public/Hydjet_Pythia8_Psi2SToJpsiPiPi_prompt_Pthat30_TuneCP5_5020GeV_Drum5Ev8/MC_20181231_Psipt0p0_103X_upgrade2018_realistic_HI_v7_RECO/step2_reco_121.root"
 )
 
@@ -27,7 +27,7 @@ from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
 finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
 process.Dfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 process.Dfinder.makeDntuple = cms.bool(True)
-process.Dfinder.tkPtCut = cms.double(1.) # before fit
+process.Dfinder.tkPtCut = cms.double(0.7) # before fit
 process.Dfinder.dPtCut = cms.vdouble(2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0) # before fit
 process.Dfinder.VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05)
 process.Dfinder.dCutSeparating_PtVal = cms.vdouble(5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5., 5.)
@@ -57,21 +57,17 @@ finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel
 
 process.Bfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 process.Bfinder.makeBntuple = cms.bool(True)
-process.Bfinder.tkPtCut = cms.double(0.7)#before fit
+process.Bfinder.tkPtCut = cms.double(0.7) # before fit
 process.Bfinder.jpsiPtCut = cms.double(0.0)#before fit
-process.Bfinder.bPtCut = cms.vdouble(5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
+process.Bfinder.bPtCut = cms.vdouble(3.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0)#before fit
 process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
 process.Bfinder.VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.10)
 process.Bfinder.svpvDistanceCut = cms.vdouble(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.0)
 process.Bfinder.doTkPreCut = cms.bool(True)
 process.Bfinder.MuonTriggerMatchingPath = cms.vstring(
-    "HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1",
-    "HLT_HIL1DoubleMuOpen_v1",
-    "HLT_HIL1DoubleMu10_v1")
+    "HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1")
 process.Bfinder.MuonTriggerMatchingFilter = cms.vstring(
-    "hltL2fDoubleMuOpenL2DR3p5PreFiltered0",
-    "hltL1fL1sL1DoubleMuOpenL1Filtered0",
-    "hltL1fL1sL1DoubleMu10L1Filtered0")
+    "hltL3f0L3Mu0L2Mu0DR3p5FilteredNHitQ10M1to5")
 process.p = cms.Path(process.BfinderSequence)
 
 ' >> ${PATHTOTEST}/${FOREST}_wBfinder.py
