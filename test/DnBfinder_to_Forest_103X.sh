@@ -82,9 +82,9 @@ process.p = cms.Path(process.BfinderSequence)
 process.ana_step = cms.Path( \\
     process.offlinePrimaryVerticesRecovery + \\
     process.HiForest + \\
-    process.runAnalyzer + \\
+    # process.runAnalyzer + \\
     process.hltanalysis + \\
-    # process.hltobject + \\
+    process.hltobject + \\
     process.centralityBin + \\
     process.hiEvtAnalyzer  \\
     ) \\
