@@ -23,8 +23,10 @@ HIFormat = False
 UseGenPlusSim = False 
 VtxLabel = "offlinePrimaryVerticesRecovery" 
 TrkLabel = "generalTracks" 
+useL1Stage2 = True
+HLTProName = "HLT"
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X 
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
+finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel, useL1Stage2, HLTProName)
 process.Dfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 process.Dfinder.makeDntuple = cms.bool(True)
 process.Dfinder.tkPtCut = cms.double(0.7) # before fit
@@ -52,12 +54,14 @@ HIFormat = False
 UseGenPlusSim = False
 VtxLabel = "offlinePrimaryVerticesRecovery"
 TrkLabel = "generalTracks"
+useL1Stage2 = True
+HLTProName = "HLT"
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X
-finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel)
+finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel, TrkLabel, useL1Stage2, HLTProName)
 
 process.Bfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 process.Bfinder.makeBntuple = cms.bool(True)
-process.Bfinder.tkPtCut = cms.double(0.7) # before fit
+process.Bfinder.tkPtCut = cms.double(0.9) # before fit
 process.Bfinder.jpsiPtCut = cms.double(0.0) # before fit
 process.Bfinder.bPtCut = cms.vdouble(3.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0) # before fit
 process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)

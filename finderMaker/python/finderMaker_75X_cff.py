@@ -1,8 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 # https://github.com/CMS-HIN-dilepton/cmssw/blob/Onia_AA_10_3_X/HiSkim/HiOnia2MuMu/python/onia2MuMuPAT_cff.py
+# https://github.com/CMS-HIN-dilepton/cmssw/blob/Onia_AA_10_3_X/HiAnalysis/HiOnia/python/oniaTreeAnalyzer_cff.py
+# https://github.com/CMS-HIN-dilepton/cmssw/blob/Onia_AA_10_3_X/HiAnalysis/HiOnia/test/hioniaanalyzer_PbPbPrompt_103X_DATA_cfg.py
 
-def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks", useL1Stage2 = False):
+def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks", useL1Stage2 = True, HLTProName = "HLT"):
 	### Set TransientTrackBuilder 
 	process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 	
@@ -87,7 +89,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 		process.muonMatch.maxDeltaR = cms.double(0.05)
 		process.muonMatch.resolveByMatchQuality = True
 
-	changeTriggerProcessName(process, "HLT")
+	changeTriggerProcessName(process, HLTProName)
 	switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
 	addHLTL1Passthrough(process)
 
@@ -280,4 +282,11 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	process.finderSequence = cms.Sequence(process.patMuonsWithTriggerSequence*process.TrackCandSequence*process.Bfinder*process.Dfinder)
 
 	### Temporal fix for the PAT Trigger prescale warnings.
-	process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
+	if (HLTProName == 'HLT') :
+		process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("gtDigis","","RECO")
+		process.patTriggerFull.l1tAlgBlkInputTag = cms.InputTag("gtStage2Digis","","RECO")
+		process.patTriggerFull.l1tExtBlkInputTag = cms.InputTag("gtStage2Digis","","RECO")
+	else :
+		process.patTriggerFull.l1GtReadoutRecordInputTag = cms.InputTag("hltGtDigis","",HLTProName)
+		process.patTriggerFull.l1tAlgBlkInputTag = cms.InputTag("hltGtStage2Digis","",HLTProName)
+		process.patTriggerFull.l1tExtBlkInputTag = cms.InputTag("hltGtStage2Digis","",HLTProName)
