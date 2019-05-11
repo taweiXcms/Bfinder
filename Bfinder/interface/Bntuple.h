@@ -175,6 +175,8 @@ public:
   float     Btrk2MVAVal[MAX_XB];
   int       Btrk1Algo[MAX_XB];
   int       Btrk2Algo[MAX_XB];
+  int       Btrk1originalAlgo[MAX_XB];
+  int       Btrk2originalAlgo[MAX_XB];
   bool      Btrk1highPurity[MAX_XB];
   bool      Btrk2highPurity[MAX_XB];
   int       Btrk1Quality[MAX_XB];
@@ -465,6 +467,8 @@ public:
         nt->Branch("Btrk2MVAVal",Btrk2MVAVal,"Btrk2MVAVal[Bsize]/F");
         nt->Branch("Btrk1Algo",Btrk1Algo,"Btrk1Algo[Bsize]/I");
         nt->Branch("Btrk2Algo",Btrk2Algo,"Btrk2Algo[Bsize]/I");
+        nt->Branch("Btrk1originalAlgo",Btrk1originalAlgo,"Btrk1originalAlgo[Bsize]/I");
+        nt->Branch("Btrk2originalAlgo",Btrk2originalAlgo,"Btrk2originalAlgo[Bsize]/I");
         nt->Branch("Btrk1highPurity",Btrk1highPurity,"Btrk1highPurity[Bsize]/O");
         nt->Branch("Btrk2highPurity",Btrk2highPurity,"Btrk2highPurity[Bsize]/O");
         nt->Branch("Btrk1Quality",Btrk1Quality,"Btrk1Quality[Bsize]/I");
@@ -958,6 +962,7 @@ public:
         Btrk1Chi2ndf[typesize] = TrackInfo->chi2[BInfo->rftk1_index[j]]/TrackInfo->ndf[BInfo->rftk1_index[j]];
         Btrk1MVAVal[typesize] = TrackInfo->trkMVAVal[BInfo->rftk1_index[j]];
         Btrk1Algo[typesize] = TrackInfo->trkAlgo[BInfo->rftk1_index[j]];
+        Btrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[BInfo->rftk1_index[j]];
         Btrk1highPurity[typesize] = TrackInfo->highPurity[BInfo->rftk1_index[j]];
         Btrk1Quality[typesize] = TrackInfo->trackQuality[BInfo->rftk1_index[j]];
         Btrk2Pt[typesize] = -1;
@@ -978,6 +983,7 @@ public:
         Btrk2Chi2ndf[typesize] = -1;
         Btrk2MVAVal[typesize] = -100;
         Btrk2Algo[typesize] = 0;
+        Btrk2originalAlgo[typesize] = 0;
         Btrk2highPurity[typesize] = false;
         Btrk2Quality[typesize] = 0;
         Btktkmass[typesize] = -1;
@@ -1026,6 +1032,7 @@ public:
         Btrk1Chi2ndf[typesize] = TrackInfo->chi2[BInfo->rftk2_index[j]]/TrackInfo->ndf[BInfo->rftk2_index[j]];
         Btrk1MVAVal[typesize] = TrackInfo->trkMVAVal[BInfo->rftk2_index[j]];
         Btrk1Algo[typesize] = TrackInfo->trkAlgo[BInfo->rftk2_index[j]];
+        Btrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[BInfo->rftk2_index[j]];
         Btrk1highPurity[typesize] = TrackInfo->highPurity[BInfo->rftk2_index[j]];
         Btrk1Quality[typesize] = TrackInfo->trackQuality[BInfo->rftk2_index[j]];
         tk1px = b4P->Px();
@@ -1051,6 +1058,7 @@ public:
         Btrk2Chi2ndf[typesize] = TrackInfo->chi2[BInfo->rftk1_index[j]]/TrackInfo->ndf[BInfo->rftk1_index[j]];
         Btrk2MVAVal[typesize] = TrackInfo->trkMVAVal[BInfo->rftk1_index[j]];
         Btrk2Algo[typesize] = TrackInfo->trkAlgo[BInfo->rftk1_index[j]];
+        Btrk2originalAlgo[typesize] = TrackInfo->originalTrkAlgo[BInfo->rftk1_index[j]];
         Btrk2highPurity[typesize] = TrackInfo->highPurity[BInfo->rftk1_index[j]];
         Btrk2Quality[typesize] = TrackInfo->trackQuality[BInfo->rftk1_index[j]];
         tk2px = b4P->Px();
@@ -1107,6 +1115,7 @@ public:
         Btrk1Chi2ndf[typesize] = TrackInfo->chi2[BInfo->rftk1_index[j]]/TrackInfo->ndf[BInfo->rftk1_index[j]];
         Btrk1MVAVal[typesize] = TrackInfo->trkMVAVal[BInfo->rftk1_index[j]];
         Btrk1Algo[typesize] = TrackInfo->trkAlgo[BInfo->rftk1_index[j]];
+        Btrk1originalAlgo[typesize] = TrackInfo->originalTrkAlgo[BInfo->rftk1_index[j]];
         Btrk1highPurity[typesize] = TrackInfo->highPurity[BInfo->rftk1_index[j]];
         Btrk1Quality[typesize] = TrackInfo->trackQuality[BInfo->rftk1_index[j]];
         tk1px = b4P->Px();
@@ -1132,6 +1141,7 @@ public:
         Btrk2Chi2ndf[typesize] = TrackInfo->chi2[BInfo->rftk2_index[j]]/TrackInfo->ndf[BInfo->rftk2_index[j]];
         Btrk2MVAVal[typesize] = TrackInfo->trkMVAVal[BInfo->rftk2_index[j]];
         Btrk2Algo[typesize] = TrackInfo->trkAlgo[BInfo->rftk2_index[j]];
+        Btrk2originalAlgo[typesize] = TrackInfo->originalTrkAlgo[BInfo->rftk2_index[j]];
         Btrk2highPurity[typesize] = TrackInfo->highPurity[BInfo->rftk2_index[j]];
         Btrk2Quality[typesize] = TrackInfo->trackQuality[BInfo->rftk2_index[j]];
         tk2px = b4P->Px();

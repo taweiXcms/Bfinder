@@ -149,6 +149,7 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
         GenLabel = cms.InputTag('genParticles'),
         MuonLabel = cms.InputTag('patMuonsWithTrigger'),
         TrackLabel = cms.InputTag('patTrackCands'),
+        TrackLabelReco = cms.InputTag(TrkLabel),
         MVAMapLabel = cms.InputTag(TrkLabel,"MVAVals"),
         Dedx_Token1 = cms.InputTag('dedxHarmonic2'),
         Dedx_Token2 = cms.InputTag('dedxTruncated40'),

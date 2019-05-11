@@ -75,6 +75,7 @@ class Bfinder : public edm::EDAnalyzer
         edm::EDGetTokenT< reco::GenParticleCollection > genLabel_;
         edm::EDGetTokenT< std::vector<pat::Muon> > muonLabel_;
         edm::EDGetTokenT< std::vector<pat::GenericParticle> > trackLabel_;
+        edm::EDGetTokenT< std::vector<reco::Track> > trackLabelReco_;
         edm::EDGetTokenT< std::vector<PileupSummaryInfo> > puInfoLabel_;
         edm::EDGetTokenT< reco::BeamSpot > bsLabel_;
         edm::EDGetTokenT< reco::VertexCollection > pvLabel_;
@@ -163,6 +164,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
     MuonTriggerMatchingFilter_ = iConfig.getParameter<std::vector<std::string> >("MuonTriggerMatchingFilter");
     genLabel_           = consumes< reco::GenParticleCollection >(iConfig.getParameter<edm::InputTag>("GenLabel"));
     trackLabel_         = consumes< std::vector<pat::GenericParticle> >(iConfig.getParameter<edm::InputTag>("TrackLabel"));
+    trackLabelReco_     = consumes< std::vector<reco::Track> >(iConfig.getParameter<edm::InputTag>("TrackLabelReco"));
     muonLabel_          = consumes< std::vector<pat::Muon> >(iConfig.getParameter<edm::InputTag>("MuonLabel"));
     puInfoLabel_    = consumes< std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("PUInfoLabel"));
     bsLabel_        = consumes< reco::BeamSpot >(iConfig.getParameter<edm::InputTag>("BSLabel"));
@@ -235,6 +237,13 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByToken(muonLabel_,muons);
     edm::Handle< std::vector<pat::GenericParticle> > tks;
     iEvent.getByToken(trackLabel_, tks);
+    edm::Handle< std::vector<reco::Track> > etracks;
+    iEvent.getByToken(trackLabelReco_, etracks);
+    if(etracks->size() != tks->size()) 
+      { 
+        fprintf(stderr,"ERROR: number of tracks in pat::GenericParticle is different from reco::Track.\n"); 
+        exit(0);
+      }
 
     //CLEAN all memory
     memset(&EvtInfo     ,0x00,sizeof(EvtInfo)   );
@@ -427,6 +436,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::vector<pat::GenericParticle>   input_tracks;
     input_muons = *muons;
     input_tracks = *tks;
+
     try{
         const reco::GenParticle* genMuonPtr[MAX_MUON];
         // memset(genMuonPtr,0x00,MAX_MUON);
@@ -711,7 +721,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
                         if(doTkPreCut_){
-                            if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
+                            // if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
+                            if( !(tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity")))) continue;
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
                             //if (tk_it->p()>200 || tk_it->pt()>200)              continue;
@@ -1061,16 +1072,21 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
                     // TrackInfo section {{{
                     // Setup MVA
-                    Handle<edm::ValueMap<float> > mvaoutput;
-                    Handle< std::vector<float> > mvaoutputpA;
+                    edm::Handle< edm::ValueMap<float> > mvaoutputAA;
+                    edm::Handle< std::vector<float> > mvaoutputpA;
                     std::vector<float>   mvavector;
+                    std::auto_ptr<edm::ValueMap<float> > mvaoutput(new edm::ValueMap<float>() );
                     if(MVAMapLabelInputTag_.instance() == "MVAVals") {
-                        iEvent.getByToken(MVAMapLabel_, mvaoutput);
+                        iEvent.getByToken(MVAMapLabel_, mvaoutputAA);
+                        *mvaoutput = *mvaoutputAA;
                     }
                     if(MVAMapLabelInputTag_.instance() == "MVAValues") {
                         iEvent.getByToken(MVAMapLabelpA_, mvaoutputpA);
                         mvavector = *mvaoutputpA;
                         assert(mvavector.size()==input_tracks.size());
+                        edm::ValueMap<float>::Filler filler(*mvaoutput);
+                        filler.insert(etracks, mvavector.begin(), mvavector.end());
+                        filler.fill();
                     }
 
                     // Setup Dedx
@@ -1092,6 +1108,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             fprintf(stderr,"ERROR: number of tracks exceeds the size of array.\n");
                             break;
                         }
+
                         if(tk_hindex>=int(isNeededTrack.size())) break;
                         if (isNeededTrack[tk_hindex]==false) continue;
 
@@ -1131,12 +1148,14 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
-                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
+                        // TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
+                        TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity"));
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
-                        if(MVAMapLabelInputTag_.instance() == "MVAVals")
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
-                        if(MVAMapLabelInputTag_.instance() == "MVAValues")
-                        TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_hindex];
+                        // if(MVAMapLabelInputTag_.instance() == "MVAVals")
+                        //   TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
+                        // if(MVAMapLabelInputTag_.instance() == "MVAValues")
+                        //   TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_rindex];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
                         if(readDedx_) {
