@@ -115,10 +115,12 @@ public:
   float     Bmu1TrgMatchFilterPt[MAX_XB];
   float     Bmu1TrgMatchFilterEta[MAX_XB];
   float     Bmu1TrgMatchFilterPhi[MAX_XB];
+  bool      Bmu1isTriggered[MAX_XB];
   float     Bmu2TrgMatchFilterE[MAX_XB];
   float     Bmu2TrgMatchFilterPt[MAX_XB];
   float     Bmu2TrgMatchFilterEta[MAX_XB];
   float     Bmu2TrgMatchFilterPhi[MAX_XB];
+  bool      Bmu2isTriggered[MAX_XB];
   
   //BInfo.mumuInfo
   float      Bmumumass[MAX_XB];
@@ -277,10 +279,12 @@ public:
   float    Jmu1TrgMatchFilterPt[MAX_XB];
   float    Jmu1TrgMatchFilterEta[MAX_XB];
   float    Jmu1TrgMatchFilterPhi[MAX_XB];
+  bool     Jmu1isTriggered[MAX_XB];
   float    Jmu2TrgMatchFilterE[MAX_XB];
   float    Jmu2TrgMatchFilterPt[MAX_XB];
   float    Jmu2TrgMatchFilterEta[MAX_XB];
   float    Jmu2TrgMatchFilterPhi[MAX_XB];
+  bool     Jmu2isTriggered[MAX_XB];
   
   float    Jgen[MAX_XB];
   int      JgenIndex[MAX_XB];
@@ -384,10 +388,12 @@ public:
         nt->Branch("Jmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Jsize]/F");
         nt->Branch("Jmu1TrgMatchFilterEta",Jmu1TrgMatchFilterEta,"Jmu1TrgMatchFilterEta[Jsize]/F");
         nt->Branch("Jmu1TrgMatchFilterPhi",Jmu1TrgMatchFilterPhi,"Jmu1TrgMatchFilterPhi[Jsize]/F");
+        nt->Branch("Jmu1isTriggered",Jmu1isTriggered,"Jmu1isTriggered[Jsize]/O");
         nt->Branch("Jmu2TrgMatchFilterE"  ,Bmu2TrgMatchFilterE,  "Bmu2TrgMatchFilterE[Jsize]/F");
         nt->Branch("Jmu2TrgMatchFilterPt" ,Bmu2TrgMatchFilterPt, "Bmu2TrgMatchFilterPt[Jsize]/F");
         nt->Branch("Jmu2TrgMatchFilterEta",Jmu2TrgMatchFilterEta,"Jmu2TrgMatchFilterEta[Jsize]/F");
         nt->Branch("Jmu2TrgMatchFilterPhi",Jmu2TrgMatchFilterPhi,"Jmu2TrgMatchFilterPhi[Jsize]/F");
+        nt->Branch("Jmu2isTriggered",Jmu2isTriggered,"Jmu2isTriggered[Jsize]/O");
 
         nt->Branch("Jgen",Jgen,"Jgen[Jsize]/F");
         nt->Branch("JgenIndex",JgenIndex,"JgenIndex[Jsize]/I");
@@ -535,10 +541,12 @@ public:
         nt->Branch("Bmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterEta",Bmu1TrgMatchFilterEta,"Bmu1TrgMatchFilterEta[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterPhi",Bmu1TrgMatchFilterPhi,"Bmu1TrgMatchFilterPhi[Bsize]/F");
+        nt->Branch("Bmu1isTriggered",Bmu1isTriggered,"Bmu1isTriggered[Jsize]/O");
         nt->Branch("Bmu2TrgMatchFilterE"  ,Bmu2TrgMatchFilterE,  "Bmu2TrgMatchFilterE[Bsize]/F");
         nt->Branch("Bmu2TrgMatchFilterPt" ,Bmu2TrgMatchFilterPt, "Bmu2TrgMatchFilterPt[Bsize]/F");
         nt->Branch("Bmu2TrgMatchFilterEta",Bmu2TrgMatchFilterEta,"Bmu2TrgMatchFilterEta[Bsize]/F");
         nt->Branch("Bmu2TrgMatchFilterPhi",Bmu2TrgMatchFilterPhi,"Bmu2TrgMatchFilterPhi[Bsize]/F");
+        nt->Branch("Bmu2isTriggered",Bmu2isTriggered,"Bmu2isTriggered[Jsize]/O");
         nt->Branch("Bmumumass",Bmumumass,"Bmumumass[Bsize]/F");
         nt->Branch("Bmumueta",Bmumueta,"Bmumueta[Bsize]/F");
         nt->Branch("Bmumuphi",Bmumuphi,"Bmumuphi[Bsize]/F");
@@ -901,10 +909,12 @@ public:
     Bmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu1TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu1TrgMatchFilterPhi[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPhi[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
+    Bmu1isTriggered[typesize] = MuonInfo->isTriggered[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu2TrgMatchFilterPhi[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPhi[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
+    Bmu2isTriggered[typesize] = MuonInfo->isTriggered[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
 
     b4P->SetPxPyPzE(mu1px+mu2px,
                     mu1py+mu2py,
@@ -1602,10 +1612,12 @@ public:
     Jmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu1TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu1TrgMatchFilterPhi[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPhi[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
+    Jmu1isTriggered[typesize] = MuonInfo->isTriggered[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu2TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu2_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu2TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu2_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu2TrgMatchFilterEta[typesize] = MuonInfo->MuTrgMatchFilterTrgObjEta[BInfo->uj_rfmu2_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu2TrgMatchFilterPhi[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPhi[BInfo->uj_rfmu2_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
+    Jmu2isTriggered[typesize] = MuonInfo->isTriggered[BInfo->uj_rfmu2_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
 
     b4P->SetPxPyPzE(mu1px+mu2px,
                     mu1py+mu2py,
