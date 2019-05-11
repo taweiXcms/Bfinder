@@ -541,12 +541,12 @@ public:
         nt->Branch("Bmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterEta",Bmu1TrgMatchFilterEta,"Bmu1TrgMatchFilterEta[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterPhi",Bmu1TrgMatchFilterPhi,"Bmu1TrgMatchFilterPhi[Bsize]/F");
-        nt->Branch("Bmu1isTriggered",Bmu1isTriggered,"Bmu1isTriggered[Jsize]/O");
+        nt->Branch("Bmu1isTriggered",Bmu1isTriggered,"Bmu1isTriggered[Bsize]/O");
         nt->Branch("Bmu2TrgMatchFilterE"  ,Bmu2TrgMatchFilterE,  "Bmu2TrgMatchFilterE[Bsize]/F");
         nt->Branch("Bmu2TrgMatchFilterPt" ,Bmu2TrgMatchFilterPt, "Bmu2TrgMatchFilterPt[Bsize]/F");
         nt->Branch("Bmu2TrgMatchFilterEta",Bmu2TrgMatchFilterEta,"Bmu2TrgMatchFilterEta[Bsize]/F");
         nt->Branch("Bmu2TrgMatchFilterPhi",Bmu2TrgMatchFilterPhi,"Bmu2TrgMatchFilterPhi[Bsize]/F");
-        nt->Branch("Bmu2isTriggered",Bmu2isTriggered,"Bmu2isTriggered[Jsize]/O");
+        nt->Branch("Bmu2isTriggered",Bmu2isTriggered,"Bmu2isTriggered[Bsize]/O");
         nt->Branch("Bmumumass",Bmumumass,"Bmumumass[Bsize]/F");
         nt->Branch("Bmumueta",Bmumueta,"Bmumueta[Bsize]/F");
         nt->Branch("Bmumuphi",Bmumuphi,"Bmumuphi[Bsize]/F");
