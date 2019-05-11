@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks"):
+# https://github.com/CMS-HIN-dilepton/cmssw/blob/Onia_AA_10_3_X/HiSkim/HiOnia2MuMu/python/onia2MuMuPAT_cff.py
+
+def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = False, UseGenPlusSim = False, VtxLabel = "hiSelectedVertex", TrkLabel = "hiGeneralTracks", useL1Stage2 = False):
 	### Set TransientTrackBuilder 
 	process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 	
@@ -73,9 +75,10 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	
 	## patMuonsWithTrigger
 	process.load("MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff")
-	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, useL1MatchingWindowForSinglets, changeTriggerProcessName, switchOffAmbiguityResolution, addHLTL1Passthrough
-	#process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
-	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
+	from MuonAnalysis.MuonAssociators.patMuonsWithTrigger_cff import addMCinfo, useL1MatchingWindowForSinglets, changeTriggerProcessName, switchOffAmbiguityResolution, addHLTL1Passthrough, useL1Stage2Candidates
+
+    # with some customization
+	# process.patMuonsWithTriggerSequence = cms.Sequence(process.pfParticleSelectionForIsoSequence*process.muonPFIsolationPATSequence*process.patMuonsWithTriggerSequence)
 	process.patMuonsWithoutTrigger.isoDeposits = cms.PSet()
 	process.patMuonsWithoutTrigger.isolationValues = cms.PSet()	
 	process.patMuonsWithoutTrigger.pvSrc = cms.InputTag(VtxLabel)
@@ -88,13 +91,27 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	switchOffAmbiguityResolution(process) # Switch off ambiguity resolution: allow multiple reco muons to match to the same trigger muon
 	addHLTL1Passthrough(process)
 
-	if "hltL3MuonCandidates" in process.patTrigger.collections:
-		process.patTrigger.collections.remove("hltL3MuonCandidates")
-	process.patTrigger.collections.append("hltHIL3MuonCandidates")
+	if useL1Stage2:
+		useL1Stage2Candidates(process)
+		process.patTrigger.collections.append("hltGtStage2Digis:Muon") 
+		process.muonMatchHLTL1.matchedCuts = cms.string('coll("hltGtStage2Digis:Muon")')
+		process.muonMatchHLTL1.useMB2InOverlap = cms.bool(True)
+		process.muonMatchHLTL1.useStage2L1 = cms.bool(True)
+		process.muonMatchHLTL1.preselection = cms.string("")
+		# process.muonL1Info.matched = cms.InputTag("gtStage2Digis:Muon:RECO")
+
+	if "hltIterL3MuonCandidatesPPOnAA" in process.patTrigger.collections:
+		process.patTrigger.collections.remove("hltIterL3MuonCandidatesPPOnAA")
+	process.patTrigger.collections.append("hltIterL3MuonCandidatesPPOnAA")
+	if "hltL2MuonCandidatesPPOnAA" in process.patTrigger.collections:
+		process.patTrigger.collections.remove("hltL2MuonCandidatesPPOnAA")
+	process.patTrigger.collections.append("hltL2MuonCandidatesPPOnAA")
 
 	process.muonL1Info.maxDeltaR = 0.3
+	process.muonL1Info.maxDeltaEta = 0.2
 	process.muonL1Info.fallbackToME1 = True
 	process.muonMatchHLTL1.maxDeltaR = 0.3
+	process.muonMatchHLTL1.maxDeltaEta = 0.2
 	process.muonMatchHLTL1.fallbackToME1 = True
 	process.muonMatchHLTL2.maxDeltaR = 0.3
 	process.muonMatchHLTL2.maxDPtRel = 10.0
@@ -104,7 +121,11 @@ def finderMaker_75X(process, AddCaloMuon = False, runOnMC = True, HIFormat = Fal
 	process.muonMatchHLTCtfTrack.maxDPtRel = 10.0
 	process.muonMatchHLTTrackMu.maxDeltaR = 0.1
 	process.muonMatchHLTTrackMu.maxDPtRel = 10.0
-	process.muonMatchHLTL3.matchedCuts = cms.string('coll("hltHIL3MuonCandidates")')
+	process.muonMatchHLTL3.matchedCuts = cms.string('coll("hltIterL3MuonCandidatesPPOnAA")')
+	process.muonMatchHLTL2.matchedCuts = cms.string('coll("hltL2MuonCandidatesPPOnAA")') 
+
+	# Make a sequence
+	process.patMuonsWithTriggerSequence = cms.Sequence(process.patMuonsWithTriggerSequence)
 	
 	# Merge muons, calomuons in a single collection for T&P
 	from RecoMuon.MuonIdentification.calomuons_cfi import calomuons;
