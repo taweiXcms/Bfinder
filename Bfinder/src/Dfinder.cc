@@ -577,7 +577,6 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
                         if(doTkPreCut_){
-                            // if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
                             if( !(tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity")))) continue;
                             //d0 analysis cuts
                             //if(tk_it->track()->hitPattern().numberOfValidHits() < 12) continue;
@@ -1044,14 +1043,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     TrackInfo.dzerror        [TrackInfo.size] = tk_it->track()->dzError();
                     TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
                     TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
-                    // TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                     TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity"));
                     TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                     TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
-                    // if(MVAMapLabelInputTag_.instance() == "MVAVals") 
-                    //     TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
-                    // if(MVAMapLabelInputTag_.instance() == "MVAValues") 
-                    //     TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_hindex];
                     TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                     TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
                     if(readDedx_) {

@@ -721,7 +721,6 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         //if (fabs(tk_it->eta()) > 2.5)                       continue;
                         TrackCutLevel->Fill(4);
                         if(doTkPreCut_){
-                            // if( !(tk_it->track()->quality(reco::TrackBase::highPurity))) continue;
                             if( !(tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity")))) continue;
                             //outdated selections
                             //if (tk_it->track()->normalizedChi2()>5)             continue;
@@ -1148,14 +1147,9 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
                         TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
                         TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
-                        // TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::highPurity);
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity"));
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
-                        // if(MVAMapLabelInputTag_.instance() == "MVAVals")
-                        //   TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
-                        // if(MVAMapLabelInputTag_.instance() == "MVAValues")
-                        //   TrackInfo.trkMVAVal      [TrackInfo.size] = mvavector[tk_rindex];
                         TrackInfo.trkAlgo        [TrackInfo.size] = tk_it->track()->algo();
                         TrackInfo.originalTrkAlgo[TrackInfo.size] = tk_it->track()->originalAlgo();
                         if(readDedx_) {
