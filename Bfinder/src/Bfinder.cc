@@ -298,8 +298,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     */
 
     // Handle primary vertex properties
-    Vertex thePrimaryV;
-    math::XYZPoint RefVtx;
+    Vertex thePrimaryV; //, thePrimaryVmaxPt, thePrimaryVmaxMult;
+    math::XYZPoint RefVtx; //, RefVtxmaxPt, RefVtxmaxMult;
     //get beamspot information
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
@@ -378,6 +378,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             VtxInfo.Size++;
             break;
         }
+
         for (reco::Vertex::trackRef_iterator it = it_vtx->tracks_begin(); it != it_vtx->tracks_end(); it++) {
            VtxInfo.Pt_Sum[VtxInfo.Size] += (*it)->pt();
            VtxInfo.Pt_Sum2[VtxInfo.Size] += ((*it)->pt() * (*it)->pt());
@@ -1145,8 +1146,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.ndf            [TrackInfo.size] = tk_it->track()->ndof();
                         TrackInfo.d0             [TrackInfo.size] = tk_it->track()->d0();
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
-                        TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
-                        TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        // TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
+                        // TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        TrackInfo.dxy            [TrackInfo.size] = tk_it->track()->dxy();
+                        TrackInfo.dxyerror       [TrackInfo.size] = tk_it->track()->dxyError();
+                        TrackInfo.dz             [TrackInfo.size] = tk_it->track()->dz();
+                        TrackInfo.dzerror        [TrackInfo.size] = tk_it->track()->dzError();
+                        TrackInfo.dxy1           [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        TrackInfo.dxyerror1      [TrackInfo.size] = TMath::Sqrt(tk_it->track()->dxyError()*tk_it->track()->dxyError() + thePrimaryV.xError()*thePrimaryV.yError());
+                        TrackInfo.dz1            [TrackInfo.size] = tk_it->track()->dz(RefVtx);
+                        TrackInfo.dzerror1       [TrackInfo.size] = TMath::Sqrt(tk_it->track()->dzError()*tk_it->track()->dzError() + thePrimaryV.zError()*thePrimaryV.zError());
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity"));
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
