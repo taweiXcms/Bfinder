@@ -111,6 +111,10 @@ public:
   int       Bmu2InTrackerLayer[MAX_XB];
   int       Bmu1TrkQuality[MAX_XB];
   int       Bmu2TrkQuality[MAX_XB];
+  bool      Bmu1highPurity[MAX_XB];
+  bool      Bmu2highPurity[MAX_XB];
+  bool      Bmu1SoftMuID[MAX_XB];
+  bool      Bmu2SoftMuID[MAX_XB];
   float     Bmu1TrgMatchFilterE[MAX_XB];
   float     Bmu1TrgMatchFilterPt[MAX_XB];
   float     Bmu1TrgMatchFilterEta[MAX_XB];
@@ -283,6 +287,10 @@ public:
   int      Jmu2InTrackerLayer[MAX_XB];
   int      Jmu1TrkQuality[MAX_XB];
   int      Jmu2TrkQuality[MAX_XB];
+  bool     Jmu1highPurity[MAX_XB];
+  bool     Jmu2highPurity[MAX_XB];
+  bool     Jmu1SoftMuID[MAX_XB];
+  bool     Jmu2SoftMuID[MAX_XB];
   float    Jmu1TrgMatchFilterE[MAX_XB];
   float    Jmu1TrgMatchFilterPt[MAX_XB];
   float    Jmu1TrgMatchFilterEta[MAX_XB];
@@ -392,6 +400,10 @@ public:
         nt->Branch("Jmu2InTrackerLayer",Jmu2InTrackerLayer,"Jmu2InTrackerLayer[Jsize]/I");
         nt->Branch("Jmu1TrkQuality",Jmu1TrkQuality,"Jmu1TrkQuality[Jsize]/I");
         nt->Branch("Jmu2TrkQuality",Jmu2TrkQuality,"Jmu2TrkQuality[Jsize]/I");
+        nt->Branch("Jmu1highPurity",Jmu1highPurity,"Jmu1highPurity[Jsize]/O");
+        nt->Branch("Jmu2highPurity",Jmu2highPurity,"Jmu2highPurity[Jsize]/O");
+        nt->Branch("Jmu1SoftMuID",Jmu1SoftMuID,"Jmu1SoftMuID[Jsize]/O");
+        nt->Branch("Jmu2SoftMuID",Jmu2SoftMuID,"Jmu2SoftMuID[Jsize]/O");
         nt->Branch("Jmu1TrgMatchFilterE"  ,Bmu1TrgMatchFilterE,  "Bmu1TrgMatchFilterE[Jsize]/F");
         nt->Branch("Jmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Jsize]/F");
         nt->Branch("Jmu1TrgMatchFilterEta",Jmu1TrgMatchFilterEta,"Jmu1TrgMatchFilterEta[Jsize]/F");
@@ -553,6 +565,10 @@ public:
         nt->Branch("Bmu2InTrackerLayer",Bmu2InTrackerLayer,"Bmu2InTrackerLayer[Bsize]/I");
         nt->Branch("Bmu1TrkQuality",Bmu1TrkQuality,"Bmu1TrkQuality[Bsize]/I");
         nt->Branch("Bmu2TrkQuality",Bmu2TrkQuality,"Bmu2TrkQuality[Bsize]/I");
+        nt->Branch("Bmu1highPurity",Bmu1highPurity,"Bmu1highPurity[Bsize]/O");
+        nt->Branch("Bmu2highPurity",Bmu2highPurity,"Bmu2highPurity[Bsize]/O");
+        nt->Branch("Bmu1SoftMuID",Bmu1SoftMuID,"Bmu1SoftMuID[Bsize]/O");
+        nt->Branch("Bmu2SoftMuID",Bmu2SoftMuID,"Bmu2SoftMuID[Bsize]/O");
         nt->Branch("Bmu1TrgMatchFilterE"  ,Bmu1TrgMatchFilterE,  "Bmu1TrgMatchFilterE[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterEta",Bmu1TrgMatchFilterEta,"Bmu1TrgMatchFilterEta[Bsize]/F");
@@ -920,6 +936,10 @@ public:
     Bmu2InTrackerLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]] + MuonInfo->i_nStripLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     Bmu1TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu2TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu2highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu2SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
 
     Bmu1TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
@@ -1647,6 +1667,10 @@ public:
     Jmu2InTrackerLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu2_index[j]] + MuonInfo->i_nStripLayer[BInfo->uj_rfmu2_index[j]];
     Jmu1TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu1_index[j]];
     Jmu2TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu2_index[j]];
+    Jmu1highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu1_index[j]];
+    Jmu2highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu2_index[j]];
+    Jmu1SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu1_index[j]];
+    Jmu2SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu2_index[j]];
 
     Jmu1TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];

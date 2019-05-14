@@ -306,6 +306,7 @@ class VtxInfoBranches { //{{{
         bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
         bool    BfinderMuID [MAX_MUON];
         bool    SoftMuID [MAX_MUON];
+        bool    OptMuID [MAX_MUON];
 
         bool    isStandAloneMuon            [ MAX_MUON];
         int 	StandAloneMuon_charge       [ MAX_MUON];
@@ -321,6 +322,7 @@ class VtxInfoBranches { //{{{
         bool    innerTrackisNonnull  [MAX_MUON];
         bool    globalTrackisNonnull [MAX_MUON];
         int     innerTrackQuality    [MAX_MUON];
+        bool    highPurity    [MAX_MUON];
         float  normchi2     [ MAX_MUON];
         int	    i_striphit   [ MAX_MUON];
         int	    i_pixelhit   [ MAX_MUON];
@@ -374,8 +376,10 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
             root->Branch("MuonInfo.BfinderMuID" ,BfinderMuID, "MuonInfo.BfinderMuID[MuonInfo.size]/O");
             root->Branch("MuonInfo.SoftMuID" ,SoftMuID, "MuonInfo.SoftMuID[MuonInfo.size]/O");
+            root->Branch("MuonInfo.OptMuID" ,OptMuID, "MuonInfo.OptMuID[MuonInfo.size]/O");
 
-            root->Branch("MuonInfo.innerTrackQuality"    , innerTrackQuality    , "MuonInfo.innerTrackQuality[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.innerTrackQuality"    , innerTrackQuality    , "MuonInfo.innerTrackQuality[MuonInfo.size]/O"	);
+            root->Branch("MuonInfo.highPurity"    , highPurity    , "MuonInfo.highPurity[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/F");
             root->Branch("MuonInfo.i_striphit"    , i_striphit    , "MuonInfo.i_striphit[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.i_pixelhit"    , i_pixelhit    , "MuonInfo.i_pixelhit[MuonInfo.size]/I"	);
@@ -451,8 +455,10 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
             root->SetBranchAddress("MuonInfo.BfinderMuID" , BfinderMuID);
             root->SetBranchAddress("MuonInfo.SoftMuID" , SoftMuID);
+            root->SetBranchAddress("MuonInfo.OptMuID" , OptMuID);
 
             root->SetBranchAddress("MuonInfo.innerTrackQuality"    , innerTrackQuality	);
+            root->SetBranchAddress("MuonInfo.highPurity"    , highPurity	);
             root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
             root->SetBranchAddress("MuonInfo.i_striphit"    , i_striphit	);
             root->SetBranchAddress("MuonInfo.i_pixelhit"    , i_pixelhit	);
