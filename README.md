@@ -27,7 +27,7 @@ To add D/Bfinder to forest:
 ```
 cd $CMSSW_BASE/src
 cmsenv
-git clone --branch CMSSW_10XX-F20190510 https://github.com/boundino/Bfinder.git --depth 1
+git clone --branch CMSSW_10XX-F20190513 https://github.com/boundino/Bfinder.git --depth 1
 source Bfinder/test/DnBfinder_to_Forest_103X.sh
 scram b -j4
 # Bfinder MC:
