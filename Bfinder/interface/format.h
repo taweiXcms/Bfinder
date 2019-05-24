@@ -306,6 +306,7 @@ class VtxInfoBranches { //{{{
         bool    isNeededMuon[MAX_MUON];//for intermediate Bfinder usage, not stored in output
         bool    BfinderMuID [MAX_MUON];
         bool    SoftMuID [MAX_MUON];
+        bool    OptMuID [MAX_MUON];
 
         bool    isStandAloneMuon            [ MAX_MUON];
         int 	StandAloneMuon_charge       [ MAX_MUON];
@@ -321,6 +322,7 @@ class VtxInfoBranches { //{{{
         bool    innerTrackisNonnull  [MAX_MUON];
         bool    globalTrackisNonnull [MAX_MUON];
         int     innerTrackQuality    [MAX_MUON];
+        bool    highPurity    [MAX_MUON];
         float  normchi2     [ MAX_MUON];
         int	    i_striphit   [ MAX_MUON];
         int	    i_pixelhit   [ MAX_MUON];
@@ -374,8 +376,10 @@ class VtxInfoBranches { //{{{
             root->Branch("MuonInfo.geninfo_index"    , geninfo_index    , "MuonInfo.geninfo_index[MuonInfo.size]/I");
             root->Branch("MuonInfo.BfinderMuID" ,BfinderMuID, "MuonInfo.BfinderMuID[MuonInfo.size]/O");
             root->Branch("MuonInfo.SoftMuID" ,SoftMuID, "MuonInfo.SoftMuID[MuonInfo.size]/O");
+            root->Branch("MuonInfo.OptMuID" ,OptMuID, "MuonInfo.OptMuID[MuonInfo.size]/O");
 
-            root->Branch("MuonInfo.innerTrackQuality"    , innerTrackQuality    , "MuonInfo.innerTrackQuality[MuonInfo.size]/I"	);
+            root->Branch("MuonInfo.innerTrackQuality"    , innerTrackQuality    , "MuonInfo.innerTrackQuality[MuonInfo.size]/O"	);
+            root->Branch("MuonInfo.highPurity"    , highPurity    , "MuonInfo.highPurity[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.normchi2"      , normchi2      , "MuonInfo.normchi2[MuonInfo.size]/F");
             root->Branch("MuonInfo.i_striphit"    , i_striphit    , "MuonInfo.i_striphit[MuonInfo.size]/I"	);
             root->Branch("MuonInfo.i_pixelhit"    , i_pixelhit    , "MuonInfo.i_pixelhit[MuonInfo.size]/I"	);
@@ -451,8 +455,10 @@ class VtxInfoBranches { //{{{
             root->SetBranchAddress("MuonInfo.geninfo_index"    , geninfo_index);
             root->SetBranchAddress("MuonInfo.BfinderMuID" , BfinderMuID);
             root->SetBranchAddress("MuonInfo.SoftMuID" , SoftMuID);
+            root->SetBranchAddress("MuonInfo.OptMuID" , OptMuID);
 
             root->SetBranchAddress("MuonInfo.innerTrackQuality"    , innerTrackQuality	);
+            root->SetBranchAddress("MuonInfo.highPurity"    , highPurity	);
             root->SetBranchAddress("MuonInfo.normchi2"      , normchi2);
             root->SetBranchAddress("MuonInfo.i_striphit"    , i_striphit	);
             root->SetBranchAddress("MuonInfo.i_pixelhit"    , i_pixelhit	);
@@ -532,8 +538,12 @@ class TrackInfoBranches{//{{{
         float	d0error      [ MAX_TRACK];
         float	dz           [ MAX_TRACK];
         float	dzerror      [ MAX_TRACK];
-        float	dzPV         [ MAX_TRACK];
-        float	dxyPV        [ MAX_TRACK];
+        float	dxy          [ MAX_TRACK];
+        float	dxyerror     [ MAX_TRACK];
+        float	dz1          [ MAX_TRACK];
+        float	dzerror1     [ MAX_TRACK];
+        float	dxy1         [ MAX_TRACK];
+        float	dxyerror1    [ MAX_TRACK];
         int     geninfo_index[ MAX_TRACK];
         int     trackQuality [ MAX_TRACK];
         bool    highPurity   [ MAX_TRACK];
@@ -565,8 +575,12 @@ class TrackInfoBranches{//{{{
             root->Branch("TrackInfo.d0error"	    ,d0error	    ,"TrackInfo.d0error[TrackInfo.size]/F"	);
             root->Branch("TrackInfo.dz"		        ,dz		        ,"TrackInfo.dz[TrackInfo.size]/F"	);
             root->Branch("TrackInfo.dzerror"	    ,dzerror	    ,"TrackInfo.dzerror[TrackInfo.size]/F"	);
-            root->Branch("TrackInfo.dzPV"           ,dzPV           ,"TrackInfo.dzPV[TrackInfo.size]/F"		);
-            root->Branch("TrackInfo.dxyPV"          ,dxyPV          ,"TrackInfo.dxyPV[TrackInfo.size]/F"		);
+            root->Branch("TrackInfo.dxy"		,dxy		        ,"TrackInfo.dxy[TrackInfo.size]/F"	);
+            root->Branch("TrackInfo.dxyerror"	    ,dxyerror	    ,"TrackInfo.dxyerror[TrackInfo.size]/F"	);
+            root->Branch("TrackInfo.dz1"                ,dz1                    ,"TrackInfo.dz1[TrackInfo.size]/F"		);
+            root->Branch("TrackInfo.dzerror1"       ,dzerror1       ,"TrackInfo.dzerror1[TrackInfo.size]/F"		);
+            root->Branch("TrackInfo.dxy1"               ,dxy1                   ,"TrackInfo.dxy1[TrackInfo.size]/F"		);
+            root->Branch("TrackInfo.dxyerror1"      ,dxyerror1      ,"TrackInfo.dxyerror1[TrackInfo.size]/F"		);
             root->Branch("TrackInfo.geninfo_index"  ,geninfo_index  ,"TrackInfo.geninfo_index[TrackInfo.size]/I");
             root->Branch("TrackInfo.trackQuality"   ,trackQuality   ,"TrackInfo.trackQuality[TrackInfo.size]/I");
             root->Branch("TrackInfo.highPurity"     ,highPurity     ,"TrackInfo.highPurity[TrackInfo.size]/O");
@@ -602,8 +616,12 @@ class TrackInfoBranches{//{{{
             root->SetBranchAddress("TrackInfo.d0error"       , d0error     );
             root->SetBranchAddress("TrackInfo.dz"            , dz          );
             root->SetBranchAddress("TrackInfo.dzerror"       , dzerror     );
-            root->SetBranchAddress("TrackInfo.dzPV"          , dzPV        );
-            root->SetBranchAddress("TrackInfo.dxyPV"         , dxyPV       );
+            root->SetBranchAddress("TrackInfo.dxy"           , dxy          );
+            root->SetBranchAddress("TrackInfo.dxyerror"      , dxyerror     );
+            root->SetBranchAddress("TrackInfo.dz1"           , dz1        );
+            root->SetBranchAddress("TrackInfo.dzerror1"      , dzerror1        );
+            root->SetBranchAddress("TrackInfo.dxy1"          , dxy1       );
+            root->SetBranchAddress("TrackInfo.dxyerror1"     , dxyerror1       );
             root->SetBranchAddress("TrackInfo.geninfo_index" , geninfo_index  );
             root->SetBranchAddress("TrackInfo.trackQuality"  , trackQuality  );
             root->SetBranchAddress("TrackInfo.highPurity"    , highPurity  );

@@ -111,6 +111,12 @@ public:
   int       Bmu2InTrackerLayer[MAX_XB];
   int       Bmu1TrkQuality[MAX_XB];
   int       Bmu2TrkQuality[MAX_XB];
+  bool      Bmu1highPurity[MAX_XB];
+  bool      Bmu2highPurity[MAX_XB];
+  bool      Bmu1SoftMuID[MAX_XB];
+  bool      Bmu2SoftMuID[MAX_XB];
+  bool      Bmu1isAcc[MAX_XB];
+  bool      Bmu2isAcc[MAX_XB];
   float     Bmu1TrgMatchFilterE[MAX_XB];
   float     Bmu1TrgMatchFilterPt[MAX_XB];
   float     Bmu1TrgMatchFilterEta[MAX_XB];
@@ -157,12 +163,20 @@ public:
   float     Btrk2Y[MAX_XB];
   float     Btrk1Dz[MAX_XB];
   float     Btrk2Dz[MAX_XB];
+  float     Btrk1DzError[MAX_XB];
+  float     Btrk2DzError[MAX_XB];
   float     Btrk1Dxy[MAX_XB];
   float     Btrk2Dxy[MAX_XB];
-  float     Btrk1D0[MAX_XB];
-  float     Btrk2D0[MAX_XB];
-  float     Btrk1D0Err[MAX_XB];
-  float     Btrk2D0Err[MAX_XB];
+  float     Btrk1DxyError[MAX_XB];
+  float     Btrk2DxyError[MAX_XB];
+  float     Btrk1Dz1[MAX_XB];
+  float     Btrk2Dz1[MAX_XB];
+  float     Btrk1DzError1[MAX_XB];
+  float     Btrk2DzError1[MAX_XB];
+  float     Btrk1Dxy1[MAX_XB];
+  float     Btrk2Dxy1[MAX_XB];
+  float     Btrk1DxyError1[MAX_XB];
+  float     Btrk2DxyError1[MAX_XB];
   float     Btrk1PixelHit[MAX_XB];
   float     Btrk2PixelHit[MAX_XB];
   float     Btrk1StripHit[MAX_XB];
@@ -275,6 +289,12 @@ public:
   int      Jmu2InTrackerLayer[MAX_XB];
   int      Jmu1TrkQuality[MAX_XB];
   int      Jmu2TrkQuality[MAX_XB];
+  bool     Jmu1highPurity[MAX_XB];
+  bool     Jmu2highPurity[MAX_XB];
+  bool     Jmu1SoftMuID[MAX_XB];
+  bool     Jmu2SoftMuID[MAX_XB];
+  bool     Jmu1isAcc[MAX_XB];
+  bool     Jmu2isAcc[MAX_XB];
   float    Jmu1TrgMatchFilterE[MAX_XB];
   float    Jmu1TrgMatchFilterPt[MAX_XB];
   float    Jmu1TrgMatchFilterEta[MAX_XB];
@@ -384,6 +404,12 @@ public:
         nt->Branch("Jmu2InTrackerLayer",Jmu2InTrackerLayer,"Jmu2InTrackerLayer[Jsize]/I");
         nt->Branch("Jmu1TrkQuality",Jmu1TrkQuality,"Jmu1TrkQuality[Jsize]/I");
         nt->Branch("Jmu2TrkQuality",Jmu2TrkQuality,"Jmu2TrkQuality[Jsize]/I");
+        nt->Branch("Jmu1highPurity",Jmu1highPurity,"Jmu1highPurity[Jsize]/O");
+        nt->Branch("Jmu2highPurity",Jmu2highPurity,"Jmu2highPurity[Jsize]/O");
+        nt->Branch("Jmu1SoftMuID",Jmu1SoftMuID,"Jmu1SoftMuID[Jsize]/O");
+        nt->Branch("Jmu2SoftMuID",Jmu2SoftMuID,"Jmu2SoftMuID[Jsize]/O");
+        nt->Branch("Jmu1isAcc",Jmu1isAcc,"Jmu1isAcc[Jsize]/O");
+        nt->Branch("Jmu2isAcc",Jmu2isAcc,"Jmu2isAcc[Jsize]/O");
         nt->Branch("Jmu1TrgMatchFilterE"  ,Bmu1TrgMatchFilterE,  "Bmu1TrgMatchFilterE[Jsize]/F");
         nt->Branch("Jmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Jsize]/F");
         nt->Branch("Jmu1TrgMatchFilterEta",Jmu1TrgMatchFilterEta,"Jmu1TrgMatchFilterEta[Jsize]/F");
@@ -453,12 +479,20 @@ public:
         nt->Branch("Btrk2Y",Btrk2Y,"Btrk2Y[Bsize]/F");  
         nt->Branch("Btrk1Dz",Btrk1Dz,"Btrk1Dz[Bsize]/F");
         nt->Branch("Btrk2Dz",Btrk2Dz,"Btrk2Dz[Bsize]/F");
+        nt->Branch("Btrk1DzError",Btrk1DzError,"Btrk1DzError[Bsize]/F");
+        nt->Branch("Btrk2DzError",Btrk2DzError,"Btrk2DzError[Bsize]/F");
         nt->Branch("Btrk1Dxy",Btrk1Dxy,"Btrk1Dxy[Bsize]/F");
         nt->Branch("Btrk2Dxy",Btrk2Dxy,"Btrk2Dxy[Bsize]/F");
-        nt->Branch("Btrk1D0",Btrk1D0,"Btrk1D0[Bsize]/F");
-        nt->Branch("Btrk2D0",Btrk2D0,"Btrk2D0[Bsize]/F");
-        nt->Branch("Btrk1D0Err",Btrk1D0Err,"Btrk1D0Err[Bsize]/F");
-        nt->Branch("Btrk2D0Err",Btrk2D0Err,"Btrk2D0Err[Bsize]/F");
+        nt->Branch("Btrk1DxyError",Btrk1DxyError,"Btrk1DxyError[Bsize]/F");
+        nt->Branch("Btrk2DxyError",Btrk2DxyError,"Btrk2DxyError[Bsize]/F");
+        nt->Branch("Btrk1Dz1",Btrk1Dz1,"Btrk1Dz1[Bsize]/F");
+        nt->Branch("Btrk2Dz1",Btrk2Dz1,"Btrk2Dz1[Bsize]/F");
+        nt->Branch("Btrk1DzError1",Btrk1DzError1,"Btrk1DzError1[Bsize]/F");
+        nt->Branch("Btrk2DzError1",Btrk2DzError1,"Btrk2DzError1[Bsize]/F");
+        nt->Branch("Btrk1Dxy1",Btrk1Dxy1,"Btrk1Dxy1[Bsize]/F");
+        nt->Branch("Btrk2Dxy1",Btrk2Dxy1,"Btrk2Dxy1[Bsize]/F");
+        nt->Branch("Btrk1DxyError1",Btrk1DxyError1,"Btrk1DxyError1[Bsize]/F");
+        nt->Branch("Btrk2DxyError1",Btrk2DxyError1,"Btrk2DxyError1[Bsize]/F");
         nt->Branch("Btrk1PixelHit",Btrk1PixelHit,"Btrk1PixelHit[Bsize]/F");
         nt->Branch("Btrk2PixelHit",Btrk2PixelHit,"Btrk2PixelHit[Bsize]/F");
         nt->Branch("Btrk1StripHit",Btrk1StripHit,"Btrk1StripHit[Bsize]/F");
@@ -537,6 +571,12 @@ public:
         nt->Branch("Bmu2InTrackerLayer",Bmu2InTrackerLayer,"Bmu2InTrackerLayer[Bsize]/I");
         nt->Branch("Bmu1TrkQuality",Bmu1TrkQuality,"Bmu1TrkQuality[Bsize]/I");
         nt->Branch("Bmu2TrkQuality",Bmu2TrkQuality,"Bmu2TrkQuality[Bsize]/I");
+        nt->Branch("Bmu1highPurity",Bmu1highPurity,"Bmu1highPurity[Bsize]/O");
+        nt->Branch("Bmu2highPurity",Bmu2highPurity,"Bmu2highPurity[Bsize]/O");
+        nt->Branch("Bmu1SoftMuID",Bmu1SoftMuID,"Bmu1SoftMuID[Bsize]/O");
+        nt->Branch("Bmu2SoftMuID",Bmu2SoftMuID,"Bmu2SoftMuID[Bsize]/O");
+        nt->Branch("Bmu1isAcc",Bmu1isAcc,"Bmu1isAcc[Bsize]/O");
+        nt->Branch("Bmu2isAcc",Bmu2isAcc,"Bmu2isAcc[Bsize]/O");
         nt->Branch("Bmu1TrgMatchFilterE"  ,Bmu1TrgMatchFilterE,  "Bmu1TrgMatchFilterE[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterPt" ,Bmu1TrgMatchFilterPt, "Bmu1TrgMatchFilterPt[Bsize]/F");
         nt->Branch("Bmu1TrgMatchFilterEta",Bmu1TrgMatchFilterEta,"Bmu1TrgMatchFilterEta[Bsize]/F");
@@ -904,6 +944,18 @@ public:
     Bmu2InTrackerLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]] + MuonInfo->i_nStripLayer[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
     Bmu1TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
     Bmu2TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu2highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]];
+    Bmu2SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu2_index[BInfo->rfuj_index[j]]];
+    Bmu1isAcc[typesize] = (fabs(Bmu1eta[typesize]) < 2.4 && 
+                           ((fabs(Bmu1eta[typesize]) < 1.2 && Bmu1pt[typesize] >= 3.5) ||
+                            (fabs(Bmu1eta[typesize]) >= 1.2 && fabs(Bmu1eta[typesize]) < 2.1 && Bmu1pt[typesize] >= 5.77-1.89*fabs(Bmu1eta[typesize])) ||
+                            (fabs(Bmu1eta[typesize]) >= 2.1 && Bmu1pt[typesize] >= 1.8)));
+    Bmu2isAcc[typesize] = (fabs(Bmu2eta[typesize]) < 2.4 && 
+                           ((fabs(Bmu2eta[typesize]) < 1.2 && Bmu2pt[typesize] >= 3.5) ||
+                            (fabs(Bmu2eta[typesize]) >= 1.2 && fabs(Bmu2eta[typesize]) < 2.1 && Bmu2pt[typesize] >= 5.77-1.89*fabs(Bmu2eta[typesize])) ||
+                            (fabs(Bmu2eta[typesize]) >= 2.1 && Bmu2pt[typesize] >= 1.8)));
 
     Bmu1TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
     Bmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[BInfo->rfuj_index[j]]*MuonInfo->MuTrgMatchFilterSize+0];
@@ -961,10 +1013,14 @@ public:
         Btrk1EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk1_index[j]];
         Btrk1PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk1_index[j]];
         Btrk1Y[typesize] = b4P->Rapidity();
-        Btrk1Dz[typesize] = TrackInfo->dzPV[BInfo->rftk1_index[j]];
-        Btrk1Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk1_index[j]];
-        Btrk1D0[typesize] = TrackInfo->d0[BInfo->rftk1_index[j]];
-        Btrk1D0Err[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
+        Btrk1Dz[typesize] = TrackInfo->dz[BInfo->rftk1_index[j]];
+        Btrk1DzError[typesize] = TrackInfo->dzerror[BInfo->rftk1_index[j]];
+        Btrk1Dxy[typesize] = TrackInfo->dxy[BInfo->rftk1_index[j]];
+        Btrk1DxyError[typesize] = TrackInfo->dxyerror[BInfo->rftk1_index[j]];
+        Btrk1Dz1[typesize] = TrackInfo->dz1[BInfo->rftk1_index[j]];
+        Btrk1DzError1[typesize] = TrackInfo->dzerror1[BInfo->rftk1_index[j]];
+        Btrk1Dxy1[typesize] = TrackInfo->dxy1[BInfo->rftk1_index[j]];
+        Btrk1DxyError1[typesize] = TrackInfo->dxyerror1[BInfo->rftk1_index[j]];
         Btrk1PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk1_index[j]];
         Btrk1StripHit[typesize] = TrackInfo->striphit[BInfo->rftk1_index[j]];
         Btrk1nPixelLayer[typesize] = TrackInfo->nPixelLayer[BInfo->rftk1_index[j]];
@@ -983,9 +1039,13 @@ public:
         Btrk2PhiErr[typesize] = 0;
         Btrk2Y[typesize] = -1;
         Btrk2Dz[typesize] = -1;
+        Btrk2DzError[typesize] = -1;
         Btrk2Dxy[typesize] = -1;
-        Btrk2D0[typesize] = -1;
-        Btrk2D0Err[typesize] = -1;
+        Btrk2DxyError[typesize] = -1;
+        Btrk2Dz1[typesize] = -1;
+        Btrk2DzError1[typesize] = -1;
+        Btrk2Dxy1[typesize] = -1;
+        Btrk2DxyError1[typesize] = -1;
         Btrk2PixelHit[typesize] = -1;
         Btrk2StripHit[typesize] = -1;
         Btrk2nPixelLayer[typesize] = -1;
@@ -1031,10 +1091,14 @@ public:
         Btrk1EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk2_index[j]];
         Btrk1PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk2_index[j]];
         Btrk1Y[typesize] = b4P->Rapidity();
-        Btrk1Dz[typesize] = TrackInfo->dzPV[BInfo->rftk2_index[j]];
-        Btrk1Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk2_index[j]];
-        Btrk1D0[typesize] = TrackInfo->d0[BInfo->rftk2_index[j]];
-        Btrk1D0Err[typesize] = TrackInfo->d0error[BInfo->rftk2_index[j]];
+        Btrk1Dz[typesize] = TrackInfo->dz[BInfo->rftk2_index[j]];
+        Btrk1DzError[typesize] = TrackInfo->dzerror[BInfo->rftk2_index[j]];
+        Btrk1Dxy[typesize] = TrackInfo->dxy[BInfo->rftk2_index[j]];
+        Btrk1DxyError[typesize] = TrackInfo->dxyerror[BInfo->rftk2_index[j]];
+        Btrk1Dz1[typesize] = TrackInfo->dz1[BInfo->rftk2_index[j]];
+        Btrk1DzError1[typesize] = TrackInfo->dzerror1[BInfo->rftk2_index[j]];
+        Btrk1Dxy1[typesize] = TrackInfo->dxy1[BInfo->rftk2_index[j]];
+        Btrk1DxyError1[typesize] = TrackInfo->dxyerror1[BInfo->rftk2_index[j]];
         Btrk1PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk2_index[j]];
         Btrk1StripHit[typesize] = TrackInfo->striphit[BInfo->rftk2_index[j]];
         Btrk1nPixelLayer[typesize] = TrackInfo->nPixelLayer[BInfo->rftk2_index[j]];
@@ -1057,10 +1121,14 @@ public:
         Btrk2EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk1_index[j]];
         Btrk2PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk1_index[j]];
         Btrk2Y[typesize] = b4P->Rapidity();
-        Btrk2Dz[typesize] = TrackInfo->dzPV[BInfo->rftk1_index[j]];
-        Btrk2Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk1_index[j]];
-        Btrk2D0[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
-        Btrk2D0Err[typesize] = TrackInfo->d0[BInfo->rftk1_index[j]];
+        Btrk2Dz[typesize] = TrackInfo->dz[BInfo->rftk1_index[j]];
+        Btrk2DzError[typesize] = TrackInfo->dzerror[BInfo->rftk1_index[j]];
+        Btrk2Dxy[typesize] = TrackInfo->dxy[BInfo->rftk1_index[j]];
+        Btrk2DxyError[typesize] = TrackInfo->dxyerror[BInfo->rftk1_index[j]];
+        Btrk2Dz1[typesize] = TrackInfo->dz1[BInfo->rftk1_index[j]];
+        Btrk2DzError1[typesize] = TrackInfo->dzerror1[BInfo->rftk1_index[j]];
+        Btrk2Dxy1[typesize] = TrackInfo->dxy1[BInfo->rftk1_index[j]];
+        Btrk2DxyError1[typesize] = TrackInfo->dxyerror1[BInfo->rftk1_index[j]];
         Btrk2PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk1_index[j]];
         Btrk2StripHit[typesize] = TrackInfo->striphit[BInfo->rftk1_index[j]];
         Btrk2nPixelLayer[typesize] = TrackInfo->nPixelLayer[BInfo->rftk1_index[j]];
@@ -1114,10 +1182,14 @@ public:
         Btrk1EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk1_index[j]];
         Btrk1PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk1_index[j]];
         Btrk1Y[typesize] = b4P->Rapidity();
-        Btrk1Dz[typesize] = TrackInfo->dzPV[BInfo->rftk1_index[j]];
-        Btrk1Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk1_index[j]];
-        Btrk1D0[typesize] = TrackInfo->d0[BInfo->rftk1_index[j]];
-        Btrk1D0Err[typesize] = TrackInfo->d0error[BInfo->rftk1_index[j]];
+        Btrk1Dz[typesize] = TrackInfo->dz[BInfo->rftk1_index[j]];
+        Btrk1DzError[typesize] = TrackInfo->dzerror[BInfo->rftk1_index[j]];
+        Btrk1Dxy[typesize] = TrackInfo->dxy[BInfo->rftk1_index[j]];
+        Btrk1DxyError[typesize] = TrackInfo->dxyerror[BInfo->rftk1_index[j]];
+        Btrk1Dz1[typesize] = TrackInfo->dz1[BInfo->rftk1_index[j]];
+        Btrk1DzError1[typesize] = TrackInfo->dzerror1[BInfo->rftk1_index[j]];
+        Btrk1Dxy1[typesize] = TrackInfo->dxy1[BInfo->rftk1_index[j]];
+        Btrk1DxyError1[typesize] = TrackInfo->dxyerror1[BInfo->rftk1_index[j]];
         Btrk1PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk1_index[j]];
         Btrk1StripHit[typesize] = TrackInfo->striphit[BInfo->rftk1_index[j]];
         Btrk1nPixelLayer[typesize] = TrackInfo->nPixelLayer[BInfo->rftk1_index[j]];
@@ -1140,10 +1212,14 @@ public:
         Btrk2EtaErr[typesize] = TrackInfo->etaErr[BInfo->rftk2_index[j]];
         Btrk2PhiErr[typesize] = TrackInfo->phiErr[BInfo->rftk2_index[j]];
         Btrk2Y[typesize] = b4P->Rapidity();
-        Btrk2Dz[typesize] = TrackInfo->dzPV[BInfo->rftk2_index[j]];
-        Btrk2Dxy[typesize] = TrackInfo->dxyPV[BInfo->rftk2_index[j]];
-        Btrk2D0[typesize] = TrackInfo->d0[BInfo->rftk2_index[j]];
-        Btrk2D0Err[typesize] = TrackInfo->d0error[BInfo->rftk2_index[j]];
+        Btrk2Dz[typesize] = TrackInfo->dz[BInfo->rftk2_index[j]];
+        Btrk2DzError[typesize] = TrackInfo->dzerror[BInfo->rftk2_index[j]];
+        Btrk2Dxy[typesize] = TrackInfo->dxy[BInfo->rftk2_index[j]];
+        Btrk2DxyError[typesize] = TrackInfo->dxyerror[BInfo->rftk2_index[j]];
+        Btrk2Dz1[typesize] = TrackInfo->dz1[BInfo->rftk2_index[j]];
+        Btrk2DzError1[typesize] = TrackInfo->dzerror1[BInfo->rftk2_index[j]];
+        Btrk2Dxy1[typesize] = TrackInfo->dxy1[BInfo->rftk2_index[j]];
+        Btrk2DxyError1[typesize] = TrackInfo->dxyerror1[BInfo->rftk2_index[j]];
         Btrk2PixelHit[typesize] = TrackInfo->pixelhit[BInfo->rftk2_index[j]];
         Btrk2StripHit[typesize] = TrackInfo->striphit[BInfo->rftk2_index[j]];
         Btrk2nPixelLayer[typesize] = TrackInfo->nPixelLayer[BInfo->rftk2_index[j]];
@@ -1607,6 +1683,18 @@ public:
     Jmu2InTrackerLayer[typesize] = MuonInfo->i_nPixelLayer[BInfo->uj_rfmu2_index[j]] + MuonInfo->i_nStripLayer[BInfo->uj_rfmu2_index[j]];
     Jmu1TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu1_index[j]];
     Jmu2TrkQuality[typesize] = MuonInfo->innerTrackQuality[BInfo->uj_rfmu2_index[j]];
+    Jmu1highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu1_index[j]];
+    Jmu2highPurity[typesize] = MuonInfo->highPurity[BInfo->uj_rfmu2_index[j]];
+    Jmu1SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu1_index[j]];
+    Jmu2SoftMuID[typesize] = MuonInfo->SoftMuID[BInfo->uj_rfmu2_index[j]];
+    Jmu1isAcc[typesize] = (fabs(Jmu1eta[typesize]) < 2.4 &&
+                           ((fabs(Jmu1eta[typesize]) < 1.2 && Jmu1pt[typesize] >= 3.5) ||
+                            (fabs(Jmu1eta[typesize]) >= 1.2 && fabs(Jmu1eta[typesize]) < 2.1 && Jmu1pt[typesize] >= 5.77-1.89*fabs(Jmu1eta[typesize])) ||
+                            (fabs(Jmu1eta[typesize]) >= 2.1 && Jmu1pt[typesize] >= 1.8)));
+    Jmu2isAcc[typesize] = (fabs(Jmu2eta[typesize]) < 2.4 &&
+                           ((fabs(Jmu2eta[typesize]) < 1.2 && Jmu2pt[typesize] >= 3.5) ||
+                            (fabs(Jmu2eta[typesize]) >= 1.2 && fabs(Jmu2eta[typesize]) < 2.1 && Jmu2pt[typesize] >= 5.77-1.89*fabs(Jmu2eta[typesize])) ||
+                            (fabs(Jmu2eta[typesize]) >= 2.1 && Jmu2pt[typesize] >= 1.8)));
 
     Jmu1TrgMatchFilterE[typesize] = MuonInfo->MuTrgMatchFilterTrgObjE[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];
     Jmu1TrgMatchFilterPt[typesize] = MuonInfo->MuTrgMatchFilterTrgObjPt[BInfo->uj_rfmu1_index[j]*MuonInfo->MuTrgMatchFilterSize+0];

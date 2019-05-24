@@ -61,13 +61,14 @@ finderMaker_75X(process, AddCaloMuon, runOnMC, HIFormat, UseGenPlusSim, VtxLabel
 
 process.Bfinder.MVAMapLabel = cms.InputTag(TrkLabel,"MVAValues")
 process.Bfinder.makeBntuple = cms.bool(True)
-process.Bfinder.tkPtCut = cms.double(0.9) # before fit
+process.Bfinder.tkPtCut = cms.double(0.8) # before fit
 process.Bfinder.jpsiPtCut = cms.double(0.0) # before fit
 process.Bfinder.bPtCut = cms.vdouble(3.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0) # before fit
 process.Bfinder.Bchannel = cms.vint32(1, 0, 0, 1, 1, 1, 1)
 process.Bfinder.VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.10)
 process.Bfinder.svpvDistanceCut = cms.vdouble(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.0)
 process.Bfinder.doTkPreCut = cms.bool(True)
+process.Bfinder.doMuPreCut = cms.bool(True)
 process.Bfinder.MuonTriggerMatchingPath = cms.vstring(
     "HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1")
 process.Bfinder.MuonTriggerMatchingFilter = cms.vstring(

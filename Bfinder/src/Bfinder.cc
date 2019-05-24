@@ -298,8 +298,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     */
 
     // Handle primary vertex properties
-    Vertex thePrimaryV;
-    math::XYZPoint RefVtx;
+    Vertex thePrimaryV; //, thePrimaryVmaxPt, thePrimaryVmaxMult;
+    math::XYZPoint RefVtx; //, RefVtxmaxPt, RefVtxmaxMult;
     //get beamspot information
     Vertex theBeamSpotV;
     reco::BeamSpot beamSpot;
@@ -378,6 +378,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             VtxInfo.Size++;
             break;
         }
+
         for (reco::Vertex::trackRef_iterator it = it_vtx->tracks_begin(); it != it_vtx->tracks_end(); it++) {
            VtxInfo.Pt_Sum[VtxInfo.Size] += (*it)->pt();
            VtxInfo.Pt_Sum2[VtxInfo.Size] += ((*it)->pt() * (*it)->pt());
@@ -477,8 +478,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 if(!mu_it->innerTrack().isNonnull()) ;
                                 else {
                                     MuonCutLevel->Fill(3);
-                                    if (  fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) >= 3.        || 
-                                          fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  >= 30.       
+                                    if (  fabs(mu_it->innerTrack()->dxy(RefVtx)) >= 3.        || 
+                                          fabs(mu_it->innerTrack()->dz(RefVtx))  >= 30.       
                                        ) ;
                                     else {
                                         MuonCutLevel->Fill(4);
@@ -497,27 +498,29 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             }
 
                         //Muon Id flag
+                        // *Bfinder* 
                         MuonInfo.BfinderMuID[MuonInfo.size] = false;
                         if(mu_it->innerTrack().isNonnull()){
                             if( (mu_it->isTrackerMuon() || mu_it->isGlobalMuon()) 
-                            && (muon::isGoodMuon(*mu_it,muon::TMOneStationTight)) 
-                            && fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) < 3.
-                            && fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  < 30.
+                            // && (muon::isGoodMuon(*mu_it,muon::TMOneStationTight)) 
+                            && fabs(mu_it->innerTrack()->dxy(RefVtx)) < 4.
+                            && fabs(mu_it->innerTrack()->dz(RefVtx))  < 35.
                             && mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement() > 0 
                             && mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5
                             && mu_it->innerTrack()->normalizedChi2() <= 1.8
                             )
                                 MuonInfo.BfinderMuID[MuonInfo.size] = true;
                         }
-                        
+                        // *SoftMu*
                         MuonInfo.SoftMuID[MuonInfo.size] = false;
                         if(mu_it->innerTrack().isNonnull()){
-                            if( (muon::isGoodMuon(*mu_it,muon::TMOneStationTight)) 
+                          if( (mu_it->isTrackerMuon() && mu_it->isGlobalMuon()) 
+                            // && muon::isGoodMuon(*mu_it,muon::TMOneStationTight) 
                             && mu_it->innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5
                             && mu_it->innerTrack()->hitPattern().pixelLayersWithMeasurement() > 0 
-                            && mu_it->innerTrack()->quality(reco::TrackBase::highPurity)
-                            && fabs(mu_it->innerTrack()->dxy(thePrimaryV.position())) < 0.3
-                            && fabs(mu_it->innerTrack()->dz(thePrimaryV.position()))  < 20.
+                            // && mu_it->innerTrack()->quality(reco::TrackBase::highPurity)
+                            && fabs(mu_it->innerTrack()->dxy(RefVtx)) < 0.3
+                            && fabs(mu_it->innerTrack()->dz(RefVtx))  < 20.
                             )
                                 MuonInfo.SoftMuID[MuonInfo.size] = true;
                         }
@@ -617,6 +620,7 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                                 if (mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))) MuonInfo.innerTrackQuality[MuonInfo.size] += 1 << (tq);
                                 //std::cout<<"type: "<<mu_it->innerTrack()->quality(static_cast<reco::TrackBase::TrackQuality>(tq))<<std::endl;
                             }
+                            MuonInfo.highPurity              [MuonInfo.size] = mu_it->innerTrack()->quality(reco::TrackBase::highPurity);
                             MuonInfo.normchi2                [MuonInfo.size] = mu_it->innerTrack()->normalizedChi2();
                             MuonInfo.i_striphit              [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidStripHits();
                             MuonInfo.i_pixelhit              [MuonInfo.size] = mu_it->innerTrack()->hitPattern().numberOfValidPixelHits();
@@ -676,9 +680,10 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                             MuonInfo.isNeededMuon[MuonInfo.size] = false;
                         }
                         else if(doMuPreCut_ &&
-                                (  !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
+                                (  // !muon::isGoodMuon(*mu_it,muon::TMOneStationTight)
                                 //|| !MuInAcc
                                 //||  some other cut
+                                 !(mu_it->isTrackerMuon() || mu_it->isGlobalMuon())
                                 )
                         ){
                             MuonInfo.isNeededMuon[MuonInfo.size] = false;
@@ -1145,8 +1150,16 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         TrackInfo.ndf            [TrackInfo.size] = tk_it->track()->ndof();
                         TrackInfo.d0             [TrackInfo.size] = tk_it->track()->d0();
                         TrackInfo.d0error        [TrackInfo.size] = tk_it->track()->d0Error();
-                        TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
-                        TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        // TrackInfo.dzPV           [TrackInfo.size] = tk_it->track()->dz(RefVtx);
+                        // TrackInfo.dxyPV          [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        TrackInfo.dxy            [TrackInfo.size] = tk_it->track()->dxy();
+                        TrackInfo.dxyerror       [TrackInfo.size] = tk_it->track()->dxyError();
+                        TrackInfo.dz             [TrackInfo.size] = tk_it->track()->dz();
+                        TrackInfo.dzerror        [TrackInfo.size] = tk_it->track()->dzError();
+                        TrackInfo.dxy1           [TrackInfo.size] = tk_it->track()->dxy(RefVtx);
+                        TrackInfo.dxyerror1      [TrackInfo.size] = TMath::Sqrt(tk_it->track()->dxyError()*tk_it->track()->dxyError() + thePrimaryV.xError()*thePrimaryV.yError());
+                        TrackInfo.dz1            [TrackInfo.size] = tk_it->track()->dz(RefVtx);
+                        TrackInfo.dzerror1       [TrackInfo.size] = TMath::Sqrt(tk_it->track()->dzError()*tk_it->track()->dzError() + thePrimaryV.zError()*thePrimaryV.zError());
                         TrackInfo.highPurity     [TrackInfo.size] = tk_it->track()->quality(reco::TrackBase::qualityByName("highPurity"));
                         TrackInfo.geninfo_index  [TrackInfo.size] = -1;//initialize for later use
                         TrackInfo.trkMVAVal      [TrackInfo.size] = (*mvaoutput)[tk_it->track()];
